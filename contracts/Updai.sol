@@ -2,7 +2,7 @@ pragma solidity ^0.4.20;
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
 
-contract Updai {
+contract Updai is Secondary, ERC20 {
 	mapping (address=>bool) banks;
 	
 	function setBank(address bank, bool authorize ) public onlyPrimary{
