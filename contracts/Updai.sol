@@ -9,13 +9,13 @@ contract Updai is Secondary, ERC20 {
 		banks[bank] = authorize;
 	} 
 
-	function issue(address recipient, address bank, uint value) public {
-		require (banks[bank],"unauthorized to issue new tokens");
+	function issue(address recipient, uint value) public {
+		require (banks[msg.sender],"unauthorized to issue new tokens");
 		_mint((recipient), value);
 	}
 
-	function burn (address from, address bank, uint value) public {
-		require (banks[bank],"unauthorized to burn tokens");
+	function burn (address from, uint value) public {
+		require (banks[msg.sender],"unauthorized to burn tokens");
 		_burn(from, value);
 	}
 
