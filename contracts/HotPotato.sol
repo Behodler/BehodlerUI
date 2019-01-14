@@ -5,7 +5,7 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Updai.sol";
 
 //winner gets 100% of own burn plus 50% of runner up. Everyone else is refunded.
-contract LastManBurning is EpochGame() { //remember to make a bank of Updai
+contract HotPotato is EpochGame() { //remember to make a bank of Updai
 	event Winner(uint epoch, address winner, address runnerUp, uint winnings);
 	address UpdaiAccount;
 	mapping(uint => address[]) highestContestantsPerEpoch; //0 == highest
@@ -31,21 +31,19 @@ contract LastManBurning is EpochGame() { //remember to make a bank of Updai
 		}
 	}
 
-	function concludeNextEpoch() public {
-		uint nextEpoch = lastEpochSettled + 1;
-		require(nextEpoch < currentEpoch, "cannot settle current epoch");
-		lastEpochSettled = nextEpoch;
-		if (highestContestantsPerEpoch[nextEpoch].length == 0 ){
+	function concludelastEpochSettled() public {
+		_settleEpoch();
+		if (highestContestantsPerEpoch[lastEpochSettled].length == 0 ){
 			return;
 		}
 
-		if(highestContestantsPerEpoch[nextEpoch][0] == highestContestantsPerEpoch[nextEpoch][1]){
+		if(highestContestantsPerEpoch[lastEpochSettled][0] == highestContestantsPerEpoch[lastEpochSettled][1]){
 			return;
 		}
 
-		uint winningBonus = highestEntriesPerEpoch[nextEpoch][1].div(2);
-		winners[highestContestantsPerEpoch[nextEpoch][0]] = winners[highestContestantsPerEpoch[nextEpoch][0]].add(winningBonus);
+		uint winningBonus = highestEntriesPerEpoch[lastEpochSettled][1].div(2);
+		winners[highestContestantsPerEpoch[lastEpochSettled][0]] = winners[highestContestantsPerEpoch[lastEpochSettled][0]].add(winningBonus);
 		Updai(UpdaiAccount).burn(self,winningBonus);
-		emit Winner(nextEpoch,highestContestantsPerEpoch[nextEpoch][0],highestContestantsPerEpoch[nextEpoch][1],winningBonus);
+		emit Winner(lastEpochSettled,highestContestantsPerEpoch[lastEpochSettled][0],highestContestantsPerEpoch[lastEpochSettled][1],winningBonus);
 	}
 }

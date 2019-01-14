@@ -15,10 +15,16 @@ contract Generator is Secondary{
 		self = address(this);
 	}
 
-	function setDependencies (address dai, address updai,address vault) public onlyPrimary {
-		DaiAccount = dai;
-		UpdaiAccount = updai;
+	function setVault (address vault) public onlyPrimary {
 		Vault = vault;
+	}
+
+	function setDai (address dai) public onlyPrimary {
+		DaiAccount = dai;
+	}
+
+	function setDependencies (address updai) public onlyPrimary {
+		UpdaiAccount = updai;
 	} 
 
 	function getExchangeRate() public view returns (uint) { //exhange rate times 100

@@ -15,6 +15,9 @@ contract EpochGame is Secondary {
 	uint currentEpochBlock;
 	using SafeMath for uint256;
 	address UpdaiAccount;
+	uint blockMiningBuffer; //used to extend game at last moment to prevent miner cheating
+	uint blockMiningCuttoff;
+
 	mapping (address=>uint) winners;
 	mapping (address=> uint) refunds;
 	mapping (address => uint) lastEpochPlayed; //cannot withdraw if currently playing for safety reasons
@@ -33,6 +36,8 @@ contract EpochGame is Secondary {
 	}
 
 	function getCurrentEpoch() public returns (uint) {
+
+		require(epochDuration > 0, "epoch duration not set");
 		uint blocksSinceLastEpoch = block.number.sub(currentEpochBlock);
 		if(blocksSinceLastEpoch < epochDuration)
 			return currentEpoch;
@@ -42,17 +47,26 @@ contract EpochGame is Secondary {
 		currentEpochBlock = currentEpochBlock.add(epochsElapsed.mul(epochDuration));
 	}
 
-	function _settleEpoch(uint epochNumber) internal {
-		require(epochNumber<currentEpoch, "cannot settle future epochs");
-		lastEpochSettled = epochNumber;
+	function _settleEpoch() internal {
+		require(lastEpochSettled+1<currentEpoch, "cannot settle future epochs");
+		lastEpochSettled = lastEpochSettled.add(1);
 	}
 
 	function _enter(uint updai, address player) internal { // call first
+		require(blockMiningBuffer > 0 && blockMiningCuttoff > 0, "block mining buffer not set");
+		uint epoch = getCurrentEpoch();
+		uint blocksSinceLastEpoch = block.number.sub(currentEpochBlock);
+	
+		//Epoch is elongated if someone plays in last chunk
+		if(epochDuration - blocksSinceLastEpoch < blockMiningCuttoff)
+			currentEpochBlock = currentEpochBlock.add(blockMiningBuffer);	
+
 		address self = address(this);
 		require (ERC20(UpdaiAccount).allowance(player,self)>=updai,"epoch game unauthorized to take dai");
+
 		ERC20(UpdaiAccount).transferFrom(player, address(this),updai);
-		lastEpochPlayed[player] = currentEpoch;
-		refunds[msg.sender] += updai;
+		lastEpochPlayed[player] = epoch;
+		refunds[msg.sender] = refunds[msg.sender].add(updai);
 	}
 
 	function withDraw() public {
