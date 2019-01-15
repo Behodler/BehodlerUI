@@ -19,12 +19,9 @@ contract Generator is Secondary{
 		Vault = vault;
 	}
 
-	function setDai (address dai) public onlyPrimary {
-		DaiAccount = dai;
-	}
-
-	function setDependencies (address updai) public onlyPrimary {
+	function setDependencies (address updai, address dai) public onlyPrimary {
 		UpdaiAccount = updai;
+		DaiAccount = dai;
 	} 
 
 	function getExchangeRate() public view returns (uint) { //exhange rate times 100
@@ -41,8 +38,6 @@ contract Generator is Secondary{
 		uint updaiToMint = dai.mul(100)/getExchangeRate();
 		require (ERC20(DaiAccount).allowance(msg.sender,self)>=dai, "Generator contract unauthorized to take Dai");
 		Updai(UpdaiAccount).issue(msg.sender,updaiToMint);
-		if(updaiToMint>100)
-			Updai(UpdaiAccount).issue(Vault,updaiToMint/100);
 	}
 
 	function redeemDai(uint updai) public {
@@ -53,5 +48,7 @@ contract Generator is Secondary{
 		require(daiToRedeem<=ERC20(DaiAccount).balanceOf(self), "dai request exceeds total reserves of dai");
 		Updai(UpdaiAccount).burn(msg.sender,updai);
 		ERC20(DaiAccount).transfer(msg.sender,daiToRedeem);
+		if(updai>100)
+			Updai(UpdaiAccount).issue(Vault,updai/100);
 	}
 }

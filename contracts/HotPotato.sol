@@ -11,6 +11,7 @@ contract HotPotato is EpochGame() { //remember to make a bank of Updai
 	mapping(uint => address[]) highestContestantsPerEpoch; //0 == highest
 	mapping (uint => uint[]) highestEntriesPerEpoch;  // 0 == highest
 	address self;
+	
 	function contructor () public {
 		self = address(this);
 	}
