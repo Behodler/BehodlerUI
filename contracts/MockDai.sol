@@ -4,6 +4,11 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 contract MockDai is Secondary, ERC20 {
+
+	constructor() public{
+		_mint(msg.sender,1e8 ether);
+	}
+
 	function name() public pure returns (string memory) {
 		return "Mock DAI";
 	}

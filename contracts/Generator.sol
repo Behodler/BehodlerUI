@@ -11,12 +11,16 @@ contract Generator is Secondary{
 	using SafeMath for uint256;
 	address self;
 
-	function contructor () public {
+	constructor() public {
 		self = address(this);
 	}
 
 	function setVault (address vault) public onlyPrimary {
 		Vault = vault;
+	}
+
+	function getVault() public view returns (address) {
+		return Vault;
 	}
 
 	function setDependencies (address updai, address dai) public onlyPrimary {
@@ -38,17 +42,20 @@ contract Generator is Secondary{
 		uint updaiToMint = dai.mul(100)/getExchangeRate();
 		require (ERC20(DaiAccount).allowance(msg.sender,self)>=dai, "Generator contract unauthorized to take Dai");
 		Updai(UpdaiAccount).issue(msg.sender,updaiToMint);
+		ERC20(DaiAccount).transferFrom(msg.sender, self,dai);
 	}
 
 	function redeemDai(uint updai) public {
 		uint updaiToTradeIn = updai.mul(90).div(100);//10% fee
-		require(ERC20(UpdaiAccount).totalSupply()<=updai, "redemption amount exceeeds total updai supply");
+
+		require(ERC20(UpdaiAccount).totalSupply()>=updai, "redemption amount exceeeds total updai supply");
 		require (ERC20(UpdaiAccount).allowance(msg.sender,self)>=updai, "Generator contract unauthorized to take updai");
+
 		uint daiToRedeem = updaiToTradeIn.mul(getExchangeRate()).div(100);
-		require(daiToRedeem<=ERC20(DaiAccount).balanceOf(self), "dai request exceeds total reserves of dai");
+		require(daiToRedeem <= ERC20(DaiAccount).balanceOf(self), "dai request exceeds total reserves of dai");
 		Updai(UpdaiAccount).burn(msg.sender,updai);
 		ERC20(DaiAccount).transfer(msg.sender,daiToRedeem);
-		if(updai>100)
+		if(updai >= 100)
 			Updai(UpdaiAccount).issue(Vault,updai/100);
 	}
 }

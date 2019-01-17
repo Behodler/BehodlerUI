@@ -2,18 +2,21 @@
 const async = require('./helpers/async.js')
 const expectThrow = require('./helpers/expectThrow').handle
 const test = async.test
-
+const setup = async.setup
 const updai = artifacts.require("Updai")
 
 contract('Updai', accounts => {
+	let updaiInstance
+	setup(async () => {
+		updaiInstance = await updai.deployed()
+	})
+	
 	test("non bank can't issue", async () => {
-		const updaiInstance = await updai.deployed()
 		await updaiInstance.setBank(accounts[0], false);
 		await expectThrow(updaiInstance.issue(accounts[1], "100", { from: accounts[0] }), 'unauthorized to issue new tokens')
 	})
 
 	test("bank can issue and burn but non-bank can't burn", async () => {
-		const updaiInstance = await updai.deployed()
 		await updaiInstance.setBank(accounts[0], true)
 		await updaiInstance.issue(accounts[1], "100", { from: accounts[0] })
 		await updaiInstance.burn(accounts[1], "50", { from: accounts[0] })
@@ -22,7 +25,6 @@ contract('Updai', accounts => {
 	})
 
 	test("bank can't burn more than totalSupply", async () => {
-		const updaiInstance = await updai.deployed()
 		await updaiInstance.setBank(accounts[0], true)
 		let balanceOfAccount1 = parseInt((await updaiInstance.balanceOf.call(accounts[1])))
 		let overflowAmount = `${balanceOfAccount1 + 1}`
