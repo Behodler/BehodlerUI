@@ -31,12 +31,24 @@ contract EpochGame is Secondary {
 		currentEpochBlock = block.number;
 	}
 
+	function setMiningProtection(uint cutoff, uint buffer) public {
+		blockMiningCuttoff = cutoff;
+		blockMiningBuffer = buffer;
+	}
+
+	function getBlockMiningCutoff() public view returns (uint) {
+		return blockMiningCuttoff;
+	}
+
+	function getBlockMiningBuffer() public view returns (uint) {
+		return blockMiningBuffer;
+	}
+
 	function setEpochDuration (uint blocks) public onlyPrimary{
 		epochDuration = blocks;
 	}
 
 	function getCurrentEpoch() public returns (uint) {
-
 		require(epochDuration > 0, "epoch duration not set");
 		uint blocksSinceLastEpoch = block.number.sub(currentEpochBlock);
 		if(blocksSinceLastEpoch < epochDuration)
@@ -47,9 +59,18 @@ contract EpochGame is Secondary {
 		currentEpochBlock = currentEpochBlock.add(epochsElapsed.mul(epochDuration));
 	}
 
+	function getLastEpochSettled() public view returns (uint) {
+		return lastEpochSettled;
+	}
+
 	function _settleEpoch() internal {
 		require(lastEpochSettled+1<currentEpoch, "cannot settle future epochs");
 		lastEpochSettled = lastEpochSettled.add(1);
+	}
+
+	function getRemainingBlocksInEpoch() public view returns (uint) {
+		uint blocksSinceLastEpoch = block.number.sub(currentEpochBlock);
+		return epochDuration - blocksSinceLastEpoch;
 	}
 
 	function _enter(uint updai, address player) internal { // call first
