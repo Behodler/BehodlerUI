@@ -15,3 +15,6 @@ In time, it is hoped that marginalized, underbanked and unbanked communities aro
 
 ## Future Development
 WeiDai's success hinges on there being mutually beneficial reasons for holders to voluntarily burn WeiDai. As such, I will be looking into how to create a market for burning and a perhaps develop a way for developers to create their own *burn games*.
+
+## Why the name?
+Since I wish to make it clear that this token extends the original Dai token, I thought it would be appropriate to use the same naming convention. Dai, loosely translated, is the Chinese word for lend/borrow. Originally I thought I'd name the token Updai since the name is catchy and the intention is clear. However, charged with a desire to linguistically acknowledge Dai, I fumbled around on Google Translate for a Chinese word that means something like "insulate" or "protect" because I wish to make it clear that the two chief properties are that it beats inflation and is stable relative to the US Dollar. Eventually I stumbled on Wei which means guard/protect. I couldn't resist! Wei Dai is one of the spiritual fathers of Bitcoin (and one of the potential Satoshi Nakamoto candidates). In summary, the final name choice acknowledges both MakerDao and Wei Dai while simultaneously communicating the values of a **thriftcoin**. 
