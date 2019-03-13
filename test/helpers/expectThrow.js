@@ -5,8 +5,8 @@ module.exports.handle = async (promise, reason) => {
 	} catch (error) {
 		if (error === "EXPECTED")
 			assert.fail("expected an error but there was none");
-		const message = !!error.reason?error.reason: JSON.stringify(error);
-		if (message !== reason)
+		const message = JSON.stringify(error);
+		if (!message.includes(reason))
 			assert.fail(`expected error:'${reason}' but was ${message}`);
 		return;
 	}
