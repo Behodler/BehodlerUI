@@ -10,12 +10,18 @@ contract WeiDaiBank is Secondary {
 
 	address weiDaiAddress;
 	address daiAddress;
+	address donationAddress;
+	address preAddress;
+	address self;
 
 	using SafeMath for uint;
 
-	function setDependencies(address weiDai, address dai) public onlyPrimary{
+	function setDependencies(address weiDai, address dai, address donation, address pre) public onlyPrimary{
 		daiAddress = dai;
 		weiDaiAddress = weiDai;
+		donationAddress = donation;
+		preAddress = pre;
+		self = address(this);
 	} 
 
 	function getDaiPerWeiDai() public view returns (uint) {
@@ -24,7 +30,7 @@ contract WeiDaiBank is Secondary {
 	}
 
 	function issue(address sender, uint weidai,uint dai) public { //sender is dai holder, msg.sender is calling contract
-		address self = address(this);
+		require(msg.sender == preAddress, "only patience regulation engine can invoke this function");
 		ERC20(daiAddress).transferFrom(sender, self,dai); 
 		WeiDai(weiDaiAddress).issue(msg.sender, weidai);
 	}
@@ -35,4 +41,13 @@ contract WeiDaiBank is Secondary {
 		uint daiPayable = getDaiPerWeiDai().mul(weiDaiToRedeem);
 		ERC20(daiAddress).transfer(msg.sender, daiPayable);
 	}
+
+	function donate(uint amount) public {
+		ERC20(weiDaiAddress).transferFrom(msg.sender,self,amount);
+	}
+
+	function withdrawDonations() public onlyPrimary {
+		uint balance = ERC20(weiDaiAddress).balanceOf(self);
+		ERC20(weiDaiAddress).transfer(donationAddress,balance);
+	} 
 }
