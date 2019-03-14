@@ -1,6 +1,5 @@
 /node_modules
 build
 *.log
-TODO.txt
 *.code-workspace
 client/contracts
