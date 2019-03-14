@@ -7,6 +7,8 @@ import "./WeiDai.sol";
 
 contract PatienceRegulationEngine is Secondary {
 	uint marginalPenaltyDrawdownPeriod; //aka mining difficulty
+	uint lastAdjustmentTimeStamp;
+	int dailyAdjustmentWeight;
 	address weiDaiBankAddress;
 	address weiDaiAddress;
 	mapping(address=>uint) lockedWeiDai;
@@ -15,7 +17,7 @@ contract PatienceRegulationEngine is Secondary {
 	mapping (address=>uint) donationBurnSplit;
 
 	using SafeMath for uint;
-
+	
 	function setDependencies(address bank, address weiDai) public onlyPrimary{
 		weiDaiBankAddress = bank;
 		weiDaiAddress = weiDai;
@@ -23,8 +25,8 @@ contract PatienceRegulationEngine is Secondary {
 	
 	function buyWeiDai(uint dai, uint split) public {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
-		require(split<=100, "split is a % expressed as an integer between 0 and 100");
-		uint weiDaiToBuy = dai.div(WeiDaiBank(weiDaiBankAddress).getDaiPerWeiDai());
+		require(split<=100, "split is a % expressed as an integer between 0 and 100");			
+		uint weiDaiToBuy = dai.mul(WeiDaiBank(weiDaiBankAddress).getWeiDaiPerDai());
 
 		WeiDaiBank(weiDaiBankAddress).issue(msg.sender, weiDaiToBuy, dai);
 		lockedWeiDai[msg.sender] = weiDaiToBuy;
@@ -34,13 +36,16 @@ contract PatienceRegulationEngine is Secondary {
 	}
 
 	function claimWeiDai() public {
+		adjustDailyPatienceDifficulty();
+
 		if(lockedWeiDai[msg.sender] == 0)
 		    return;
 		uint penalty = calculateCurrentPenalty(msg.sender);
 		uint weiDai = lockedWeiDai[msg.sender];
 		if(penalty==0)
 		{
-			marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod.add(100);
+			int adjustment = int(weiDai * 100);
+			dailyAdjustmentWeight = dailyAdjustmentWeight+adjustment>dailyAdjustmentWeight?dailyAdjustmentWeight+adjustment:dailyAdjustmentWeight; //handle overflow
 		}
 		else
 		{
@@ -57,11 +62,8 @@ contract PatienceRegulationEngine is Secondary {
 				WeiDai(weiDaiAddress).approve(weiDaiBankAddress,donation);
 				WeiDaiBank(weiDaiBankAddress).donate(donation);
 			}
-
-			if(marginalPenaltyDrawdownPeriod <= penalty)
-		        marginalPenaltyDrawdownPeriod = 1;
-		    else 
-				marginalPenaltyDrawdownPeriod -= penalty;
+			int adjustment = int(weiDai * penalty);
+			dailyAdjustmentWeight = dailyAdjustmentWeight-adjustment<dailyAdjustmentWeight?dailyAdjustmentWeight-adjustment:dailyAdjustmentWeight; //handle underflow
 		}
 		
 		lockedWeiDai[msg.sender] = 0;
@@ -73,5 +75,16 @@ contract PatienceRegulationEngine is Secondary {
 		if(periods >= 20)
 		    return 0;
 		return 100 - (5 * periods);
+	}
+
+	function adjustDailyPatienceDifficulty() private {
+		if(block.timestamp - lastAdjustmentTimeStamp > 1 days){
+			if(dailyAdjustmentWeight>0)
+				marginalPenaltyDrawdownPeriod << 1;//double penalty
+			else if(dailyAdjustmentWeight<0)
+				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod/2==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
+		  dailyAdjustmentWeight = 0;
+		  lastAdjustmentTimeStamp = block.timestamp;
+		}
 	}
 }

@@ -24,9 +24,11 @@ contract WeiDaiBank is Secondary {
 		self = address(this);
 	} 
 
-	function getDaiPerWeiDai() public view returns (uint) {
-		return ERC20(daiAddress).totalSupply().div(WeiDai(weiDaiAddress).totalSupply());
-
+	function getWeiDaiPerDai()public view returns (uint) {
+		uint totalWeiDai = WeiDai(weiDaiAddress).totalSupply();
+		if(totalWeiDai == 0)
+			return 1000; //initial exchange rate is 1 weidai == 1/1000th dai as an aesthetic early adopter perk (get in before parity)
+		return WeiDai(weiDaiAddress).totalSupply().div(ERC20(daiAddress).balanceOf(self));
 	}
 
 	function issue(address sender, uint weidai,uint dai) public { //sender is dai holder, msg.sender is calling contract
@@ -38,7 +40,7 @@ contract WeiDaiBank is Secondary {
 	function redeemWeiDai(uint weiDai) public {
 		WeiDai(weiDaiAddress).burn(msg.sender, weiDai);
 		uint weiDaiToRedeem = weiDai*100/98;
-		uint daiPayable = getDaiPerWeiDai().mul(weiDaiToRedeem);
+		uint daiPayable = weiDaiToRedeem.div(getWeiDaiPerDai());
 		ERC20(daiAddress).transfer(msg.sender, daiPayable);
 	}
 
