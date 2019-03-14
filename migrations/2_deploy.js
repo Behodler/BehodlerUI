@@ -22,10 +22,12 @@ module.exports = async function (deployer, network, accounts) {
 		daiAddress = (await MockDai.deployed()).address
 	}
 	else if (network === 'main') {
+		donationAddress = accounts[0];
 		daiAddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
 	}
 
-	await weidaiBankInstance.setDependencies(weidaiInstance.address, daiAddress, donationAddress, preInstance.address)
+	await weidaiBankInstance.setDependencies(weidaiInstance.address, daiAddress, preInstance.address)
+	await weidaiBankInstance.setDonationAddress(donationAddress)
 	await weidaiInstance.setBank(weidaiBankInstance.address, true)
 	await preInstance.setDependencies(weidaiBankInstance.address, weidaiInstance.address);
 }

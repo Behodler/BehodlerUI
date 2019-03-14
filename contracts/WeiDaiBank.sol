@@ -16,13 +16,16 @@ contract WeiDaiBank is Secondary {
 
 	using SafeMath for uint;
 
-	function setDependencies(address weiDai, address dai, address donation, address pre) public onlyPrimary{
+	function setDependencies(address weiDai, address dai, address pre) public onlyPrimary{
 		daiAddress = dai;
 		weiDaiAddress = weiDai;
-		donationAddress = donation;
 		preAddress = pre;
 		self = address(this);
 	} 
+
+	function setDonationAddress(address donation) public onlyPrimary {
+		donationAddress = donation;
+	}
 
 	function getWeiDaiPerDai()public view returns (uint) {
 		uint totalWeiDai = WeiDai(weiDaiAddress).totalSupply();

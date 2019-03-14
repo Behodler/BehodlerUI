@@ -17,12 +17,25 @@ contract PatienceRegulationEngine is Secondary {
 	mapping (address=>uint) donationBurnSplit;
 
 	using SafeMath for uint;
-	
+
 	function setDependencies(address bank, address weiDai) public onlyPrimary{
 		weiDaiBankAddress = bank;
 		weiDaiAddress = weiDai;
+		marginalPenaltyDrawdownPeriod = 1;
+	}
+
+	function getLastAdjustmentTimeStamp() public view returns (uint) {
+		return lastAdjustmentTimeStamp;
 	}
 	
+	function getCurrentPenalty() public view returns (uint) {
+		return marginalPenaltyDrawdownPeriod;
+	}
+
+	function getLockedWeiDai(address hodler) public view returns (uint) {
+		return lockedWeiDai[hodler];
+	}
+
 	function buyWeiDai(uint dai, uint split) public {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
 		require(split<=100, "split is a % expressed as an integer between 0 and 100");			
@@ -56,7 +69,7 @@ contract PatienceRegulationEngine is Secondary {
 			.div(100);
 
 			address self = address(this);
-			WeiDai(weiDaiAddress).burn(self,penalty.sub(donation));
+			WeiDai(weiDaiAddress).burn(self, penalty.sub(donation));
 
 			if(donation>0){
 				WeiDai(weiDaiAddress).approve(weiDaiBankAddress,donation);
@@ -67,7 +80,7 @@ contract PatienceRegulationEngine is Secondary {
 		}
 		
 		lockedWeiDai[msg.sender] = 0;
-		WeiDai(weiDaiAddress).transfer(msg.sender,weiDai);
+		WeiDai(weiDaiAddress).transfer(msg.sender, weiDai);
 	}
 
 	function calculateCurrentPenalty(address holder) private view returns (uint) {
