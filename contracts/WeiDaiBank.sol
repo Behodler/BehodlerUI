@@ -36,7 +36,7 @@ contract WeiDaiBank is Secondary {
 
 	function issue(address sender, uint weidai,uint dai) public { //sender is dai holder, msg.sender is calling contract
 		require(msg.sender == preAddress, "only patience regulation engine can invoke this function");
-		ERC20(daiAddress).transferFrom(sender, self,dai); 
+		ERC20(daiAddress).transferFrom(sender, self, dai); 
 		WeiDai(weiDaiAddress).issue(msg.sender, weidai);
 	}
 
