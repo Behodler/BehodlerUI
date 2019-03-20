@@ -95,9 +95,9 @@ contract PatienceRegulationEngine is Secondary {
 			if(dailyAdjustmentWeight>0)
 				marginalPenaltyDrawdownPeriod << 1;//double penalty
 			else if(dailyAdjustmentWeight<0)
-				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod/2==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
-		  dailyAdjustmentWeight = 0;
-		  lastAdjustmentTimeStamp = block.timestamp;
+				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod>>1==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
+			dailyAdjustmentWeight = 0;
+			lastAdjustmentTimeStamp = block.timestamp;
 		}
 	}
 }

@@ -13,6 +13,7 @@ contract WeiDaiBank is Secondary {
 	address donationAddress;
 	address preAddress;
 	address self;
+	uint lastKnownExchangeRate;
 
 	using SafeMath for uint;
 
@@ -21,6 +22,7 @@ contract WeiDaiBank is Secondary {
 		weiDaiAddress = weiDai;
 		preAddress = pre;
 		self = address(this);
+		lastKnownExchangeRate = 1000;
 	} 
 
 	function setDonationAddress(address donation) public onlyPrimary {
@@ -30,7 +32,7 @@ contract WeiDaiBank is Secondary {
 	function getWeiDaiPerDai()public view returns (uint) {
 		uint totalWeiDai = WeiDai(weiDaiAddress).totalSupply();
 		if(totalWeiDai == 0)
-			return 1000; //initial exchange rate is 1 weidai == 1/1000th dai as an aesthetic early adopter perk (get in before parity)
+			return lastKnownExchangeRate; //initial exchange rate is 1 weidai == 1/1000th dai as an aesthetic early adopter perk (get in before parity)
 		return WeiDai(weiDaiAddress).totalSupply().div(ERC20(daiAddress).balanceOf(self));
 	}
 
@@ -43,7 +45,8 @@ contract WeiDaiBank is Secondary {
 	function redeemWeiDai(uint weiDai) public {
 		WeiDai(weiDaiAddress).burn(msg.sender, weiDai);
 		uint weiDaiToRedeem = weiDai*100/98;
-		uint daiPayable = weiDaiToRedeem.div(getWeiDaiPerDai());
+		lastKnownExchangeRate = getWeiDaiPerDai();
+		uint daiPayable = weiDaiToRedeem.div(lastKnownExchangeRate);
 		ERC20(daiAddress).transfer(msg.sender, daiPayable);
 	}
 

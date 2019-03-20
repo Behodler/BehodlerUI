@@ -28,7 +28,7 @@ contract('WeiDai', accounts => {
 		await weidaiInstance.setBank(accounts[0], true)
 		let balanceOfAccount1 = parseInt((await weidaiInstance.balanceOf.call(accounts[1])))
 		let overflowAmount = `${balanceOfAccount1 + 1}`
-		await expectThrow(weidaiInstance.burn(accounts[1], overflowAmount, { from: accounts[0] }), "- satisfies all conditions set by Solidity")//openzeppelin safemath seems to throw nothing in their require statements
+		await expectThrow(weidaiInstance.burn(accounts[1], overflowAmount, { from: accounts[0] }), "{}")//openzeppelin safemath seems to throw nothing in their require statements
 	})
 
 })
