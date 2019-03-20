@@ -82,71 +82,72 @@ contract('Patience Regulation Engine: APPROVE', accounts => {
 });
 
 
-// contract('Patience Regulation Engine: Premature', accounts => {
-// 	let bankInstance, preInstance, mockDaiInstance
-// 	setup(async () => {
-// 		const { bi, pi, mi } = await setupTests(accounts)
-// 		bankInstance = bi
-// 		preInstance = pi
-// 		mockDaiInstance = mi
-// 	})
+contract('Patience Regulation Engine: Premature', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+	})
 
-// 	test("prematurely claiming incurs penalty, donates to donation address, strengthens exchange rate", async () => {
-// 		// const initialExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
-// 		// assert.equal(initialExchangeRate, "1000")
+	test("prematurely claiming incurs penalty, donates to donation address, strengthens exchange rate", async () => {
+		// const initialExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
+		// assert.equal(initialExchangeRate, "1000")
 
-// 		// await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] });
-// 		// await preInstance.buyWeiDai("1000", "20", { from: accounts[1] });
+		// await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] });
+		// await preInstance.buyWeiDai("1000", "20", { from: accounts[1] });
 
-// 	})
-// })
-
-
-// contract('Patience Regulation Engine: Patient', accounts => {
-// 	let bankInstance, preInstance, mockDaiInstance
-// 	setup(async () => {
-// 		const { bi, pi, mi } = await setupTests(accounts)
-// 		bankInstance = bi
-// 		preInstance = pi
-// 		mockDaiInstance = mi
-// 	})
-
-// 	test("withdrawing after duration incurs no penalty, exchange rate unaffected", async () => { // test will be long running. see https://medium.com/edgefund/time-travelling-truffle-tests-f581c1964687
-// 	    // const secondsInFuture = time.oneDay;
-//         // const originalBlock = web3.eth.getBlock('latest');
-//         // const newBlock = await time.advanceTimeAndBlock(secondsInFuture);
-//         // const timeDiff = newBlock.timestamp - originalBlock.timestamp;
-
-// 		// assert.isTrue(timeDiff >= secondsInFuture);
-
-// 	})
-// })
+	})
+})
 
 
-// contract('Patience Regulation Engine: Redemption', accounts => {
-// 	let bankInstance, preInstance, mockDaiInstance
-// 	setup(async () => {
-// 		const { bi, pi, mi } = await setupTests(accounts)
-// 		bankInstance = bi
-// 		preInstance = pi
-// 		mockDaiInstance = mi
-// 	})
-// 	test("redeeming weidai from bank incurrs 2% fee, pushes up exchange rate, transfers dai from bank to withdrawer", async () => {
+contract('Patience Regulation Engine: Patient', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+	})
 
-// 	})
+	test("withdrawing after duration incurs no penalty, exchange rate unaffected", async () => { // test will be long running. see https://medium.com/edgefund/time-travelling-truffle-tests-f581c1964687
+		const secondsInFuture = time.oneDay();
+		const currentBlock = (await web3.eth.getBlockNumber());
+		const previous = currentBlock - 1;
+		const originalBlock = await web3.eth.getBlock(previous);
+		const newBlock = await time.advanceTimeAndBlock(secondsInFuture);
+		const timeDiff = newBlock.timestamp - originalBlock.timestamp;
+		assert.isTrue(timeDiff >= secondsInFuture);
 
-// })
+	})
+})
 
-// contract('Patience Regulation Engine: Premature: TimeStamp stability', accounts => {
-// 	let bankInstance, preInstance, mockDaiInstance
-// 	setup(async () => {
-// 		const { bi, pi, mi } = await setupTests(accounts)
-// 		bankInstance = bi
-// 		preInstance = pi
-// 		mockDaiInstance = mi
-// 	})
-// 	test("purchasing wei from multiple users doesn't affect last adjustment timestamp", async () => {
 
-// 	})
+contract('Patience Regulation Engine: Redemption', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+	})
+	test("redeeming weidai from bank incurrs 2% fee, pushes up exchange rate, transfers dai from bank to withdrawer", async () => {
 
-// })
+	})
+
+})
+
+contract('Patience Regulation Engine: Premature: TimeStamp stability', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+	})
+	test("purchasing wei from multiple users doesn't affect last adjustment timestamp", async () => {
+
+	})
+
+})
