@@ -32,6 +32,10 @@ contract PatienceRegulationEngine is Secondary {
 		claimWindowsPerAdjustment = c;
 	}
 
+	function getCurrentAdjustmentWeight() public view returns (int) {
+		return currentAdjustmentWeight;
+	}
+
 	function getBlockOfPurchase() public view returns (uint) {
 		return blockOfPurchase[msg.sender];
 	}
@@ -55,7 +59,7 @@ contract PatienceRegulationEngine is Secondary {
 	function buyWeiDai(uint dai, uint split) public {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
 		require(split<=100, "split is a % expressed as an integer between 0 and 100");			
-		uint weiDaiToBuy = dai.mul(WeiDaiBank(weiDaiBankAddress).getWeiDaiPerDai());
+		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(weiDaiBankAddress).daiPerMyriadWeidai());
 
 		WeiDaiBank(weiDaiBankAddress).issue(msg.sender, weiDaiToBuy, dai);
 		lockedWeiDai[msg.sender] = weiDaiToBuy;

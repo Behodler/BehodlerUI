@@ -4,8 +4,6 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./WeiDai.sol";
 
-
-
 contract WeiDaiBank is Secondary {
 
 	address weiDaiAddress;
@@ -22,18 +20,22 @@ contract WeiDaiBank is Secondary {
 		weiDaiAddress = weiDai;
 		preAddress = pre;
 		self = address(this);
-		lastKnownExchangeRate = 1000;
+		lastKnownExchangeRate = 100; //1 weidai == 1 US cent.
 	} 
 
 	function setDonationAddress(address donation) public onlyPrimary {
 		donationAddress = donation;
 	}
 
-	function getWeiDaiPerDai()public view returns (uint) {
+	function daiPerMyriadWeidai()public view returns (uint) {
 		uint totalWeiDai = WeiDai(weiDaiAddress).totalSupply();
-		if(totalWeiDai == 0)
-			return lastKnownExchangeRate; //initial exchange rate is 1 weidai == 1/1000th dai as an aesthetic early adopter perk (get in before parity)
-		return WeiDai(weiDaiAddress).totalSupply().div(ERC20(daiAddress).balanceOf(self));
+		
+		if(totalWeiDai == 0){
+			return lastKnownExchangeRate;
+		}
+		return ERC20(daiAddress).balanceOf(self)
+		.mul(10000) //scale by a myriad
+		.div(WeiDai(weiDaiAddress).totalSupply());
 	}
 
 	function issue(address sender, uint weidai,uint dai) public { //sender is dai holder, msg.sender is calling contract
@@ -43,11 +45,16 @@ contract WeiDaiBank is Secondary {
 	}
 
 	function redeemWeiDai(uint weiDai) public {
+		uint exchangeRate = daiPerMyriadWeidai();
 		WeiDai(weiDaiAddress).burn(msg.sender, weiDai);
-		uint weiDaiToRedeem = weiDai*100/98;
-		lastKnownExchangeRate = getWeiDaiPerDai();
-		uint daiPayable = weiDaiToRedeem.div(lastKnownExchangeRate);
+		uint totalWeiDai = WeiDai(weiDaiAddress).totalSupply();
+
+		uint weiDaiToRedeem = totalWeiDai==0?weiDai:weiDai*98/100; //burn 2% of withdrawals unless final withdrawal
+		uint daiPayable = weiDaiToRedeem
+		.mul(exchangeRate)
+		.div(10000);
 		ERC20(daiAddress).transfer(msg.sender, daiPayable);
+		lastKnownExchangeRate = daiPerMyriadWeidai();
 	}
 
 	function withdrawDonations() public onlyPrimary {
