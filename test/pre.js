@@ -1,13 +1,13 @@
 
 const async = require('./helpers/async.js')
 const expectThrow = require('./helpers/expectThrow').handle
-const time = require('./helpers/time');
+const time = require('./helpers/time')
 
 const test = async.test
 const setup = async.setup
 const bank = artifacts.require("WeiDaiBank")
 const pre = artifacts.require("PatienceRegulationEngine")
-const mockDai = artifacts.require("MockDai");
+const mockDai = artifacts.require("MockDai")
 
 // some of the mechanics can only be tested live because we can't expect a unit test to wait a day and I will not callibrate contracts just to make unit tests quicker
 //Famous last words ^^
@@ -17,7 +17,7 @@ const setupTests = async (accounts) => {
 	var mi = await mockDai.deployed()
 	for (var i = 0; i < accounts.length; i++)
 		mi.transfer(accounts[i], "10000", { from: accounts[0] })
-	return { bi, pi, mi };
+	return { bi, pi, mi }
 }
 
 contract('Patience Regulation Engine: SPLIT', accounts => {
@@ -33,10 +33,10 @@ contract('Patience Regulation Engine: SPLIT', accounts => {
 		const initialExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
 		assert.equal(initialExchangeRate, "1000")
 
-		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] });
-		expectThrow(preInstance.buyWeiDai("1000", "101", { from: accounts[1] }), "split is a % expressed as an integer between 0 and 100");
+		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] })
+		expectThrow(preInstance.buyWeiDai("1000", "101", { from: accounts[1] }), "split is a % expressed as an integer between 0 and 100")
 	})
-});
+})
 
 contract('Patience Regulation Engine: BUY 1', accounts => {
 	let bankInstance, preInstance, mockDaiInstance
@@ -51,17 +51,17 @@ contract('Patience Regulation Engine: BUY 1', accounts => {
 		const initialExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
 		assert.equal(initialExchangeRate, "1000")
 
-		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] });
-		await preInstance.buyWeiDai("1000", "20", { from: accounts[1] });
+		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] })
+		await preInstance.buyWeiDai("1000", "20", { from: accounts[1] })
 		const firstBuyExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
 		assert.equal(firstBuyExchangeRate, "1000")
 
-		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[4] });
-		await preInstance.buyWeiDai("1500", "0", { from: accounts[4] });
+		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[4] })
+		await preInstance.buyWeiDai("1500", "0", { from: accounts[4] })
 		const secondBuyExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
 		assert.equal(secondBuyExchangeRate, "1000")
 	})
-});
+})
 
 
 contract('Patience Regulation Engine: APPROVE', accounts => {
@@ -77,9 +77,9 @@ contract('Patience Regulation Engine: APPROVE', accounts => {
 		const initialExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
 		assert.equal(initialExchangeRate, "1000")
 
-		expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "{}");
+		expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "{}")
 	})
-});
+})
 
 
 contract('Patience Regulation Engine: Premature', accounts => {
@@ -95,8 +95,8 @@ contract('Patience Regulation Engine: Premature', accounts => {
 		// const initialExchangeRate = (await bankInstance.getWeiDaiPerDai.call()).toString()
 		// assert.equal(initialExchangeRate, "1000")
 
-		// await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] });
-		// await preInstance.buyWeiDai("1000", "20", { from: accounts[1] });
+		// await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] })
+		// await preInstance.buyWeiDai("1000", "20", { from: accounts[1] })
 
 	})
 })
@@ -112,13 +112,33 @@ contract('Patience Regulation Engine: Patient', accounts => {
 	})
 
 	test("withdrawing after duration incurs no penalty, exchange rate unaffected", async () => { // test will be long running. see https://medium.com/edgefund/time-travelling-truffle-tests-f581c1964687
-		const secondsInFuture = time.oneDay();
-		const currentBlock = (await web3.eth.getBlockNumber());
-		const previous = currentBlock - 1;
-		const originalBlock = await web3.eth.getBlock(previous);
-		const newBlock = await time.advanceTimeAndBlock(secondsInFuture);
-		const timeDiff = newBlock.timestamp - originalBlock.timestamp;
-		assert.isTrue(timeDiff >= secondsInFuture);
+		const account = accounts[6]
+
+		const currentBlock = await web3.eth.getBlockNumber();
+		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
+		const lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
+		const nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
+		const blocksUntilNextAdjustment = nextAdjustmentBlock - currentBlock
+
+		assert.isAtLeast(blocksUntilNextAdjustment, currentClaimWaitWindow * 2, "too few blocks to next adjustment. Consider resetting ganache.")
+
+		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
+	
+		assert.equal(currentLockedWeiDai, 0)
+
+		const exchangeRateBeforeTransactions = (await bankInstance.getWeiDaiPerDai.call()).toNumber()
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("100", "0", { from: account })
+		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + currentClaimWaitWindow; blockNumber = (await time.advanceBlock()));
+
+		await preInstance.claimWeiDai()
+
+		const exchangeRateAfterTransactions = (await bankInstance.getWeiDaiPerDai.call()).toNumber()
+
+		assert.equal(exchangeRateBeforeTransactions, exchangeRateAfterTransactions)
 
 	})
 })

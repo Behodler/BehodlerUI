@@ -50,10 +50,6 @@ contract WeiDaiBank is Secondary {
 		ERC20(daiAddress).transfer(msg.sender, daiPayable);
 	}
 
-	function donate(uint amount) public {
-		ERC20(weiDaiAddress).transferFrom(msg.sender,self,amount);
-	}
-
 	function withdrawDonations() public onlyPrimary {
 		uint balance = ERC20(weiDaiAddress).balanceOf(self);
 		ERC20(weiDaiAddress).transfer(donationAddress,balance);

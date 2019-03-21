@@ -19,17 +19,17 @@ advanceTime = (time) => {
     });
 }
 
-advanceBlock = () => {
+advanceBlock = async () => {
     return new Promise((resolve, reject) => {
         web3.currentProvider.send({
             jsonrpc: "2.0",
             method: "evm_mine",
             id: new Date().getTime()
         }, (err, result) => {
-            if (err) { return reject(err); }
-            const newBlockHash = web3.eth.getBlock('latest').hash;
+			if (err) { return reject(err); }
+			const currentBlockNumber = web3.eth.getBlockNumber();
 
-            return resolve(newBlockHash)
+            return resolve(currentBlockNumber)
         });
     });
 }

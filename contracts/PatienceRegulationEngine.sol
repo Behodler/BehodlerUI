@@ -7,8 +7,10 @@ import "./WeiDai.sol";
 
 contract PatienceRegulationEngine is Secondary {
 	uint marginalPenaltyDrawdownPeriod; //aka mining difficulty
-	uint lastAdjustmentTimeStamp;
-	int dailyAdjustmentWeight;
+	uint claimWindowsPerAdjustment;
+	uint lastAdjustmentBlock;
+	uint launchTimeStamp;
+	int currentAdjustmentWeight;
 	address weiDaiBankAddress;
 	address weiDaiAddress;
 	mapping(address=>uint) lockedWeiDai;
@@ -22,10 +24,24 @@ contract PatienceRegulationEngine is Secondary {
 		weiDaiBankAddress = bank;
 		weiDaiAddress = weiDai;
 		marginalPenaltyDrawdownPeriod = 1;
+		launchTimeStamp = block.timestamp;
 	}
 
-	function getLastAdjustmentTimeStamp() public view returns (uint) {
-		return lastAdjustmentTimeStamp;
+	function setClaimWindowsPerAdjustment(uint c) public onlyPrimary {
+		require(block.timestamp - launchTimeStamp <= 365 days, "environmental variables can only be altered in first year");
+		claimWindowsPerAdjustment = c;
+	}
+
+	function getBlockOfPurchase() public view returns (uint) {
+		return blockOfPurchase[msg.sender];
+	}
+
+	function getClaimWindowsPerAdjustment() public view returns (uint) {
+		return claimWindowsPerAdjustment;
+	}
+
+	function getLastAdjustmentBlockNumber() public view returns (uint) {
+		return lastAdjustmentBlock;
 	}
 	
 	function getCurrentPenalty() public view returns (uint) {
@@ -49,20 +65,21 @@ contract PatienceRegulationEngine is Secondary {
 	}
 
 	function claimWeiDai() public {
-		adjustDailyPatienceDifficulty();
-
 		if(lockedWeiDai[msg.sender] == 0)
 		    return;
+
+		adjustDailyPatienceDifficulty();
+
 		uint penalty = calculateCurrentPenalty(msg.sender);
 		uint weiDai = lockedWeiDai[msg.sender];
 		if(penalty==0)
 		{
 			int adjustment = int(weiDai * 100);
-			dailyAdjustmentWeight = dailyAdjustmentWeight+adjustment>dailyAdjustmentWeight?dailyAdjustmentWeight+adjustment:dailyAdjustmentWeight; //handle overflow
+			currentAdjustmentWeight = currentAdjustmentWeight+adjustment>currentAdjustmentWeight?currentAdjustmentWeight+adjustment:currentAdjustmentWeight; //handle overflow
 		}
 		else
 		{
-			uint penaltyTax = penalty.mul(weiDai).div(100);
+			uint penaltyTax = penalty.mul(weiDai).div(100); //div 100 turns penalty into a %
 			weiDai = weiDai.sub(penaltyTax);
 			uint donation = donationBurnSplit[msg.sender]
 			.mul(penalty)
@@ -72,11 +89,10 @@ contract PatienceRegulationEngine is Secondary {
 			WeiDai(weiDaiAddress).burn(self, penalty.sub(donation));
 
 			if(donation>0){
-				WeiDai(weiDaiAddress).approve(weiDaiBankAddress,donation);
-				WeiDaiBank(weiDaiBankAddress).donate(donation);
+				WeiDai(weiDaiAddress).transfer(weiDaiBankAddress,donation);
 			}
 			int adjustment = int(weiDai * penalty);
-			dailyAdjustmentWeight = dailyAdjustmentWeight-adjustment<dailyAdjustmentWeight?dailyAdjustmentWeight-adjustment:dailyAdjustmentWeight; //handle underflow
+			currentAdjustmentWeight = currentAdjustmentWeight-adjustment<currentAdjustmentWeight?currentAdjustmentWeight-adjustment:currentAdjustmentWeight; //handle underflow
 		}
 		
 		lockedWeiDai[msg.sender] = 0;
@@ -91,13 +107,23 @@ contract PatienceRegulationEngine is Secondary {
 	}
 
 	function adjustDailyPatienceDifficulty() private {
-		if(block.timestamp - lastAdjustmentTimeStamp > 1 days){
-			if(dailyAdjustmentWeight>0)
+		if(nextPatienceAdjustment()){
+			if(currentAdjustmentWeight > 0)
 				marginalPenaltyDrawdownPeriod << 1;//double penalty
-			else if(dailyAdjustmentWeight<0)
+			else if(currentAdjustmentWeight < 0)
 				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod>>1==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
-			dailyAdjustmentWeight = 0;
-			lastAdjustmentTimeStamp = block.timestamp;
+			currentAdjustmentWeight = 0;
+			lastAdjustmentBlock = block.number;
 		}
+	}
+
+	function nextPatienceAdjustment() private view returns (bool) {
+		uint durationSinceLastAdjustment = block.number - lastAdjustmentBlock;
+		uint patienceAdjustmentDuration = getClaimWaitWindow() * claimWindowsPerAdjustment;
+		return durationSinceLastAdjustment >= patienceAdjustmentDuration;
+	}
+
+	function getClaimWaitWindow() public view returns (uint) {
+		return marginalPenaltyDrawdownPeriod * 20;
 	}
 }

@@ -1,4 +1,6 @@
 test PRE
 this might be for weidai 2:
     - consider having variable adjustment times. For instance, if the number of weidai claims between adjustments exceeds 1000, then half the time (with a minimum) but if the number is less than 500 then double the time.
-		-> check notepad for recent update on this
+		-> check notepad for recent update on this 
+		 --finish withdrawing after duration incurs no penalty test
+	
