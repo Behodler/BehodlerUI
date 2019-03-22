@@ -29,6 +29,7 @@ module.exports = async function (deployer, network, accounts) {
 	await weidaiBankInstance.setDependencies(weidaiInstance.address, daiAddress, preInstance.address)
 	await weidaiBankInstance.setDonationAddress(donationAddress)
 	await weidaiInstance.setBank(weidaiBankInstance.address, true)
+	await weidaiInstance.setBank(preInstance.address, true)
 	await preInstance.setDependencies(weidaiBankInstance.address, weidaiInstance.address);
 	await preInstance.setClaimWindowsPerAdjustment(10);
 }

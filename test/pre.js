@@ -149,12 +149,66 @@ contract('Patience Regulation Engine: Patient', accounts => {
 		const marginalPenaltyAfter = (await preInstance.getCurrentPenalty.call()).toNumber();
 		const adjustmentWeightAfter = (await preInstance.getCurrentAdjustmentWeight.call()).toNumber();
 
-
-		console.log("exchange rate: " + exchangeRateAfterTransactions)
 		assert.equal(exchangeRateBeforeTransactions, exchangeRateAfterTransactions)
 		assert.equal(adjustmentWeightBefore + 1000000, adjustmentWeightAfter)
 		assert.equal(marginalPenaltyBefore, marginalPenaltyAfter)
 		assert.equal(weidaiBalanceBefore + expectedWeiDai, weidaiBalanceAfter)
+	})
+})
+
+contract('Patience Regulation Engine: difficulty change', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi, wd } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+		weidaiInstance = wd
+	})
+
+	test("paitent claimer after adjustment window doubles difficulty, impatient claimer, halves difficulty", async () => {
+		const account = accounts[5]
+
+		const currentBlock = await web3.eth.getBlockNumber();
+		let currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
+		let lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
+		let nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
+
+		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
+
+		assert.equal(currentLockedWeiDai, 0)
+
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("100", "0", { from: account })
+		let purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		const durationUntilNextDifficultyAdjustment = currentClaimWaitWindow * claimWindowsPerAdjustment
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + durationUntilNextDifficultyAdjustment; blockNumber = (await time.advanceBlock()));
+
+		const marginalPenaltyBefore = (await preInstance.getCurrentPenalty.call()).toNumber();
+		assert.equal(marginalPenaltyBefore, 1)
+
+		await preInstance.claimWeiDai({ from: account })
+
+		const marginalPenaltyAfterClaim = (await preInstance.getCurrentPenalty.call()).toNumber();
+
+		assert.equal(marginalPenaltyAfterClaim, 2)
+
+		await preInstance.buyWeiDai("1000", "0", { from: account })
+		await preInstance.claimWeiDai({ from: account })
+
+		await preInstance.buyWeiDai("1", "0", { from: account })
+		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+		currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+
+		lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
+		nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + durationUntilNextDifficultyAdjustment * 3; blockNumber = (await time.advanceBlock()));
+		await preInstance.claimWeiDai({ from: account })
+
+		const marginalPenaltyAfterPrematureClaim = (await preInstance.getCurrentPenalty.call()).toNumber();
+		assert.equal(marginalPenaltyAfterPrematureClaim, 1)
 	})
 })
 
@@ -168,6 +222,7 @@ contract('Patience Regulation Engine: Redemption', accounts => {
 		mockDaiInstance = mi
 		weidaiInstance = wd
 	})
+
 	test("redeeming weidai from bank incurrs 2% fee, pushes up exchange rate, transfers dai from bank to withdrawer", async () => {
 		const account = accounts[8]
 
@@ -206,7 +261,7 @@ contract('Patience Regulation Engine: Redemption', accounts => {
 		const exchangeRateAfterRedemption = (await bankInstance.daiPerMyriadWeidai.call()).toNumber()
 		assert.equal(daiAfterRedemption, daiBeforeRedemption + (0.98 * daiValueOfWeiDai))
 		assert.equal(weidaiAfterRedemption, 50000)
-		assert.equal(exchangeRateBeforeRedemption+2, exchangeRateAfterRedemption)
+		assert.equal(exchangeRateBeforeRedemption + 2, exchangeRateAfterRedemption)
 	})
 })
 

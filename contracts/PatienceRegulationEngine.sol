@@ -72,7 +72,7 @@ contract PatienceRegulationEngine is Secondary {
 		if(lockedWeiDai[msg.sender] == 0)
 		    return;
 
-		adjustDailyPatienceDifficulty();
+
 
 		uint penalty = calculateCurrentPenalty(msg.sender);
 		uint weiDai = lockedWeiDai[msg.sender];
@@ -84,6 +84,7 @@ contract PatienceRegulationEngine is Secondary {
 		else
 		{
 			uint penaltyTax = penalty.mul(weiDai).div(100); //div 100 turns penalty into a %
+			int adjustment = int(weiDai * penalty);
 			weiDai = weiDai.sub(penaltyTax);
 			uint donation = donationBurnSplit[msg.sender]
 			.mul(penalty)
@@ -95,10 +96,10 @@ contract PatienceRegulationEngine is Secondary {
 			if(donation>0){
 				WeiDai(weiDaiAddress).transfer(weiDaiBankAddress,donation);
 			}
-			int adjustment = int(weiDai * penalty);
+			
 			currentAdjustmentWeight = currentAdjustmentWeight-adjustment<currentAdjustmentWeight?currentAdjustmentWeight-adjustment:currentAdjustmentWeight; //handle underflow
 		}
-		
+		adjustPatienceDifficulty();
 		lockedWeiDai[msg.sender] = 0;
 		WeiDai(weiDaiAddress).transfer(msg.sender, weiDai);
 	}
@@ -110,18 +111,19 @@ contract PatienceRegulationEngine is Secondary {
 		return 100 - (5 * periods);
 	}
 
-	function adjustDailyPatienceDifficulty() private {
+	function adjustPatienceDifficulty() private {
 		if(nextPatienceAdjustment()){
 			if(currentAdjustmentWeight > 0)
-				marginalPenaltyDrawdownPeriod << 1;//double penalty
+				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod << 1;//double penalty
 			else if(currentAdjustmentWeight < 0)
 				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod>>1==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
+			
 			currentAdjustmentWeight = 0;
 			lastAdjustmentBlock = block.number;
 		}
 	}
 
-	function nextPatienceAdjustment() private view returns (bool) {
+	function nextPatienceAdjustment() private  returns (bool) {
 		uint durationSinceLastAdjustment = block.number - lastAdjustmentBlock;
 		uint patienceAdjustmentDuration = getClaimWaitWindow() * claimWindowsPerAdjustment;
 		return durationSinceLastAdjustment >= patienceAdjustmentDuration;
