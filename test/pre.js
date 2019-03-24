@@ -148,6 +148,7 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 
 	test("paitent claimer after adjustment window doubles difficulty, impatient claimer, halves difficulty, donate to donation address", async () => {
 		const account = accounts[5]
+		const donationAddress = accounts[3]
 		let currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
 		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
 		let lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
@@ -172,14 +173,15 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 
 		assert.equal(marginalPenaltyAfterClaim, 2)
 
-		await preInstance.buyWeiDai("1000", "0", { from: account })
+		await preInstance.buyWeiDai("1000", "10", { from: account })
 		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
 		currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
 		durationUntilNextDifficultyAdjustment = currentClaimWaitWindow * claimWindowsPerAdjustment
-	//	for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + (currentClaimWaitWindow * 2); blockNumber = (await time.advanceBlock()));
+		const initialBlockNumber = (await web3.eth.getBlockNumber());
+		for (let blockNumber = initialBlockNumber; blockNumber <=initialBlockNumber+10 ; blockNumber = (await time.advanceBlock()));
 		await preInstance.claimWeiDai({ from: account }) //premature
 
-		//TODO:assert donation
+
 
 		await preInstance.buyWeiDai("1", "0", { from: account })
 		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
@@ -192,6 +194,13 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 
 		const marginalPenaltyAfterPrematureClaim = (await preInstance.getCurrentPenalty.call()).toNumber();
 		assert.equal(marginalPenaltyAfterPrematureClaim, 1)
+
+		//donations
+		const donationWeiDaiBalanceBefore = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
+		assert.equal(donationWeiDaiBalanceBefore,0)
+		await bankInstance.withdrawDonations({from:accounts[0]})
+		const donationWeiDaiBalanceAfter = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
+		assert.equal(donationWeiDaiBalanceAfter, 7000)
 	})
 })
 

@@ -73,7 +73,6 @@ contract PatienceRegulationEngine is Secondary {
 		    return;
 
 
-
 		uint penalty = calculateCurrentPenalty(msg.sender);
 		uint weiDai = lockedWeiDai[msg.sender];
 		if(penalty==0)
@@ -86,12 +85,13 @@ contract PatienceRegulationEngine is Secondary {
 			uint penaltyTax = penalty.mul(weiDai).div(100); //div 100 turns penalty into a %
 			int adjustment = int(weiDai * penalty);
 			weiDai = weiDai.sub(penaltyTax);
+			
 			uint donation = donationBurnSplit[msg.sender]
-			.mul(penalty)
+			.mul(penaltyTax)
 			.div(100);
 
 			address self = address(this);
-			WeiDai(weiDaiAddress).burn(self, penalty.sub(donation));
+			WeiDai(weiDaiAddress).burn(self, penaltyTax.sub(donation));
 
 			if(donation>0){
 				WeiDai(weiDaiAddress).transfer(weiDaiBankAddress,donation);
