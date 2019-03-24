@@ -255,17 +255,3 @@ contract('Patience Regulation Engine: Redemption', accounts => {
 		assert.equal(exchangeRateBeforeRedemption + 2, exchangeRateAfterRedemption)
 	})
 })
-
-contract('Patience Regulation Engine: Premature: TimeStamp stability', accounts => {
-	let bankInstance, preInstance, mockDaiInstance
-	setup(async () => {
-		const { bi, pi, mi } = await setupTests(accounts)
-		bankInstance = bi
-		preInstance = pi
-		mockDaiInstance = mi
-	})
-	test("purchasing wei from multiple users doesn't affect last adjustment timestamp", async () => {
-
-	})
-
-})
