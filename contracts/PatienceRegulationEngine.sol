@@ -123,7 +123,7 @@ contract PatienceRegulationEngine is Secondary {
 		}
 	}
 
-	function nextPatienceAdjustment() private  returns (bool) {
+	function nextPatienceAdjustment() private view returns (bool) {
 		uint durationSinceLastAdjustment = block.number - lastAdjustmentBlock;
 		uint patienceAdjustmentDuration = getClaimWaitWindow() * claimWindowsPerAdjustment;
 		return durationSinceLastAdjustment >= patienceAdjustmentDuration;

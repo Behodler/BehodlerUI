@@ -1,1 +1,2 @@
 finish test PRE
+ -> in premature test, check that donation address is funded

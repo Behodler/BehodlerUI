@@ -82,26 +82,6 @@ contract('Patience Regulation Engine: APPROVE', accounts => {
 })
 
 
-contract('Patience Regulation Engine: Premature', accounts => {
-	let bankInstance, preInstance, mockDaiInstance
-	setup(async () => {
-		const { bi, pi, mi } = await setupTests(accounts)
-		bankInstance = bi
-		preInstance = pi
-		mockDaiInstance = mi
-	})
-
-	test("prematurely claiming incurs penalty, donates to donation address, strengthens exchange rate", async () => {
-		// const initialExchangeRate = (await bankInstance.daiPerMyriadWeidai.call()).toString()
-		// assert.equal(initialExchangeRate, "1000")
-
-		// await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] })
-		// await preInstance.buyWeiDai("1000", "20", { from: accounts[1] })
-
-	})
-})
-
-
 contract('Patience Regulation Engine: Patient', accounts => {
 	let bankInstance, preInstance, mockDaiInstance, weidaiInstance
 	setup(async () => {
@@ -166,14 +146,11 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 		weidaiInstance = wd
 	})
 
-	test("paitent claimer after adjustment window doubles difficulty, impatient claimer, halves difficulty", async () => {
+	test("paitent claimer after adjustment window doubles difficulty, impatient claimer, halves difficulty, donate to donation address", async () => {
 		const account = accounts[5]
-
-		const currentBlock = await web3.eth.getBlockNumber();
 		let currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
 		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
 		let lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
-		let nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
 
 		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
 
@@ -183,7 +160,7 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 		await preInstance.buyWeiDai("100", "0", { from: account })
 		let purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
 
-		const durationUntilNextDifficultyAdjustment = currentClaimWaitWindow * claimWindowsPerAdjustment
+		let durationUntilNextDifficultyAdjustment = currentClaimWaitWindow * claimWindowsPerAdjustment
 		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + durationUntilNextDifficultyAdjustment; blockNumber = (await time.advanceBlock()));
 
 		const marginalPenaltyBefore = (await preInstance.getCurrentPenalty.call()).toNumber();
@@ -196,7 +173,13 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 		assert.equal(marginalPenaltyAfterClaim, 2)
 
 		await preInstance.buyWeiDai("1000", "0", { from: account })
-		await preInstance.claimWeiDai({ from: account })
+		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+		currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		durationUntilNextDifficultyAdjustment = currentClaimWaitWindow * claimWindowsPerAdjustment
+	//	for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + (currentClaimWaitWindow * 2); blockNumber = (await time.advanceBlock()));
+		await preInstance.claimWeiDai({ from: account }) //premature
+
+		//TODO:assert donation
 
 		await preInstance.buyWeiDai("1", "0", { from: account })
 		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
@@ -211,7 +194,6 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 		assert.equal(marginalPenaltyAfterPrematureClaim, 1)
 	})
 })
-
 
 contract('Patience Regulation Engine: Redemption', accounts => {
 	let bankInstance, preInstance, mockDaiInstance
