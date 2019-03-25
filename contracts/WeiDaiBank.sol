@@ -55,10 +55,13 @@ contract WeiDaiBank is Secondary {
 		.div(10000);
 		ERC20(daiAddress).transfer(msg.sender, daiPayable);
 		lastKnownExchangeRate = daiPerMyriadWeidai();
+		emit DaiPerMyriadWeiDai (lastKnownExchangeRate, block.timestamp, block.number);
 	}
 
 	function withdrawDonations() public onlyPrimary {
 		uint balance = ERC20(weiDaiAddress).balanceOf(self);
 		ERC20(weiDaiAddress).transfer(donationAddress,balance);
 	} 
+
+	event DaiPerMyriadWeiDai (uint amount, uint timestamp, uint blocknumber);
 }
