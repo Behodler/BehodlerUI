@@ -3,3 +3,6 @@ build
 *.log
 *.code-workspace
 client/contracts
+
+/reference
+/client/src/contracts

@@ -1,27 +1,37 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@types/react-redux": "^6.0.12",
-    "openzeppelin-solidity": "^2.1.1",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "react-redux": "^6.0.0",
-    "react-scripts-ts": "3.1.0",
-    "redux": "^4.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
-  },
-  "devDependencies": {
-    "@types/jest": "^23.3.12",
-    "@types/node": "^10.12.18",
-    "@types/react": "^16.7.18",
-    "@types/react-dom": "^16.0.11",
-    "typescript": "^3.2.2"
-  }
+	"name": "client",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@material-ui/core": "3.7.1",
+		"@material-ui/icons": "^3.0.1",
+		"acorn": "^6.0.7",
+		"ajv": "^6.8.1",
+		"bignumber.js": "^8.0.1",
+		"openzeppelin-solidity": "^2.1.1",
+		"react": "^16.7.0",
+		"react-dom": "^16.7.0",
+		"react-redux": "^6.0.0",
+		"react-scripts-ts": "3.1.0",
+		"redux": "^4.0.1",
+		"truffle-contract": "^3.0.1",
+		"truffle-core": "^4.1.14",
+		"truffle-hdwallet-provider": "^0.0.6",
+		"web3": "^1.0.0-beta.50"
+	},
+	"scripts": {
+		"start": "react-scripts-ts start",
+		"build": "react-scripts-ts build",
+		"test": "react-scripts-ts test --env=jsdom",
+		"eject": "react-scripts-ts eject"
+	},
+	"devDependencies": {
+		"@types/jest": "^23.3.12",
+		"@types/node": "^10.12.18",
+		"@types/react": "^16.7.18",
+		"@types/react-dom": "^16.0.11",
+		"@types/react-redux": "^6.0.12",
+		"@types/react-router-dom": "^4.3.1",
+		"typescript": "^3.2.2"
+	}
 }
