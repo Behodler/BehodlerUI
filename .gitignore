@@ -6,3 +6,5 @@ client/contracts
 
 /reference
 /client/src/contracts
+
+package-lock.json
