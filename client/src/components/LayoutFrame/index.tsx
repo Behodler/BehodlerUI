@@ -1,32 +1,36 @@
 import * as React from 'react'
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import { withStyles, Drawer, List, ListItem, Divider, ListItemIcon, ListItemText, Hidden, Grid } from '@material-ui/core';
+
+import { withStyles, Drawer, Divider, Hidden, Grid } from '@material-ui/core';
 import WeidaiLogo from './WeidaiLogo'
+import {UserSection} from './ActionPanel/UserSection'
+import {AdminSection} from './ActionPanel/AdminSection' 
+import {ContractSection} from './InfoPanel/ContractSection/index'
+import {WalletSection} from './InfoPanel/WalletSection'
 
 interface LayoutFrameProps {
 	classes?: any
 }
 
-const width: number = 200;
+const actionWidth:number = 250
+const infoWidth:number = 400
 
 let styleObject = {
 	root: {
 		display: 'flex',
 	},
 	actionDrawer: {
-		minWidth: width,
+		width: actionWidth,
 		flexShrink: 0,
 	},
 	infoDrawer: {
-		minWidth: width * 2,
+		width: infoWidth,
 		flexShrink: 0,
 	},
 	actionDrawerPaper: {
-		minWidth: width
+		width: actionWidth
 	},
 	infoDrawerPaper: {
-		minWidth: width * 2
+		width: infoWidth
 	},
 	content: {
 		flexGrow: 1
@@ -39,6 +43,9 @@ let styleObject = {
 	subheading:{
 		fontSize:16,
 		margin:"0px 0 5px 0"
+	},
+	infoDivider:{
+		margin:"100px 0 25px 0"
 	}
 }
 
@@ -61,23 +68,9 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 						className={classes.actionDrawer}
 						classes={{ paper: classes.actionDrawerPaper }}
 					>
-						<List>
-							{['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-								<ListItem button key={text}>
-									<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-									<ListItemText primary={text} />
-								</ListItem>
-							))}
-						</List>
+						<UserSection />
 						<Divider />
-						<List>
-							{['All mail', 'Trash', 'Spam'].map((text, index) => (
-								<ListItem button key={text}>
-									<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-									<ListItemText primary={text} />
-								</ListItem>
-							))}
-						</List>
+					<AdminSection />
 					</Drawer>
 				</Hidden>
 				<main className={classes.content}>
@@ -119,30 +112,34 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 						</Grid>
 					</Grid>
 					<Divider variant="middle" />
-					CONTENT
+					<Grid 
+					container
+					justify="center"
+					alignItems="stretch"
+					direction="column">
+						<Grid item>
+								Content
+						</Grid>
+					</Grid>
 				</main>
 				<Hidden mdDown>
 					<Drawer variant="permanent" anchor="right"
 						className={classes.infoDrawer}
 						classes={{ paper: classes.infoDrawerPaper }}
 					>
-						<List>
-							{['Globby', 'Stoppy', 'Drafts'].map((text, index) => (
-								<ListItem button key={text}>
-									<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-									<ListItemText primary={text} />
-								</ListItem>
-							))}
-						</List>
-						<Divider />
-						<List>
-							{['Hello', 'Trash', 'Spam'].map((text, index) => (
-								<ListItem button key={text}>
-									<ListItemIcon>{index % 3 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-									<ListItemText primary={text} />
-								</ListItem>
-							))}
-						</List>
+						<WalletSection  
+						walletAddress="0x5AbFEc...56f9"
+						friendly="satoshi"
+						daiBalance={110}
+						weiDaiBalance={1000}
+						incubatingWeiDai={12}
+						/>
+						<Divider className={classes.infoDivider} />
+						<ContractSection weidaiPrice={0.74} 
+										penaltyReductionPeriod={120}
+										nextPenaltyAdjustment = {17453362}
+										totalPriceGrowth={344}
+										annualizedGrowth={21} /> 
 					</Drawer>
 				</Hidden>
 			</div>
