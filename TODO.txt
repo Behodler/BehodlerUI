@@ -6,7 +6,6 @@ design front end:
 Steps: 
 1. design layout component with props only -- BUSY
 	-> metamask screen (can only happen after redux etc)
-	->app bar appears when sidebars disappear 
 2. create a store.ts for the state of the page
 3. write actions, constants etc for the page
 4. Read drizzle example and create a drizzle provider, first without ts
