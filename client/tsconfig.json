@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -27,9 +27,6 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
-  ],
-  "include": [
-	  "definitions/web3-core.ts"
+	"src/setupTests.ts"
   ]
 }
