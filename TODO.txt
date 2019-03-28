@@ -1,17 +1,9 @@
-design front end:
-	- think about drizzle 
-	--types: https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
-
-
-Steps: 
-1. design layout component with props only -- BUSY
-	-> metamask screen (can only happen after redux etc)
-2. create a store.ts for the state of the page
-3. write actions, constants etc for the page
-4. Read drizzle example and create a drizzle provider, first without ts
-5. If not using ts is too cumbersome, look into creating types using above url
-   Else get away without types on the index page 
-6. figure out how to load basic blockchain info using drizzle sagas etc.
-7. If 6 can be done without an ethereumAPI then remove into
-8. introduce routing on the central content section (might conflict with next instruction) 
-9. Have only one container since the dapp is ideally small
+NO WINDOWS!
+Steps:
+	1. fix initial state bug
+	2. get the wallet section to work perfectly. Refactoring is key
+	3. get all the other layout sections to work with placeholders for routing
+	4. create placeholder pages
+	5. routing and all the hell it entails for redux
+	6. ???
+	7. profit
