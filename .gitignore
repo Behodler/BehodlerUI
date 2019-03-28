@@ -6,5 +6,5 @@ client/contracts
 
 /reference
 /client/src/contracts
-
+/reduxReference
 package-lock.json

@@ -38,6 +38,7 @@ class UserSectionComponent extends React.Component<UserSectionProps, any>{
 					<ListItemIcon><QuestionAnswer /></ListItemIcon>
 					<ListItemText primary="What's a Thriftcoin?" />
 			</ListItem>
+			<Divider />
 			<ListItem key = "social">
 				<Social />
 			</ListItem>
