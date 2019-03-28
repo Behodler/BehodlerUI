@@ -1,3 +1,4 @@
 import * as React from 'react'
 
-export const themedText = (classes: any) => (text: string | number, percentage: boolean = false) => <p className={classes.text}>{text}{percentage ? "%" : ""}</p>
+export const themedText = (classes: any) => (text: string | number, percentage: boolean = false, icon:any|undefined=undefined) =>(
+	 <p className={classes.text}>{!!icon?icon:""}{text}{percentage ? "%" : ""}</p>)

@@ -5,6 +5,7 @@ import AssignmentReturned from '@material-ui/icons/AssignmentReturned'
 import Timeline from '@material-ui/icons/Timeline'
 import Computer from '@material-ui/icons/Computer'
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer'
+import {Social} from '../../Social/index'
 
 interface UserSectionProps{
 
@@ -36,6 +37,9 @@ class UserSectionComponent extends React.Component<UserSectionProps, any>{
 			<ListItem button key="thrift">
 					<ListItemIcon><QuestionAnswer /></ListItemIcon>
 					<ListItemText primary="What's a Thriftcoin?" />
+			</ListItem>
+			<ListItem key = "social">
+				<Social />
 			</ListItem>
 		</List>)
 	}
