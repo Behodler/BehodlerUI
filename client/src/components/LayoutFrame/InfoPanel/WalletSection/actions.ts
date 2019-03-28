@@ -23,12 +23,17 @@ export interface IWalletFriendlyEditorCancel extends Action {
 	type: constants.WALLET_FRIENDLY_EDITOR_CANCEL;
 }
 
-export interface IWalletFriendlyEditorAccept extends Action {
-	type: constants.WALLET_FRIENDLY_EDITOR_ACCEPT;
+export interface IWalletFriendlyEditorAcceptClick extends Action {
+	type: constants.WALLET_FRIENDLY_EDITOR_ACCEPT_CLICK;
 }
 
+export interface IWalletFriendlyEditorAcceptSuccess extends Action {
+	type: constants.WALLET_FRIENDLY_EDITOR_ACCEPT_SUCCESS;
+}
+
+
 export type WalletAction = IWalletFriendlyHover | IWalletFriendlyPencilClick |
-	IWalletFriendlyEditorAccept | IWalletFriendlyEditorCancel
+	IWalletFriendlyEditorAcceptClick | IWalletFriendlyEditorAcceptSuccess | IWalletFriendlyEditorCancel
 	| IWalletFriendlyEditorTextChanged;
 
 export function walletFriendlyHover(onHover:boolean): IWalletFriendlyHover {
@@ -61,8 +66,14 @@ export function walletFriendlyEditorCancel(): IWalletFriendlyEditorCancel {
 	}
 }
 
-export function walletFriendlyEditorAccept(): IWalletFriendlyEditorAccept {
+export function walletFriendlyEditorAcceptClick(): IWalletFriendlyEditorAcceptClick {
 	return {
-		type: constants.WALLET_FRIENDLY_EDITOR_ACCEPT
+		type: constants.WALLET_FRIENDLY_EDITOR_ACCEPT_CLICK
+	}
+}
+
+export function walletFriendlyEditorAcceptSuccess(): IWalletFriendlyEditorAcceptSuccess {
+	return {
+		type: constants.WALLET_FRIENDLY_EDITOR_ACCEPT_SUCCESS
 	}
 }
