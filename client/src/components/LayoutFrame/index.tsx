@@ -67,7 +67,7 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 
 
 	render() {
-		const { classes } = this.props
+		const { classes,...nonStyleProps } = this.props
 		return (
 			<div className={classes.root}>
 
@@ -137,7 +137,7 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 						classes={{ paper: classes.infoDrawerPaper }}
 					>
 						<WalletSection
-							{...this.props}
+							{...nonStyleProps}
 						/>
 						<Divider className={classes.infoDivider} />
 						<ContractSection weidaiPrice={0.74}

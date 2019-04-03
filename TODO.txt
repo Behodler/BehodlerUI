@@ -1,6 +1,5 @@
-NO WINDOWS!
 Steps:
-	1. abandon drizzle for now (npm uninstall)
+	1. abandon drizzle for now (npm uninstall) --DONE
 	2. create actions, reducers etc for updating everything in wallet. --DONE
 		-> implement redux with no sagas. --DONE (although sagas are possible)
 	3. Have the site load with no info --DONE
