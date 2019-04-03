@@ -2,14 +2,32 @@ import * as React from 'react'
 import { Grid, withStyles, List, ListItem, IconButton } from '@material-ui/core';
 import { themedText } from '../Common'
 import Edit from '@material-ui/icons/Edit'
+import * as constants from './constants'
 
-export interface ContractProps {
+export interface WalletPropsOnly {
 	walletAddress: string
 	friendly: string
-	daiBalance: number,
-	weiDaiBalance: number,
-	incubatingWeiDai: number,
+	daiBalance: number
+	weiDaiBalance: number
+	incubatingWeiDai: number
+	friendlyTextField: string
+	submittingFriendly: boolean
+	hovering: boolean
 	classes?: any
+}
+
+export interface WalletActionsOnly {
+	walletFriendlyAcceptClick: () => void
+	walletFriendlySuccess: () => void
+	walletFriendlyCancel: () => void
+	walletFriendlyEditorTextChanged: (newText: string) => void
+	walletPencilHover: (hover: boolean) => void
+	walletPencilClick: () => void
+	walletFieldUpdate: (fieldName: constants.WalletFieldNames, text: string) => void
+}
+
+export interface WalletProps extends WalletPropsOnly, WalletActionsOnly {
+
 }
 
 const textStyle = (theme: any) => ({
@@ -19,12 +37,12 @@ const textStyle = (theme: any) => ({
 		margin: "0 0 0 0",
 	},
 	button: {
-		paddingTop:0,
-		paddingBottom:0
+		paddingTop: 0,
+		paddingBottom: 0
 	}
 })
 
-export class WalletSectionComponent extends React.Component<ContractProps, any>{
+export class WalletSectionComponent extends React.Component<WalletProps, any>{
 
 	render() {
 		return (
@@ -33,15 +51,15 @@ export class WalletSectionComponent extends React.Component<ContractProps, any>{
 	}
 
 	getList() {
-		const {classes} = this.props
+		const { classes } = this.props
 		return (
 			<List>
 				<ListItem>
 					{this.getLine("Wallet Address", `${this.props.walletAddress}`)}
 				</ListItem>
 				<ListItem>
-					
-					{this.getLine("Friendly", this.props.friendly,false,<IconButton className={classes.button}><Edit fontSize="small" /></IconButton> )}
+
+					{this.getLine("Friendly", this.props.friendly, false, <IconButton className={classes.button}><Edit fontSize="small" /></IconButton>)}
 
 				</ListItem>
 				<ListItem>

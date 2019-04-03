@@ -3,8 +3,8 @@ import { Action } from 'redux';
 
 export interface IWalletFriendlyHover extends Action {
 	type: constants.WALLET_FRIENDLY_HOVER;
-	payload:{
-		onHover:boolean
+	payload: {
+		onHover: boolean
 	}
 }
 
@@ -15,6 +15,14 @@ export interface IWalletFriendlyPencilClick extends Action {
 export interface IWalletFriendlyEditorTextChanged extends Action {
 	type: constants.WALLET_FRIENDLY_EDITOR_TEXTCHANGED;
 	payload: {
+		newText: string
+	}
+}
+
+export interface IWalletFieldUpdate extends Action {
+	type: constants.WALLET_FIELD_UPDATE;
+	payload: {
+		fieldName: constants.WalletFieldNames
 		newText: string
 	}
 }
@@ -34,13 +42,23 @@ export interface IWalletFriendlyEditorAcceptSuccess extends Action {
 
 export type WalletAction = IWalletFriendlyHover | IWalletFriendlyPencilClick |
 	IWalletFriendlyEditorAcceptClick | IWalletFriendlyEditorAcceptSuccess | IWalletFriendlyEditorCancel
-	| IWalletFriendlyEditorTextChanged;
+	| IWalletFriendlyEditorTextChanged | IWalletFieldUpdate;
 
-export function walletFriendlyHover(onHover:boolean): IWalletFriendlyHover {
+export function walletFriendlyHover(onHover: boolean): IWalletFriendlyHover {
 	return {
 		type: constants.WALLET_FRIENDLY_HOVER,
-		payload:{
+		payload: {
 			onHover
+		}
+	}
+}
+
+export function walletFieldUpdate(fieldName: constants.WalletFieldNames, newText: string): IWalletFieldUpdate { //TODO: determine if this is necessary
+	return {
+		type: constants.WALLET_FIELD_UPDATE,
+		payload: {
+			fieldName,
+			newText
 		}
 	}
 }
@@ -51,10 +69,10 @@ export function walletFriendlyPencilClick(): IWalletFriendlyPencilClick {
 	}
 }
 
-export function walletFriendlyEditorTextChanged(newText:string): IWalletFriendlyEditorTextChanged {
+export function walletFriendlyEditorTextChanged(newText: string): IWalletFriendlyEditorTextChanged {
 	return {
 		type: constants.WALLET_FRIENDLY_EDITOR_TEXTCHANGED,
-		payload:{
+		payload: {
 			newText
 		}
 	}

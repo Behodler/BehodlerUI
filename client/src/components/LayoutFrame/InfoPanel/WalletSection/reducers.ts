@@ -20,6 +20,10 @@ export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state
 			return { ...state, hovering: action.payload.onHover }
 		case constants.WALLET_FRIENDLY_PENCIL_CLICK:
 			return { ...state, editingFriendly: true }
+		case constants.WALLET_FIELD_UPDATE:
+			let newState = { ...state }
+			newState[action.payload.fieldName] = action.payload.newText
+			return newState
 		default:
 			return initialState
 	}

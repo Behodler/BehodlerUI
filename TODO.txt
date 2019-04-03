@@ -1,9 +1,14 @@
 NO WINDOWS!
 Steps:
-	1. fix initial state bug
-	2. get the wallet section to work perfectly. Refactoring is key
-	3. get all the other layout sections to work with placeholders for routing
-	4. create placeholder pages
-	5. routing and all the hell it entails for redux
-	6. ???
-	7. profit
+	1. abandon drizzle for now (npm uninstall)
+	2. create actions, reducers etc for updating everything in wallet. --DONE
+		-> implement redux with no sagas. --DONE (although sagas are possible)
+	3. Have the site load with no info --DONE
+	4. Create a loading saga that "fetches" each info thing from a mock service just to get it all to work --BUSY
+	 	--> mapState To Props -- DONE
+		--> wire up friendly stuff on component
+		--> think about the blockchain link, saga etc
+	5. remove wallet container --DONE
+	6. create an EthereumAPI that only sagas invoke (define module for trufflecontract)
+	7. Either implement the EthereumAPI using best practices or see if you can squeeze drizzle in.
+	8. Now we can do routing

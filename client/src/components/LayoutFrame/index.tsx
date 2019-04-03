@@ -7,9 +7,15 @@ import { AdminSection } from './ActionPanel/AdminSection'
 import { ContractSection } from './InfoPanel/ContractSection/index'
 import { WalletSection } from './InfoPanel/WalletSection'
 import Mobile from './ActionPanel/Mobile'
+import {WalletPropsOnly, WalletActionsOnly } from'./InfoPanel/WalletSection'
 
-interface LayoutFrameProps {
+export interface LayoutFramePropsOnly extends WalletPropsOnly {
 	classes?: any
+}
+
+export interface LayoutFrameActionsOnly extends WalletActionsOnly{}
+
+export interface LayoutFrameProps extends LayoutFramePropsOnly, LayoutFrameActionsOnly{
 }
 
 const actionWidth: number = 250
@@ -131,11 +137,7 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 						classes={{ paper: classes.infoDrawerPaper }}
 					>
 						<WalletSection
-							walletAddress="0x5AbFEc...56f9"
-							friendly="satoshi"
-							daiBalance={110}
-							weiDaiBalance={1000}
-							incubatingWeiDai={12}
+							{...this.props}
 						/>
 						<Divider className={classes.infoDivider} />
 						<ContractSection weidaiPrice={0.74}
