@@ -19,4 +19,4 @@ const mapDispatchToProps = (dispatch: any, ownProps: any) => bindActionCreators(
 	}
 	, dispatch);
 
-export default withRouter<any>(connect(mapStateToProps, mapDispatchToProps,null,{})(AppPresentationComponent))
+export default withRouter<any>(connect(mapStateToProps, mapDispatchToProps)(AppPresentationComponent))

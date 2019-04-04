@@ -4,7 +4,7 @@ import { LayoutFramePropsOnly } from './index'
 import { LayoutStore } from './store'
 
 export function mapStateToProps(state: LayoutStore): LayoutFramePropsOnly {
-	const { friendly, friendlyTextField, submittingFriendly, address, daiBalance, weiDaiBalance, incubatingWeiDai, hovering } = state
+	const { friendly, friendlyTextField, submittingFriendly, address, daiBalance, weiDaiBalance, incubatingWeiDai, editingFriendly } = state
 	return {
 		walletAddress: address,
 		friendly,
@@ -13,7 +13,7 @@ export function mapStateToProps(state: LayoutStore): LayoutFramePropsOnly {
 		incubatingWeiDai,
 		friendlyTextField: friendlyTextField || "",
 		submittingFriendly,
-		hovering
+		editingFriendly
 	}
 }
 
@@ -22,7 +22,6 @@ export const mapDispatchToProps = (dispatch: any, ownProps: any) => ({
 	walletFriendlySuccess: () => dispatch(walletActions.walletFriendlyEditorAcceptSuccess()),
 	walletFriendlyCancel: () => dispatch(walletActions.walletFriendlyEditorCancel()),
 	walletFriendlyEditorTextChanged: (newText: string) => dispatch(walletActions.walletFriendlyEditorTextChanged(newText)),
-	walletPencilHover: (hover: boolean) => dispatch(walletActions.walletFriendlyHover(hover)),
 	walletPencilClick: () => dispatch(walletActions.walletFriendlyPencilClick()),
 	walletFieldUpdate: (fieldName: walletConstants.WalletFieldNames, text: string) => dispatch(walletActions.walletFieldUpdate(fieldName, text))
 })

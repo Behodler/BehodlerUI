@@ -1,13 +1,6 @@
 import * as constants from './constants'
 import { Action } from 'redux';
 
-export interface IWalletFriendlyHover extends Action {
-	type: constants.WALLET_FRIENDLY_HOVER;
-	payload: {
-		onHover: boolean
-	}
-}
-
 export interface IWalletFriendlyPencilClick extends Action {
 	type: constants.WALLET_FRIENDLY_PENCIL_CLICK;
 }
@@ -40,18 +33,10 @@ export interface IWalletFriendlyEditorAcceptSuccess extends Action {
 }
 
 
-export type WalletAction = IWalletFriendlyHover | IWalletFriendlyPencilClick |
+export type WalletAction = IWalletFriendlyPencilClick |
 	IWalletFriendlyEditorAcceptClick | IWalletFriendlyEditorAcceptSuccess | IWalletFriendlyEditorCancel
 	| IWalletFriendlyEditorTextChanged | IWalletFieldUpdate;
 
-export function walletFriendlyHover(onHover: boolean): IWalletFriendlyHover {
-	return {
-		type: constants.WALLET_FRIENDLY_HOVER,
-		payload: {
-			onHover
-		}
-	}
-}
 
 export function walletFieldUpdate(fieldName: constants.WalletFieldNames, newText: string): IWalletFieldUpdate { //TODO: determine if this is necessary
 	return {

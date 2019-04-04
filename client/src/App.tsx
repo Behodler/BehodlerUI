@@ -21,9 +21,9 @@ class AppPresentationComponent extends React.Component<any, any> {
 		const walletFriendlyEditorTextChanged = this.props.walletFieldUpdate
 		const walletFriendlySuccess = this.props.walletFieldUpdate
 		const walletPencilClick = this.props.walletFieldUpdate
-		const walletPencilHover = this.props.walletPencilHover
-		const layoutActions: LayoutFrameActionsOnly = { walletFieldUpdate, walletFriendlyAcceptClick, walletFriendlyCancel, walletFriendlyEditorTextChanged, walletFriendlySuccess, walletPencilClick, walletPencilHover }
+		const layoutActions: LayoutFrameActionsOnly = { walletFieldUpdate, walletFriendlyAcceptClick, walletFriendlyCancel, walletFriendlyEditorTextChanged, walletFriendlySuccess, walletPencilClick }
 		//actions and layoutFrameProps
+		console.log("pencil: " + layoutActions.walletPencilClick)
 		const layoutPage: LayoutFrameProps = {
 			walletAddress: layoutProps.walletAddress,
 			friendly: layoutProps.friendly,
@@ -32,14 +32,13 @@ class AppPresentationComponent extends React.Component<any, any> {
 			incubatingWeiDai: layoutProps.incubatingWeiDai,
 			friendlyTextField: layoutProps.friendlyTextField,
 			submittingFriendly: layoutProps.submittingFriendly,
-			hovering: layoutProps.hovering,
+			editingFriendly: layoutProps.editingFriendly,
 			walletFieldUpdate: layoutActions.walletFieldUpdate,
 			walletFriendlyAcceptClick: layoutActions.walletFriendlyAcceptClick,
 			walletFriendlyCancel: layoutActions.walletFriendlyCancel,
 			walletFriendlyEditorTextChanged: layoutActions.walletFriendlyEditorTextChanged,
 			walletFriendlySuccess: layoutActions.walletFriendlySuccess,
-			walletPencilClick: layoutActions.walletPencilClick,
-			walletPencilHover: layoutActions.walletPencilHover
+			walletPencilClick: layoutActions.walletPencilClick
 		};
 		return layoutPage;
 	}

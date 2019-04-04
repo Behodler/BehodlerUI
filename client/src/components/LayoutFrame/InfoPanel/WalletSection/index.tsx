@@ -3,6 +3,7 @@ import { Grid, withStyles, List, ListItem, IconButton } from '@material-ui/core'
 import { themedText } from '../Common'
 import Edit from '@material-ui/icons/Edit'
 import * as constants from './constants'
+import FormDialog from '../../../Common/FormDialog'
 
 export interface WalletPropsOnly {
 	walletAddress: string
@@ -12,7 +13,7 @@ export interface WalletPropsOnly {
 	incubatingWeiDai: number
 	friendlyTextField: string
 	submittingFriendly: boolean
-	hovering: boolean
+	editingFriendly: boolean
 	classes?: any
 }
 
@@ -21,7 +22,6 @@ export interface WalletActionsOnly {
 	walletFriendlySuccess: () => void
 	walletFriendlyCancel: () => void
 	walletFriendlyEditorTextChanged: (newText: string) => void
-	walletPencilHover: (hover: boolean) => void
 	walletPencilClick: () => void
 	walletFieldUpdate: (fieldName: constants.WalletFieldNames, text: string) => void
 }
@@ -46,7 +46,19 @@ export class WalletSectionComponent extends React.Component<WalletProps, any>{
 
 	render() {
 		return (
-			this.getList()
+			<div>
+				<FormDialog
+					fieldNames={['Friendly Name']}
+					submit={this.props.walletFriendlyAcceptClick}
+					close={this.props.walletFriendlyCancel}
+					fieldUpdate={[this.props.walletFieldUpdate]}
+					validationErrors={[]}
+					message='stored locally only'
+					title='Set Friendly Name for Account'
+					isOpen={this.props.editingFriendly}
+				></FormDialog>
+				{this.getList()}
+			</div>
 		)
 	}
 
@@ -59,7 +71,7 @@ export class WalletSectionComponent extends React.Component<WalletProps, any>{
 				</ListItem>
 				<ListItem>
 
-					{this.getLine("Friendly", this.props.friendly, false, <IconButton className={classes.button}><Edit fontSize="small" /></IconButton>)}
+					{this.getLine("Friendly", this.props.friendly, false, <IconButton onClick={() => { console.log("button clicked"); this.props.walletPencilClick() }} className={classes.button}><Edit fontSize="small" /></IconButton>)}
 
 				</ListItem>
 				<ListItem>

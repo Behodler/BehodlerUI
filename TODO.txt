@@ -5,7 +5,7 @@ Steps:
 	3. Have the site load with no info --DONE
 	4. Create a loading saga that "fetches" each info thing from a mock service just to get it all to work --BUSY
 	 	--> mapState To Props -- DONE
-		--> wire up friendly stuff on component
+		--> wire up friendly stuff on component -- CURRENT BUG: every redux action is WALLET_FIELD_UPDATE
 		--> think about the blockchain link, saga etc
 	5. remove wallet container --DONE
 	6. create an EthereumAPI that only sagas invoke (define module for trufflecontract)

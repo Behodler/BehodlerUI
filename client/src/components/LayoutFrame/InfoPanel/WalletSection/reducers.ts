@@ -5,6 +5,7 @@ import * as constants from './constants'
 
 
 export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state: IWalletStore, action: actions.WalletAction): IWalletStore => {
+	console.log("wallet reducer called: " + JSON.stringify(action, null, 4))
 	switch (action.type) {
 		case constants.WALLET_FRIENDLY_EDITOR_ACCEPT_CLICK:
 			return { ...state, submittingFriendly: true }
@@ -16,9 +17,8 @@ export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state
 			const text = isValidText(action.payload.newText) ? action.payload.newText
 				: state.friendlyTextField;
 			return { ...state, friendlyTextField: text }
-		case constants.WALLET_FRIENDLY_HOVER:
-			return { ...state, hovering: action.payload.onHover }
 		case constants.WALLET_FRIENDLY_PENCIL_CLICK:
+			console.log("pencil clicked")
 			return { ...state, editingFriendly: true }
 		case constants.WALLET_FIELD_UPDATE:
 			let newState = { ...state }

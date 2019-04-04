@@ -7,17 +7,15 @@ export interface IWalletStore{
 	daiBalance:number
 	weiDaiBalance:number
 	incubatingWeiDai:number
-	hovering:boolean
 }
 
 export const initialState:IWalletStore = {
 	address:'0x0',
 	friendly:'',
-	editingFriendly:true,
+	editingFriendly:false,
 	friendlyTextField:'',
 	daiBalance:0,
 	weiDaiBalance:0,
 	incubatingWeiDai:0,
-	submittingFriendly:false,
-	hovering:false
+	submittingFriendly:false
 }
