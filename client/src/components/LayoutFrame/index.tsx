@@ -7,15 +7,15 @@ import { AdminSection } from './ActionPanel/AdminSection'
 import { ContractSection } from './InfoPanel/ContractSection/index'
 import { WalletSection } from './InfoPanel/WalletSection'
 import Mobile from './ActionPanel/Mobile'
-import {WalletPropsOnly, WalletActionsOnly } from'./InfoPanel/WalletSection'
+import { WalletPropsOnly, WalletActionsOnly } from './InfoPanel/WalletSection'
 
 export interface LayoutFramePropsOnly extends WalletPropsOnly {
 	classes?: any
 }
 
-export interface LayoutFrameActionsOnly extends WalletActionsOnly{}
+export interface LayoutFrameActionsOnly extends WalletActionsOnly { }
 
-export interface LayoutFrameProps extends LayoutFramePropsOnly, LayoutFrameActionsOnly{
+export interface LayoutFrameProps extends LayoutFramePropsOnly, LayoutFrameActionsOnly {
 }
 
 const actionWidth: number = 250
@@ -61,13 +61,17 @@ let styles = (theme: any) => styleObject
 
 class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 
+	async componentDidMount() {
+		console.log("COMPONENT DID MOUNT CALLED")
+	}
+
 	constructor(props: LayoutFrameProps) {
 		super(props)
 	}
 
 
 	render() {
-		const { classes,...nonStyleProps } = this.props
+		const { classes, ...nonStyleProps } = this.props
 		return (
 			<div className={classes.root}>
 

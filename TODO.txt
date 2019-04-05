@@ -1,13 +1,6 @@
-Steps:
-	1. abandon drizzle for now (npm uninstall) --DONE
-	2. create actions, reducers etc for updating everything in wallet. --DONE
-		-> implement redux with no sagas. --DONE (although sagas are possible)
-	3. Have the site load with no info --DONE
-	4. Create a loading saga that "fetches" each info thing from a mock service just to get it all to work --BUSY
-	 	--> mapState To Props -- DONE
-		--> wire up friendly stuff on component -- CURRENT BUG: every redux action is WALLET_FIELD_UPDATE
-		--> think about the blockchain link, saga etc
-	5. remove wallet container --DONE
-	6. create an EthereumAPI that only sagas invoke (define module for trufflecontract)
-	7. Either implement the EthereumAPI using best practices or see if you can squeeze drizzle in.
-	8. Now we can do routing
+1. create an EthereumAPI that only sagas invoke (define module for trufflecontract)
+2. create a loaded boolean for the store of wallet and don't show layout until wallet is loaded
+3. Create a metamaskDetected boolean. If loaded==true but metmaskDetected==false then 
+			don't display layout
+			display "enable metamask" message
+4. In componentDidMount of App.tsx call a saga to load layoutInfo. This saga ends with setting the loaded boolean to true and setting the metamaskDetected boolean
