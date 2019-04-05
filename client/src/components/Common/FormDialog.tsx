@@ -12,7 +12,8 @@ interface FormDialogProps {
 	fieldNames: string[]
 	submit: () => void,
 	close: () => void
-	fieldUpdate: [(fieldName: string, newText: string) => void]
+	fieldUpdate: [(newText: string) => void]
+	fieldText: string[]
 	message: string
 	title: string
 	isOpen: boolean
@@ -49,7 +50,8 @@ class FormDialogComponent extends React.Component<FormDialogProps, any> {
 				type="text"
 				key={`${index}`}
 				fullWidth
-				onChange={(event) => { this.props.fieldUpdate[index](fieldName, event.target.value) }}
+				value={this.props.fieldText[index]}
+				onChange={(event) => { this.props.fieldUpdate[index](event.target.value) }}
 			/>
 		))
 	}

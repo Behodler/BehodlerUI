@@ -51,11 +51,12 @@ export class WalletSectionComponent extends React.Component<WalletProps, any>{
 					fieldNames={['Friendly Name']}
 					submit={this.props.walletFriendlyAcceptClick}
 					close={this.props.walletFriendlyCancel}
-					fieldUpdate={[this.props.walletFieldUpdate]}
+					fieldUpdate={[this.props.walletFriendlyEditorTextChanged]}
 					validationErrors={[]}
 					message='stored locally only'
 					title='Set Friendly Name for Account'
 					isOpen={this.props.editingFriendly}
+					fieldText={[this.props.friendlyTextField]}
 				></FormDialog>
 				{this.getList()}
 			</div>
@@ -71,7 +72,7 @@ export class WalletSectionComponent extends React.Component<WalletProps, any>{
 				</ListItem>
 				<ListItem>
 
-					{this.getLine("Friendly", this.props.friendly, false, <IconButton onClick={() => { console.log("button clicked"); this.props.walletPencilClick() }} className={classes.button}><Edit fontSize="small" /></IconButton>)}
+					{this.getLine("Friendly", this.props.friendly, false, <IconButton onClick={this.props.walletPencilClick} className={classes.button}><Edit fontSize="small" /></IconButton>)}
 
 				</ListItem>
 				<ListItem>

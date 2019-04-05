@@ -5,10 +5,11 @@ import * as constants from './constants'
 
 
 export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state: IWalletStore, action: actions.WalletAction): IWalletStore => {
-	console.log("wallet reducer called: " + JSON.stringify(action, null, 4))
 	switch (action.type) {
 		case constants.WALLET_FRIENDLY_EDITOR_ACCEPT_CLICK:
-			return { ...state, submittingFriendly: true }
+			if (!state.friendlyTextField || state.friendlyTextField.length === 0)
+				return { ...state }
+			return { ...state, submittingFriendly: true, friendly: state.friendlyTextField || "" }
 		case constants.WALLET_FRIENDLY_EDITOR_ACCEPT_SUCCESS:
 			return { ...state, submittingFriendly: false, editingFriendly: false }
 		case constants.WALLET_FRIENDLY_EDITOR_CANCEL:
@@ -18,8 +19,7 @@ export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state
 				: state.friendlyTextField;
 			return { ...state, friendlyTextField: text }
 		case constants.WALLET_FRIENDLY_PENCIL_CLICK:
-			console.log("pencil clicked")
-			return { ...state, editingFriendly: true }
+			return { ...state, editingFriendly: true, friendlyTextField: state.friendly }
 		case constants.WALLET_FIELD_UPDATE:
 			let newState = { ...state }
 			newState[action.payload.fieldName] = action.payload.newText
@@ -29,5 +29,5 @@ export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state
 	}
 }
 
-const isValidText = (text: string | undefined): boolean =>
-	!!text && text.length < 15
+const isValidText = (text: string): boolean =>
+	text.length < 15

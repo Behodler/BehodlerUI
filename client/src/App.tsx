@@ -16,14 +16,13 @@ class AppPresentationComponent extends React.Component<any, any> {
 
 		const layoutProps: LayoutFramePropsOnly = this.props[sections.walletSection] as LayoutFramePropsOnly;
 		const walletFieldUpdate = this.props.walletFieldUpdate
-		const walletFriendlyAcceptClick = this.props.walletFieldUpdate
-		const walletFriendlyCancel = this.props.walletFieldUpdate
-		const walletFriendlyEditorTextChanged = this.props.walletFieldUpdate
-		const walletFriendlySuccess = this.props.walletFieldUpdate
-		const walletPencilClick = this.props.walletFieldUpdate
+		const walletFriendlyAcceptClick = this.props.walletFriendlyAcceptClick
+		const walletFriendlyCancel = this.props.walletFriendlyCancel
+		const walletFriendlyEditorTextChanged = this.props.walletFriendlyEditorTextChanged
+		const walletFriendlySuccess = this.props.walletFriendlySuccess
+		const walletPencilClick = this.props.walletPencilClick
 		const layoutActions: LayoutFrameActionsOnly = { walletFieldUpdate, walletFriendlyAcceptClick, walletFriendlyCancel, walletFriendlyEditorTextChanged, walletFriendlySuccess, walletPencilClick }
 		//actions and layoutFrameProps
-		console.log("pencil: " + layoutActions.walletPencilClick)
 		const layoutPage: LayoutFrameProps = {
 			walletAddress: layoutProps.walletAddress,
 			friendly: layoutProps.friendly,

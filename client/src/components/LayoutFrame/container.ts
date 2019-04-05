@@ -22,7 +22,7 @@ export const mapDispatchToProps = (dispatch: any, ownProps: any) => ({
 	walletFriendlySuccess: () => dispatch(walletActions.walletFriendlyEditorAcceptSuccess()),
 	walletFriendlyCancel: () => dispatch(walletActions.walletFriendlyEditorCancel()),
 	walletFriendlyEditorTextChanged: (newText: string) => dispatch(walletActions.walletFriendlyEditorTextChanged(newText)),
-	walletPencilClick: () => dispatch(walletActions.walletFriendlyPencilClick()),
+	walletPencilClick: () =>  dispatch(walletActions.walletFriendlyPencilClick()),
 	walletFieldUpdate: (fieldName: walletConstants.WalletFieldNames, text: string) => dispatch(walletActions.walletFieldUpdate(fieldName, text))
 })
 
