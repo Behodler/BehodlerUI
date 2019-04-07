@@ -1,28 +1,19 @@
-import * as walletActions from './InfoPanel/WalletSection/actions'
-import * as walletConstants from './InfoPanel/WalletSection/constants'
+import * as actions from './actions'
 import { LayoutFramePropsOnly } from './index'
 import { LayoutStore } from './store'
 
 export function mapStateToProps(state: LayoutStore): LayoutFramePropsOnly {
-	const { friendly, friendlyTextField, submittingFriendly, address, daiBalance, weiDaiBalance, incubatingWeiDai, editingFriendly } = state
+	const { metaMaskEnabled, metamaskConnected, connectingAccount } = state
 	return {
-		walletAddress: address,
-		friendly,
-		daiBalance,
-		weiDaiBalance,
-		incubatingWeiDai,
-		friendlyTextField: friendlyTextField || "",
-		submittingFriendly,
-		editingFriendly
+		metaMaskEnabled,
+		metamaskConnected,
+		connectingAccount
 	}
 }
 
 export const mapDispatchToProps = (dispatch: any, ownProps: any) => ({
-	walletFriendlyAcceptClick: () => dispatch(walletActions.walletFriendlyEditorAcceptClick()),
-	walletFriendlySuccess: () => dispatch(walletActions.walletFriendlyEditorAcceptSuccess()),
-	walletFriendlyCancel: () => dispatch(walletActions.walletFriendlyEditorCancel()),
-	walletFriendlyEditorTextChanged: (newText: string) => dispatch(walletActions.walletFriendlyEditorTextChanged(newText)),
-	walletPencilClick: () =>  dispatch(walletActions.walletFriendlyPencilClick()),
-	walletFieldUpdate: (fieldName: walletConstants.WalletFieldNames, text: string) => dispatch(walletActions.walletFieldUpdate(fieldName, text))
+	connectToMetamask: () =>  dispatch(actions.connectToMetamask()),
+	setMetaMaskConnected: (connected: boolean) => dispatch(actions.setMetamaskConnected(connected)),
+	setMetaMaskEnabled: (enabled: boolean) => dispatch(actions.setMetamaskEnabled(enabled)),
 })
 

@@ -4,6 +4,7 @@ import { themedText } from '../Common'
 import Edit from '@material-ui/icons/Edit'
 import * as constants from './constants'
 import FormDialog from '../../../Common/FormDialog'
+import sections from 'src/redux/sections';
 
 export interface WalletPropsOnly {
 	walletAddress: string
@@ -28,6 +29,23 @@ export interface WalletActionsOnly {
 
 export interface WalletProps extends WalletPropsOnly, WalletActionsOnly {
 
+}
+
+export const populateWalletProps = (props:any):WalletProps=>{
+	const walletPropsOnly = props[sections.walletSection] as WalletPropsOnly
+	const walletFieldUpdate = props.walletFieldUpdate
+	const walletFriendlyAcceptClick = props.walletFriendlyAcceptClick
+	const walletFriendlyCancel = props.walletFriendlyCancel
+	const walletFriendlyEditorTextChanged = props.walletFriendlyEditorTextChanged
+	const walletFriendlySuccess = props.walletFriendlySuccess
+	const walletPencilClick = props.walletPencilClick
+	const walletActions: WalletActionsOnly = { walletFieldUpdate, walletFriendlyAcceptClick, walletFriendlyCancel, walletFriendlyEditorTextChanged, walletFriendlySuccess, walletPencilClick }
+
+	const walletProps:WalletProps = {
+		...walletPropsOnly,
+		...walletActions
+	}
+	return walletProps
 }
 
 const textStyle = (theme: any) => ({

@@ -1,6 +1,3 @@
-1. create an EthereumAPI that only sagas invoke (define module for trufflecontract)
-2. create a loaded boolean for the store of wallet and don't show layout until wallet is loaded
-3. Create a metamaskDetected boolean. If loaded==true but metmaskDetected==false then 
-			don't display layout
-			display "enable metamask" message
-4. In componentDidMount of App.tsx call a saga to load layoutInfo. This saga ends with setting the loaded boolean to true and setting the metamaskDetected boolean
+1. Metamask: create components for not enabled and not connected that layout frame shows
+2. wire up all the other layout sections
+3. routing and pages...

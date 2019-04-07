@@ -5,17 +5,44 @@ import WeidaiLogo from './WeidaiLogo'
 import { UserSection } from './ActionPanel/UserSection'
 import { AdminSection } from './ActionPanel/AdminSection'
 import { ContractSection } from './InfoPanel/ContractSection/index'
-import { WalletSection } from './InfoPanel/WalletSection'
+import { WalletSection, populateWalletProps } from './InfoPanel/WalletSection'
 import Mobile from './ActionPanel/Mobile'
-import { WalletPropsOnly, WalletActionsOnly } from './InfoPanel/WalletSection'
+import { WalletProps } from './InfoPanel/WalletSection'
+import sections from '../../redux/sections'
 
-export interface LayoutFramePropsOnly extends WalletPropsOnly {
+export interface LayoutFramePropsOnly {
+	metaMaskEnabled: boolean,
+	metamaskConnected: boolean,
+	connectingAccount: boolean
 	classes?: any
 }
 
-export interface LayoutFrameActionsOnly extends WalletActionsOnly { }
+export interface LayoutFrameActionsOnly {
+	connectToMetamask: () => void,
+	setMetaMaskConnected: (connected: boolean) => void,
+	setMetaMaskEnabled: (enabled: boolean) => void
+}
 
-export interface LayoutFrameProps extends LayoutFramePropsOnly, LayoutFrameActionsOnly {
+export interface LayoutFrameProps extends LayoutFramePropsOnly, LayoutFrameActionsOnly, WalletProps {
+}
+
+
+export const populateLayoutFrameProps = (props: any): LayoutFrameProps => {
+	const walletProps = populateWalletProps(props)
+
+	const connectToMetamask = props.connectToMetamask
+	const setMetaMaskConnected = props.setMetaMaskConnected
+	const setMetaMaskEnabled = props.setMetaMaskEnabled
+
+	const layoutProps = props[sections.layoutSection]
+	const layoutActions: LayoutFrameActionsOnly = { connectToMetamask, setMetaMaskConnected, setMetaMaskEnabled }
+
+	return {
+		...walletProps,
+		...layoutProps,
+		...layoutActions
+	}
+
 }
 
 const actionWidth: number = 250
@@ -56,13 +83,14 @@ let styleObject = {
 	}
 }
 
-
 let styles = (theme: any) => styleObject
+
 
 class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 
 	async componentDidMount() {
-		console.log("COMPONENT DID MOUNT CALLED")
+		console.log("about to connect")
+		await this.props.connectToMetamask()
 	}
 
 	constructor(props: LayoutFrameProps) {
@@ -72,7 +100,16 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 
 	render() {
 		const { classes, ...nonStyleProps } = this.props
-		return (
+
+		const noMetamask = "NO METAMASK!"
+		const notConnected = "METAMASK NOT CONNECTED!"
+		let error = ""
+		if (!this.props.metaMaskEnabled)
+			error = noMetamask
+		else if (!this.props.metamaskConnected)
+			error = notConnected
+
+		return error.length > 0 ? error : (
 			<div className={classes.root}>
 
 				<Hidden mdDown>

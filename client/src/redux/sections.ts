@@ -1,5 +1,6 @@
 enum sections {
-	walletSection = 'walletSection'
+	walletSection = 'walletSection',
+	layoutSection = 'layoutSection'
 } 
 
 export default sections
