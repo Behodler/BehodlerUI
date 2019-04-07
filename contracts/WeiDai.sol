@@ -20,11 +20,11 @@ contract WeiDai is Secondary, ERC20 {
 	}
 
 	function name() public pure returns (string memory) {
-		return "Finswitch Rand";
+		return "WeiDai";
 	}
 
 	function symbol() public pure returns (string memory) {
-		return "RFIN";
+		return "WDAI";
 	}
 
 	function decimals() public pure returns (uint8) {
