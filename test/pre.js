@@ -34,7 +34,7 @@ contract('Patience Regulation Engine: SPLIT', accounts => {
 		assert.equal(initialExchangeRate, "100")
 
 		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] })
-		expectThrow(preInstance.buyWeiDai("1000", "101", { from: accounts[1] }), "split is a % expressed as an integer between 0 and 100")
+		expectThrow(preInstance.buyWeiDai("1000", "110", { from: accounts[1] }), "split is a % expressed as an integer between 0 and 99")
 	})
 })
 

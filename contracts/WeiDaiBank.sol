@@ -3,6 +3,7 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol"
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./WeiDai.sol";
+import "./PatienceRegulationEngine.sol";
 
 contract WeiDaiBank is Secondary {
 
@@ -40,16 +41,20 @@ contract WeiDaiBank is Secondary {
 
 	function issue(address sender, uint weidai,uint dai) public { //sender is dai holder, msg.sender is calling contract
 		require(msg.sender == preAddress, "only patience regulation engine can invoke this function");
-		ERC20(daiAddress).transferFrom(sender, self, dai); 
+		ERC20(daiAddress).transferFrom(sender, self, dai);  //test failing
 		WeiDai(weiDaiAddress).issue(msg.sender, weidai);
 	}
 
 	function redeemWeiDai(uint weiDai) public {
 		uint exchangeRate = daiPerMyriadWeidai();
-		WeiDai(weiDaiAddress).burn(msg.sender, weiDai);
-		uint totalWeiDai = WeiDai(weiDaiAddress).totalSupply();
+		uint fee = WeiDai(weiDaiAddress).totalSupply() - weiDai == 0? 0 : weiDai*2/100;
+		uint donation = (fee*PatienceRegulationEngine(preAddress).getDonationSplit(msg.sender))/100;
 
-		uint weiDaiToRedeem = totalWeiDai==0?weiDai:weiDai*98/100; //burn 2% of withdrawals unless final withdrawal
+		WeiDai(weiDaiAddress).burn(msg.sender, weiDai-donation);
+		WeiDai(weiDaiAddress).transferFrom(msg.sender, self,donation);
+
+		uint weiDaiToRedeem = weiDai - fee;
+		
 		uint daiPayable = weiDaiToRedeem
 		.mul(exchangeRate)
 		.div(10000);

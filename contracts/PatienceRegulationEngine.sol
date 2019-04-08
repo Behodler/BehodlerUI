@@ -58,14 +58,13 @@ contract PatienceRegulationEngine is Secondary {
 
 	function buyWeiDai(uint dai, uint split) public {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
-		require(split<=100, "split is a % expressed as an integer between 0 and 100");			
+		setDonationSplit(msg.sender,split);		
 		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(weiDaiBankAddress).daiPerMyriadWeidai());
 
 		WeiDaiBank(weiDaiBankAddress).issue(msg.sender, weiDaiToBuy, dai);
 		lockedWeiDai[msg.sender] = weiDaiToBuy;
 		penaltyDrawdownPeriod[msg.sender] = marginalPenaltyDrawdownPeriod;
 		blockOfPurchase[msg.sender] = block.number;
-		donationBurnSplit[msg.sender] = split;
 	}
 
 	function claimWeiDai() public {
@@ -86,7 +85,7 @@ contract PatienceRegulationEngine is Secondary {
 			int adjustment = int(weiDai * penalty);
 			weiDai = weiDai.sub(penaltyTax);
 			
-			uint donation = donationBurnSplit[msg.sender]
+			uint donation = getDonationSplit(msg.sender)
 			.mul(penaltyTax)
 			.div(100);
 
@@ -131,5 +130,20 @@ contract PatienceRegulationEngine is Secondary {
 
 	function getClaimWaitWindow() public view returns (uint) {
 		return marginalPenaltyDrawdownPeriod * 20;
+	}
+
+	function setDonationSplit(uint split) public {
+		setDonationSplit(msg.sender,split);
+	}
+
+	function setDonationSplit(address user, uint split) private {
+		require(split<100, "split is a % expressed as an integer between 0 and 99");
+		donationBurnSplit[user] = split + 1;
+	}
+
+	function getDonationSplit(address user) public view returns (uint) {
+		if(donationBurnSplit[user]==0)
+			return 10; //defaults to 10%
+		return donationBurnSplit[user]-1;
 	}
 }

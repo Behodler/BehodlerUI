@@ -1,3 +1,11 @@
+For next time:
+implement and test Fallback functions
+
+Front end:
 1. Metamask: create components for not enabled and not connected that layout frame shows
 2. wire up all the other layout sections
 3. routing and pages...
+
+
+
+TODO long run: dai nuclear option
