@@ -1,11 +1,12 @@
 const WeiDai = artifacts.require('WeiDai')
 const MockDai = artifacts.require('MockDai')
 const WeiDaiBank = artifacts.require("WeiDaiBank")
-const PRE = artifacts.require("PatienceRegulationEngine");
+const PRE = artifacts.require("PatienceRegulationEngine")
+const versionController = artifacts.require("WeiDaiVersionController")
 
 module.exports = async function (deployer, network, accounts) {
-	var weidaiInstance, weidaiBankInstance, preInstance
-	var daiAddress
+	var weidaiInstance, weidaiBankInstance, preInstance, vcInstance
+	var daiAddress, vcAddress
 
 	var donationAddress = accounts[3]; //update later;
 
@@ -18,18 +19,26 @@ module.exports = async function (deployer, network, accounts) {
 	preInstance = await PRE.deployed();
 
 	if (network === 'development') {
+		await deployer.deploy(versionController)
 		await deployer.deploy(MockDai)
+		vcInstance = await versionController.deployed()
+		vcAddress = vcInstance.address
 		daiAddress = (await MockDai.deployed()).address
+		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"))
 	}
 	else if (network === 'main') {
+		const version = 1
 		donationAddress = accounts[0];
+		vcAddress = "to be determined"
+		//TODO: instantiate vc using vcaddress and set contract group
+		//TODO: await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, "WeiDai")
 		daiAddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
 	}
 
-	await weidaiBankInstance.setDependencies(weidaiInstance.address, daiAddress, preInstance.address)
 	await weidaiBankInstance.setDonationAddress(donationAddress)
-	await weidaiInstance.setBank(weidaiBankInstance.address, true)
-	await weidaiInstance.setBank(preInstance.address, true)
-	await preInstance.setDependencies(weidaiBankInstance.address, weidaiInstance.address);
 	await preInstance.setClaimWindowsPerAdjustment(10);
+
+	await weidaiInstance.setVersionController(vcAddress)
+	await weidaiBankInstance.setVersionController(vcAddress)
+	await preInstance.setVersionController(vcAddress)
 }

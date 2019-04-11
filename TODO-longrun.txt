@@ -1,0 +1,25 @@
+TODO long run: 
+	1. replace public with external where possible: external is only for functions that won't be called by methods. parameters by reference
+	2. dai global settlement
+		-same as upgrade
+	3. Write an integration article for https://github.com/makerdao/developerguides
+	4. Upgrade from single to multi (let's hope they launch before I do): 
+			https://github.com/makerdao/developerguides/tree/master/mcd
+			"If there are smart contracts with the address of Dai hard-coded, update the address to the address for MCD which will be published at launch"
+			My thinking: 
+			- deploy versioned weidai
+			- primary can set and name valid versions. Front end will have a drop down for user to choose active version
+			- primary can set default version
+			- primary can lock versions that are valid to prevent users buying more weisai, for instance.
+			- later on launch a DAO that will take the place of primary. 
+			- DAO will confer voting rights to users staking default weidai. 
+				=> when default changes, current stakers keep existing votes but receive no more (date of change recorded)
+				=> 100 votes per day per weidai
+				=> propsals in ring queue. items can only be added to queue when it expires.
+				=> stake 10 votes to make a proposal.
+				=> address cannot make more than 1 proposal at a time
+				=> votes are not transferrable.
+				=> when a proposal has expired, it can be removed from queue by activating it. Releases staked votes to caller
+				=> proposals of 3 types can be makerdao
+				=> require 75% majority(or most votes in queue or something)
+

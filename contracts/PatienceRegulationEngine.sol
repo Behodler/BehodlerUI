@@ -4,15 +4,14 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./WeiDaiBank.sol";
 import "./WeiDai.sol";
+import "./baseContracts/Versioned.sol";
 
-contract PatienceRegulationEngine is Secondary {
+contract PatienceRegulationEngine is Secondary, Versioned {
 	uint marginalPenaltyDrawdownPeriod; //aka mining difficulty
 	uint claimWindowsPerAdjustment;
 	uint lastAdjustmentBlock;
 	uint launchTimeStamp;
 	int currentAdjustmentWeight;
-	address weiDaiBankAddress;
-	address weiDaiAddress;
 	mapping(address=>uint) lockedWeiDai;
 	mapping (address=>uint) penaltyDrawdownPeriod;
 	mapping (address=>uint) blockOfPurchase;
@@ -20,9 +19,7 @@ contract PatienceRegulationEngine is Secondary {
 
 	using SafeMath for uint;
 
-	function setDependencies(address bank, address weiDai) public onlyPrimary{
-		weiDaiBankAddress = bank;
-		weiDaiAddress = weiDai;
+	constructor () public {
 		marginalPenaltyDrawdownPeriod = 1;
 		launchTimeStamp = block.timestamp;
 	}
@@ -59,9 +56,9 @@ contract PatienceRegulationEngine is Secondary {
 	function buyWeiDai(uint dai, uint split) public {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
 		setDonationSplit(msg.sender,split);		
-		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(weiDaiBankAddress).daiPerMyriadWeidai());
+		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(getWeiDaiBank()).daiPerMyriadWeidai());
 
-		WeiDaiBank(weiDaiBankAddress).issue(msg.sender, weiDaiToBuy, dai);
+		WeiDaiBank(getWeiDaiBank()).issue(msg.sender, weiDaiToBuy, dai);
 		lockedWeiDai[msg.sender] = weiDaiToBuy;
 		penaltyDrawdownPeriod[msg.sender] = marginalPenaltyDrawdownPeriod;
 		blockOfPurchase[msg.sender] = block.number;
@@ -90,17 +87,17 @@ contract PatienceRegulationEngine is Secondary {
 			.div(100);
 
 			address self = address(this);
-			WeiDai(weiDaiAddress).burn(self, penaltyTax.sub(donation));
+			WeiDai(getWeiDai()).burn(self, penaltyTax.sub(donation));
 
 			if(donation>0){
-				WeiDai(weiDaiAddress).transfer(weiDaiBankAddress,donation);
+				WeiDai(getWeiDai()).transfer(getWeiDaiBank(),donation);
 			}
 			
 			currentAdjustmentWeight = currentAdjustmentWeight-adjustment<currentAdjustmentWeight?currentAdjustmentWeight-adjustment:currentAdjustmentWeight; //handle underflow
 		}
 		adjustPatienceDifficulty();
 		lockedWeiDai[msg.sender] = 0;
-		WeiDai(weiDaiAddress).transfer(msg.sender, weiDai);
+		WeiDai(getWeiDai()).transfer(msg.sender, weiDai);
 	}
 
 	function calculateCurrentPenalty(address holder) private view returns (uint) {
