@@ -53,7 +53,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return lockedWeiDai[hodler];
 	}
 
-	function buyWeiDai(uint dai, uint split) public {
+	function buyWeiDai(uint dai, uint split) public versionMatch enabledOnly {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
 		setDonationSplit(msg.sender,split);		
 		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(getWeiDaiBank()).daiPerMyriadWeidai());
@@ -64,7 +64,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		blockOfPurchase[msg.sender] = block.number;
 	}
 
-	function claimWeiDai() public {
+	function claimWeiDai() external versionMatch {
 		if(lockedWeiDai[msg.sender] == 0)
 		    return;
 
@@ -129,7 +129,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return marginalPenaltyDrawdownPeriod * 20;
 	}
 
-	function setDonationSplit(uint split) public {
+	function setDonationSplit(uint split) external versionMatch {
 		setDonationSplit(msg.sender,split);
 	}
 

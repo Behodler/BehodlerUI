@@ -4,36 +4,39 @@ import "../WeiDaiVersionController.sol";
 
 contract Versioned is Secondary{
 	address internal versionController;
-	uint internal version;
 
 	function setVersionController(address controller) external onlyPrimary{
 		versionController = controller;
-		refreshVersion();
 	}
 
 	modifier versionMatch(){
 		require(versionController != address(0) 
-		&& version == WeiDaiVersionController(versionController).getUserActiveVersion(msg.sender),"version mismatch");
+			&& getVersion() == WeiDaiVersionController(versionController).getUserActiveVersion(msg.sender), "version mismatch");
 		_;
 	}
 
-	function refreshVersion() public { 
-		version = WeiDaiVersionController(versionController).getContractVersion(address(this));
+	modifier enabledOnly(){
+		require(versionController != address(0) && WeiDaiVersionController(versionController).isEnabled(getVersion()), "version disabled");
+		_;
+	}
+
+	function getVersion() internal view returns (uint) {
+		return WeiDaiVersionController(versionController).getContractVersion(address(this));
 	}
 
 	function getWeiDai() internal view returns (address) {
-		return WeiDaiVersionController(versionController).getWeiDai(version);
+		return WeiDaiVersionController(versionController).getWeiDai(getVersion());
 	}
 	
 	function getDai() internal view returns (address) {
-		return WeiDaiVersionController(versionController).getDai(version);
+		return WeiDaiVersionController(versionController).getDai(getVersion());
 	}
 
 	function getPRE() internal view returns (address) {
-		return WeiDaiVersionController(versionController).getPRE(version);
+		return WeiDaiVersionController(versionController).getPRE(getVersion());
 	}
 
 	function getWeiDaiBank() internal view returns (address) {
-		return WeiDaiVersionController(versionController).getWeiDaiBank(version);
+		return WeiDaiVersionController(versionController).getWeiDaiBank(getVersion());
 	}
 }

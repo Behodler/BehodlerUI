@@ -6,7 +6,7 @@ import "./baseContracts/Versioned.sol";
 contract WeiDai is Secondary, ERC20, Versioned {
 
 	modifier onlyBank(){
-		require(getWeiDaiBank() == msg.sender, "requires bank authorization");
+		require(getWeiDaiBank() == msg.sender || getPRE() == msg.sender, "requires bank authorization");
 		_;
 	}
 

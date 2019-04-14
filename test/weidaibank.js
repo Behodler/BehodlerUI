@@ -17,7 +17,7 @@ contract('bank', accounts => {
 		mockDaiInstance = await mockDai.deployed()
 		weidaiInstance = await weiDai.deployed()
 		for (var i = 0; i < accounts.length; i++)
-			mockDaiInstance.transfer(accounts[i], "10000", { from: accounts[0] })
+			await mockDaiInstance.transfer(accounts[i], "10000", { from: accounts[0] })
 	})
 
 	test("non pre can't issue weidai through bank", async () => {

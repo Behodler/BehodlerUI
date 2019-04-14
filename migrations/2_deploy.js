@@ -2,7 +2,7 @@ const WeiDai = artifacts.require('WeiDai')
 const MockDai = artifacts.require('MockDai')
 const WeiDaiBank = artifacts.require("WeiDaiBank")
 const PRE = artifacts.require("PatienceRegulationEngine")
-const versionController = artifacts.require("WeiDaiVersionController")
+const VersionController = artifacts.require("WeiDaiVersionController")
 
 module.exports = async function (deployer, network, accounts) {
 	var weidaiInstance, weidaiBankInstance, preInstance, vcInstance
@@ -19,12 +19,13 @@ module.exports = async function (deployer, network, accounts) {
 	preInstance = await PRE.deployed();
 
 	if (network === 'development') {
-		await deployer.deploy(versionController)
+		await deployer.deploy(VersionController)
 		await deployer.deploy(MockDai)
-		vcInstance = await versionController.deployed()
+		vcInstance = await VersionController.deployed()
 		vcAddress = vcInstance.address
 		daiAddress = (await MockDai.deployed()).address
 		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"))
+		await vcInstance.setDefaultVersion(1)
 	}
 	else if (network === 'main') {
 		const version = 1

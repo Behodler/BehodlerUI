@@ -23,7 +23,7 @@ contract WeiDaiBank is Secondary, Versioned {
 		donationAddress = donation;
 	}
 
-	function daiPerMyriadWeidai()public view returns (uint) {
+	function daiPerMyriadWeidai() public view returns (uint) {
 		uint totalWeiDai = WeiDai(getWeiDai()).totalSupply();
 		
 		if(totalWeiDai == 0){
@@ -34,13 +34,13 @@ contract WeiDaiBank is Secondary, Versioned {
 		.div(WeiDai(getWeiDai()).totalSupply());
 	}
 
-	function issue(address sender, uint weidai,uint dai) public { //sender is dai holder, msg.sender is calling contract
+	function issue(address sender, uint weidai,uint dai) external { //sender is dai holder, msg.sender is calling contract
 		require(msg.sender == getPRE(), "only patience regulation engine can invoke this function");
 		ERC20(getDai()).transferFrom(sender, self, dai);  //test failing
 		WeiDai(getWeiDai()).issue(msg.sender, weidai);
 	}
 
-	function redeemWeiDai(uint weiDai) public {
+	function redeemWeiDai(uint weiDai) external versionMatch {
 		uint exchangeRate = daiPerMyriadWeidai();
 		uint fee = WeiDai(getWeiDai()).totalSupply() - weiDai == 0? 0 : weiDai*2/100;
 		uint donation = (fee*PatienceRegulationEngine(getPRE()).getDonationSplit(msg.sender))/100;

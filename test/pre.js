@@ -16,7 +16,7 @@ const setupTests = async (accounts) => {
 	var mi = await mockDai.deployed()
 	var wd = await weidai.deployed()
 	for (var i = 0; i < accounts.length; i++)
-		mi.transfer(accounts[i], "10000", { from: accounts[0] })
+		await mi.transfer(accounts[i], "10000", { from: accounts[0] })
 	return { bi, pi, mi, wd }
 }
 
@@ -34,7 +34,7 @@ contract('Patience Regulation Engine: SPLIT', accounts => {
 		assert.equal(initialExchangeRate, "100")
 
 		await mockDaiInstance.approve(bank.address, "10000", { from: accounts[1] })
-		expectThrow(preInstance.buyWeiDai("1000", "110", { from: accounts[1] }), "split is a % expressed as an integer between 0 and 99")
+		await expectThrow(preInstance.buyWeiDai("1000", "110", { from: accounts[1] }), "split is a % expressed as an integer between 0 and 99")
 	})
 })
 
@@ -77,7 +77,7 @@ contract('Patience Regulation Engine: APPROVE', accounts => {
 		const initialExchangeRate = (await bankInstance.daiPerMyriadWeidai.call()).toString()
 		assert.equal(initialExchangeRate, "100")
 
-		expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "{}")
+		await expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "{}")
 	})
 })
 

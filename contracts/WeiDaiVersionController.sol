@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
 
-contract WeiDaiVersionController is Secondary{ //TODO: implement
+contract WeiDaiVersionController is Secondary{
 	struct contractFamily{
 		address weiDai;
 		address dai;
@@ -48,16 +48,24 @@ contract WeiDaiVersionController is Secondary{ //TODO: implement
 		return versionedContractFamilies[version].weiDaiBank;
 	}
 
-	function setEnabled(uint version, bool enabled) external onlyPrimary {
-		versionedContractFamilies[version].enabled = enabled;
-	}
-
 	function getContractFamilyName (uint version) external view returns (string memory) {
 		bytes memory name = new bytes(16);
 		for(uint i = 0;i<16;i++){
 			name[i] = versionedContractFamilies[version].name[i];
 		}
 		return string(name);
+	}
+
+	function renameContractFamily (uint version, bytes16 name) external onlyPrimary {
+		versionedContractFamilies[version].name = name;
+	}
+
+	function setEnabled(uint version, bool enabled) external onlyPrimary {
+		versionedContractFamilies[version].enabled = enabled;
+	}
+
+	function isEnabled(uint version) external view returns (bool) {
+		return versionedContractFamilies[version].enabled;
 	}
 
 	function setActiveVersion(uint version) external {

@@ -1,6 +1,4 @@
 For next time:
-- pass all tests again
-- new tests for versioning
 - beta period of 1 year: (don't compromise. Don't be arrested. win win win: I think that means no alterations, just shut down)
 	- max 50 dai can be spent per session
 	- new weidai creation can be shut down permanently and irreversibly 
