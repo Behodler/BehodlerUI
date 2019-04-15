@@ -92,7 +92,7 @@ contract('Patience Regulation Engine: Patient', accounts => {
 		weidaiInstance = wd
 	})
 
-	test("withdrawing after duration incurs no penalty, exchange rate unaffected", async () => { // test will be long running. see https://medium.com/edgefund/time-travelling-truffle-tests-f581c1964687
+	test("withdrawing after duration incurs no penalty, exchange rate unaffected", async () => {
 		const account = accounts[6]
 
 		const currentBlock = await web3.eth.getBlockNumber();
@@ -178,7 +178,7 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 		currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
 		durationUntilNextDifficultyAdjustment = currentClaimWaitWindow * claimWindowsPerAdjustment
 		const initialBlockNumber = (await web3.eth.getBlockNumber());
-		for (let blockNumber = initialBlockNumber; blockNumber <=initialBlockNumber+10 ; blockNumber = (await time.advanceBlock()));
+		for (let blockNumber = initialBlockNumber; blockNumber <= initialBlockNumber + 10; blockNumber = (await time.advanceBlock()));
 		await preInstance.claimWeiDai({ from: account }) //premature
 
 
@@ -195,10 +195,9 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 		const marginalPenaltyAfterPrematureClaim = (await preInstance.getCurrentPenalty.call()).toNumber();
 		assert.equal(marginalPenaltyAfterPrematureClaim, 1)
 
-		//donations
 		const donationWeiDaiBalanceBefore = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
-		assert.equal(donationWeiDaiBalanceBefore,0)
-		await bankInstance.withdrawDonations({from:accounts[0]})
+		assert.equal(donationWeiDaiBalanceBefore, 0)
+		await bankInstance.withdrawDonations({ from: accounts[0] })
 		const donationWeiDaiBalanceAfter = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
 		assert.equal(donationWeiDaiBalanceAfter, 7000)
 	})
@@ -253,5 +252,28 @@ contract('Patience Regulation Engine: Redemption', accounts => {
 		assert.equal(daiAfterRedemption, daiBeforeRedemption + (0.98 * daiValueOfWeiDai))
 		assert.equal(weidaiAfterRedemption, 50000)
 		assert.equal(exchangeRateBeforeRedemption + 2, exchangeRateAfterRedemption)
+	})
+})
+
+contract('Patience Regulation Engine: Beta Phase', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi, wd } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+		weidaiInstance = wd
+	})
+
+	test("100 limit applies during beta phase but not after", async () => {
+		const primaryOptions = { from: accounts[0] }
+		await preInstance.setBetaPhase(1, primaryOptions)
+		await mockDaiInstance.approve(bankInstance.address, "1000000", primaryOptions)
+		await expectThrow(preInstance.buyWeiDai(101, 0, primaryOptions), "maximum 100 dai can be purchased during beta phase.")
+		await expectThrow(preInstance.buyWeiDai(101, 0, { from: accounts[1] }), "maximum 100 dai can be purchased during beta phase.")
+	
+		await preInstance.setBetaPhase(0, primaryOptions)
+		preInstance.buyWeiDai(101, 0, primaryOptions)
+		preInstance.buyWeiDai(101, 0, { from: accounts[1] })
 	})
 })

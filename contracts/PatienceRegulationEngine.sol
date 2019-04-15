@@ -11,6 +11,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	uint claimWindowsPerAdjustment;
 	uint lastAdjustmentBlock;
 	uint launchTimeStamp;
+	uint betaPhase;
 	int currentAdjustmentWeight;
 	mapping(address=>uint) lockedWeiDai;
 	mapping (address=>uint) penaltyDrawdownPeriod;
@@ -24,8 +25,12 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		launchTimeStamp = block.timestamp;
 	}
 
+	function setBetaPhase(uint b) public onlyPrimary {
+		betaPhase = b * (1 days);
+	}
+
 	function setClaimWindowsPerAdjustment(uint c) public onlyPrimary {
-		require(block.timestamp - launchTimeStamp <= 365 days, "environmental variables can only be altered in first year");
+		require(betaPhase==0 || isBetaPhase(), "environmental variables can only be altered during beta period");
 		claimWindowsPerAdjustment = c;
 	}
 
@@ -53,7 +58,13 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return lockedWeiDai[hodler];
 	}
 
+	function isBetaPhase() private view returns (bool){
+		return betaPhase!=0 && (block.timestamp - launchTimeStamp < betaPhase);
+	}
+
 	function buyWeiDai(uint dai, uint split) public versionMatch enabledOnly {
+		require(!isBetaPhase() || dai <= 100, "maximum 100 dai can be purchased during beta phase.");
+		require(!isBetaPhase() || ERC20(getDai()).balanceOf(getWeiDaiBank()) <= 10000, "beta phase maximum dai limit reached.");
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
 		setDonationSplit(msg.sender,split);		
 		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(getWeiDaiBank()).daiPerMyriadWeidai());

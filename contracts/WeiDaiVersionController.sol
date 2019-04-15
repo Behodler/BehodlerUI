@@ -4,10 +4,10 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol"
 
 contract WeiDaiVersionController is Secondary{
 	struct contractFamily{
-		address weiDai;
+		address  weiDai;
 		address dai;
-		address patienceRegulationEngine;
-		address weiDaiBank;
+		address   patienceRegulationEngine;
+		address   weiDaiBank;
 		bool enabled;
 		bytes16 name;
 	}
@@ -16,7 +16,7 @@ contract WeiDaiVersionController is Secondary{
 	mapping (address=>uint) activeVersion;
 	uint defaultVersion;
 	
-	function setContractGroup(uint version, address weiDai, address dai, address pre, address bank, bytes16 name) external onlyPrimary{
+	function setContractGroup(uint version, address   weiDai, address dai, address   pre, address   bank, bytes16 name) external onlyPrimary{
 		require(version>0, "version zero reserved.");
 		versionedContractFamilies[version] = contractFamily({
 			weiDai:weiDai,
@@ -32,7 +32,7 @@ contract WeiDaiVersionController is Secondary{
 		contractVersion[bank] = version;
 	}
 
-	function getWeiDai(uint version) external view returns (address){
+	function getWeiDai(uint version) external view returns (address ){
 		return versionedContractFamilies[version].weiDai;
 	}
 
@@ -40,11 +40,11 @@ contract WeiDaiVersionController is Secondary{
 		return versionedContractFamilies[version].dai;
 	}
 
-	function getPRE(uint version) external view returns (address){
+	function getPRE(uint version) external view returns (address ){
 		return versionedContractFamilies[version].patienceRegulationEngine;
 	}
 
-	function getWeiDaiBank(uint version) external view returns (address){
+	function getWeiDaiBank(uint version) external view returns (address ){
 		return versionedContractFamilies[version].weiDaiBank;
 	}
 

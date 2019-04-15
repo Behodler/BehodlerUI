@@ -10,8 +10,7 @@ contract Versioned is Secondary{
 	}
 
 	modifier versionMatch(){
-		require(versionController != address(0) 
-			&& getVersion() == WeiDaiVersionController(versionController).getUserActiveVersion(msg.sender), "version mismatch");
+		require(versionController != address(0) && getVersion() == WeiDaiVersionController(versionController).getUserActiveVersion(msg.sender), "version mismatch");
 		_;
 	}
 
@@ -24,7 +23,7 @@ contract Versioned is Secondary{
 		return WeiDaiVersionController(versionController).getContractVersion(address(this));
 	}
 
-	function getWeiDai() internal view returns (address) {
+	function getWeiDai() internal view returns (address ) {
 		return WeiDaiVersionController(versionController).getWeiDai(getVersion());
 	}
 	
@@ -32,11 +31,11 @@ contract Versioned is Secondary{
 		return WeiDaiVersionController(versionController).getDai(getVersion());
 	}
 
-	function getPRE() internal view returns (address) {
+	function getPRE() internal view returns (address ) {
 		return WeiDaiVersionController(versionController).getPRE(getVersion());
 	}
 
-	function getWeiDaiBank() internal view returns (address) {
+	function getWeiDaiBank() internal view returns (address ) {
 		return WeiDaiVersionController(versionController).getWeiDaiBank(getVersion());
 	}
 }
