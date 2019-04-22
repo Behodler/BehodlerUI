@@ -1,4 +1,7 @@
 For next time:
+read context https://reactjs.org/docs/context.html
+look at use reducer with context to allow deep dispatching without passing props all the way down (this is going to make my code so much neater)
+
 
 Re-write and replace redux with hooks
 
