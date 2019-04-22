@@ -1,5 +1,9 @@
 For next time:
+
+Re-write and replace redux with hooks
+
 Front end:
+1. bug when clicking on edit friendly after metamask signed in: pencil click action resets metamask state
 1. Metamask: create components for not enabled and not connected that layout frame shows
 2. wire up all the other layout sections
 3. routing and pages...

@@ -11,6 +11,4 @@ class AppPresentationComponent extends React.Component<any, any> {
 	}
 }
 
-
-
 export { AppPresentationComponent };

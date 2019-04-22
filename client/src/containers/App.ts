@@ -16,10 +16,10 @@ function mapStateToProps(state: any): any {
 	return props
 }
 
-const mapDispatchToProps = (dispatch: any, ownProps: any) => bindActionCreators(
+const mapDispatchToProps = (dispatch: any) => bindActionCreators(
 	{
-		...layoutFrame.mapDispatchToProps(dispatch, ownProps),
-		...walletSection.mapDispatchToProps(dispatch,ownProps)
+		...layoutFrame.mapDispatchToProps(dispatch),
+		...walletSection.mapDispatchToProps(dispatch)
 	}
 	, dispatch);
 

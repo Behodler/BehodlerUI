@@ -21,9 +21,7 @@ export const walletReducer: Reducer<IWalletStore, actions.WalletAction> = (state
 		case constants.WALLET_FRIENDLY_PENCIL_CLICK:
 			return { ...state, editingFriendly: true, friendlyTextField: state.friendly }
 		case constants.WALLET_FIELD_UPDATE:
-			let newState = { ...state }
-			newState[action.payload.fieldName] = action.payload.newText
-			return newState
+			return { ...state, [action.payload.fieldName]: action.payload.newText }
 		default:
 			return initialState
 	}

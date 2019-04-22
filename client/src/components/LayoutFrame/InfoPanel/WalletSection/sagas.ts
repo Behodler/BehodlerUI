@@ -2,7 +2,7 @@ import * as actions from './actions';
 import * as constants from './constants'
 import { IWalletStore } from './store'
 import sections from '../../../../redux/sections'
-import { takeLatest, select, put } from 'redux-saga/effects';
+import { select, put,takeLeading } from 'redux-saga/effects';
 import { setFriendlyName } from '../../../../util/HTML5'
 
 export const getState = (state: any) => state;
@@ -16,7 +16,7 @@ function* setFriendly() {
 }
 
 export function* walletRoot() {
-	yield takeLatest<actions.WalletAction>(constants.WALLET_FRIENDLY_EDITOR_ACCEPT_CLICK, setFriendly)
+	yield takeLeading<actions.WalletAction>(constants.WALLET_FRIENDLY_EDITOR_ACCEPT_CLICK, setFriendly)
 }
 
 

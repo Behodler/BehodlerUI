@@ -2,6 +2,7 @@ import * as actions from './actions'
 import * as constants from './constants'
 import { WalletPropsOnly } from './index'
 import { IWalletStore } from './store'
+import { bindActionCreators } from 'redux';
 
 export function mapStateToProps(state: IWalletStore): WalletPropsOnly {
 	const { friendly, friendlyTextField, submittingFriendly, address, daiBalance, weiDaiBalance, incubatingWeiDai, editingFriendly } = state
@@ -17,12 +18,12 @@ export function mapStateToProps(state: IWalletStore): WalletPropsOnly {
 	}
 }
 
-export const mapDispatchToProps = (dispatch: any, ownProps: any) => ({
+export const mapDispatchToProps = (dispatch: any) => bindActionCreators({
 	walletFriendlyAcceptClick: () => dispatch(actions.walletFriendlyEditorAcceptClick()),
 	walletFriendlySuccess: () => dispatch(actions.walletFriendlyEditorAcceptSuccess()),
 	walletFriendlyCancel: () => dispatch(actions.walletFriendlyEditorCancel()),
 	walletFriendlyEditorTextChanged: (newText: string) => dispatch(actions.walletFriendlyEditorTextChanged(newText)),
-	walletPencilClick: () =>  dispatch(actions.walletFriendlyPencilClick()),
+	walletPencilClick: () => dispatch(actions.walletFriendlyPencilClick()),
 	walletFieldUpdate: (fieldName: constants.WalletFieldNames, text: string) => dispatch(actions.walletFieldUpdate(fieldName, text))
-})
+}, dispatch)
 

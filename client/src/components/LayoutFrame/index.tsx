@@ -18,9 +18,7 @@ export interface LayoutFramePropsOnly {
 }
 
 export interface LayoutFrameActionsOnly {
-	connectToMetamask: () => void,
-	setMetaMaskConnected: (connected: boolean) => void,
-	setMetaMaskEnabled: (enabled: boolean) => void
+	connectToMetamask: () => void
 }
 
 export interface LayoutFrameProps extends LayoutFramePropsOnly, LayoutFrameActionsOnly, WalletProps {
@@ -31,11 +29,9 @@ export const populateLayoutFrameProps = (props: any): LayoutFrameProps => {
 	const walletProps = populateWalletProps(props)
 
 	const connectToMetamask = props.connectToMetamask
-	const setMetaMaskConnected = props.setMetaMaskConnected
-	const setMetaMaskEnabled = props.setMetaMaskEnabled
 
 	const layoutProps = props[sections.layoutSection]
-	const layoutActions: LayoutFrameActionsOnly = { connectToMetamask, setMetaMaskConnected, setMetaMaskEnabled }
+	const layoutActions: LayoutFrameActionsOnly = { connectToMetamask }
 
 	return {
 		...walletProps,
@@ -88,9 +84,9 @@ let styles = (theme: any) => styleObject
 
 class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 
-	async componentDidMount() {
+	componentDidMount() {
 		console.log("about to connect")
-		await this.props.connectToMetamask()
+		this.props.connectToMetamask()
 	}
 
 	constructor(props: LayoutFrameProps) {
@@ -101,15 +97,15 @@ class LayoutFrameComponent extends React.Component<LayoutFrameProps, any>{
 	render() {
 		const { classes, ...nonStyleProps } = this.props
 
-		const noMetamask = "NO METAMASK!"
+		const noMetamask = <div><button onClick={async () => { await this.props.connectToMetamask() }}>connect</button></div>
 		const notConnected = "METAMASK NOT CONNECTED!"
-		let error = ""
+		let error:any = null
 		if (!this.props.metaMaskEnabled)
 			error = noMetamask
 		else if (!this.props.metamaskConnected)
 			error = notConnected
 
-		return error.length > 0 ? error : (
+		return !!error ? error : (
 			<div className={classes.root}>
 
 				<Hidden mdDown>
