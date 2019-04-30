@@ -1,12 +1,18 @@
 For next time:
+In client/src/blockchain/observables/WeiDai, add an observable for each method
+
 read context https://reactjs.org/docs/context.html
 look at use reducer with context to allow deep dispatching without passing props all the way down (this is going to make my code so much neater)
 
 
-Re-write and replace redux with hooks
+1. in wallet replace each prop with a state hook
+2. in blockchainAPI use rxjs to watch for account changes (https://www.learnrxjs.io/concepts/rxjs-primer.html)
+ -> in wallet, useEffects to subscribe/unsubscribe to the accountstream
+ -> web3.eth.subscribe(“newBlockHeaders”)
+		-> in this subscription, emit to observables new accounts, and view updates
+3. if 2 is successful then subscribe to each new block and call all the view methods
+	-> if any one of them changes, have an refresh method which returns an incremented int and can be fired in every render
 
-Front end:
-1. bug when clicking on edit friendly after metamask signed in: pencil click action resets metamask state
-1. Metamask: create components for not enabled and not connected that layout frame shows
-2. wire up all the other layout sections
-3. routing and pages...
+
+
+
