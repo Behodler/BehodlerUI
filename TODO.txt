@@ -1,4 +1,8 @@
 For next time:
+we need to keep the option open for burn rewards. For instance, when someone burns their weidai, they're issued governance tokens to use in controlling WeiDAO:
+1. Allow anyone to burn their own tokens
+2. Allow holder of weidai to approve someone else burns on their behalf (this will allow WeiDAO tokens to be generated 
+
 In client/src/blockchain/observables/WeiDai, add an observable for each method
 
 read context https://reactjs.org/docs/context.html
