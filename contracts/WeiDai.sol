@@ -5,6 +5,8 @@ import "./baseContracts/Versioned.sol";
 
 contract WeiDai is Secondary, ERC20, Versioned {
 
+	mapping (address=>mapping(address=>uint)) arsonAllowance;
+
 	modifier onlyBank(){
 		require(getWeiDaiBank() == msg.sender || getPRE() == msg.sender, "requires bank authorization");
 		_;
@@ -14,8 +16,29 @@ contract WeiDai is Secondary, ERC20, Versioned {
 		_mint(recipient, value);
 	}
 
-	function burn (address from, uint value) public onlyBank{
-		_burn(from, value);
+	function approveArson(address arsonist, uint value) external {
+		arsonAllowance[msg.sender][arsonist] = value;
+		emit arsonApproved(msg.sender,arsonist,value);
+	}
+
+	function getArsonAllowance (address arsonist, address holder) public view returns (uint){
+		return arsonAllowance[holder][arsonist];
+	}
+
+	function burn (address holder, uint value) public {
+		bool canBurn = holder == msg.sender ||
+					getArsonAllowance(msg.sender,holder) >= value ||
+					getWeiDaiBank() == msg.sender ||
+		getPRE() == msg.sender;
+
+		require(canBurn, "unauthorized to burn WeiDai");
+
+		if(getArsonAllowance(msg.sender,holder) >= value){
+			arsonAllowance[holder][msg.sender] -= value;
+		}
+
+		_burn(holder, value);
+		emit weiDaiBurnt(msg.sender, holder, value);
 	}
 
 	function name() public pure returns (string memory) {
@@ -29,4 +52,7 @@ contract WeiDai is Secondary, ERC20, Versioned {
 	function decimals() public pure returns (uint8) {
 		return 18;
 	}
+
+	event arsonApproved (address msgsender, address arsonist, uint value);
+	event weiDaiBurnt(address indexed burner, address holder, uint value);
 }
