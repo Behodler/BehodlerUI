@@ -136,6 +136,166 @@ contract('Patience Regulation Engine: Patient', accounts => {
 	})
 })
 
+contract('Patience Regulation Engine: ClaimForSuccess % 0', accounts => {
+	let bankInstance, preInstance, mockDaiInstance, weidaiInstance
+	setup(async () => {
+		const { bi, pi, mi, wd } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+		weidaiInstance = wd
+	})
+
+	test("claiming for a recipient increases their balance", async () => {
+		const account = accounts[6]
+		const delegate = accounts[7]
+		const currentBlock = await web3.eth.getBlockNumber();
+		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
+		const lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
+		const nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
+		const blocksUntilNextAdjustment = nextAdjustmentBlock - currentBlock
+
+		assert.isAtLeast(blocksUntilNextAdjustment, currentClaimWaitWindow * 2, "too few blocks to next adjustment. Consider resetting ganache.")
+
+		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
+
+		assert.equal(currentLockedWeiDai, 0)
+
+		const exchangeRateBeforeTransactions = (await bankInstance.daiPerMyriadWeidai.call()).toNumber()
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("100", "0", { from: account })
+		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + currentClaimWaitWindow; blockNumber = (await time.advanceBlock()));
+
+		const adjustmentWeightBefore = (await preInstance.getCurrentAdjustmentWeight.call()).toNumber();
+		const marginalPenaltyBefore = (await preInstance.getCurrentPenalty.call()).toNumber();
+		const weidaiBalanceBefore = (await weidaiInstance.balanceOf.call(account)).toNumber()
+		const weiDaiBalanceOfDelegateBefore = (await weidaiInstance.balanceOf.call(delegate)).toNumber()
+
+		await preInstance.setClaimDelegate(delegate, 0, { from: account })
+		await preInstance.claimWeiDaiFor(account, { from: delegate })
+
+		const exchangeRateAfterTransactions = (await bankInstance.daiPerMyriadWeidai.call()).toNumber()
+		const expectedWeiDai = 100 * exchangeRateAfterTransactions
+
+		const weidaiBalanceAfter = (await weidaiInstance.balanceOf.call(account)).toNumber()
+		const weidaiBalanceOfDelegateAfter = (await weidaiInstance.balanceOf.call(delegate)).toNumber()
+		const marginalPenaltyAfter = (await preInstance.getCurrentPenalty.call()).toNumber();
+		const adjustmentWeightAfter = (await preInstance.getCurrentAdjustmentWeight.call()).toNumber();
+
+		assert.equal(exchangeRateBeforeTransactions, exchangeRateAfterTransactions)
+		assert.equal(adjustmentWeightBefore + 1000000, adjustmentWeightAfter)
+		assert.equal(marginalPenaltyBefore, marginalPenaltyAfter)
+		assert.equal(weidaiBalanceBefore + expectedWeiDai, weidaiBalanceAfter)
+
+		assert.equal(weiDaiBalanceOfDelegateBefore, weidaiBalanceOfDelegateAfter)
+	})
+})
+
+contract('Patience Regulation Engine: ClaimForSuccess % > 0', accounts => {
+	let bankInstance, preInstance, mockDaiInstance, weidaiInstance
+	setup(async () => {
+		const { bi, pi, mi, wd } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+		weidaiInstance = wd
+	})
+
+	test("claiming for a recipient increases their balance", async () => {
+		const account = accounts[6]
+		const delegate = accounts[7]
+		const currentBlock = await web3.eth.getBlockNumber();
+		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
+		const lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
+		const nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
+		const blocksUntilNextAdjustment = nextAdjustmentBlock - currentBlock
+
+		assert.isAtLeast(blocksUntilNextAdjustment, currentClaimWaitWindow * 2, "too few blocks to next adjustment. Consider resetting ganache.")
+
+		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
+
+		assert.equal(currentLockedWeiDai, 0)
+
+		const exchangeRateBeforeTransactions = (await bankInstance.daiPerMyriadWeidai.call()).toNumber()
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("100", "0", { from: account })
+		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + currentClaimWaitWindow; blockNumber = (await time.advanceBlock()));
+
+		const adjustmentWeightBefore = (await preInstance.getCurrentAdjustmentWeight.call()).toNumber();
+		const marginalPenaltyBefore = (await preInstance.getCurrentPenalty.call()).toNumber();
+		const weidaiBalanceBefore = (await weidaiInstance.balanceOf.call(account)).toNumber()
+		const weiDaiBalanceOfDelegateBefore = (await weidaiInstance.balanceOf.call(delegate)).toNumber()
+
+		await preInstance.setClaimDelegate(delegate, 2500, { from: account }) //25%
+		await preInstance.claimWeiDaiFor(account, { from: delegate })
+
+		const exchangeRateAfterTransactions = (await bankInstance.daiPerMyriadWeidai.call()).toNumber()
+		const expectedWeiDai = 100 * exchangeRateAfterTransactions
+
+		const weidaiBalanceAfter = (await weidaiInstance.balanceOf.call(account)).toNumber()
+		const weidaiBalanceOfDelegateAfter = (await weidaiInstance.balanceOf.call(delegate)).toNumber()
+		const expectedWeiDaiBalanceForDelegateAfter = expectedWeiDai * 0.25
+		const expectedWeiDaiBalanceForRecipientAfter = expectedWeiDai * 0.75
+		const marginalPenaltyAfter = (await preInstance.getCurrentPenalty.call()).toNumber();
+		const adjustmentWeightAfter = (await preInstance.getCurrentAdjustmentWeight.call()).toNumber();
+
+		assert.equal(exchangeRateBeforeTransactions, exchangeRateAfterTransactions)
+		assert.equal(adjustmentWeightBefore + 1000000, adjustmentWeightAfter)
+		assert.equal(marginalPenaltyBefore, marginalPenaltyAfter)
+		assert.equal(weidaiBalanceBefore + expectedWeiDaiBalanceForRecipientAfter, weidaiBalanceAfter)
+
+		assert.equal(weidaiBalanceOfDelegateAfter, expectedWeiDaiBalanceForDelegateAfter + weiDaiBalanceOfDelegateBefore)
+	})
+})
+
+contract('Patience Regulation Engine: ClaimForFailure', accounts => {
+	let bankInstance, preInstance, mockDaiInstance, weidaiInstance
+	setup(async () => {
+		const { bi, pi, mi, wd } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+		weidaiInstance = wd
+	})
+
+	test("claiming for a recipient as a disabled delegate fails", async () => {
+		const expectedError = "claimFor disabled for this user: recipient must invoke the setClaimDelegate function."
+		const account = accounts[6]
+		const delegate = accounts[7]
+		const currentBlock = await web3.eth.getBlockNumber();
+		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
+		const lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()
+		const nextAdjustmentBlock = (currentClaimWaitWindow * claimWindowsPerAdjustment) + lastAdjustmentBlock
+		const blocksUntilNextAdjustment = nextAdjustmentBlock - currentBlock
+
+		assert.isAtLeast(blocksUntilNextAdjustment, currentClaimWaitWindow * 2, "too few blocks to next adjustment. Consider resetting ganache.")
+
+		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
+
+		assert.equal(currentLockedWeiDai, 0)
+
+		const exchangeRateBeforeTransactions = (await bankInstance.daiPerMyriadWeidai.call()).toNumber()
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("100", "0", { from: account })
+		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + currentClaimWaitWindow; blockNumber = (await time.advanceBlock()));
+
+
+		await expectThrow(preInstance.claimWeiDaiFor(account, { from: delegate }), expectedError)
+		await preInstance.setClaimDelegate(delegate, 10, { from: account })
+		await preInstance.disableClaimDelegate(delegate, { from: account })
+		await expectThrow(preInstance.claimWeiDaiFor(account, { from: delegate }), expectedError)
+	})
+})
+
 contract('Patience Regulation Engine: difficulty change', accounts => {
 	let bankInstance, preInstance, mockDaiInstance
 	setup(async () => {
@@ -271,7 +431,7 @@ contract('Patience Regulation Engine: Beta Phase', accounts => {
 		await mockDaiInstance.approve(bankInstance.address, "1000000", primaryOptions)
 		await expectThrow(preInstance.buyWeiDai(101, 0, primaryOptions), "maximum 100 dai can be purchased during beta phase.")
 		await expectThrow(preInstance.buyWeiDai(101, 0, { from: accounts[1] }), "maximum 100 dai can be purchased during beta phase.")
-	
+
 		await preInstance.setBetaPhase(0, primaryOptions)
 		preInstance.buyWeiDai(101, 0, primaryOptions)
 		preInstance.buyWeiDai(101, 0, { from: accounts[1] })

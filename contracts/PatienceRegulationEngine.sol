@@ -1,4 +1,4 @@
-pragma solidity >=0.4.21 <0.6.0;
+pragma solidity >=0.5.0 <0.6.0;
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
@@ -17,6 +17,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	mapping (address=>uint) penaltyDrawdownPeriod;
 	mapping (address=>uint) blockOfPurchase;
 	mapping (address=>uint) donationBurnSplit;
+	mapping (address => mapping (address=> uint)) claimDelegateReward;
 
 	using SafeMath for uint;
 
@@ -49,7 +50,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	function getLastAdjustmentBlockNumber() public view returns (uint) {
 		return lastAdjustmentBlock;
 	}
-	
+
 	function getCurrentPenalty() public view returns (uint) {
 		return marginalPenaltyDrawdownPeriod;
 	}
@@ -65,8 +66,8 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	function buyWeiDai(uint dai, uint split) public versionMatch enabledOnly {
 		require(!isBetaPhase() || dai <= 100, "maximum 100 dai can be purchased during beta phase.");
 		require(!isBetaPhase() || ERC20(getDai()).balanceOf(getWeiDaiBank()) <= 10000, "beta phase maximum dai limit reached.");
-		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");		
-		setDonationSplit(msg.sender,split);		
+		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");
+		setDonationSplit(msg.sender,split);
 		uint weiDaiToBuy = dai.mul(10000).div(WeiDaiBank(getWeiDaiBank()).daiPerMyriadWeidai());
 
 		WeiDaiBank(getWeiDaiBank()).issue(msg.sender, weiDaiToBuy, dai);
@@ -75,13 +76,29 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		blockOfPurchase[msg.sender] = block.number;
 	}
 
+	function setClaimDelegate(address delegate, uint rewardPercentage) external versionMatch {
+		require(rewardPercentage<=10000, "reward must be % expressed as an integer between 0 and 10,000");
+		claimDelegateReward[msg.sender][delegate] = rewardPercentage + 1;
+	}
+
+	function disableClaimDelegate(address delegate) external versionMatch {
+		claimDelegateReward[msg.sender][delegate] = 0;
+	}
+
 	function claimWeiDai() external versionMatch {
 		if(lockedWeiDai[msg.sender] == 0)
 		    return;
+		claim(msg.sender, address(0), 0);
+	}
 
+	function claimWeiDaiFor(address recipient) external versionMatch {
+		require(claimDelegateReward[recipient][msg.sender]>0, "claimFor disabled for this user: recipient must invoke the setClaimDelegate function.");
+		claim(recipient, msg.sender, claimDelegateReward[recipient][msg.sender]);
+	}
 
-		uint penalty = calculateCurrentPenalty(msg.sender);
-		uint weiDai = lockedWeiDai[msg.sender];
+	function claim(address recipient, address delegate, uint reward) private {
+		uint penalty = calculateCurrentPenalty(recipient);
+		uint weiDai = lockedWeiDai[recipient];
 		if(penalty==0)
 		{
 			int adjustment = int(weiDai * 100);
@@ -92,8 +109,8 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 			uint penaltyTax = penalty.mul(weiDai).div(100); //div 100 turns penalty into a %
 			int adjustment = int(weiDai * penalty);
 			weiDai = weiDai.sub(penaltyTax);
-			
-			uint donation = getDonationSplit(msg.sender)
+
+			uint donation = getDonationSplit(recipient)
 			.mul(penaltyTax)
 			.div(100);
 
@@ -103,12 +120,17 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 			if(donation>0){
 				WeiDai(getWeiDai()).transfer(getWeiDaiBank(),donation);
 			}
-			
 			currentAdjustmentWeight = currentAdjustmentWeight-adjustment<currentAdjustmentWeight?currentAdjustmentWeight-adjustment:currentAdjustmentWeight; //handle underflow
 		}
 		adjustPatienceDifficulty();
-		lockedWeiDai[msg.sender] = 0;
-		WeiDai(getWeiDai()).transfer(msg.sender, weiDai);
+		lockedWeiDai[recipient] = 0;
+		uint delegateWeiDai = reward > 0? (weiDai * (reward-1))/10000 : 0;
+		uint recipientWeiDai = weiDai - delegateWeiDai;
+
+		WeiDai(getWeiDai()).transfer(recipient, recipientWeiDai);
+		if(delegate != address(0)){
+			WeiDai(getWeiDai()).transfer(delegate, delegateWeiDai);
+		}
 	}
 
 	function calculateCurrentPenalty(address holder) private view returns (uint) {
@@ -124,7 +146,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod << 1;//double penalty
 			else if(currentAdjustmentWeight < 0)
 				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod>>1==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
-			
+
 			currentAdjustmentWeight = 0;
 			lastAdjustmentBlock = block.number;
 		}
