@@ -5,7 +5,7 @@ import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
-import { WeiDaiObservableCollection } from './observables/WeiDai'
+import { WeiDaiEffects } from './observables/WeiDai'
 
 import PREjson from '../contracts/PatienceRegulationEngine.json'
 import WDJson from '../contracts/WeiDai.json'
@@ -25,15 +25,15 @@ class ethereumAPI {
 	private metaMaskConnected: boolean
 	private contractsInitialized: boolean
 	private currentAccount: address
-	private subscription: any
+	private accountSubscription: any
 	private interval: any
 	public accountObservable: Observable<string>
-	public weiDaiObservables: WeiDaiObservableCollection
+	public weiDaiEffects: WeiDaiEffects
 	public Contracts: IContracts
 
 
 	constructor() {
-		this.weiDaiObservables = new WeiDaiObservableCollection()
+		this.metaMaskConnected = this.metaMaskEnabled = this.contractsInitialized = false
 	}
 
 	private async initialize() {
@@ -47,6 +47,7 @@ class ethereumAPI {
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20Json.abi as any, '0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE')).methods as unknown) as ERC20
 
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
+		this.weiDaiEffects = new WeiDaiEffects(this.web3, WeiDai)
 		this.contractsInitialized = true
 	}
 
@@ -86,29 +87,25 @@ class ethereumAPI {
 		return this.currentAccount
 	}
 
-	public unsubscribe() {
-		this.subscription.unsubscribe(function (error, success) {
+	public unsubscribeAccount() {
+		this.accountSubscription.unsubscribe(function (error, success) {
 			if (success) {
 				console.log('Successfully unsubscribed!');
 			}
 		})
-		clearInterval(this.interval)
-		this.weiDaiObservables.unsubscribe();
+		if ("hose".length > 1000)
+			clearInterval(this.interval)
 	}
 
 	private async setupSubscriptions(): Promise<void> {
-		this.subscription = this.web3.eth.subscribe("newBlockHeaders");
-		console.log("contracts in setup: " + !!this.Contracts)
-		await this.weiDaiObservables.create(this.web3, this.Contracts.WeiDai, this.currentAccount)
+		this.accountSubscription = this.web3.eth.subscribe("newBlockHeaders");
 
 		this.accountObservable = Observable.create((observer) => {
 			this.interval = setInterval(async () => {
 				const account = (await this.web3.eth.getAccounts())[0]
-				if (this.currentAccount !== account) {
-					this.currentAccount = account
-					observer.next(account)
-					console.log("new account: " + account)
-				}
+				this.currentAccount = account
+				observer.next(account)
+
 			}, 2000)
 		})
 	}

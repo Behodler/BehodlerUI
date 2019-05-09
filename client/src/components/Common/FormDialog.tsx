@@ -32,69 +32,61 @@ const formStyle = (theme: any) => ({
 	}
 })
 
-class FormDialogComponent extends React.Component<FormDialogProps, any> {
-	constructor(props: FormDialogProps) {
-		super(props)
-		this.getFields = this.getFields.bind(this)
-		this.getValidationErrors = this.getValidationErrors.bind(this)
-	}
 
+const getFields = (props) => {
+	return props.fieldNames.map((fieldName, index) => (
+		<TextField
+			autoFocus
+			margin="dense"
+			id={`${index}`}
+			label={fieldName}
+			type="text"
+			key={`${index}`}
+			fullWidth
+			value={props.fieldText[index]}
+			onChange={(event) => { props.fieldUpdate[index](event.target.value) }}
+		/>
+	))
+}
 
-	getFields() {
-		return this.props.fieldNames.map((fieldName, index) => (
-			<TextField
-				autoFocus
-				margin="dense"
-				id={`${index}`}
-				label={fieldName}
-				type="text"
-				key={`${index}`}
-				fullWidth
-				value={this.props.fieldText[index]}
-				onChange={(event) => { this.props.fieldUpdate[index](event.target.value) }}
-			/>
-		))
-	}
+const getValidationErrors = (props) => {
+	if (props.validationErrors.length == 0)
+		return ""
+	return (
+		<h6 color="secondary">
+			{props.validationErrors.map(error => (
+				<div>{error}<br /></div>
+			))}
+		</h6>
+	)
+}
 
-	getValidationErrors() {
-		if (this.props.validationErrors.length == 0)
-			return ""
-		return (
-			<h6 color="secondary">
-				{this.props.validationErrors.map(error => (
-					<div>{error}<br /></div>
-				))}
-			</h6>
-		)
-	}
-
-	render() {
-		return (
-			<div>
-				<Dialog
-					open={this.props.isOpen}
-					onClose={this.props.close}
-					aria-labelledby="form-dialog-title">
-					<DialogTitle id="form-dialog-title">{this.props.title}</DialogTitle>
-					<DialogContent>
-						<DialogContentText>
-							{this.getValidationErrors()}
-							{this.props.message}
-						</DialogContentText>
-						{this.getFields()}
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={this.props.close} color="primary">
-							Cancel
+function FormDialogComponent(props: FormDialogProps) {
+	return (
+		<div>
+			<Dialog
+				open={props.isOpen}
+				onClose={props.close}
+				aria-labelledby="form-dialog-title">
+				<DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						{getValidationErrors(props)}
+						{props.message}
+					</DialogContentText>
+					{getFields(props)}
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={props.close} color="primary">
+						Cancel
 							</Button>
-						<Button onClick={this.props.submit} color="primary">
-							Create
+					<Button onClick={props.submit} color="primary">
+						Create
 						</Button>
-					</DialogActions>
-				</Dialog>
-			</div>
-		);
-	}
+				</DialogActions>
+			</Dialog>
+		</div>
+	);
 }
 
 const FormDialog = withStyles(formStyle)(FormDialogComponent)
