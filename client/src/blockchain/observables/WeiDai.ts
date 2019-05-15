@@ -24,8 +24,11 @@ export class WeiDaiEffects {
 	balanceOfEffect(holder: string): Effect {
 		return this.createEffect(async (account) => {
 			const resultHex = await this.weiDaiInstance.balanceOf(holder).call({ from: account })
+			if(!!resultHex){
 			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
 			return resultDecimal
+			}
+			return "0";
 		})
 	}
 

@@ -7,10 +7,11 @@ import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
 import { WeiDaiEffects } from './observables/WeiDai'
 
-import PREjson from '../contracts/PatienceRegulationEngine.json'
-import WDJson from '../contracts/WeiDai.json'
-import bankJson from '../contracts/WeiDaiBank.json'
-import ERC20Json from '../contracts/ERC20.json'
+import PREJSON from '../contracts/PatienceRegulationEngine.json'
+import WDJSON from '../contracts/WeiDai.json'
+import bankJSON from '../contracts/WeiDaiBank.json'
+import ERC20JSON from '../contracts/ERC20.json'
+import DaiAddressJSON from './daiNetworkAddresses.json'
 
 interface IContracts {
 	WeiDai: WeiDai
@@ -27,6 +28,7 @@ class ethereumAPI {
 	private currentAccount: address
 	private accountSubscription: any
 	private interval: any
+	private network: string
 	public accountObservable: Observable<string>
 	public weiDaiEffects: WeiDaiEffects
 	public Contracts: IContracts
@@ -41,10 +43,11 @@ class ethereumAPI {
 		if (!this.isMetaMaskConnected) {
 			return;
 		}
-		const WeiDai: WeiDai = await this.deploy(WDJson)
-		const WeiDaiBank: WeiDaiBank = await this.deploy(bankJson);
-		const PRE: PatienceRegulationEngine = await this.deploy(PREjson)
-		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20Json.abi as any, '0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE')).methods as unknown) as ERC20
+		this.network = await this.web3.eth.net.getNetworkType();
+		const WeiDai: WeiDai = await this.deploy(WDJSON)
+		const WeiDaiBank: WeiDaiBank = await this.deploy(bankJSON);
+		const PRE: PatienceRegulationEngine = await this.deploy(PREJSON)
+		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
 
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
 		this.weiDaiEffects = new WeiDaiEffects(this.web3, WeiDai)
@@ -93,8 +96,7 @@ class ethereumAPI {
 				console.log('Successfully unsubscribed!');
 			}
 		})
-		if ("hose".length > 1000)
-			clearInterval(this.interval)
+		clearInterval(this.interval)
 	}
 
 	private async setupSubscriptions(): Promise<void> {
@@ -105,7 +107,6 @@ class ethereumAPI {
 				const account = (await this.web3.eth.getAccounts())[0]
 				this.currentAccount = account
 				observer.next(account)
-
 			}, 2000)
 		})
 	}
