@@ -2,17 +2,22 @@ import Web3 from "web3";
 import { PatienceRegulationEngine } from './contractInterfaces/PatienceRegulationEngine'
 import { WeiDai } from './contractInterfaces/WeiDai'
 import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
+import { ERC20 } from './contractInterfaces/ERC20'
+import { address } from './contractInterfaces/SolidityTypes'
+import { Observable } from 'rxjs'
+import { WeiDaiEffects } from './observables/WeiDai'
 
-
-let TruffleContract = require("truffle-contract");
-const patienceRegulationEngineContract = TruffleContract(require("../contracts/PatienceRegulationEngine.json"));
-const weiDaiContract = TruffleContract(require("../contracts/WeiDai.json"));
-const weiDaiBankContract = TruffleContract(require("../contracts/WeiDaiBank.json"));
+import PREJSON from '../contracts/PatienceRegulationEngine.json'
+import WDJSON from '../contracts/WeiDai.json'
+import bankJSON from '../contracts/WeiDaiBank.json'
+import ERC20JSON from '../contracts/ERC20.json'
+import DaiAddressJSON from './daiNetworkAddresses.json'
 
 interface IContracts {
 	WeiDai: WeiDai
 	PRE: PatienceRegulationEngine
 	WeiDaiBank: WeiDaiBank
+	Dai: ERC20
 }
 
 class ethereumAPI {
@@ -20,21 +25,32 @@ class ethereumAPI {
 	private metaMaskEnabled: boolean
 	private metaMaskConnected: boolean
 	private contractsInitialized: boolean
+	private currentAccount: address
+	private accountSubscription: any
+	private interval: any
+	private network: string
+	public accountObservable: Observable<string>
+	public weiDaiEffects: WeiDaiEffects
 	public Contracts: IContracts
 
+
 	constructor() {
+		this.metaMaskConnected = this.metaMaskEnabled = this.contractsInitialized = false
 	}
 
-	public async initialize() {
+	private async initialize() {
 		this.contractsInitialized = false
-		if (this.isMetaMaskEnabled) {
-			console.log("metamask not enabled")
+		if (!this.isMetaMaskConnected) {
 			return;
 		}
-		const WeiDai: WeiDai = await this.deploy(weiDaiContract);
-		const WeiDaiBank: WeiDaiBank = await this.deploy(weiDaiBankContract);
-		const PRE: PatienceRegulationEngine = await this.deploy(patienceRegulationEngineContract)
-		this.Contracts = { WeiDai, WeiDaiBank, PRE }
+		this.network = await this.web3.eth.net.getNetworkType();
+		const WeiDai: WeiDai = await this.deploy(WDJSON)
+		const WeiDaiBank: WeiDaiBank = await this.deploy(bankJSON);
+		const PRE: PatienceRegulationEngine = await this.deploy(PREJSON)
+		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
+
+		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
+		this.weiDaiEffects = new WeiDaiEffects(this.web3, WeiDai)
 		this.contractsInitialized = true
 	}
 
@@ -49,9 +65,12 @@ class ethereumAPI {
 			} catch (metaMaskDeniedException) {
 				this.metaMaskConnected = false
 			}
+
 			web3 = new Web3(web3.currentProvider)
 			this.web3 = web3
-		}else{
+			this.currentAccount = (await web3.eth.getAccounts())[0]
+			await this.initialize()
+			await this.setupSubscriptions()
 		}
 	}
 
@@ -67,6 +86,31 @@ class ethereumAPI {
 		return this.metaMaskConnected
 	}
 
+	public loggedInUser(): address {
+		return this.currentAccount
+	}
+
+	public unsubscribeAccount() {
+		this.accountSubscription.unsubscribe(function (error, success) {
+			if (success) {
+				console.log('Successfully unsubscribed!');
+			}
+		})
+		clearInterval(this.interval)
+	}
+
+	private async setupSubscriptions(): Promise<void> {
+		this.accountSubscription = this.web3.eth.subscribe("newBlockHeaders");
+
+		this.accountObservable = Observable.create((observer) => {
+			this.interval = setInterval(async () => {
+				const account = (await this.web3.eth.getAccounts())[0]
+				this.currentAccount = account
+				observer.next(account)
+			}, 2000)
+		})
+	}
+
 	private setMetamaskEnabled(enabled: boolean) {
 		if (!enabled) {
 			this.contractsInitialized = false
@@ -78,12 +122,18 @@ class ethereumAPI {
 		}
 	}
 
-	private async deploy(contract: any) {
-		contract.setProvider(this.web3.currentProvider);
+	private async deploy(truffleJson: any) {
+		const abi = truffleJson.abi
+
+		let keysOfNetworks = Object.keys(truffleJson.networks)
+		const address: string = truffleJson.networks[keysOfNetworks[0]].address
+
 		let contractInstance: any;
 		try {
-			contractInstance = await contract.deployed();
-		} catch (err) {
+			const contractInstance = await new this.web3.eth.Contract(abi, address)
+			return contractInstance.methods;
+		}
+		catch (err) {
 			console.log("contract failed to load: " + err);
 			return {
 				address: "0x0",
@@ -94,6 +144,6 @@ class ethereumAPI {
 	}
 }
 
-const API:ethereumAPI = new ethereumAPI()
+const API: ethereumAPI = new ethereumAPI()
 
 export default API

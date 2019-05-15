@@ -1,52 +1,12 @@
 import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { Grid, withStyles, List, ListItem, IconButton } from '@material-ui/core';
 import { themedText } from '../Common'
 import Edit from '@material-ui/icons/Edit'
-import * as constants from './constants'
 import FormDialog from '../../../Common/FormDialog'
-import sections from 'src/redux/sections';
+import API from '../../../../blockchain/ethereumAPI'
+import * as storage from '../../../../util/HTML5'
 
-export interface WalletPropsOnly {
-	walletAddress: string
-	friendly: string
-	daiBalance: number
-	weiDaiBalance: number
-	incubatingWeiDai: number
-	friendlyTextField: string
-	submittingFriendly: boolean
-	editingFriendly: boolean
-	classes?: any
-}
-
-export interface WalletActionsOnly {
-	walletFriendlyAcceptClick: () => void
-	walletFriendlySuccess: () => void
-	walletFriendlyCancel: () => void
-	walletFriendlyEditorTextChanged: (newText: string) => void
-	walletPencilClick: () => void
-	walletFieldUpdate: (fieldName: constants.WalletFieldNames, text: string) => void
-}
-
-export interface WalletProps extends WalletPropsOnly, WalletActionsOnly {
-
-}
-
-export const populateWalletProps = (props:any):WalletProps=>{
-	const walletPropsOnly = props[sections.walletSection] as WalletPropsOnly
-	const walletFieldUpdate = props.walletFieldUpdate
-	const walletFriendlyAcceptClick = props.walletFriendlyAcceptClick
-	const walletFriendlyCancel = props.walletFriendlyCancel
-	const walletFriendlyEditorTextChanged = props.walletFriendlyEditorTextChanged
-	const walletFriendlySuccess = props.walletFriendlySuccess
-	const walletPencilClick = props.walletPencilClick
-	const walletActions: WalletActionsOnly = { walletFieldUpdate, walletFriendlyAcceptClick, walletFriendlyCancel, walletFriendlyEditorTextChanged, walletFriendlySuccess, walletPencilClick }
-
-	const walletProps:WalletProps = {
-		...walletPropsOnly,
-		...walletActions
-	}
-	return walletProps
-}
 
 const textStyle = (theme: any) => ({
 	text: {
@@ -60,71 +20,105 @@ const textStyle = (theme: any) => ({
 	}
 })
 
-export class WalletSectionComponent extends React.Component<WalletProps, any>{
 
-	render() {
-		return (
-			<div>
-				<FormDialog
-					fieldNames={['Friendly Name']}
-					submit={this.props.walletFriendlyAcceptClick}
-					close={this.props.walletFriendlyCancel}
-					fieldUpdate={[this.props.walletFriendlyEditorTextChanged]}
-					validationErrors={[]}
-					message='stored locally only'
-					title='Set Friendly Name for Account'
-					isOpen={this.props.editingFriendly}
-					fieldText={[this.props.friendlyTextField]}
-				></FormDialog>
-				{this.getList()}
-			</div>
-		)
+function WalletSectionComponent(props: any) {
+	const classes = props.classes
+	const [walletAddress, setWalletAddress] = useState<string>("0x0")
+	const [weiDaiBalance, setWeiDaiBalance] = useState<string>("unset")
+	const [editingFriendly, setEditingFriendly] = useState<boolean>(false)
+	const [friendlyText, setFriendlyText] = useState<string>(storage.loadFriendlyName(walletAddress))
+
+	useEffect(() => {
+		const subscription = API.accountObservable.subscribe(account => {
+			setWalletAddress(account)
+			setFriendlyText(storage.loadFriendlyName(account))
+		})
+
+		return function () {
+			subscription.unsubscribe()
+		}
+	})
+	useEffect(() => {
+		if (walletAddress != "0x0") {
+			const effect = API.weiDaiEffects.balanceOfEffect(walletAddress)
+			const subscription = effect.Observable.subscribe((balance) => {
+				setWeiDaiBalance(balance)
+			})
+
+			return function () {
+				effect.cleanup()
+				subscription.unsubscribe()
+			}
+		}
+		return () => { }
+	})
+
+	const updateFriendly = () => {
+		if (friendlyText.length == 0)
+			return
+		storage.setFriendlyName(walletAddress, friendlyText)
+		setEditingFriendly(false)
 	}
 
-	getList() {
-		const { classes } = this.props
-		return (
-			<List>
-				<ListItem>
-					{this.getLine("Wallet Address", `${this.props.walletAddress}`)}
-				</ListItem>
-				<ListItem>
 
-					{this.getLine("Friendly", this.props.friendly, false, <IconButton onClick={this.props.walletPencilClick} className={classes.button}><Edit fontSize="small" /></IconButton>)}
-
-				</ListItem>
-				<ListItem>
-					{this.getLine("Dai Balance", this.props.daiBalance)}
-				</ListItem>
-				<ListItem>
-					{this.getLine("WeiDai Balance", this.props.weiDaiBalance)}
-				</ListItem>
-				<ListItem>
-					{this.getLine("Incubating WeiDai", this.props.incubatingWeiDai)}
-				</ListItem>
-			</List>
-		)
-	}
-
-	getLine(label: string, detail: number | string, percentage: boolean = false, icon: any | undefined = undefined) {
-		const paragraph = themedText(this.props.classes)
-		return (
-			<Grid
-				container
-				direction="row"
-				justify="space-between"
-				alignItems="center"
-			>
-				<Grid item>
-					{paragraph(label)}
-				</Grid>
-				<Grid item>
-					{paragraph(detail, percentage, icon)}
-				</Grid>
-			</Grid>
-		)
-	}
+	return (
+		<div>
+			<FormDialog
+				fieldNames={['Friendly Name']}
+				submit={updateFriendly}
+				close={() => setEditingFriendly(false)}
+				fieldUpdate={[setFriendlyText]}
+				validationErrors={[]}
+				message='stored locally only'
+				title='Set Friendly Name for Account'
+				isOpen={editingFriendly}
+				fieldText={[friendlyText]}
+			></FormDialog>
+			{getList(classes, walletAddress, storage.loadFriendlyName(walletAddress), "TODO:dai", weiDaiBalance, "TODO:incubating weidai", setEditingFriendly)}
+		</div>
+	)
 }
 
+function getList(classes: any, walletAddress: string, friendly: string, daiBalance: string, weiDaiBalance: string, incubatingWeiDai: string, pencilClick: (editing: boolean) => void) {
+	return (
+		<List>
+			<ListItem>
+				{getLine(classes, "Wallet Address", `${walletAddress}`)}
+			</ListItem>
+			<ListItem>
+				{getLine(classes, "Friendly", friendly, false, <IconButton onClick={() => pencilClick(true)} className={classes.button}><Edit fontSize="small" /></IconButton>)}
+			</ListItem>
+			<ListItem>
+				{getLine(classes, "Dai Balance", daiBalance)}
+			</ListItem>
+			<ListItem>
+				{getLine(classes, "WeiDai Balance", weiDaiBalance)}
+			</ListItem>
+			<ListItem>
+				{getLine(classes, "Incubating WeiDai", incubatingWeiDai)}
+			</ListItem>
+		</List>
+	)
+}
+
+
+function getLine(classes: any, label: string, detail: number | string, percentage: boolean = false, icon: any | undefined = undefined) {
+	const paragraph = themedText(classes)
+	return (
+		<Grid
+			container
+			direction="row"
+			justify="space-between"
+			alignItems="center"
+		>
+			<Grid item>
+				{paragraph(label)}
+			</Grid>
+			<Grid item>
+				{paragraph(detail, percentage, icon)}
+			</Grid>
+		</Grid>
+	)
+}
 
 export const WalletSection = withStyles(textStyle)(WalletSectionComponent)
