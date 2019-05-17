@@ -1,21 +1,21 @@
 import Web3 from "web3";
-import { WeiDai } from '../contractInterfaces/WeiDai';
+import {ERC20} from '../contractInterfaces/ERC20'
 import { EffectFactory, Effect, EffectFactoryType } from './common'
 
-export class WeiDaiEffects {
+export class ERC20Effects {
 	web3: Web3
-	weiDaiInstance: WeiDai
+	tokenInstance: ERC20
 	createEffect: EffectFactoryType
 
-	constructor(web3: Web3, weiDaiInstance: WeiDai) {
+	constructor(web3: Web3, tokenInstance: ERC20) {
 		this.web3 = web3
-		this.weiDaiInstance = weiDaiInstance
+		this.tokenInstance = tokenInstance
 		this.createEffect = EffectFactory(web3)
 	}
 
 	totalSupplyEffect(): Effect {
 		return this.createEffect(async (account) => {
-			const resultHex = await this.weiDaiInstance.totalSupply().call({ from: account })
+			const resultHex = await this.tokenInstance.totalSupply().call({ from: account })
 			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
 			return resultDecimal
 		})
@@ -23,7 +23,7 @@ export class WeiDaiEffects {
 
 	balanceOfEffect(holder: string): Effect {
 		return this.createEffect(async (account) => {
-			const resultHex = await this.weiDaiInstance.balanceOf(holder).call({ from: account })
+			const resultHex = await this.tokenInstance.balanceOf(holder).call({ from: account })
 			if(!!resultHex){
 			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
 			return resultDecimal
@@ -34,7 +34,7 @@ export class WeiDaiEffects {
 
 	allowance(owner: string, spender: string): Effect {
 		return this.createEffect(async (account) => {
-			const resultHex = await this.weiDaiInstance.allowance(owner, spender).call({ from: account })
+			const resultHex = await this.tokenInstance.allowance(owner, spender).call({ from: account })
 			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
 			return resultDecimal
 		})

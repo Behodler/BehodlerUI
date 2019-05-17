@@ -5,7 +5,7 @@ import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
-import { WeiDaiEffects } from './observables/WeiDai'
+import { ERC20Effects } from './observables/ERC20'
 
 import PREJSON from '../contracts/PatienceRegulationEngine.json'
 import WDJSON from '../contracts/WeiDai.json'
@@ -30,7 +30,7 @@ class ethereumAPI {
 	private interval: any
 	private network: string
 	public accountObservable: Observable<string>
-	public weiDaiEffects: WeiDaiEffects
+	public weiDaiEffects: ERC20Effects
 	public Contracts: IContracts
 
 
@@ -50,7 +50,7 @@ class ethereumAPI {
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
 
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
-		this.weiDaiEffects = new WeiDaiEffects(this.web3, WeiDai)
+		this.weiDaiEffects = new ERC20Effects(this.web3, WeiDai)
 		this.contractsInitialized = true
 	}
 
