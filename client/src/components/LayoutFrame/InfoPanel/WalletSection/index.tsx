@@ -39,17 +39,16 @@ function WalletSectionComponent(props: any) {
 		}
 	})
 	useEffect(() => {
-		if (walletAddress != "0x0") {
-			const effect = API.weiDaiEffects.balanceOfEffect(walletAddress)
-			const subscription = effect.Observable.subscribe((balance) => {
-				setWeiDaiBalance(balance)
-			})
+		const effect = API.weiDaiEffects.balanceOfEffect(walletAddress)
+		const subscription = effect.Observable.subscribe((balance) => {
+			setWeiDaiBalance(balance)
+		})
 
-			return function () {
-				effect.cleanup()
-				subscription.unsubscribe()
-			}
+		return function () {
+			effect.cleanup()
+			subscription.unsubscribe()
 		}
+
 		return () => { }
 	})
 

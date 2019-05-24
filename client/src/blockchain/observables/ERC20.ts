@@ -1,6 +1,6 @@
 import Web3 from "web3";
-import {ERC20} from '../contractInterfaces/ERC20'
-import { EffectFactory, Effect, EffectFactoryType } from './common'
+import { ERC20 } from '../contractInterfaces/ERC20'
+import { EffectFactory, Effect, EffectFactoryType, FetchNumber, FetchNumberFields } from './common'
 
 export class ERC20Effects {
 	web3: Web3
@@ -23,12 +23,12 @@ export class ERC20Effects {
 
 	balanceOfEffect(holder: string): Effect {
 		return this.createEffect(async (account) => {
-			const resultHex = await this.tokenInstance.balanceOf(holder).call({ from: account })
-			if(!!resultHex){
-			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
-			return resultDecimal
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				action: async () => { await this.tokenInstance.balanceOf(holder).call({ from: account }) },
+				defaultValue: "0"
 			}
-			return "0";
+			return await FetchNumber(params)
 		})
 	}
 

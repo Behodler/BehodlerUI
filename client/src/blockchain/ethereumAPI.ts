@@ -31,6 +31,7 @@ class ethereumAPI {
 	private network: string
 	public accountObservable: Observable<string>
 	public weiDaiEffects: ERC20Effects
+	public daiEffects: ERC20Effects
 	public Contracts: IContracts
 
 
@@ -50,7 +51,8 @@ class ethereumAPI {
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
 
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
-		this.weiDaiEffects = new ERC20Effects(this.web3, WeiDai)
+		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
+		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
 		this.contractsInitialized = true
 	}
 
@@ -69,8 +71,8 @@ class ethereumAPI {
 			web3 = new Web3(web3.currentProvider)
 			this.web3 = web3
 			this.currentAccount = (await web3.eth.getAccounts())[0]
-			await this.initialize()
 			await this.setupSubscriptions()
+			await this.initialize()
 		}
 	}
 
@@ -102,12 +104,14 @@ class ethereumAPI {
 	private async setupSubscriptions(): Promise<void> {
 		this.accountSubscription = this.web3.eth.subscribe("newBlockHeaders");
 
-		this.accountObservable = Observable.create((observer) => {
-			this.interval = setInterval(async () => {
+		this.accountObservable = Observable.create(async (observer) => {
+			const accountObserver = async () => {
 				const account = (await this.web3.eth.getAccounts())[0]
 				this.currentAccount = account
 				observer.next(account)
-			}, 2000)
+			};
+			await accountObserver();
+			this.interval = setInterval(accountObserver, 2000)
 		})
 	}
 
