@@ -20,24 +20,27 @@ const textStyle = (theme: any) => ({
 	}
 })
 
-
 function WalletSectionComponent(props: any) {
 	const classes = props.classes
 	const [walletAddress, setWalletAddress] = useState<string>("0x0")
 	const [weiDaiBalance, setWeiDaiBalance] = useState<string>("unset")
+	const [daiBalance, setDaiBalance] = useState<string>("unset")
+	const [incubatingWeiDai, setIncubatingWeiDai] = useState<string>("unset")
 	const [editingFriendly, setEditingFriendly] = useState<boolean>(false)
 	const [friendlyText, setFriendlyText] = useState<string>(storage.loadFriendlyName(walletAddress))
 
 	useEffect(() => {
 		const subscription = API.accountObservable.subscribe(account => {
+			if (walletAddress !== account)
+				setFriendlyText(storage.loadFriendlyName(account))
 			setWalletAddress(account)
-			setFriendlyText(storage.loadFriendlyName(account))
 		})
 
 		return function () {
 			subscription.unsubscribe()
 		}
 	})
+
 	useEffect(() => {
 		const effect = API.weiDaiEffects.balanceOfEffect(walletAddress)
 		const subscription = effect.Observable.subscribe((balance) => {
@@ -48,8 +51,30 @@ function WalletSectionComponent(props: any) {
 			effect.cleanup()
 			subscription.unsubscribe()
 		}
+	})
 
-		return () => { }
+	useEffect(() => {
+		const effect = API.daiEffects.balanceOfEffect(walletAddress)
+		const subscription = effect.Observable.subscribe((balance) => {
+			setDaiBalance(balance)
+		})
+
+		return function () {
+			effect.cleanup()
+			subscription.unsubscribe()
+		}
+	})
+
+	useEffect(() => {
+		const effect = API.preEffects.incubatingWeiDaiEffect(walletAddress)
+		const subscription = effect.Observable.subscribe((balance) => {
+			setIncubatingWeiDai(balance)
+		})
+
+		return function () {
+			effect.cleanup()
+			subscription.unsubscribe()
+		}
 	})
 
 	const updateFriendly = () => {
@@ -73,7 +98,7 @@ function WalletSectionComponent(props: any) {
 				isOpen={editingFriendly}
 				fieldText={[friendlyText]}
 			></FormDialog>
-			{getList(classes, walletAddress, storage.loadFriendlyName(walletAddress), "TODO:dai", weiDaiBalance, "TODO:incubating weidai", setEditingFriendly)}
+			{getList(classes, walletAddress, storage.loadFriendlyName(walletAddress), daiBalance, weiDaiBalance, incubatingWeiDai, setEditingFriendly)}
 		</div>
 	)
 }

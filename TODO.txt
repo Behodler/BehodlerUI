@@ -1,8 +1,8 @@
 For next time:
 
 front end:
-1. Complete wallet section using mockdai for dai
-2. Do infopanel
-
+1. Do infopanel
+2. action panels
 After:
 routes
+ 

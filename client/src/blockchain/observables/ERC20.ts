@@ -1,23 +1,25 @@
 import Web3 from "web3";
 import { ERC20 } from '../contractInterfaces/ERC20'
-import { EffectFactory, Effect, EffectFactoryType, FetchNumber, FetchNumberFields } from './common'
+import { Effect, FetchNumber, FetchNumberFields } from './common'
+import EffectBase from './EffectBase'
 
-export class ERC20Effects {
-	web3: Web3
+export class ERC20Effects extends EffectBase {
 	tokenInstance: ERC20
-	createEffect: EffectFactoryType
 
 	constructor(web3: Web3, tokenInstance: ERC20) {
-		this.web3 = web3
+		super(web3)
 		this.tokenInstance = tokenInstance
-		this.createEffect = EffectFactory(web3)
 	}
 
 	totalSupplyEffect(): Effect {
 		return this.createEffect(async (account) => {
-			const resultHex = await this.tokenInstance.totalSupply().call({ from: account })
-			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
-			return resultDecimal
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				action: async (accounts) => await this.tokenInstance.totalSupply().call({ from: accounts[0] }),
+				defaultValue: "unset",
+				accounts: [account]
+			}
+			return await FetchNumber(params)
 		})
 	}
 
@@ -25,8 +27,9 @@ export class ERC20Effects {
 		return this.createEffect(async (account) => {
 			const params: FetchNumberFields = {
 				web3: this.web3,
-				action: async () => { await this.tokenInstance.balanceOf(holder).call({ from: account }) },
-				defaultValue: "0"
+				action: async (accounts) => await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] }),
+				defaultValue: "unset",
+				accounts: [holder, account]
 			}
 			return await FetchNumber(params)
 		})
@@ -34,9 +37,13 @@ export class ERC20Effects {
 
 	allowance(owner: string, spender: string): Effect {
 		return this.createEffect(async (account) => {
-			const resultHex = await this.tokenInstance.allowance(owner, spender).call({ from: account })
-			const resultDecimal = this.web3.utils.hexToNumberString(resultHex["_hex"])
-			return resultDecimal
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				action: async (accounts) => await this.tokenInstance.allowance(accounts[0], accounts[1]).call({ from: accounts[2] }),
+				defaultValue: "unset",
+				accounts: [owner, spender, account]
+			}
+			return await FetchNumber(params)
 		})
 	}
 }
