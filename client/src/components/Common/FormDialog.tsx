@@ -17,14 +17,18 @@ interface FormDialogProps {
 	message: string
 	title: string
 	isOpen: boolean
-	validationErrors: string[]
+	validationErrors: string[],
+	classes?: any
 }
 
 const formStyle = (theme: any) => ({
-	text: {
+	title: {
+		fontSize: 16,
+		fontFamily: "Syncopate",
+	},
+	message: {
 		fontSize: 12,
 		fontFamily: "Syncopate",
-		margin: "0 0 0 0",
 	},
 	errorLabel: {
 		paddingTop: 0,
@@ -33,7 +37,7 @@ const formStyle = (theme: any) => ({
 })
 
 
-const getFields = (props) => {
+const getFields = (props:FormDialogProps) => {
 	return props.fieldNames.map((fieldName, index) => (
 		<TextField
 			autoFocus
@@ -44,6 +48,12 @@ const getFields = (props) => {
 			key={`${index}`}
 			fullWidth
 			value={props.fieldText[index]}
+			InputLabelProps={{
+				className:props.classes.message
+			}}
+			InputProps={{
+				className: props.classes.message,
+			}}
 			onChange={(event) => { props.fieldUpdate[index](event.target.value) }}
 		/>
 	))
@@ -62,17 +72,18 @@ const getValidationErrors = (props) => {
 }
 
 function FormDialogComponent(props: FormDialogProps) {
+
 	return (
 		<div>
 			<Dialog
 				open={props.isOpen}
 				onClose={props.close}
 				aria-labelledby="form-dialog-title">
-				<DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
+				<DialogTitle id="form-dialog-title"><div className={props.classes.title}>{props.title}</div></DialogTitle>
 				<DialogContent>
 					<DialogContentText>
 						{getValidationErrors(props)}
-						{props.message}
+						<div className={props.classes.message}>{props.message}</div>
 					</DialogContentText>
 					{getFields(props)}
 				</DialogContent>

@@ -2,7 +2,13 @@ For next time:
 
 front end:
 1. Do infopanel
-2. action panels
+2. Routing
+3. Patience Regulation Engine page
+3.1 Link to PRE page
+4. Metamask not enabled landing page
+5. Metamask is enabled but not connected landing page
+6. Metamask is connected landing page
 After:
+style material ui components to have consistent font
 routes
  
