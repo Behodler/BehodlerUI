@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { withStyles, Drawer, Divider, Hidden, Grid } from '@material-ui/core';
 import WeidaiLogo from './WeidaiLogo'
 import { UserSection } from './ActionPanel/UserSection'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { AdminSection } from './ActionPanel/AdminSection'
 import { ContractSection } from './InfoPanel/ContractSection/index'
 import { WalletSection } from './InfoPanel/WalletSection/index'
@@ -133,9 +134,22 @@ function LayoutFrameComponent(props: any) {
 					alignItems="stretch"
 					direction="column">
 					<Grid item>
-						Content
-						</Grid>
+						<Router>
+							<Switch>
+								<Route path="/" exact >
+									Content
+								</Route>
+								<Route path="/engine">
+									Patience Regulation Engine
+								</Route>
+								<Route path="/bank">
+									Bank
+								</Route>
+							</Switch>
+						</Router>
+					</Grid>
 				</Grid>
+
 			</main>
 			<Hidden mdDown>
 				<Drawer variant="permanent" anchor="right"

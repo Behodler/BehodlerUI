@@ -1,5 +1,5 @@
 front end:
-1. Routing
+1. Each line in contract section should be a link that drops a slider with an explanation
 2. Patience Regulation Engine page
 2.1 Link to PRE page
 3. Metamask not enabled landing page
