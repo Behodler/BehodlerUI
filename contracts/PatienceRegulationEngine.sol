@@ -133,7 +133,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		}
 	}
 
-	function calculateCurrentPenalty(address holder) private view returns (uint) {
+	function calculateCurrentPenalty(address holder) public view returns (uint) {
 		uint periods = (block.number.sub(blockOfPurchase[holder])).div(penaltyDrawdownPeriod[holder]);
 		if(periods >= 20)
 		    return 0;

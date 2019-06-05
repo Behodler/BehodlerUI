@@ -1,6 +1,8 @@
 import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { Grid, withStyles, List, ListItem } from '@material-ui/core';
-import { themedText} from '../Common'
+import { themedText } from '../Common'
+import API from '../../../../blockchain/ethereumAPI'
 export interface ContractProps {
 	weidaiPrice: number
 	penaltyReductionPeriod: number
@@ -15,42 +17,78 @@ const textStyle = (theme: any) => ({
 		fontSize: 14,
 		fontFamily: "Syncopate",
 		margin: "0",
-		fontWeight:600
+		fontWeight: 600
 	}
 })
 
-export class ContractSectionComponent extends React.Component<ContractProps, any>{
+function ContractSectionComponent(props: any) {
+	const classes = props.classes
+	const [weiDaiPrice, setWeiDaiPrice] = useState<number>(0)
+	const [penaltyReductionPeriod, setPenaltyReductionPeriod] = useState("0")
+	const [lastAdjustmentBlock, setAdjustment] = useState("0")
+	const [totalPriceGrowth, setTotalPriceGrowth] = useState<number>(0)
+	const getLine = getLineFactory(classes)
 
-	render() {
-		return (
-			this.getList()
-		)
-	}
+	useEffect(() => {
+		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
+		const subscription = effect.Observable.subscribe((exchangeRate) => {
+			const weiDaiExchangeRate = 1 / parseInt(exchangeRate)
+			const growth = (weiDaiExchangeRate - 0.01) / 100
+			setWeiDaiPrice(weiDaiExchangeRate)
+			setTotalPriceGrowth(growth)
+		})
 
-	getList() {
-		return (
-			<List>
-				<ListItem>
-					{this.getLine("WEIDAI PRICE", `${this.props.weidaiPrice} DAI`)}
-				</ListItem>
-				<ListItem>
-					{this.getLine("PENALTY REDUCTION PERIOD", this.props.penaltyReductionPeriod)}
-				</ListItem>
-				<ListItem>
-					{this.getLine("NEXT PENALTY ADJUSTMENT", this.props.nextPenaltyAdjustment)}
-				</ListItem>
-				<ListItem>
-					{this.getLine("TOTAL PRICE GROWTH", this.props.totalPriceGrowth, true)}
-				</ListItem>
-				<ListItem>
-					{this.getLine("ANNUALIZED GROWTH", this.props.annualizedGrowth, true)}
-				</ListItem>
-			</List>
-		)
-	}
+		return function () {
+			subscription.unsubscribe()
+			effect.cleanup()
+		}
+	})
 
-	getLine(label: string, detail: number|string, percentage: boolean = false) {
-		const paragraph = themedText(this.props.classes)
+	useEffect(() => {
+		const effect = API.preEffects.currentPenalty()
+		const subscription = effect.Observable.subscribe((penalty) => {
+			setPenaltyReductionPeriod(penalty)
+		})
+		return () => {
+			subscription.unsubscribe()
+			effect.cleanup()
+		}
+	})
+
+	useEffect(() => {
+		const effect = API.preEffects.lastAdjustmentBlock()
+		const subscription = effect.Observable.subscribe((last) => {
+			setAdjustment(last)
+		})
+		return () => {
+			subscription.unsubscribe()
+			effect.cleanup()
+		}
+	})
+
+	return (
+		<List>
+			<ListItem>
+				{getLine("WEIDAI PRICE", `${weiDaiPrice} DAI`)}
+			</ListItem>
+			<ListItem>
+				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod)}
+			</ListItem>
+			<ListItem>
+				{getLine("LAST PENALTY ADJUSTMENT BLOCK", lastAdjustmentBlock)}
+			</ListItem>
+			<ListItem>
+				{getLine("TOTAL PRICE GROWTH", totalPriceGrowth, true)}
+			</ListItem>
+		</List>
+	)
+}
+
+
+function getLineFactory(classes: any) {
+
+	return function (label: string, detail: number | string, percentage: boolean = false) {
+		const paragraph = themedText(classes)
 		return (
 			<Grid
 				container
@@ -68,6 +106,5 @@ export class ContractSectionComponent extends React.Component<ContractProps, any
 		)
 	}
 }
-
 
 export const ContractSection = withStyles(textStyle)(ContractSectionComponent)

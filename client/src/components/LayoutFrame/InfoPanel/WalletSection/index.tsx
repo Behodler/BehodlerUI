@@ -6,6 +6,7 @@ import Edit from '@material-ui/icons/Edit'
 import FormDialog from '../../../Common/FormDialog'
 import API from '../../../../blockchain/ethereumAPI'
 import * as storage from '../../../../util/HTML5'
+import { truncate } from '../../../../util/jsHelpers'
 
 
 const textStyle = (theme: any) => ({
@@ -107,7 +108,7 @@ function getList(classes: any, walletAddress: string, friendly: string, daiBalan
 	return (
 		<List>
 			<ListItem>
-				{getLine(classes, "Wallet Address", `${walletAddress}`)}
+				{getLine(classes, "Wallet Address", `${truncate(walletAddress)}`)}
 			</ListItem>
 			<ListItem>
 				{getLine(classes, "Friendly", friendly, false, <IconButton onClick={() => pencilClick(true)} className={classes.button}><Edit fontSize="small" /></IconButton>)}

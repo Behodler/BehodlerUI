@@ -55,10 +55,16 @@ export const FetchNumber = async (params: FetchNumberFields) => {
 		const resultHex = await params.action(params.accounts)
 		if (!resultHex)
 			return params.defaultValue
-		const resultDecimal = params.web3.utils.hexToNumberString(resultHex["_hex"])
-		return params.web3.utils.fromWei(resultDecimal)
+		return params.web3.utils.hexToNumberString(resultHex["_hex"])
 	} catch (error) {
 		console.error(error)
 		return params.defaultValue
 	}
+}
+
+export const FetchEthereumNumber = async (params: FetchNumberFields) => {
+	const value = await FetchNumber(params)
+	if (value === params.defaultValue)
+		return params.defaultValue
+	return params.web3.utils.fromWei(value)
 }
