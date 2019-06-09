@@ -5,26 +5,26 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import lightBlue from '@material-ui/core/colors/lightBlue'
 
-const style = {
-	card: {
-		minWidth: 275,
-	},
-	bullet: {
-		display: 'inline-block',
-		margin: '0 2px',
-		transform: 'scale(0.8)',
-	},
-	title: {
-		fontSize: 14,
-	},
-	pos: {
-		marginBottom: 12,
-	},
-};
+const style = (theme: any) => (
+	{
+		card: {
+			backgroundColor: lightBlue['50'],
+
+		},
+		typography: {
+			fontFamily: "Syncopate",
+			margin:"0 0 10px 0"
+		},
+
+		pos: {
+			marginBottom: 12,
+		}
+	}
+);
 
 export interface DetailProps {
-	visible: boolean
 	header: string,
 	content: string,
 	linkText?: string
@@ -47,10 +47,10 @@ export function detail(props: DetailProps) {
 	return (
 		<Card className={classes.card}>
 			<CardContent>
-				<Typography className={classes.title} color="textSecondary" gutterBottom>
+				<Typography variant="title" className={classes.typography}>
 					{props.header}
 				</Typography>
-				<Typography variant="body2" component="p">
+				<Typography variant="caption" className={classes.typography}>
 					{props.content}
 				</Typography>
 			</CardContent>
@@ -62,4 +62,4 @@ export function detail(props: DetailProps) {
 	);
 }
 
-export const Detail =  withStyles(style)(detail)
+export const Detail = withStyles(style)(detail)

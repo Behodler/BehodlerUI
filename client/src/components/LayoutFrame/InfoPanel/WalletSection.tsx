@@ -7,7 +7,8 @@ import FormDialog from '../../Common/FormDialog'
 import API from '../../../blockchain/ethereumAPI'
 import * as storage from '../../../util/HTML5'
 import { truncate } from '../../../util/jsHelpers'
-
+import {DetailProps} from './Detail'
+import {ClickAbleInfoListItem} from './Common'
 
 const textStyle = (theme: any) => ({
 	text: {
@@ -21,7 +22,13 @@ const textStyle = (theme: any) => ({
 	}
 })
 
-function WalletSectionComponent(props: any) {
+export interface WalletProps {
+	setDetailProps: (props: DetailProps) => void
+	setDetailVisibility: (visible:boolean) =>void
+	classes?: any
+}
+
+function WalletSectionComponent(props: WalletProps) {
 	const classes = props.classes
 	const [walletAddress, setWalletAddress] = useState<string>("0x0")
 	const [weiDaiBalance, setWeiDaiBalance] = useState<string>("unset")
@@ -85,7 +92,6 @@ function WalletSectionComponent(props: any) {
 		setEditingFriendly(false)
 	}
 
-
 	return (
 		<div>
 			<FormDialog
@@ -99,29 +105,29 @@ function WalletSectionComponent(props: any) {
 				isOpen={editingFriendly}
 				fieldText={[friendlyText]}
 			></FormDialog>
-			{getList(classes, walletAddress, storage.loadFriendlyName(walletAddress), daiBalance, weiDaiBalance, incubatingWeiDai, setEditingFriendly)}
+			{getList(classes,props.setDetailProps,props.setDetailVisibility, walletAddress, storage.loadFriendlyName(walletAddress), daiBalance, weiDaiBalance, incubatingWeiDai, setEditingFriendly)}
 		</div>
 	)
 }
 
-function getList(classes: any, walletAddress: string, friendly: string, daiBalance: string, weiDaiBalance: string, incubatingWeiDai: string, pencilClick: (editing: boolean) => void) {
+function getList(classes: any,setDetailProps:(props:DetailProps)=>void,setDetailVisibility:(props:boolean)=>void, walletAddress: string, friendly: string, daiBalance: string, weiDaiBalance: string, incubatingWeiDai: string, pencilClick: (editing: boolean) => void) {
 	return (
 		<List>
 			<ListItem button>
 				{getLine(classes, "Wallet Address", `${truncate(walletAddress)}`)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine(classes, "Friendly", friendly, false, <IconButton onClick={() => pencilClick(true)} className={classes.button}><Edit fontSize="small" /></IconButton>)}
 			</ListItem>
-			<ListItem button>
+			<ClickAbleInfoListItem details={daiBalanceDetails} setDetailProps = {setDetailProps} setDetailVisibility={setDetailVisibility}>
 				{getLine(classes, "Dai Balance", daiBalance)}
-			</ListItem>
-			<ListItem button>
+			</ClickAbleInfoListItem>
+			<ClickAbleInfoListItem details={weiDaiBalanceDetails} setDetailProps = {setDetailProps} setDetailVisibility={setDetailVisibility}>
 				{getLine(classes, "WeiDai Balance", weiDaiBalance)}
-			</ListItem>
-			<ListItem button>
+			</ClickAbleInfoListItem>
+			<ClickAbleInfoListItem details={incubatingWeiDaiDetails} setDetailProps = {setDetailProps} setDetailVisibility={setDetailVisibility}>
 				{getLine(classes, "Incubating WeiDai", incubatingWeiDai)}
-			</ListItem>
+			</ClickAbleInfoListItem>
 		</List>
 	)
 }
@@ -144,6 +150,27 @@ function getLine(classes: any, label: string, detail: number | string, percentag
 			</Grid>
 		</Grid>
 	)
+}
+
+const daiBalanceDetails: DetailProps = {
+	header: "Dai Balance",
+	content: "To create WeiDai, you need to first own some Dai, an ERC20 token known as a stablecoin because it tracks the US Dollar. Unlike early renditions of stable coins, Dai is managed entirely on the Ethereum blockchain by the MakerDAO and is 100% decentralized, inheriting the censorship resistance of ethereum transactions.",
+	linkText: "Learn more", 
+	linkURL: "https://medium.com/"
+}
+
+const weiDaiBalanceDetails: DetailProps = {
+	header: "WeiDai Balance",
+	content: "WeiDai is the world's first thriftcoin, a stablecoin designed to increase in value while retaining price stability. WeiDai is redeemable for Dai according to a global redeem rate. Whenever circulating WeiDai is burnt, the redeem rate increases. Two mechanisms exist to encourage regular burning so that the redeem rate regularly increases. The redeem rate can never fall.",
+	linkText: "Learn more", 
+	linkURL: "https://medium.com/"
+}
+
+const incubatingWeiDaiDetails: DetailProps = {
+	header: "Incubating WeiDai",
+	content: "To create WeiDai, you send your Dai to the Patience Regulation Engine, an Ethereum smart contract that incubates your Dai until it becomes WeiDai. If you prematurely attempt to withdraw your incubating WeiDai, it will be slashed with a penalty. Once the WeiDai has incubated entirely, you have to withdraw it from the Patience Regulation Engine to use it.",
+	linkText: "Learn more", 
+	linkURL: "https://medium.com/"
 }
 
 export const WalletSection = withStyles(textStyle)(WalletSectionComponent)

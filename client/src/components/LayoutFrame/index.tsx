@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Drawer, Divider, Hidden, Grid } from '@material-ui/core';
+import { withStyles, Drawer, Divider, Hidden, Grid, List, ListItem, ClickAwayListener } from '@material-ui/core';
 import WeidaiLogo from './WeidaiLogo'
 import { UserSection } from './ActionPanel/UserSection'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
@@ -16,7 +16,7 @@ const infoWidth: number = 400
 
 let styleObject = {
 	root: {
-		display: 'flex',
+
 	},
 	actionDrawer: {
 		width: actionWidth,
@@ -45,7 +45,10 @@ let styleObject = {
 		margin: "0px 0 5px 0"
 	},
 	infoDivider: {
-		margin: "100px 0 25px 0"
+		margin: "25px 0 25px 0"
+	},
+	listItem: {
+		display: "list-item"
 	}
 }
 
@@ -56,7 +59,8 @@ function LayoutFrameComponent(props: any) {
 
 	const [metaMaskConnected, setMetaMaskConnected] = useState<boolean>(API.isMetaMaskConnected())
 	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(API.isMetaMaskEnabled())
-	const [detailProps, setDetailProps] = useState<DetailProps>({ visible: false, header: '', content: '' })
+	const [detailProps, setDetailProps] = useState<DetailProps>({ header: '', content: '' })
+	const [detailVisibility, setDetailVisibility] = useState<boolean>(false)
 
 	useEffect(() => {
 		if (!metaMaskConnected || !metaMaskEnabled) {
@@ -155,15 +159,20 @@ function LayoutFrameComponent(props: any) {
 
 			</main>
 			<Hidden mdDown>
-				<Drawer variant="permanent" anchor="right"
-					className={classes.infoDrawer}
-					classes={{ paper: classes.infoDrawerPaper }}
-				>
-					<WalletSection />
-					<Divider className={classes.infoDivider} />
-					<ContractSection setDetailProps={setDetailProps} />
-					{detailProps.visible ? <Detail {...detailProps} /> : ""}
-				</Drawer>
+				<ClickAwayListener onClickAway={() => setDetailVisibility(false)}>
+					<Drawer variant="permanent" anchor="right"
+						className={classes.infoDrawer}
+						classes={{ paper: classes.infoDrawerPaper }}
+					>
+						<List>
+							<ListItem className={classes.listItem}><WalletSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} /></ListItem>
+							<ListItem className={classes.listItem}><Divider className={classes.infoDivider} /></ListItem>
+							<ListItem className={classes.listItem}><ContractSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} /></ListItem>
+							<ListItem className={classes.listItem}><Divider className={classes.infoDivider} /> </ListItem>
+							<ListItem className={classes.listItem}>{detailVisibility ? <Detail {...detailProps} /> : ""}</ListItem>
+						</List>
+					</Drawer>
+				</ClickAwayListener>
 			</Hidden>
 		</div>
 	)

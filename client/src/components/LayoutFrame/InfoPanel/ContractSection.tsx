@@ -1,13 +1,14 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { Grid, withStyles, List, ListItem } from '@material-ui/core';
+import { Grid, withStyles, List } from '@material-ui/core';
 import { themedText } from './Common'
 import API from '../../../blockchain/ethereumAPI'
 import { DetailProps } from './Detail'
-
+import { ClickAbleInfoListItem } from './Common'
 
 export interface ContractProps {
 	setDetailProps: (props: DetailProps) => void
+	setDetailVisibility: (visible: boolean) => void
 	classes?: any
 }
 
@@ -17,7 +18,11 @@ const textStyle = (theme: any) => ({
 		fontFamily: "Syncopate",
 		margin: "0",
 		fontWeight: 600
-	}
+	},
+	button: {
+		paddingTop: 0,
+		paddingBottom: 0
+	},
 })
 
 
@@ -68,18 +73,18 @@ function ContractSectionComponent(props: ContractProps) {
 
 	return (
 		<List>
-			<ListItem button onClick={() => props.setDetailProps({ ...weiDaiDetail, visible: true })}>
+			<ClickAbleInfoListItem details={weiDaiDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
 				{getLine("WEIDAI PRICE", `${weiDaiPrice} DAI`)}
-			</ListItem>
-			<ListItem button>
-				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod)}
-			</ListItem>
-			<ListItem button>
+			</ClickAbleInfoListItem>
+			<ClickAbleInfoListItem details={penaltyReductionPeriodDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
+				{getLine("PENALTY REDUCTION RATE", penaltyReductionPeriod)}
+			</ClickAbleInfoListItem>
+			<ClickAbleInfoListItem details={adjustmentBlockDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
 				{getLine("LAST PENALTY ADJUSTMENT BLOCK", lastAdjustmentBlock)}
-			</ListItem>
-			<ListItem button>
+			</ClickAbleInfoListItem>
+			<ClickAbleInfoListItem details={totalPriceGrowthDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
 				{getLine("TOTAL PRICE GROWTH", totalPriceGrowth, true)}
-			</ListItem>
+			</ClickAbleInfoListItem>
 		</List>
 	)
 }
@@ -94,8 +99,7 @@ function getLineFactory(classes: any) {
 				container
 				direction="row"
 				justify="space-between"
-				alignItems="center"
-			>
+				alignItems="center">
 				<Grid item>
 					{paragraph(label)}
 				</Grid>
@@ -108,9 +112,29 @@ function getLineFactory(classes: any) {
 }
 
 const weiDaiDetail: DetailProps = {
-	visible: false,
-	header: "WeiDai balance",
-	content: "Weidai is an ERC20 token collateralized by the Dai stablecoin in a smart contract. It is fully decentralized.",
+	header: "weidai price",
+	content: "WeiDai is an ERC20 token 100% backed by the Dai stable coin. WeiDai price is the amount of Dai that 1 WeiDai can be redeemed for. This number increases with regular use",
+	linkText: "Learn more",
+	linkURL: "https://medium.com/"
+}
+
+const penaltyReductionPeriodDetail: DetailProps = {
+	header: "Penalty Reduction Rate",
+	content: "After WeiDai is created it has to incubate before being withdrawn. If you withdraw newly created WeiDai before the incubation period ends, a penalty tax is levied. The penalty falls by 5 percentage points at the penalty reduction rate which is measured in blocks. For example, Suppose the penalty reduction rate is 4 and you purchase 200 WeiDai. After 4 blocks have passed, if you attempt to withdraw your WeiDai, you'll only receive 10 since the penalty will be 95%. If you withdraw after 20 blocks, the penalty would have fallen to 75% which means you'll receive 50 WeiDai.",
+	linkText: "Learn more",
+	linkURL: "https://medium.com/"
+}
+
+const adjustmentBlockDetail: DetailProps = {
+	header: "Adjustment Block",
+	content: "The penalty reduction rate adjusts dynamically in response to how difficult WeiDai makers find it to wait for the entire incubation period, similar to Bitcoin's mining difficulty. The adjustment block is when the penalty was last adjusted",
+	linkText: "Learn more",
+	linkURL: "https://medium.com/"
+}
+
+const totalPriceGrowthDetail: DetailProps = {
+	header: "Total Price Growth",
+	content: "The initial redeem rate for WeiDai was 1 WeiDai = 0.01 Dai. As the circulating supply is burnt, the redeem rate automatically rises. The total price growth is the percentage that the redeem rate has increased since day 1.",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"
 }
