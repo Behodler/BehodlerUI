@@ -1,14 +1,13 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
 import { Grid, withStyles, List, ListItem } from '@material-ui/core';
-import { themedText } from '../Common'
-import API from '../../../../blockchain/ethereumAPI'
+import { themedText } from './Common'
+import API from '../../../blockchain/ethereumAPI'
+import { DetailProps } from './Detail'
+
+
 export interface ContractProps {
-	weidaiPrice: number
-	penaltyReductionPeriod: number
-	nextPenaltyAdjustment: number,
-	totalPriceGrowth: number,
-	annualizedGrowth: number,
+	setDetailProps: (props: DetailProps) => void
 	classes?: any
 }
 
@@ -21,7 +20,8 @@ const textStyle = (theme: any) => ({
 	}
 })
 
-function ContractSectionComponent(props: any) {
+
+function ContractSectionComponent(props: ContractProps) {
 	const classes = props.classes
 	const [weiDaiPrice, setWeiDaiPrice] = useState<number>(0)
 	const [penaltyReductionPeriod, setPenaltyReductionPeriod] = useState("0")
@@ -68,16 +68,16 @@ function ContractSectionComponent(props: any) {
 
 	return (
 		<List>
-			<ListItem>
+			<ListItem button onClick={() => props.setDetailProps({ ...weiDaiDetail, visible: true })}>
 				{getLine("WEIDAI PRICE", `${weiDaiPrice} DAI`)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine("LAST PENALTY ADJUSTMENT BLOCK", lastAdjustmentBlock)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine("TOTAL PRICE GROWTH", totalPriceGrowth, true)}
 			</ListItem>
 		</List>
@@ -105,6 +105,14 @@ function getLineFactory(classes: any) {
 			</Grid>
 		)
 	}
+}
+
+const weiDaiDetail: DetailProps = {
+	visible: false,
+	header: "WeiDai balance",
+	content: "Weidai is an ERC20 token collateralized by the Dai stablecoin in a smart contract. It is fully decentralized.",
+	linkText: "Learn more",
+	linkURL: "https://medium.com/"
 }
 
 export const ContractSection = withStyles(textStyle)(ContractSectionComponent)

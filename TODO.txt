@@ -1,5 +1,11 @@
 front end:
-1. Each line in contract section should be a link that drops a slider with an explanation
+1. Each line in info section should pop a card at the bottom: --BUSY, continue for contract section and wealletSection
+	- card done. Now I must place it
+	1.1 Make a useState for card details in index of Layout Frames.
+	1.2 Take card out of common and put it in its own file
+	1.3 Card is rendered in Layout index and gets the state while
+	1.4 both wallet and contract get the setState methods
+	
 2. Patience Regulation Engine page
 2.1 Link to PRE page
 3. Metamask not enabled landing page

@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
 import { Grid, withStyles, List, ListItem, IconButton } from '@material-ui/core';
-import { themedText } from '../Common'
+import { themedText } from './Common'
 import Edit from '@material-ui/icons/Edit'
-import FormDialog from '../../../Common/FormDialog'
-import API from '../../../../blockchain/ethereumAPI'
-import * as storage from '../../../../util/HTML5'
-import { truncate } from '../../../../util/jsHelpers'
+import FormDialog from '../../Common/FormDialog'
+import API from '../../../blockchain/ethereumAPI'
+import * as storage from '../../../util/HTML5'
+import { truncate } from '../../../util/jsHelpers'
 
 
 const textStyle = (theme: any) => ({
@@ -107,19 +107,19 @@ function WalletSectionComponent(props: any) {
 function getList(classes: any, walletAddress: string, friendly: string, daiBalance: string, weiDaiBalance: string, incubatingWeiDai: string, pencilClick: (editing: boolean) => void) {
 	return (
 		<List>
-			<ListItem>
+			<ListItem button>
 				{getLine(classes, "Wallet Address", `${truncate(walletAddress)}`)}
 			</ListItem>
 			<ListItem>
 				{getLine(classes, "Friendly", friendly, false, <IconButton onClick={() => pencilClick(true)} className={classes.button}><Edit fontSize="small" /></IconButton>)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine(classes, "Dai Balance", daiBalance)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine(classes, "WeiDai Balance", weiDaiBalance)}
 			</ListItem>
-			<ListItem>
+			<ListItem button>
 				{getLine(classes, "Incubating WeiDai", incubatingWeiDai)}
 			</ListItem>
 		</List>

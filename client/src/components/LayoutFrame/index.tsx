@@ -5,8 +5,9 @@ import WeidaiLogo from './WeidaiLogo'
 import { UserSection } from './ActionPanel/UserSection'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { AdminSection } from './ActionPanel/AdminSection'
-import { ContractSection } from './InfoPanel/ContractSection/index'
-import { WalletSection } from './InfoPanel/WalletSection/index'
+import { ContractSection } from './InfoPanel/ContractSection'
+import { WalletSection } from './InfoPanel/WalletSection'
+import { Detail, DetailProps } from './InfoPanel/Detail'
 import Mobile from './ActionPanel/Mobile'
 import API from '../../blockchain/ethereumAPI'
 
@@ -55,6 +56,8 @@ function LayoutFrameComponent(props: any) {
 
 	const [metaMaskConnected, setMetaMaskConnected] = useState<boolean>(API.isMetaMaskConnected())
 	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(API.isMetaMaskEnabled())
+	const [detailProps, setDetailProps] = useState<DetailProps>({ visible: false, header: '', content: '' })
+
 	useEffect(() => {
 		if (!metaMaskConnected || !metaMaskEnabled) {
 			API.connectMetaMask().then(() => {
@@ -158,11 +161,8 @@ function LayoutFrameComponent(props: any) {
 				>
 					<WalletSection />
 					<Divider className={classes.infoDivider} />
-					<ContractSection weidaiPrice={0.74}
-						penaltyReductionPeriod={120}
-						nextPenaltyAdjustment={17453362}
-						totalPriceGrowth={344}
-						annualizedGrowth={21} />
+					<ContractSection setDetailProps={setDetailProps} />
+					{detailProps.visible ? <Detail {...detailProps} /> : ""}
 				</Drawer>
 			</Hidden>
 		</div>
