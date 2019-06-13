@@ -36,7 +36,7 @@ function WalletSectionComponent(props: WalletProps) {
 	const [incubatingWeiDai, setIncubatingWeiDai] = useState<string>("unset")
 	const [editingFriendly, setEditingFriendly] = useState<boolean>(false)
 	const [friendlyText, setFriendlyText] = useState<string>(storage.loadFriendlyName(walletAddress))
-
+	const [currentPenalty, setCurrentPenalty] = useState<string>("0")
 	useEffect(() => {
 		const subscription = API.accountObservable.subscribe(account => {
 			if (walletAddress !== account)
@@ -85,6 +85,18 @@ function WalletSectionComponent(props: WalletProps) {
 		}
 	})
 
+	useEffect(() => {
+		const effect = API.preEffects.calculateCurrentPenaltyForHolder(walletAddress)
+		const subscription = effect.Observable.subscribe((penalty) => {
+			setCurrentPenalty(penalty)
+		})
+
+		return function () {
+			effect.cleanup()
+			subscription.unsubscribe()
+		}
+	})
+
 	const updateFriendly = () => {
 		if (friendlyText.length == 0)
 			return
@@ -105,12 +117,12 @@ function WalletSectionComponent(props: WalletProps) {
 				isOpen={editingFriendly}
 				fieldText={[friendlyText]}
 			></FormDialog>
-			{getList(classes,props.setDetailProps,props.setDetailVisibility, walletAddress, storage.loadFriendlyName(walletAddress), daiBalance, weiDaiBalance, incubatingWeiDai, setEditingFriendly)}
+			{getList(classes,props.setDetailProps,props.setDetailVisibility, walletAddress, storage.loadFriendlyName(walletAddress), daiBalance, weiDaiBalance, incubatingWeiDai,currentPenalty, setEditingFriendly)}
 		</div>
 	)
 }
 
-function getList(classes: any,setDetailProps:(props:DetailProps)=>void,setDetailVisibility:(props:boolean)=>void, walletAddress: string, friendly: string, daiBalance: string, weiDaiBalance: string, incubatingWeiDai: string, pencilClick: (editing: boolean) => void) {
+function getList(classes: any,setDetailProps:(props:DetailProps)=>void,setDetailVisibility:(props:boolean)=>void, walletAddress: string, friendly: string, daiBalance: string, weiDaiBalance: string, incubatingWeiDai: string,currentPenalty:string, pencilClick: (editing: boolean) => void) {
 	return (
 		<List>
 			<ListItem button>
@@ -128,6 +140,11 @@ function getList(classes: any,setDetailProps:(props:DetailProps)=>void,setDetail
 			<ClickAbleInfoListItem details={incubatingWeiDaiDetails} setDetailProps = {setDetailProps} setDetailVisibility={setDetailVisibility}>
 				{getLine(classes, "Incubating WeiDai", incubatingWeiDai)}
 			</ClickAbleInfoListItem>
+			{parseInt(currentPenalty)>-1?
+			<ClickAbleInfoListItem details={currentPenaltyDetails} setDetailProps = {setDetailProps} setDetailVisibility={setDetailVisibility}>
+				{getLine(classes, "Current Penalty", currentPenalty+'%')}
+			</ClickAbleInfoListItem>:""
+			}
 		</List>
 	)
 }
@@ -168,9 +185,16 @@ const weiDaiBalanceDetails: DetailProps = {
 
 const incubatingWeiDaiDetails: DetailProps = {
 	header: "Incubating WeiDai",
-	content: "To create WeiDai, you send your Dai to the Patience Regulation Engine, an Ethereum smart contract that incubates your Dai until it becomes WeiDai. If you prematurely attempt to withdraw your incubating WeiDai, it will be slashed with a penalty. Once the WeiDai has incubated entirely, you have to withdraw it from the Patience Regulation Engine to use it.",
+	content: "To create WeiDai, you send your Dai to the Patience Regulation Engine, an Ethereum smart contract that incubates your Dai until it becomes WeiDai. If you prematurely attempt to withdraw your incubating WeiDai, it will be slashed with a penalty. Once the WeiDai has incubated entirely, you have to withdraw it from the Patience Regulation Engine to use it. Each Ethereum address can only incubate one batch of WeiDai at a time.",
 	linkText: "Learn more", 
 	linkURL: "https://medium.com/"
+}
+
+const currentPenaltyDetails:DetailProps = {
+	header: "Penalty on Early Withdrawal",
+	content:"Current Penalty, expressed as a percentage is a tax you will incur if you withdraw your incubating WeiDai before it has finished incubating. You should only see this stat if you currently have incubating WeiDai. The penalty declines over time in steps of 5 percentage points. The rate at which it declines is measured in blocks and listed below under the stat 'Penalty Reduction Period'. The penalty reduction period dynamically adjusts regularly, rising if most purchasers manage to wait out the incubation during an epoch and falling if most users do not manage to wait. When you purchase WeiDai, the penalty reduction period you experience is fixed for the duration of the incubation. The easiest analogy for the penalty reduction period is mining difficulty in proof of work coins like Bitcoin, except that instead of the work coming from mining power, it comes from your very patience.",
+	linkText:"Learn more",
+	linkURL:'http://medium.com'
 }
 
 export const WalletSection = withStyles(textStyle)(WalletSectionComponent)

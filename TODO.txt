@@ -1,10 +1,9 @@
 front end:
-1. ADD a penalty for withdrawal on the wallet section that toggles between "10% penalty", "WeiDai ready!"
-2. Patience Regulation Engine page
-2.1 Link to PRE page
-3. Metamask not enabled landing page
-4. Metamask is enabled but not connected landing page
-5. Metamask is connected landing page
+1. Patience Regulation Engine page
+1.1 Link to PRE page
+2. Metamask not enabled landing page
+3. Metamask is enabled but not connected landing page
+4. Metamask is connected landing page
 
 After:
 style material ui components to have consistent font

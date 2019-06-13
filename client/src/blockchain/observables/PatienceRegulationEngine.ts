@@ -35,6 +35,18 @@ export class PatienceRegulationEffects extends EffectBase {
 		})
 	}
 
+	calculateCurrentPenaltyForHolder(holder:string):Effect{
+		return this.createEffect(async (account) => {
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				defaultValue: "0",
+				action: async (accounts) => await this.preInstance.calculateCurrentPenalty(accounts[0]).call({ from: accounts[1] }),
+				accounts: [holder, account]
+			}
+			return await FetchNumber(params)
+		})
+	}
+
 	lastAdjustmentBlock(): Effect {
 		return this.createEffect(async (account) => {
 			const params: FetchNumberFields = {

@@ -77,7 +77,7 @@ function ContractSectionComponent(props: ContractProps) {
 				{getLine("WEIDAI PRICE", `${weiDaiPrice} DAI`)}
 			</ClickAbleInfoListItem>
 			<ClickAbleInfoListItem details={penaltyReductionPeriodDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
-				{getLine("PENALTY REDUCTION RATE", penaltyReductionPeriod)}
+				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod +' block' + (parseInt(penaltyReductionPeriod)>1?'s':''))}
 			</ClickAbleInfoListItem>
 			<ClickAbleInfoListItem details={adjustmentBlockDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
 				{getLine("LAST PENALTY ADJUSTMENT BLOCK", lastAdjustmentBlock)}
@@ -119,8 +119,8 @@ const weiDaiDetail: DetailProps = {
 }
 
 const penaltyReductionPeriodDetail: DetailProps = {
-	header: "Penalty Reduction Rate",
-	content: "After WeiDai is created it has to incubate before being withdrawn. If you withdraw newly created WeiDai before the incubation period ends, a penalty tax is levied. The penalty falls by 5 percentage points at the penalty reduction rate which is measured in blocks. For example, Suppose the penalty reduction rate is 4 and you purchase 200 WeiDai. After 4 blocks have passed, if you attempt to withdraw your WeiDai, you'll only receive 10 since the penalty will be 95%. If you withdraw after 20 blocks, the penalty would have fallen to 75% which means you'll receive 50 WeiDai.",
+	header: "Penalty Reduction Period",
+	content: "After WeiDai is created it has to incubate before being withdrawn. If you withdraw newly created WeiDai before the incubation period ends, a penalty tax is levied. The penalty falls by 5 percentage points every penalty reduction period which is measured in Ethereum blocks. For example, suppose the penalty reduction period is 4 and you purchase 200 WeiDai. After 4 blocks have passed, if you attempt to withdraw your WeiDai, you'll only receive 10 since the penalty will be 95%. If you withdraw after 20 blocks, the penalty would have fallen to 75% which means you'll receive 50 WeiDai.",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"
 }
