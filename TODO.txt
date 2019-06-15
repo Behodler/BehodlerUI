@@ -1,10 +1,11 @@
 front end:
-1. Patience Regulation Engine page
+1. Patience Regulation Engine page - use PRE.png
 1.1 Link to PRE page
 2. Metamask not enabled landing page
 3. Metamask is enabled but not connected landing page
 4. Metamask is connected landing page
+5. Bank
 
-After:
-style material ui components to have consistent font
- 
+
+Governance:
+No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.

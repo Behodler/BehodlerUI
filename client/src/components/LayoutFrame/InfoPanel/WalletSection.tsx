@@ -170,29 +170,29 @@ function getLine(classes: any, label: string, detail: number | string, percentag
 }
 
 const daiBalanceDetails: DetailProps = {
-	header: "Dai Balance",
-	content: "To create WeiDai, you need to first own some Dai, an ERC20 token known as a stablecoin because it tracks the US Dollar. Unlike early renditions of stable coins, Dai is managed entirely on the Ethereum blockchain by the MakerDAO and is 100% decentralized, inheriting the censorship resistance of ethereum transactions.",
+	header: "DAI BALANCE",
+	content: "TO CREATE WEIDAI, YOU NEED TO FIRST OWN SOME DAI, AN ERC20 TOKEN KNOWN AS A STABLECOIN BECAUSE IT TRACKS THE US DOLLAR. UNLIKE EARLY RENDITIONS OF STABLE COINS, DAI IS MANAGED ENTIRELY ON THE ETHEREUM BLOCKCHAIN BY THE MAKERDAO AND IS 100% DECENTRALIZED, INHERITING THE CENSORSHIP RESISTANCE OF ETHEREUM TRANSACTIONS.",
 	linkText: "Learn more", 
 	linkURL: "https://medium.com/"
 }
 
 const weiDaiBalanceDetails: DetailProps = {
-	header: "WeiDai Balance",
-	content: "WeiDai is the world's first thriftcoin, a stablecoin designed to increase in value while retaining price stability. WeiDai is redeemable for Dai according to a global redeem rate. Whenever circulating WeiDai is burnt, the redeem rate increases. Two mechanisms exist to encourage regular burning so that the redeem rate regularly increases. The redeem rate can never fall.",
+	header: "WEIDAI BALANCE",
+	content: "WEIDAI IS THE WORLD'S FIRST THRIFTCOIN, A STABLECOIN DESIGNED TO INCREASE IN VALUE WHILE RETAINING PRICE STABILITY. WEIDAI IS REDEEMABLE FOR DAI ACCORDING TO A GLOBAL REDEEM RATE. WHENEVER CIRCULATING WEIDAI IS BURNT, THE REDEEM RATE INCREASES. TWO MECHANISMS EXIST TO ENCOURAGE REGULAR BURNING SO THAT THE REDEEM RATE REGULARLY INCREASES. THE REDEEM RATE CAN NEVER FALL.",
 	linkText: "Learn more", 
 	linkURL: "https://medium.com/"
 }
 
 const incubatingWeiDaiDetails: DetailProps = {
-	header: "Incubating WeiDai",
-	content: "To create WeiDai, you send your Dai to the Patience Regulation Engine, an Ethereum smart contract that incubates your Dai until it becomes WeiDai. If you prematurely attempt to withdraw your incubating WeiDai, it will be slashed with a penalty. Once the WeiDai has incubated entirely, you have to withdraw it from the Patience Regulation Engine to use it. Each Ethereum address can only incubate one batch of WeiDai at a time.",
+	header: "INCUBATING WEIDAI",
+	content: "TO CREATE WEIDAI, YOU SEND YOUR DAI TO THE PATIENCE REGULATION ENGINE, AN ETHEREUM SMART CONTRACT THAT INCUBATES YOUR DAI UNTIL IT BECOMES WEIDAI. IF YOU PREMATURELY ATTEMPT TO WITHDRAW YOUR INCUBATING WEIDAI, IT WILL BE SLASHED WITH A PENALTY. ONCE THE WEIDAI HAS INCUBATED ENTIRELY, YOU HAVE TO WITHDRAW IT FROM THE PATIENCE REGULATION ENGINE TO USE IT. EACH ETHEREUM ADDRESS CAN ONLY INCUBATE ONE BATCH OF WEIDAI AT A TIME.",
 	linkText: "Learn more", 
 	linkURL: "https://medium.com/"
 }
 
 const currentPenaltyDetails:DetailProps = {
-	header: "Penalty on Early Withdrawal",
-	content:"Current Penalty, expressed as a percentage is a tax you will incur if you withdraw your incubating WeiDai before it has finished incubating. You should only see this stat if you currently have incubating WeiDai. The penalty declines over time in steps of 5 percentage points. The rate at which it declines is measured in blocks and listed below under the stat 'Penalty Reduction Period'. The penalty reduction period dynamically adjusts regularly, rising if most purchasers manage to wait out the incubation during an epoch and falling if most users do not manage to wait. When you purchase WeiDai, the penalty reduction period you experience is fixed for the duration of the incubation. The easiest analogy for the penalty reduction period is mining difficulty in proof of work coins like Bitcoin, except that instead of the work coming from mining power, it comes from your very patience.",
+	header: "PENALTY ON EARLY WITHDRAWAL",
+	content:"CURRENT PENALTY, EXPRESSED AS A PERCENTAGE IS A TAX YOU WILL INCUR IF YOU WITHDRAW YOUR INCUBATING WEIDAI BEFORE IT HAS FINISHED INCUBATING. YOU SHOULD ONLY SEE THIS STAT IF YOU CURRENTLY HAVE INCUBATING WEIDAI. THE PENALTY DECLINES OVER TIME IN STEPS OF 5 PERCENTAGE POINTS. THE RATE AT WHICH IT DECLINES IS MEASURED IN BLOCKS AND LISTED BELOW UNDER THE STAT 'PENALTY REDUCTION PERIOD'. THE PENALTY REDUCTION PERIOD DYNAMICALLY ADJUSTS REGULARLY, RISING IF MOST PURCHASERS MANAGE TO WAIT OUT THE INCUBATION DURING AN EPOCH AND FALLING IF MOST USERS DO NOT MANAGE TO WAIT. WHEN YOU PURCHASE WEIDAI, THE PENALTY REDUCTION PERIOD YOU EXPERIENCE IS FIXED FOR THE DURATION OF THE INCUBATION. THE EASIEST ANALOGY FOR THE PENALTY REDUCTION PERIOD IS MINING DIFFICULTY IN PROOF OF WORK COINS LIKE BITCOIN, EXCEPT THAT INSTEAD OF THE WORK COMING FROM MINING POWER, IT COMES FROM YOUR VERY PATIENCE.",
 	linkText:"Learn more",
 	linkURL:'http://medium.com'
 }

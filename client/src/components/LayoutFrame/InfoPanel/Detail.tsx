@@ -50,7 +50,7 @@ export function detail(props: DetailProps) {
 				<Typography variant="title" className={classes.typography}>
 					{props.header}
 				</Typography>
-				<Typography variant="caption" className={classes.typography}>
+				<Typography variant="subtitle2" className={classes.typography}>
 					{props.content}
 				</Typography>
 			</CardContent>

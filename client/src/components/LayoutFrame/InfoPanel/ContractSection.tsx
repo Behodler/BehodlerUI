@@ -14,7 +14,7 @@ export interface ContractProps {
 
 const textStyle = (theme: any) => ({
 	text: {
-		fontSize: 14,
+		fontSize: 11.5,
 		fontFamily: "Syncopate",
 		margin: "0",
 		fontWeight: 600
@@ -112,29 +112,29 @@ function getLineFactory(classes: any) {
 }
 
 const weiDaiDetail: DetailProps = {
-	header: "weidai price",
-	content: "WeiDai is an ERC20 token 100% backed by the Dai stable coin. WeiDai price is the amount of Dai that 1 WeiDai can be redeemed for. This number increases with regular use",
+	header: "WEIDAI PRICE",
+	content: "WEIDAI IS AN ERC20 TOKEN 100% BACKED BY THE DAI STABLE COIN. WEIDAI PRICE IS THE AMOUNT OF DAI THAT 1 WEIDAI CAN BE REDEEMED FOR. THIS NUMBER INCREASES WITH REGULAR USE",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"
 }
 
 const penaltyReductionPeriodDetail: DetailProps = {
-	header: "Penalty Reduction Period",
-	content: "After WeiDai is created it has to incubate before being withdrawn. If you withdraw newly created WeiDai before the incubation period ends, a penalty tax is levied. The penalty falls by 5 percentage points every penalty reduction period which is measured in Ethereum blocks. For example, suppose the penalty reduction period is 4 and you purchase 200 WeiDai. After 4 blocks have passed, if you attempt to withdraw your WeiDai, you'll only receive 10 since the penalty will be 95%. If you withdraw after 20 blocks, the penalty would have fallen to 75% which means you'll receive 50 WeiDai.",
+	header: "PENALTY REDUCTION PERIOD",
+	content: "AFTER WEIDAI IS CREATED IT HAS TO INCUBATE BEFORE BEING WITHDRAWN. IF YOU WITHDRAW NEWLY CREATED WEIDAI BEFORE THE INCUBATION PERIOD ENDS, A PENALTY TAX IS LEVIED. THE PENALTY FALLS BY 5 PERCENTAGE POINTS EVERY PENALTY REDUCTION PERIOD WHICH IS MEASURED IN ETHEREUM BLOCKS. FOR EXAMPLE, SUPPOSE THE PENALTY REDUCTION PERIOD IS 4 AND YOU PURCHASE 200 WEIDAI. AFTER 4 BLOCKS HAVE PASSED, IF YOU ATTEMPT TO WITHDRAW YOUR WEIDAI, YOU'LL ONLY RECEIVE 10 SINCE THE PENALTY WILL BE 95%. IF YOU WITHDRAW AFTER 20 BLOCKS, THE PENALTY WOULD HAVE FALLEN TO 75% WHICH MEANS YOU'LL RECEIVE 50 WEIDAI.",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"
 }
 
 const adjustmentBlockDetail: DetailProps = {
-	header: "Adjustment Block",
-	content: "The penalty reduction rate adjusts dynamically in response to how difficult WeiDai makers find it to wait for the entire incubation period, similar to Bitcoin's mining difficulty. The adjustment block is when the penalty was last adjusted",
+	header: "ADJUSTMENT BLOCK",
+	content: "THE PENALTY REDUCTION RATE ADJUSTS DYNAMICALLY IN RESPONSE TO HOW DIFFICULT WEIDAI MAKERS FIND IT TO WAIT FOR THE ENTIRE INCUBATION PERIOD, SIMILAR TO BITCOIN'S MINING DIFFICULTY. THE ADJUSTMENT BLOCK IS WHEN THE PENALTY WAS LAST ADJUSTED",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"
 }
 
 const totalPriceGrowthDetail: DetailProps = {
-	header: "Total Price Growth",
-	content: "The initial redeem rate for WeiDai was 1 WeiDai = 0.01 Dai. As the circulating supply is burnt, the redeem rate automatically rises. The total price growth is the percentage that the redeem rate has increased since day 1.",
+	header: "TOTAL PRICE GROWTH",
+	content: "THE INITIAL REDEEM RATE FOR WEIDAI WAS 1 WEIDAI = 0.01 DAI. AS THE CIRCULATING SUPPLY IS BURNT, THE REDEEM RATE AUTOMATICALLY RISES. THE TOTAL PRICE GROWTH IS THE PERCENTAGE THAT THE REDEEM RATE HAS INCREASED SINCE DAY 1.",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"
 }
