@@ -10,6 +10,7 @@ import { WalletSection } from './InfoPanel/WalletSection'
 import { Detail, DetailProps } from './InfoPanel/Detail'
 import Mobile from './ActionPanel/Mobile'
 import API from '../../blockchain/ethereumAPI'
+import { PatienceRegulationEngine } from '../PRE/index'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
@@ -61,6 +62,8 @@ function LayoutFrameComponent(props: any) {
 	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(API.isMetaMaskEnabled())
 	const [detailProps, setDetailProps] = useState<DetailProps>({ header: '', content: '' })
 	const [detailVisibility, setDetailVisibility] = useState<boolean>(false)
+	const [walletAddress, setWalletAddress] = useState<string>("0x0")
+
 
 	useEffect(() => {
 		if (!metaMaskConnected || !metaMaskEnabled) {
@@ -68,6 +71,21 @@ function LayoutFrameComponent(props: any) {
 				setMetaMaskEnabled(API.isMetaMaskEnabled())
 				setMetaMaskConnected(API.isMetaMaskConnected())
 			})
+		}
+	})
+
+	useEffect(() => {
+		if (metaMaskConnected) {
+			const subscription = API.accountObservable.subscribe(account => {
+				setWalletAddress(account)
+			})
+
+			return function () {
+				subscription.unsubscribe()
+			}
+		}
+		else {
+			return () => { }
 		}
 	})
 
@@ -81,6 +99,8 @@ function LayoutFrameComponent(props: any) {
 		error = noMetamask
 	else if (!metaMaskConnected)
 		error = notConnected
+	else if (walletAddress === '0x0')
+		error = 'NO ACCOUNT'
 
 	return !!error ? error : (
 		<div className={classes.root}>
@@ -147,7 +167,7 @@ function LayoutFrameComponent(props: any) {
 									Content
 								</Route>
 								<Route path="/engine">
-									Patience Regulation Engine
+									<PatienceRegulationEngine currentUser={walletAddress} />
 								</Route>
 								<Route path="/bank">
 									Bank
@@ -165,7 +185,7 @@ function LayoutFrameComponent(props: any) {
 						classes={{ paper: classes.infoDrawerPaper }}
 					>
 						<List>
-							<ListItem className={classes.listItem}><WalletSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} /></ListItem>
+							<ListItem className={classes.listItem}><WalletSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} walletAddress={walletAddress} /></ListItem>
 							<ListItem className={classes.listItem}><Divider className={classes.infoDivider} /></ListItem>
 							<ListItem className={classes.listItem}><ContractSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} /></ListItem>
 							<ListItem className={classes.listItem}><Divider className={classes.infoDivider} /> </ListItem>

@@ -3,24 +3,24 @@ import { Observable } from 'rxjs'
 import Web3 from "web3";
 
 export interface EffectFactoryType {
-	(action: (account: string) => Promise<string>): Effect
+	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect
 }
 
 export const EffectFactory = (web3: Web3): EffectFactoryType => (
-	(action: (account: string) => Promise<string>): Effect => {
+	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect => {
 		const subscription = web3.eth.subscribe("newBlockHeaders")
 		const observable = Observable.create(async (observer) => {
-			const queryBlockChain = async () => {
+			const queryBlockChain = async (data) => {
 				let account = (await web3.eth.getAccounts())[0]
 				if (account === "0x0") {
 					observer.next("unset")
 				}
 				else {
-					const currentResult = await action(account)
+					const currentResult = await action({ account, blockNumber: data.number })
 					observer.next(currentResult)
 				}
 			}
-			await queryBlockChain()
+			await queryBlockChain({ number: 0 })
 			subscription.on('data', queryBlockChain)
 		})
 		return new Effect(observable, subscription)
@@ -29,8 +29,8 @@ export const EffectFactory = (web3: Web3): EffectFactoryType => (
 
 export class Effect {
 	private subscription: any
-	public Observable: Observable<string>
-	public constructor(Observable: Observable<string>, subscription: any) {
+	public Observable: Observable<any>
+	public constructor(Observable: Observable<any>, subscription: any) {
 		this.subscription = subscription
 		this.Observable = Observable
 	}

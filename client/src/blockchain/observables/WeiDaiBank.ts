@@ -12,7 +12,7 @@ export class BankEffects extends EffectBase {
 	}
 
 	daiPerMyriadWeidaiEffect():Effect {
-		return this.createEffect(async(account)=>{
+		return this.createEffect(async({account,blockNumber})=>{
 			const params:FetchNumberFields = {
 				web3:this.web3,
 				defaultValue:"unset",

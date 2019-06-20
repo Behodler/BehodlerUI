@@ -38,7 +38,6 @@ class ethereumAPI {
 	public bankEffects: BankEffects
 	public Contracts: IContracts
 
-
 	constructor() {
 		this.metaMaskConnected = this.metaMaskEnabled = this.contractsInitialized = false
 	}

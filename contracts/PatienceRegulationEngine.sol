@@ -35,6 +35,10 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		claimWindowsPerAdjustment = c;
 	}
 
+	function getPenaltyDrawdownPeriodForHolder(address holder) public view returns (uint){
+		return penaltyDrawdownPeriod[holder];
+	}
+
 	function getCurrentAdjustmentWeight() public view returns (int) {
 		return currentAdjustmentWeight;
 	}
@@ -134,6 +138,8 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	}
 
 	function calculateCurrentPenalty(address holder) public view returns (uint) {
+		if(penaltyDrawdownPeriod[holder]==0)
+			return 0;
 		uint periods = (block.number.sub(blockOfPurchase[holder])).div(penaltyDrawdownPeriod[holder]);
 		if(periods >= 20)
 		    return 0;

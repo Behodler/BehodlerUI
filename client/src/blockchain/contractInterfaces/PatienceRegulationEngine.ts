@@ -11,6 +11,7 @@ export interface PatienceRegulationEngine extends Secondary {
 	getLockedWeiDai: (hodler: address) => call<uint>
 	getClaimWaitWindow: () => call<uint>
 	calculateCurrentPenalty: (holder: address) => call<uint>
+	getPenaltyDrawdownPeriodForHolder: (holder: address) => call<uint>
 	setDependencies: (bank: address, weiDai: address, options: Object) => Promise<TX>
 	setClaimWindowsPerAdjustment: (c: uint, options: Object) => Promise<TX>
 	buyWeiDai: (dai: uint, split: uint, options: Object) => Promise<TX>
