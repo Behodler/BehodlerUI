@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Grid, List, ListItem, Typography, Button, Link } from '@material-ui/core';
+import { withStyles, Grid, List, ListItem, Typography, Button, Link, TextField } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
-
+import {formatNumberText} from '../../util/jsHelpers'
 interface PREprops {
 	currentUser: string
 	classes?: any
@@ -29,9 +29,9 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [drawDownPeriodForUser, setDrawDownPeriodForUser] = useState(0)
 	const [split, setSplit] = useState(10)
 	const [spinnerVisibility, setSpinnerVisibility] = useState<boolean>(false)
-	if("twelve".length>111)
+	if ("twelve".length > 111)
 		console.log(spinnerVisibility)
-	
+
 	useEffect(() => {
 		const effect = API.preEffects.getClaimWaitWindow()
 		const subscription = effect.Observable.subscribe((duration) => {
@@ -53,7 +53,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
 		const subscription = effect.Observable.subscribe((daiPerMyriadWeiDai: string) => {
-			setExchangeRate(parseInt(daiPerMyriadWeiDai) / 100) //daiPerWeiDai
+			setExchangeRate(parseInt(daiPerMyriadWeiDai)) //daiPerWeiDai
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
@@ -96,24 +96,28 @@ function patienceRegulationEngineComponent(props: PREprops) {
 
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
-	const calculateWeiDai = calculateWeiDaiToIncubateFactory(exchangeRate, setweiDaiToCreate)
-	const calculateDai = calculateDaiToIncubateFactory(exchangeRate, setDaiBalance)
+	const setDaiToIncubateText = (text: string) => {
+		const newText = formatNumberText(text)
+		setDaiToIncubate(newText)
+		const weiDaiToCreateNumber = (parseFloat(newText) * 10000) / exchangeRate
+		setweiDaiToCreate(`${isNaN(weiDaiToCreateNumber)?'':weiDaiToCreateNumber}`)
+	}
 	return (
 		<Grid
 			container
 			direction="column"
-			justify="center"
+			justify="flex-start"
 			alignItems="center"
 			spacing={0}>
 			<Grid item>
 				<Grid
 					container
 					direction="row"
-					justify="space-evenly"
+					justify="flex-start"
 					alignItems="center"
-					spacing={32}>
+					spacing={0}>
 					<Grid item>
-						<Typography variant="h3">
+						<Typography variant="h5">
 							Patiencer Regulation Engine
 					</Typography>
 					</Grid>
@@ -135,8 +139,9 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			<Grid item>
 				<Grid container
 					direction="row"
-					justify="space-evenly"
-					alignItems="flex-start">
+					justify="space-between"
+					spacing={16}
+					alignItems="center">
 					<Grid item>
 						<Typography variant="title">
 							Your Dai balance
@@ -153,17 +158,34 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				<Grid container
 					direction="row"
 					justify="space-evenly"
+					spacing={8}
 					alignItems="flex-start">
 					<Grid item>
-						<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={calculateWeiDai} entireAction={() => setDaiToIncubate(daiBalance)} />
+						<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
 					</Grid>
 					<Grid item>
-						<Typography variant="subtitle2">
-							will create
-						</Typography>
+						<List>
+							<ListItem></ListItem>
+							<ListItem><Typography variant="subtitle2">
+								will create
+						</Typography></ListItem>
+						</List>
 					</Grid>
 					<Grid item>
-						<ValueTextBox text={weiDaiToCreate} placeholder="WeiDai" changeText={calculateDai} />
+						<List>
+							<ListItem>
+								<TextField
+									label="WeiDai"
+									type="text"
+									name="WeiDai"
+									autoComplete="WeiDai"
+									margin="normal"
+									variant="outlined"
+									value={weiDaiToCreate}
+								/>
+							</ListItem>
+							<ListItem></ListItem>
+						</List>
 					</Grid>
 				</Grid>
 			</Grid>
@@ -217,22 +239,4 @@ const buyWeiDaiAction = async (dai: string, split: number, user: string, setSpin
 	} finally {
 		setSpinnerVisibility(false)
 	}
-}
-
-const calculateDaiToIncubateFactory = (exchangeRate, setDai: (text: string) => void) => (weiDaiToBeIncubated) => {
-
-	const weiDai = parseFloat(weiDaiToBeIncubated)
-	if (isNaN(weiDai))
-		setDai("")
-	else
-		setDai(`${exchangeRate * weiDai}`)
-}
-
-const calculateWeiDaiToIncubateFactory = (exchangeRate, setWeiDai: (text: string) => void) => (daiToBeIncubated) => {
-
-	const dai = parseFloat(daiToBeIncubated)
-	if (isNaN(dai))
-		setWeiDai("")
-	else
-		setWeiDai(`${dai / exchangeRate}`)
 }

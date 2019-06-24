@@ -17,7 +17,7 @@ const infoWidth: number = 400
 
 let styleObject = {
 	root: {
-
+		display: "flex"
 	},
 	actionDrawer: {
 		width: actionWidth,
@@ -106,7 +106,8 @@ function LayoutFrameComponent(props: any) {
 		<div className={classes.root}>
 
 			<Hidden mdDown>
-				<Drawer variant="permanent"
+				<Drawer variant="persistent"
+					open={true}
 					className={classes.actionDrawer}
 					classes={{ paper: classes.actionDrawerPaper }}
 				>
@@ -155,32 +156,23 @@ function LayoutFrameComponent(props: any) {
 					</Grid>
 				</Grid>
 				<Divider variant="middle" />
-				<Grid
-					container
-					justify="center"
-					alignItems="stretch"
-					direction="column">
-					<Grid item>
-						<Router>
-							<Switch>
-								<Route path="/" exact >
-									Content
+				<Router>
+					<Switch>
+						<Route path="/" exact >
+							Content
 								</Route>
-								<Route path="/engine">
-									<PatienceRegulationEngine currentUser={walletAddress} />
+						<Route path="/engine">
+							<PatienceRegulationEngine currentUser={walletAddress} />
+						</Route>
+						<Route path="/bank">
+							Bank
 								</Route>
-								<Route path="/bank">
-									Bank
-								</Route>
-							</Switch>
-						</Router>
-					</Grid>
-				</Grid>
-
+					</Switch>
+				</Router>
 			</main>
 			<Hidden mdDown>
 				<ClickAwayListener onClickAway={() => setDetailVisibility(false)}>
-					<Drawer variant="permanent" anchor="right"
+					<Drawer variant="persistent" anchor="right" open={true}
 						className={classes.infoDrawer}
 						classes={{ paper: classes.infoDrawerPaper }}
 					>
