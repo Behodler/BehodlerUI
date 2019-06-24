@@ -1,14 +1,21 @@
 import * as React from 'react'
-import { TextField, ListItem, List, Link } from '@material-ui/core';
+import { TextField, ListItem, List, Link, withStyles } from '@material-ui/core';
 
 interface props {
 	text: string
 	placeholder: string
 	changeText: (text: string) => void
-	entireAction?: () => void
+	entireAction?: () => void,
+	classes?: any
 }
 
-export function ValueTextBox(props: props) {
+const style = (theme: any) => ({
+	link: {
+		marginTop: '-20px'
+	}
+})
+
+export function ValueTextBoxComponent(props: props) {
 	return (
 		<div>
 			<List>
@@ -25,12 +32,15 @@ export function ValueTextBox(props: props) {
 					/>
 				</ListItem>
 				<ListItem>
-					<Link
+					<Link className={props.classes.link}
 						variant="body2"
-						onClick={props.entireAction}>
-						use entire balance
+						href='#'
+						onClick={(e: any) => { e.preventDefault(); if (props.entireAction) props.entireAction(); }}>
+						entire balance
     		</Link>
 				</ListItem>
 			</List>
 		</div>)
 }
+
+export const ValueTextBox = withStyles(style)(ValueTextBoxComponent)

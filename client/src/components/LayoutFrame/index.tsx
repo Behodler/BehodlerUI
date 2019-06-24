@@ -41,6 +41,9 @@ let styleObject = {
 		fontFamily: 'Syncopate',
 		margin: "10px 0 5px 0"
 	},
+	headingDivider:{
+		margin:'10px 0 50px 0'
+	},
 	subheading: {
 		fontSize: 16,
 		margin: "0px 0 5px 0"
@@ -155,7 +158,7 @@ function LayoutFrameComponent(props: any) {
 						</Grid>
 					</Grid>
 				</Grid>
-				<Divider variant="middle" />
+				<Divider variant="middle" className={classes.headingDivider} />
 				<Router>
 					<Switch>
 						<Route path="/" exact >

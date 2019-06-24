@@ -11,7 +11,7 @@ interface PREprops {
 
 const style = (theme: any) => ({
 	pagebreak: {
-		margin: "100px"
+		margin: "70px"
 	}
 })
 
@@ -115,17 +115,17 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					direction="row"
 					justify="flex-start"
 					alignItems="center"
-					spacing={0}>
+					spacing={8}>
 					<Grid item>
-						<Typography variant="h5">
-							Patiencer Regulation Engine
+						<Typography variant="h4">
+							PATIENCE REGULATION ENGINE
 					</Typography>
 					</Grid>
 				</Grid>
 			</Grid>
 			<Grid item>
 				<Typography variant="h6">
-					WeiDai = Dai + Time
+					WEIDAI = DAI + TIME
 				</Typography>
 			</Grid>
 			<Grid item>
