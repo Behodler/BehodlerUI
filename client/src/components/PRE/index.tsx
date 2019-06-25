@@ -43,7 +43,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	})
 
 	useEffect(() => {
-		const effect = API.weiDaiEffects.balanceOfEffect(props.currentUser)
+		const effect = API.daiEffects.balanceOfEffect(props.currentUser)
 		const subscription = effect.Observable.subscribe((balance: string) => {
 			setDaiBalance(balance)
 		})
@@ -98,8 +98,12 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	})
 	const setDaiToIncubateText = (text: string) => {
 		const newText = formatNumberText(text)
-		setDaiToIncubate(newText)
-		const weiDaiToCreateNumber = (parseFloat(newText) * 10000) / exchangeRate
+		const newTextNum = parseFloat(newText)
+		const daiBalanceNum = parseFloat(daiBalance)
+		const cappedText = newTextNum>daiBalanceNum?daiBalance:newText
+		
+		setDaiToIncubate(cappedText)
+		const weiDaiToCreateNumber = (parseFloat(cappedText) * 10000) / exchangeRate
 		setweiDaiToCreate(`${isNaN(weiDaiToCreateNumber)?'':weiDaiToCreateNumber}`)
 	}
 	return (

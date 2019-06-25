@@ -5,6 +5,7 @@ front end:
 3. Metamask is enabled but not connected landing page
 4. Metamask is connected landing page
 5. Bank
+6. Side panel: For how it works and FAQ, sliders, not buttons.
 
 
 Governance:
