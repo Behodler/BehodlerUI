@@ -139,7 +139,7 @@ function LayoutFrameComponent(props: any) {
 									direction="row"
 									justify="space-evenly"
 									alignItems="center"
-									spacing={32}>
+									spacing={7}>
 									<Grid item>
 										<p className={classes.heading}>
 											WEIDAI

@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Grid, List, ListItem, Typography, Button, Link, TextField } from '@material-ui/core';
+import { withStyles, Grid, List, ListItem, Typography, Button, TextField, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
-import {formatNumberText} from '../../util/jsHelpers'
+import { formatNumberText } from '../../util/jsHelpers'
 interface PREprops {
 	currentUser: string
 	classes?: any
@@ -12,7 +12,11 @@ interface PREprops {
 const style = (theme: any) => ({
 	pagebreak: {
 		margin: "70px"
-	}
+	},
+	splitRate: {
+		marginTop: "10px",
+		fontSize: "10"
+	},
 })
 
 function patienceRegulationEngineComponent(props: PREprops) {
@@ -27,10 +31,13 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [currentWithdrawalPenalty, setCurrentWithdrawalPenalty] = useState<string>("")
 	const [weiDaiToClaim, setWeiDaiToClaim] = useState<string>("")
 	const [drawDownPeriodForUser, setDrawDownPeriodForUser] = useState(0)
-	const [split, setSplit] = useState(10)
+	const [split, setSplit] = useState<string>("")
+	const [customSplitChecked, setCustomSplitChecked] = useState<boolean>(false)
 	const [spinnerVisibility, setSpinnerVisibility] = useState<boolean>(false)
-	if ("twelve".length > 111)
+	if ("twelve".length > 111) {
 		console.log(spinnerVisibility)
+		setSplit("20")
+	}
 
 	useEffect(() => {
 		const effect = API.preEffects.getClaimWaitWindow()
@@ -100,14 +107,28 @@ function patienceRegulationEngineComponent(props: PREprops) {
 		const newText = formatNumberText(text)
 		const newTextNum = parseFloat(newText)
 		const daiBalanceNum = parseFloat(daiBalance)
-		const cappedText = newTextNum>daiBalanceNum?daiBalance:newText
-		
+		const cappedText = newTextNum > daiBalanceNum ? daiBalance : newText
+
 		setDaiToIncubate(cappedText)
 		const weiDaiToCreateNumber = (parseFloat(cappedText) * 10000) / exchangeRate
-		setweiDaiToCreate(`${isNaN(weiDaiToCreateNumber)?'':weiDaiToCreateNumber}`)
+		setweiDaiToCreate(`${isNaN(weiDaiToCreateNumber) ? '' : weiDaiToCreateNumber}`)
+	}
+
+	const setSplitText = (text: string) => {
+		const newText = formatNumberText(text)
+		let newTextInt = parseInt(newText)
+		if (isNaN(newTextInt)) {
+			setSplit('')
+			return
+		}
+		else if (newTextInt >= 100)
+			newTextInt = 99
+		else if (newTextInt < 0)
+			newTextInt = 0
+		setSplit(`${newTextInt}`)
 	}
 	return (
-		<Grid
+		<div><Grid
 			container
 			direction="column"
 			justify="flex-start"
@@ -121,7 +142,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					alignItems="center"
 					spacing={8}>
 					<Grid item>
-						<Typography variant="h4">
+						<Typography variant="h5">
 							PATIENCE REGULATION ENGINE
 					</Typography>
 					</Grid>
@@ -134,7 +155,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			</Grid>
 			<Grid item>
 				<Typography variant="subtitle1">
-					It currently takes {incubationDuration} block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
+					It currently takes <Typography color="primary" display="inline"><Box display="inline" fontWeight="fontWeightBold">{incubationDuration}</Box></Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
 				</Typography>
 			</Grid>
 			<Grid item>
@@ -144,15 +165,15 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				<Grid container
 					direction="row"
 					justify="space-between"
-					spacing={16}
+					spacing={4}
 					alignItems="center">
 					<Grid item>
-						<Typography variant="title">
+						<Typography variant="h6">
 							Your Dai balance
 							</Typography>
 					</Grid>
 					<Grid item>
-						<Typography variant="title" color="primary">
+						<Typography variant="h6" color="primary">
 							{daiBalance}
 						</Typography>
 					</Grid>
@@ -161,8 +182,8 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			<Grid item>
 				<Grid container
 					direction="row"
-					justify="space-evenly"
-					spacing={8}
+					justify="space-around"
+					spacing={1}
 					alignItems="flex-start">
 					<Grid item>
 						<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
@@ -194,46 +215,82 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				</Grid>
 			</Grid>
 			<Grid item>
-				<List>
-					<ListItem>
-						<Button onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, setSpinnerVisibility, incubatingWeiDai == 0)}>Create</Button>
-					</ListItem>
-					<ListItem>
-						<Link variant="button" onClick={() => { alert("todo: split rate pop up or slide down: "); setSplit(20) }}>Change split rate</Link>
-					</ListItem>
-				</List>
-			</Grid>
-			<Grid item>
-				Incubating WeiDai: {incubatingWeiDai}
-			</Grid>
-			<Grid item>
-				Blocks incubated: {progressBlock}/{holderIncubationDuration}
-			</Grid>
-			<Grid item>
-				Todo: progress bar
-			</Grid>
-			<Grid item>
-				<Typography variant="h5" color="secondary">
-					Current Penalty: {currentWithdrawalPenalty}
-				</Typography>
-			</Grid>
-			<Grid item>
-				<ValueTextBox placeholder="WeiDai" text={weiDaiToClaim} changeText={(text: string) => { setWeiDaiToClaim(text) }} entireAction={() => setWeiDaiToClaim(incubatingWeiDai.toString())} />
-			</Grid>
-			<Grid item>
-				<Button onClick={() => {
-					alert("todo: claim weidai")
-				}}>
-					Claim{parseInt(currentWithdrawalPenalty) > 0 ? ' with penalty' : ''}
-				</Button>
+				<Grid
+					container
+					direction="column"
+					justify="flex-start"
+					alignItems="center"
+					spacing={0}>
+					<Grid item>
+						<Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, setSpinnerVisibility, incubatingWeiDai == 0)}>Create</Button>
+					</Grid>
+					<Grid item className={props.classes.splitRate}>
+						<FormGroup row>
+							<FormControlLabel
+								label="set custom split rate (advanced)"
+								control={
+									<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
+										setCustomSplitChecked(event.target.checked)
+										if (!event.target.checked)
+											setSplit("10")
+									}
+									}
+									/>
+								}
+							/>
+						</FormGroup>
+					</Grid>
+					<Grid item>
+						<Box component="div" visibility={customSplitChecked ? "visible" : "hidden"}>
+							<ValueTextBox text={split} placeholder={"Split Rate"} changeText={setSplitText}></ValueTextBox>
+						</Box>
+					</Grid>
+				</Grid>
 			</Grid>
 		</Grid>
+			<Divider className={props.classes.pagebreak} />
+			<Grid
+				container
+				direction="column"
+				justify="flex-start"
+				alignItems="center"
+				spacing={0}>
+				<Grid item>
+					<Typography variant="subtitle2">
+						Incubating WeiDai: {incubatingWeiDai}
+					</Typography>
+				</Grid>
+				<Grid item>
+					<Typography variant="subtitle2">
+						Blocks incubated: {progressBlock}/{holderIncubationDuration}
+					</Typography>
+				</Grid>
+				<Grid item>
+					Todo: progress bar
+			</Grid>
+				<Grid item>
+					<Typography variant="h5" color="secondary">
+						Current Penalty: {currentWithdrawalPenalty}
+					</Typography>
+				</Grid>
+				<Grid item>
+					<ValueTextBox placeholder="WeiDai" text={weiDaiToClaim} changeText={(text: string) => { setWeiDaiToClaim(text) }} entireAction={() => setWeiDaiToClaim(incubatingWeiDai.toString())} />
+				</Grid>
+				<Grid item>
+					<Button onClick={() => {
+						alert("todo: claim weidai")
+					}}>
+						Claim{parseInt(currentWithdrawalPenalty) > 0 ? ' with penalty' : ''}
+					</Button>
+				</Grid>
+			</Grid>
+		</div>
 	)
 }
 
 export const PatienceRegulationEngine = withStyles(style)(patienceRegulationEngineComponent)
 
-const buyWeiDaiAction = async (dai: string, split: number, user: string, setSpinnerVisibility: (visible: boolean) => void, createEnabled: boolean) => {
+const buyWeiDaiAction = async (dai: string, split: string, user: string, setSpinnerVisibility: (visible: boolean) => void, createEnabled: boolean) => {
 	if (!createEnabled)
 		alert('TODO: insert weidai incubating message')
 	setSpinnerVisibility(true)

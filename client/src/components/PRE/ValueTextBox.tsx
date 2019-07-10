@@ -31,14 +31,16 @@ export function ValueTextBoxComponent(props: props) {
 						onChange={(event) => { props.changeText(event.target.value) }}
 					/>
 				</ListItem>
+				{!!props.entireAction?
 				<ListItem>
 					<Link className={props.classes.link}
 						variant="body2"
 						href='#'
 						onClick={(e: any) => { e.preventDefault(); if (props.entireAction) props.entireAction(); }}>
 						entire balance
-    		</Link>
-				</ListItem>
+    			</Link>
+				</ListItem>:""
+				}
 			</List>
 		</div>)
 }

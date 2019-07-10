@@ -47,7 +47,7 @@ export function detail(props: DetailProps) {
 	return (
 		<Card className={classes.card}>
 			<CardContent>
-				<Typography variant="title" className={classes.typography}>
+				<Typography variant="h6" className={classes.typography}>
 					{props.header}
 				</Typography>
 				<Typography variant="subtitle2" className={classes.typography}>
