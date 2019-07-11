@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { withStyles, Grid, List, ListItem, Typography, Button, TextField, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
+import {IncubationProgress} from './IncubationProgress'
 import { formatNumberText } from '../../util/jsHelpers'
 interface PREprops {
 	currentUser: string
@@ -25,7 +26,7 @@ const style = (theme: any) => ({
 	},
 	joinText: {
 		marginTop: '50px'
-	}
+	},
 })
 
 function patienceRegulationEngineComponent(props: PREprops) {
@@ -43,6 +44,8 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [split, setSplit] = useState<string>("")
 	const [customSplitChecked, setCustomSplitChecked] = useState<boolean>(false)
 	const [spinnerVisibility, setSpinnerVisibility] = useState<boolean>(false)
+	const [progressBar, setProgressBar] = useState<number>(0)
+
 	if ("twelve".length > 111) {
 		console.log(spinnerVisibility)
 		setSplit("20")
@@ -108,6 +111,8 @@ function patienceRegulationEngineComponent(props: PREprops) {
 
 			setProgressBlock(progressBlock)
 			setHolderIncubationDuration(totalDuration)
+			const progressBarIncrement = Math.round(progressBlock/totalDuration*100)
+			setProgressBar(isNaN(progressBarIncrement)?0:progressBarIncrement)
 		})
 
 		return () => { subscription.unsubscribe(); effect.cleanup() }
@@ -277,7 +282,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Typography>
 					</Grid>
 					<Grid item>
-						Todo: progress bar
+					<IncubationProgress progress={progressBar}/>
 				</Grid>
 					<Grid item>
 						<Typography variant="h6" color="secondary">
