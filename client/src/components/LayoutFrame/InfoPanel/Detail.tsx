@@ -14,7 +14,6 @@ const style = (theme: any) => (
 
 		},
 		typography: {
-			fontFamily: "Syncopate",
 			margin:"0 0 10px 0"
 		},
 

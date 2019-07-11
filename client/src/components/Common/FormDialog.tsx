@@ -24,11 +24,9 @@ interface FormDialogProps {
 const formStyle = (theme: any) => ({
 	title: {
 		fontSize: 16,
-		fontFamily: "Syncopate",
 	},
 	message: {
 		fontSize: 12,
-		fontFamily: "Syncopate",
 	},
 	errorLabel: {
 		paddingTop: 0,

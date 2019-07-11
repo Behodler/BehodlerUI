@@ -13,7 +13,6 @@ import { ClickAbleInfoListItem } from './Common'
 const textStyle = (theme: any) => ({
 	text: {
 		fontSize: 12,
-		fontFamily: "Syncopate",
 		margin: "0 0 0 0",
 	},
 	button: {

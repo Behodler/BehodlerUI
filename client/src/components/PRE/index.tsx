@@ -11,12 +11,21 @@ interface PREprops {
 
 const style = (theme: any) => ({
 	pagebreak: {
-		margin: "70px"
+		margin: "55px"
 	},
 	splitRate: {
 		marginTop: "10px",
 		fontSize: "10"
 	},
+	pageSplit: {
+		margin: "20px"
+	},
+	bottomBox: {
+		marginBottom: "100px"
+	},
+	joinText: {
+		marginTop: '50px'
+	}
 })
 
 function patienceRegulationEngineComponent(props: PREprops) {
@@ -128,7 +137,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 		setSplit(`${newTextInt}`)
 	}
 	return (
-		<div><Grid
+		<div className={props.classes.root}><Grid
 			container
 			direction="column"
 			justify="flex-start"
@@ -189,12 +198,12 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
 					</Grid>
 					<Grid item>
-						<List>
-							<ListItem></ListItem>
-							<ListItem><Typography variant="subtitle2">
+
+						<Box component="div" className={props.classes.joinText}>
+							<Typography variant="caption">
 								will create
-						</Typography></ListItem>
-						</List>
+						</Typography>
+						</Box>
 					</Grid>
 					<Grid item>
 						<List>
@@ -248,42 +257,45 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				</Grid>
 			</Grid>
 		</Grid>
-			<Divider className={props.classes.pagebreak} />
-			<Grid
-				container
-				direction="column"
-				justify="flex-start"
-				alignItems="center"
-				spacing={0}>
-				<Grid item>
-					<Typography variant="subtitle2">
-						Incubating WeiDai: {incubatingWeiDai}
-					</Typography>
+			<Box component="div" display={incubatingWeiDai === 0 ? "inline" : "none"}>
+				<Divider className={props.classes.pageSplit} />
+				<Grid
+					className={props.classes.bottomBox}
+					container
+					direction="column"
+					justify="flex-start"
+					alignItems="center"
+					spacing={0}>
+					<Grid item>
+						<Typography variant="h5" color="primary">
+							Incubating WeiDai: {incubatingWeiDai}
+						</Typography>
+					</Grid>
+					<Grid item>
+						<Typography variant="subtitle1">
+							Blocks incubated: {progressBlock}/{holderIncubationDuration}
+						</Typography>
+					</Grid>
+					<Grid item>
+						Todo: progress bar
 				</Grid>
-				<Grid item>
-					<Typography variant="subtitle2">
-						Blocks incubated: {progressBlock}/{holderIncubationDuration}
-					</Typography>
+					<Grid item>
+						<Typography variant="h6" color="secondary">
+							Current Penalty: {currentWithdrawalPenalty}
+						</Typography>
+					</Grid>
+					<Grid item>
+						<ValueTextBox placeholder="WeiDai to claim" text={weiDaiToClaim} changeText={(text: string) => { setWeiDaiToClaim(text) }} entireAction={() => setWeiDaiToClaim(incubatingWeiDai.toString())} />
+					</Grid>
+					<Grid item>
+						<Button variant="contained" color="secondary" onClick={() => {
+							alert("todo: claim weidai")
+						}}>
+							Claim{parseInt(currentWithdrawalPenalty) > 0 ? ' with penalty' : ''}
+						</Button>
+					</Grid>
 				</Grid>
-				<Grid item>
-					Todo: progress bar
-			</Grid>
-				<Grid item>
-					<Typography variant="h5" color="secondary">
-						Current Penalty: {currentWithdrawalPenalty}
-					</Typography>
-				</Grid>
-				<Grid item>
-					<ValueTextBox placeholder="WeiDai" text={weiDaiToClaim} changeText={(text: string) => { setWeiDaiToClaim(text) }} entireAction={() => setWeiDaiToClaim(incubatingWeiDai.toString())} />
-				</Grid>
-				<Grid item>
-					<Button onClick={() => {
-						alert("todo: claim weidai")
-					}}>
-						Claim{parseInt(currentWithdrawalPenalty) > 0 ? ' with penalty' : ''}
-					</Button>
-				</Grid>
-			</Grid>
+			</Box>
 		</div>
 	)
 }

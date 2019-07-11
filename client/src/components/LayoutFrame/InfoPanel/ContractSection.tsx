@@ -15,7 +15,6 @@ export interface ContractProps {
 const textStyle = (theme: any) => ({
 	text: {
 		fontSize: 11.5,
-		fontFamily: "Syncopate",
 		margin: "0",
 		fontWeight: 600
 	},

@@ -38,7 +38,6 @@ let styleObject = {
 	},
 	heading: {
 		fontSize: 40,
-		fontFamily: 'Syncopate',
 		margin: "10px 0 5px 0"
 	},
 	headingDivider:{
