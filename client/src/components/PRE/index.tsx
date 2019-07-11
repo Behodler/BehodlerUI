@@ -164,7 +164,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			</Grid>
 			<Grid item>
 				<Typography variant="subtitle1">
-					It currently takes <Typography color="primary" display="inline"><Box display="inline" fontWeight="fontWeightBold">{incubationDuration}</Box></Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
+					It currently takes <Typography color="primary" display="inline">{incubationDuration}</Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
 				</Typography>
 			</Grid>
 			<Grid item>

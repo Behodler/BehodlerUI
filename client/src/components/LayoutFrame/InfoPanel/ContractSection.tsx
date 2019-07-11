@@ -14,7 +14,7 @@ export interface ContractProps {
 
 const textStyle = (theme: any) => ({
 	text: {
-		fontSize: 11.5,
+		fontSize: 13,
 		margin: "0",
 		fontWeight: 600
 	},

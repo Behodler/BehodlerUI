@@ -22,6 +22,11 @@ interface IContracts {
 	Dai: ERC20
 }
 
+interface AccountObservable{
+	account:string
+	isPrimary:boolean
+}
+
 class ethereumAPI {
 	private web3: Web3;
 	private metaMaskEnabled: boolean
@@ -31,7 +36,7 @@ class ethereumAPI {
 	private accountSubscription: any
 	private interval: any
 	private network: string
-	public accountObservable: Observable<string>
+	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
 	public daiEffects: ERC20Effects
 	public preEffects: PatienceRegulationEffects
@@ -52,7 +57,6 @@ class ethereumAPI {
 		const WeiDaiBank: WeiDaiBank = await this.deploy(bankJSON);
 		const PRE: PatienceRegulationEngine = await this.deploy(PREJSON)
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
-
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
 		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
 		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
@@ -113,7 +117,9 @@ class ethereumAPI {
 			const accountObserver = async () => {
 				const account = (await this.web3.eth.getAccounts())[0]
 				this.currentAccount = account
-				observer.next(account)
+				const primary = await this.Contracts.WeiDai.primary.call({from:account})
+				const observableResult:AccountObservable = {account,isPrimary:primary===account}
+				observer.next(observableResult)
 			};
 			await accountObserver();
 			this.interval = setInterval(accountObserver, 2000)

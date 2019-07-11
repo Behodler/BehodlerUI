@@ -6,7 +6,7 @@ import { IconButton, Icon, withStyles } from '@material-ui/core';
 
 const style = (theme: any) => ({
 	Button: {
-		margin: "10px 20px 0 0",
+		margin: "10px 20px 10px 10px",
 		padding: "0"
 	}
 })
@@ -15,20 +15,18 @@ interface SocialProps {
 	classes?: any
 }
 
-class SocialComponent extends React.Component<SocialProps, any> {
-	render() {
-		const { classes } = this.props
+function SocialComponent(props:SocialProps){
+		const { classes } = props
 		return (
 			<div>
 				<IconButton className={classes.Button}>
-					<Icon><img src={github} /></Icon>
+					<Icon><img src={github} onClick={()=>window.open('https://github.com/gititGoro/weidai')} /></Icon>
 				</IconButton>
 				<IconButton className={classes.Button}>
 					<Icon><img src={medium} /></Icon>
 				</IconButton>
 			</div>
 		)
-	}
 }
 
 export const Social = withStyles(style)(SocialComponent)
