@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import { ERC20 } from '../contractInterfaces/ERC20'
-import { Effect, FetchEthereumNumber, FetchNumberFields } from './common'
+import { Effect, FetchEthereumNumber, FetchNumberFields, FetchNumber } from './common'
 import EffectBase from './EffectBase'
 
 export class ERC20Effects extends EffectBase {
@@ -43,7 +43,7 @@ export class ERC20Effects extends EffectBase {
 				defaultValue: "unset",
 				accounts: [owner, spender, account]
 			}
-			return await FetchEthereumNumber(params)
+			return await FetchNumber(params)
 		})
 	}
 }

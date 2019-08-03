@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { withStyles, Grid, List, ListItem, Typography, Button, TextField, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
-import {IncubationProgress} from './IncubationProgress'
+import { IncubationProgress } from './IncubationProgress'
 import { formatNumberText } from '../../util/jsHelpers'
 interface PREprops {
 	currentUser: string
@@ -27,6 +27,9 @@ const style = (theme: any) => ({
 	joinText: {
 		marginTop: '50px'
 	},
+	createErrorMargin:{
+		marginTop: '10px'
+	}
 })
 
 function patienceRegulationEngineComponent(props: PREprops) {
@@ -43,13 +46,28 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [drawDownPeriodForUser, setDrawDownPeriodForUser] = useState(0)
 	const [split, setSplit] = useState<string>("")
 	const [customSplitChecked, setCustomSplitChecked] = useState<boolean>(false)
-	const [spinnerVisibility, setSpinnerVisibility] = useState<boolean>(false)
 	const [progressBar, setProgressBar] = useState<number>(0)
+	const [daiEnabled, setDaiEnabled] = useState<boolean>(false)
+	const [showInvalidDaiWarning, setShowInvalidDaiWarning] = useState<boolean>(false)
 
-	if ("twelve".length > 111) {
-		console.log(spinnerVisibility)
-		setSplit("20")
+	const invalidDaiWarning = function (show: boolean) {
+		if (show)
+			return <Grid item>
+				<Typography className ={props.classes.createErrorMargin} color="secondary" variant="caption">
+					before clicking create, enter a valid number for dai (text box above)
+				</Typography>
+
+			</Grid>
+		return ""
 	}
+
+	useEffect(() => {
+		const effect = API.daiEffects.allowance(props.currentUser, API.Contracts.WeiDaiBank.address)
+		const subscription = effect.Observable.subscribe((allowance) => {
+			setDaiEnabled(allowance === API.UINTMAX)
+		})
+		return () => { subscription.unsubscribe(); effect.cleanup() }
+	})
 
 	useEffect(() => {
 		const effect = API.preEffects.getClaimWaitWindow()
@@ -101,7 +119,6 @@ function patienceRegulationEngineComponent(props: PREprops) {
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
 
-
 	useEffect(() => {
 		const effect = API.preEffects.getBlockOfPurchase()
 		const subscription = effect.Observable.subscribe((result: any) => {
@@ -111,12 +128,13 @@ function patienceRegulationEngineComponent(props: PREprops) {
 
 			setProgressBlock(progressBlock)
 			setHolderIncubationDuration(totalDuration)
-			const progressBarIncrement = Math.round(progressBlock/totalDuration*100)
-			setProgressBar(isNaN(progressBarIncrement)?0:progressBarIncrement)
+			const progressBarIncrement = Math.round(progressBlock / totalDuration * 100)
+			setProgressBar(isNaN(progressBarIncrement) ? 0 : progressBarIncrement)
 		})
 
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
+
 	const setDaiToIncubateText = (text: string) => {
 		const newText = formatNumberText(text)
 		const newTextNum = parseFloat(newText)
@@ -236,8 +254,14 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					alignItems="center"
 					spacing={0}>
 					<Grid item>
-						<Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, setSpinnerVisibility, incubatingWeiDai == 0)}>Create</Button>
+						{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, incubatingWeiDai == 0, setShowInvalidDaiWarning)}>Create</Button>
+							: <Button size="large" variant="contained" color="secondary" onClick={async () => {
+								await API.Contracts.Dai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
+							}}>Enable Dai</Button>
+						}
+
 					</Grid>
+					{invalidDaiWarning(showInvalidDaiWarning)}
 					<Grid item className={props.classes.splitRate}>
 						<FormGroup row>
 							<FormControlLabel
@@ -262,7 +286,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				</Grid>
 			</Grid>
 		</Grid>
-			<Box component="div" display={incubatingWeiDai === 0 ? "inline" : "none"}>
+			<Box component="div" display={incubatingWeiDai > 0 ? "inline" : "none"}>
 				<Divider className={props.classes.pageSplit} />
 				<Grid
 					className={props.classes.bottomBox}
@@ -282,8 +306,8 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Typography>
 					</Grid>
 					<Grid item>
-					<IncubationProgress progress={progressBar}/>
-				</Grid>
+						<IncubationProgress progress={progressBar} />
+					</Grid>
 					<Grid item>
 						<Typography variant="h6" color="secondary">
 							Current Penalty: {currentWithdrawalPenalty}
@@ -307,14 +331,17 @@ function patienceRegulationEngineComponent(props: PREprops) {
 
 export const PatienceRegulationEngine = withStyles(style)(patienceRegulationEngineComponent)
 
-const buyWeiDaiAction = async (dai: string, split: string, user: string, setSpinnerVisibility: (visible: boolean) => void, createEnabled: boolean) => {
+const buyWeiDaiAction = async (dai: string, split: string, user: string, createEnabled: boolean, showError: (show: boolean) => void) => {
 	if (!createEnabled)
-		alert('TODO: insert weidai incubating message')
-	setSpinnerVisibility(true)
-
-	try {
-		alert(`waiting for Api to create using ${dai} with a splitrate of ${split} by user ${user}`)
-	} finally {
-		setSpinnerVisibility(false)
+		return
+	let splitInt = parseInt(split)
+	splitInt = isNaN(splitInt) ? 10 : splitInt
+	const convertedDai = parseFloat(dai)
+	if (isNaN(convertedDai)) {
+		showError(true)
+		return
 	}
+	showError(false)
+	let unscaledDai = API.toWei(dai)
+	await API.Contracts.PRE.buyWeiDai(unscaledDai, `${splitInt}`).send({ from: user })
 }

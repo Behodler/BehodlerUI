@@ -7,7 +7,7 @@ import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
 import { PatienceRegulationEffects } from './observables/PatienceRegulationEngine'
-import {BankEffects} from './observables/WeiDaiBank'
+import { BankEffects } from './observables/WeiDaiBank'
 
 import PREJSON from '../contracts/PatienceRegulationEngine.json'
 import WDJSON from '../contracts/WeiDai.json'
@@ -22,9 +22,9 @@ interface IContracts {
 	Dai: ERC20
 }
 
-interface AccountObservable{
-	account:string
-	isPrimary:boolean
+interface AccountObservable {
+	account: string
+	isPrimary: boolean
 }
 
 class ethereumAPI {
@@ -42,6 +42,8 @@ class ethereumAPI {
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
 	public Contracts: IContracts
+	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
+	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
 	constructor() {
 		this.metaMaskConnected = this.metaMaskEnabled = this.contractsInitialized = false
@@ -53,15 +55,26 @@ class ethereumAPI {
 			return;
 		}
 		this.network = await this.web3.eth.net.getNetworkType();
-		const WeiDai: WeiDai = await this.deploy(WDJSON)
-		const WeiDaiBank: WeiDaiBank = await this.deploy(bankJSON);
-		const PRE: PatienceRegulationEngine = await this.deploy(PREJSON)
+		const weiDaiDeployment = await this.deploy(WDJSON)
+		const WeiDai: WeiDai = weiDaiDeployment.methods;
+		WeiDai.address = weiDaiDeployment.address;
+
+		const weiDaiBankDeployment = await this.deploy(bankJSON);
+		const WeiDaiBank: WeiDaiBank = weiDaiBankDeployment.methods
+		WeiDaiBank.address = weiDaiBankDeployment.address;
+
+		const preDeployment = await this.deploy(PREJSON)
+		const PRE: PatienceRegulationEngine = preDeployment.methods
+		PRE.address = preDeployment.address
+
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
+		Dai.address = DaiAddressJSON[this.network]
+
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
 		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
 		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
 		this.preEffects = new PatienceRegulationEffects(this.web3, this.Contracts.PRE)
-		this.bankEffects = new BankEffects (this.web3,this.Contracts.WeiDaiBank)
+		this.bankEffects = new BankEffects(this.web3, this.Contracts.WeiDaiBank)
 		this.contractsInitialized = true
 	}
 
@@ -101,6 +114,14 @@ class ethereumAPI {
 		return this.currentAccount
 	}
 
+	public toWei(eth:string){
+		return this.web3.utils.toWei(eth)
+	}
+
+	public fromWei(wei:string){
+		return this.web3.utils.fromWei(wei)
+	}
+
 	public unsubscribeAccount() {
 		this.accountSubscription.unsubscribe(function (error, success) {
 			if (success) {
@@ -117,8 +138,8 @@ class ethereumAPI {
 			const accountObserver = async () => {
 				const account = (await this.web3.eth.getAccounts())[0]
 				this.currentAccount = account
-				const primary = await this.Contracts.WeiDai.primary.call({from:account})
-				const observableResult:AccountObservable = {account,isPrimary:primary===account}
+				const primary = await this.Contracts.WeiDai.primary.call({ from: account })
+				const observableResult: AccountObservable = { account, isPrimary: primary === account }
 				observer.next(observableResult)
 			};
 			await accountObserver();
@@ -146,7 +167,8 @@ class ethereumAPI {
 		let contractInstance: any;
 		try {
 			const contractInstance = await new this.web3.eth.Contract(abi, address)
-			return contractInstance.methods;
+			
+			return { methods: contractInstance.methods, address };
 		}
 		catch (err) {
 			console.log("contract failed to load: " + err);

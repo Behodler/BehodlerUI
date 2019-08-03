@@ -28,7 +28,7 @@ contract('bank', accounts => {
 
 	test("only primary can trigger a donation withdrawal", async () => {
 		let randomAddress = accounts[4]
-		await expectThrow(bankInstance.withdrawDonations({ from: randomAddress }), '{}')
+		await expectThrow(bankInstance.withdrawDonations({ from: randomAddress }), 'satisfies all conditions set by Solidity `require` statements.')
 	})
 
 	test("redeeming after buying preserves donation split", async () => {

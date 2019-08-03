@@ -1,7 +1,6 @@
-import { address, TX } from './SolidityTypes'
-import { call } from './CallableMethodInterface'
+import { address } from './SolidityTypes'
 
 export interface Secondary {
-	primary: () => call<address>
-	transferPrimary: (recipient: address, options: Object) => Promise<TX>
+	primary: () => any
+	transferPrimary: (recipient: address) =>any
 }

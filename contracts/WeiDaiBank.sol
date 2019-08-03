@@ -34,9 +34,9 @@ contract WeiDaiBank is Secondary, Versioned {
 		.div(WeiDai(getWeiDai()).totalSupply());
 	}
 
-	function issue(address sender, uint weidai,uint dai) external { //sender is dai holder, msg.sender is calling contract
+	function issue(address sender, uint weidai, uint dai) external { //sender is dai holder, msg.sender is calling contract
 		require(msg.sender == getPRE(), "only patience regulation engine can invoke this function");
-		ERC20(getDai()).transferFrom(sender, self, dai);  //test failing
+		ERC20(getDai()).transferFrom(sender, self, dai);//failing live at this point
 		WeiDai(getWeiDai()).issue(msg.sender, weidai);
 	}
 

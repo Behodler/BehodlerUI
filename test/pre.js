@@ -20,6 +20,23 @@ const setupTests = async (accounts) => {
 	return { bi, pi, mi, wd }
 }
 
+contract('Patience Regulation Engine: APPROVE', accounts => {
+	let bankInstance, preInstance, mockDaiInstance
+	setup(async () => {
+		const { bi, pi, mi } = await setupTests(accounts)
+		bankInstance = bi
+		preInstance = pi
+		mockDaiInstance = mi
+	})
+
+	test("not approving bank to take dai fails", async () => {
+		const initialExchangeRate = (await bankInstance.daiPerMyriadWeidai.call()).toString()
+		assert.equal(initialExchangeRate, "100")
+
+		await expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "satisfies all conditions set by Solidity `require` statements.")
+	})
+})
+
 contract('Patience Regulation Engine: SPLIT', accounts => {
 	let bankInstance, preInstance, mockDaiInstance
 	setup(async () => {
@@ -62,25 +79,6 @@ contract('Patience Regulation Engine: BUY 1', accounts => {
 		assert.equal(secondBuyExchangeRate, "100")
 	})
 })
-
-
-contract('Patience Regulation Engine: APPROVE', accounts => {
-	let bankInstance, preInstance, mockDaiInstance
-	setup(async () => {
-		const { bi, pi, mi } = await setupTests(accounts)
-		bankInstance = bi
-		preInstance = pi
-		mockDaiInstance = mi
-	})
-
-	test("not approving bank to take dai fails", async () => {
-		const initialExchangeRate = (await bankInstance.daiPerMyriadWeidai.call()).toString()
-		assert.equal(initialExchangeRate, "100")
-
-		await expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "{}")
-	})
-})
-
 
 contract('Patience Regulation Engine: Patient', accounts => {
 	let bankInstance, preInstance, mockDaiInstance, weidaiInstance
@@ -412,28 +410,5 @@ contract('Patience Regulation Engine: Redemption', accounts => {
 		assert.equal(daiAfterRedemption, daiBeforeRedemption + (0.98 * daiValueOfWeiDai))
 		assert.equal(weidaiAfterRedemption, 50000)
 		assert.equal(exchangeRateBeforeRedemption + 2, exchangeRateAfterRedemption)
-	})
-})
-
-contract('Patience Regulation Engine: Beta Phase', accounts => {
-	let bankInstance, preInstance, mockDaiInstance
-	setup(async () => {
-		const { bi, pi, mi, wd } = await setupTests(accounts)
-		bankInstance = bi
-		preInstance = pi
-		mockDaiInstance = mi
-		weidaiInstance = wd
-	})
-
-	test("100 limit applies during beta phase but not after", async () => {
-		const primaryOptions = { from: accounts[0] }
-		await preInstance.setBetaPhase(1, primaryOptions)
-		await mockDaiInstance.approve(bankInstance.address, "1000000", primaryOptions)
-		await expectThrow(preInstance.buyWeiDai(101, 0, primaryOptions), "maximum 100 dai can be purchased during beta phase.")
-		await expectThrow(preInstance.buyWeiDai(101, 0, { from: accounts[1] }), "maximum 100 dai can be purchased during beta phase.")
-
-		await preInstance.setBetaPhase(0, primaryOptions)
-		preInstance.buyWeiDai(101, 0, primaryOptions)
-		preInstance.buyWeiDai(101, 0, { from: accounts[1] })
 	})
 })
