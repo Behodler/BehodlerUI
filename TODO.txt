@@ -5,6 +5,8 @@ front end:
 1.1 Link to PRE page -- DONE
 1.2 Load immediately before first block -- DONE (without work)
 1.3 Make incubation only visible if incubating -- DONE
+1.4 Progress bar not getting correct numbers -- Not perfect but does fill
+
 2. Metamask not enabled landing page
 3. Metamask is enabled but not connected landing page
 4. Metamask is connected landing page

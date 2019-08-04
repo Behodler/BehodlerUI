@@ -27,7 +27,7 @@ const style = (theme: any) => ({
 	joinText: {
 		marginTop: '50px'
 	},
-	createErrorMargin:{
+	createErrorMargin: {
 		marginTop: '10px'
 	}
 })
@@ -53,7 +53,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const invalidDaiWarning = function (show: boolean) {
 		if (show)
 			return <Grid item>
-				<Typography className ={props.classes.createErrorMargin} color="secondary" variant="caption">
+				<Typography className={props.classes.createErrorMargin} color="secondary" variant="caption">
 					before clicking create, enter a valid number for dai (text box above)
 				</Typography>
 
@@ -64,7 +64,10 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.daiEffects.allowance(props.currentUser, API.Contracts.WeiDaiBank.address)
 		const subscription = effect.Observable.subscribe((allowance) => {
-			setDaiEnabled(allowance === API.UINTMAX)
+			let ethScaledAllowance = parseFloat(API.fromWei(allowance))
+			const daiBalanceFloat = parseFloat(daiBalance)
+			const nan = isNaN(ethScaledAllowance) || isNaN(daiBalanceFloat)
+			setDaiEnabled(!nan && ethScaledAllowance > daiBalanceFloat)
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})

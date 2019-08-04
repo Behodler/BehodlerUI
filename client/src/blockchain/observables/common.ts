@@ -20,7 +20,9 @@ export const EffectFactory = (web3: Web3): EffectFactoryType => (
 					observer.next(currentResult)
 				}
 			}
-			await queryBlockChain({ number: 0 })
+			let blockNumber = await web3.eth.getBlockNumber()
+			await queryBlockChain({ number: blockNumber })
+
 			subscription.on('data', queryBlockChain)
 		})
 		return new Effect(observable, subscription)
