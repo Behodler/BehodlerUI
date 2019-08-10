@@ -40,7 +40,7 @@ export class PatienceRegulationEffects extends EffectBase {
 			const params: FetchNumberFields = {
 				web3: this.web3,
 				defaultValue: "0",
-				action: async (accounts) => await this.preInstance.calculateCurrentPenalty(accounts[0]).call({ from: accounts[1] }),
+				action: async (accounts) => await this.preInstance.calculateCurrentPenalty(accounts[0],`${blockNumber}`).call({ from: accounts[1] }),
 				accounts: [holder, account]
 			}
 			return await FetchNumber(params)

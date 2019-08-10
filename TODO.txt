@@ -5,14 +5,19 @@ front end:
 1.1 Link to PRE page -- DONE
 1.2 Load immediately before first block -- DONE (without work)
 1.3 Make incubation only visible if incubating -- DONE
-1.4 Progress bar not getting correct numbers -- Not perfect but does fill
-
+1.4 Progress bar not getting correct numbers -- DONE
+1.5 Remove claim amount
+1.6 Popup when with penalty
+1.7 make claim text more visible or blue or something
+1.8 check for any public solidity methods that rely on block.number
+1.9 Round numbers that are >0
 2. Metamask not enabled landing page
 3. Metamask is enabled but not connected landing page
 4. Metamask is connected landing page
-5. Bank
-6. Side panel: For how it works and FAQ, sliders, not buttons.
-7. small nav bar functionality
+5. Handle Metamask user rejection. It causes uncaught error.
+6. Bank
+7. Side panel: For how it works and FAQ, sliders, not buttons.
+8. small nav bar functionality
 
 
 Governance:

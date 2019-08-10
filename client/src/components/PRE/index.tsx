@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import { withStyles, Grid, List, ListItem, Typography, Button, TextField, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
+import FormDialog from '../Common/FormDialog'
 import { IncubationProgress } from './IncubationProgress'
 import { formatNumberText } from '../../util/jsHelpers'
+
 interface PREprops {
 	currentUser: string
 	classes?: any
@@ -42,13 +44,13 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [progressBlock, setProgressBlock] = useState<number>(0)
 	const [holderIncubationDuration, setHolderIncubationDuration] = useState<number>(0)
 	const [currentWithdrawalPenalty, setCurrentWithdrawalPenalty] = useState<string>("")
-	const [weiDaiToClaim, setWeiDaiToClaim] = useState<string>("")
 	const [drawDownPeriodForUser, setDrawDownPeriodForUser] = useState(0)
 	const [split, setSplit] = useState<string>("")
 	const [customSplitChecked, setCustomSplitChecked] = useState<boolean>(false)
 	const [progressBar, setProgressBar] = useState<number>(0)
 	const [daiEnabled, setDaiEnabled] = useState<boolean>(false)
 	const [showInvalidDaiWarning, setShowInvalidDaiWarning] = useState<boolean>(false)
+	const [claimWithPenaltyPopup, setClaimWithPenaltyPopup] = useState<boolean>(false)
 
 	const invalidDaiWarning = function (show: boolean) {
 		if (show)
@@ -125,13 +127,14 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.preEffects.getBlockOfPurchase()
 		const subscription = effect.Observable.subscribe((result: any) => {
-			const totalDuration = drawDownPeriodForUser * 20
-			const currentBlock = result.blockNumber - result.blockOfPurchase
-			const progressBlock = currentBlock > totalDuration ? totalDuration : currentBlock
 
+			const totalBlockDuration = drawDownPeriodForUser * 20
+			const currentBlock = result.blockNumber - result.blockOfPurchase
+			const progressBlock = currentBlock > totalBlockDuration ? totalBlockDuration : currentBlock
 			setProgressBlock(progressBlock)
-			setHolderIncubationDuration(totalDuration)
-			const progressBarIncrement = Math.round(progressBlock / totalDuration * 100)
+			setHolderIncubationDuration(totalBlockDuration)
+			const progressBarIncrement = Math.round(progressBlock * 100 / totalBlockDuration)
+
 			setProgressBar(isNaN(progressBarIncrement) ? 0 : progressBarIncrement)
 		})
 
@@ -162,133 +165,154 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			newTextInt = 0
 		setSplit(`${newTextInt}`)
 	}
+
+
+
+	const calculateNetWeiDai = (penalty, weiDaiToCreate) => {
+		const penaltyNum = parseInt(penalty) / 100
+		const weiNum = parseFloat(weiDaiToCreate)
+		return Math.round((weiNum * (1 - penaltyNum) * 1000)) / 1000
+	}
+
 	return (
-		<div className={props.classes.root}><Grid
-			container
-			direction="column"
-			justify="flex-start"
-			alignItems="center"
-			spacing={0}>
-			<Grid item>
-				<Grid
-					container
-					direction="row"
-					justify="flex-start"
-					alignItems="center"
-					spacing={8}>
-					<Grid item>
-						<Typography variant="h5">
-							PATIENCE REGULATION ENGINE
+		<div className={props.classes.root}>
+			<FormDialog fieldNames={[]} fieldUpdate={[() => { }]} fieldText={[]} isOpen={claimWithPenaltyPopup}
+				message={`WeiDai after early claim penalty: ${calculateNetWeiDai(currentWithdrawalPenalty, incubatingWeiDai)}`}
+				title="Claiming WeiDai before full incubation incurs a penalty. Proceed?"
+				validationErrors={[]}
+				close={() => { setClaimWithPenaltyPopup(false) }}
+				submit={async () => {
+					setClaimWithPenaltyPopup(false)
+					await API.Contracts.PRE.claimWeiDai().send({ from: props.currentUser })
+
+				}}
+			/>
+			<Grid
+				container
+				direction="column"
+				justify="flex-start"
+				alignItems="center"
+				spacing={0}>
+				<Grid item>
+					<Grid
+						container
+						direction="row"
+						justify="flex-start"
+						alignItems="center"
+						spacing={8}>
+						<Grid item>
+							<Typography variant="h5">
+								PATIENCE REGULATION ENGINE
 					</Typography>
+						</Grid>
 					</Grid>
 				</Grid>
-			</Grid>
-			<Grid item>
-				<Typography variant="h6">
-					WEIDAI = DAI + TIME
+				<Grid item>
+					<Typography variant="h6">
+						WEIDAI = DAI + TIME
 				</Typography>
-			</Grid>
-			<Grid item>
-				<Typography variant="subtitle1">
-					It currently takes <Typography color="primary" display="inline">{incubationDuration}</Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
+				</Grid>
+				<Grid item>
+					<Typography variant="subtitle1">
+						It currently takes <Typography color="primary" display="inline">{incubationDuration}</Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
 				</Typography>
-			</Grid>
-			<Grid item>
-				<div className={props.classes.pagebreak}></div>
-			</Grid>
-			<Grid item>
-				<Grid container
-					direction="row"
-					justify="space-between"
-					spacing={4}
-					alignItems="center">
-					<Grid item>
-						<Typography variant="h6">
-							Your Dai balance
+				</Grid>
+				<Grid item>
+					<div className={props.classes.pagebreak}></div>
+				</Grid>
+				<Grid item>
+					<Grid container
+						direction="row"
+						justify="space-between"
+						spacing={4}
+						alignItems="center">
+						<Grid item>
+							<Typography variant="h6">
+								Your Dai balance
 							</Typography>
-					</Grid>
-					<Grid item>
-						<Typography variant="h6" color="primary">
-							{daiBalance}
-						</Typography>
-					</Grid>
-				</Grid>
-			</Grid>
-			<Grid item>
-				<Grid container
-					direction="row"
-					justify="space-around"
-					spacing={1}
-					alignItems="flex-start">
-					<Grid item>
-						<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
-					</Grid>
-					<Grid item>
-
-						<Box component="div" className={props.classes.joinText}>
-							<Typography variant="caption">
-								will create
-						</Typography>
-						</Box>
-					</Grid>
-					<Grid item>
-						<List>
-							<ListItem>
-								<TextField
-									label="WeiDai"
-									type="text"
-									name="WeiDai"
-									autoComplete="WeiDai"
-									margin="normal"
-									variant="outlined"
-									value={weiDaiToCreate}
-								/>
-							</ListItem>
-							<ListItem></ListItem>
-						</List>
+						</Grid>
+						<Grid item>
+							<Typography variant="h6" color="primary">
+								{daiBalance}
+							</Typography>
+						</Grid>
 					</Grid>
 				</Grid>
-			</Grid>
-			<Grid item>
-				<Grid
-					container
-					direction="column"
-					justify="flex-start"
-					alignItems="center"
-					spacing={0}>
-					<Grid item>
-						{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, incubatingWeiDai == 0, setShowInvalidDaiWarning)}>Create</Button>
-							: <Button size="large" variant="contained" color="secondary" onClick={async () => {
-								await API.Contracts.Dai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
-							}}>Enable Dai</Button>
-						}
+				<Grid item>
+					<Grid container
+						direction="row"
+						justify="space-around"
+						spacing={1}
+						alignItems="flex-start">
+						<Grid item>
+							<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
+						</Grid>
+						<Grid item>
 
-					</Grid>
-					{invalidDaiWarning(showInvalidDaiWarning)}
-					<Grid item className={props.classes.splitRate}>
-						<FormGroup row>
-							<FormControlLabel
-								label="set custom split rate (advanced)"
-								control={
-									<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
-										setCustomSplitChecked(event.target.checked)
-										if (!event.target.checked)
-											setSplit("10")
-									}
-									}
+							<Box component="div" className={props.classes.joinText}>
+								<Typography variant="caption">
+									will create
+						</Typography>
+							</Box>
+						</Grid>
+						<Grid item>
+							<List>
+								<ListItem>
+									<TextField
+										label="WeiDai"
+										type="text"
+										name="WeiDai"
+										autoComplete="WeiDai"
+										margin="normal"
+										variant="outlined"
+										value={weiDaiToCreate}
 									/>
-								}
-							/>
-						</FormGroup>
+								</ListItem>
+								<ListItem></ListItem>
+							</List>
+						</Grid>
 					</Grid>
-					<Grid item>
-						<Box component="div" visibility={customSplitChecked ? "visible" : "hidden"}>
-							<ValueTextBox text={split} placeholder={"Split Rate"} changeText={setSplitText}></ValueTextBox>
-						</Box>
+				</Grid>
+				<Grid item>
+					<Grid
+						container
+						direction="column"
+						justify="flex-start"
+						alignItems="center"
+						spacing={0}>
+						<Grid item>
+							{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, incubatingWeiDai == 0, setShowInvalidDaiWarning)}>Create</Button>
+								: <Button size="large" variant="contained" color="secondary" onClick={async () => {
+									await API.Contracts.Dai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
+								}}>Enable Dai</Button>
+							}
+
+						</Grid>
+						{invalidDaiWarning(showInvalidDaiWarning)}
+						<Grid item className={props.classes.splitRate}>
+							<FormGroup row>
+								<FormControlLabel
+									label="set custom split rate (advanced)"
+									control={
+										<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
+											setCustomSplitChecked(event.target.checked)
+											if (!event.target.checked)
+												setSplit("10")
+										}
+										}
+										/>
+									}
+								/>
+							</FormGroup>
+						</Grid>
+						<Grid item>
+							<Box component="div" visibility={customSplitChecked ? "visible" : "hidden"}>
+								<ValueTextBox text={split} placeholder={"Split Rate"} changeText={setSplitText}></ValueTextBox>
+							</Box>
+						</Grid>
 					</Grid>
 				</Grid>
 			</Grid>
-		</Grid>
 			<Box component="div" display={incubatingWeiDai > 0 ? "inline" : "none"}>
 				<Divider className={props.classes.pageSplit} />
 				<Grid
@@ -317,11 +341,13 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Typography>
 					</Grid>
 					<Grid item>
-						<ValueTextBox placeholder="WeiDai to claim" text={weiDaiToClaim} changeText={(text: string) => { setWeiDaiToClaim(text) }} entireAction={() => setWeiDaiToClaim(incubatingWeiDai.toString())} />
-					</Grid>
-					<Grid item>
-						<Button variant="contained" color="secondary" onClick={() => {
-							alert("todo: claim weidai")
+						<Button variant="contained" color="secondary" onClick={async () => {
+							if (parseInt(currentWithdrawalPenalty) > 0) {
+								setClaimWithPenaltyPopup(true)
+								console.log(claimWithPenaltyPopup)
+							} else {
+								await API.Contracts.PRE.claimWeiDai().send({ from: props.currentUser })
+							}
 						}}>
 							Claim{parseInt(currentWithdrawalPenalty) > 0 ? ' with penalty' : ''}
 						</Button>

@@ -36,8 +36,8 @@ function ContractSectionComponent(props: ContractProps) {
 	useEffect(() => {
 		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
 		const subscription = effect.Observable.subscribe((exchangeRate) => {
-			const weiDaiExchangeRate = 1 / parseInt(exchangeRate)
-			const growth = (weiDaiExchangeRate - 0.01) / 100
+			const weiDaiExchangeRate = parseInt(exchangeRate) / 10000
+			const growth = Math.round(((weiDaiExchangeRate - 0.01) / 0.01) * 10000)/100
 			setWeiDaiPrice(weiDaiExchangeRate)
 			setTotalPriceGrowth(growth)
 		})
@@ -76,7 +76,7 @@ function ContractSectionComponent(props: ContractProps) {
 				{getLine("WEIDAI PRICE", `${weiDaiPrice} DAI`)}
 			</ClickAbleInfoListItem>
 			<ClickAbleInfoListItem details={penaltyReductionPeriodDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
-				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod +' block' + (parseInt(penaltyReductionPeriod)>1?'s':''))}
+				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod + ' block' + (parseInt(penaltyReductionPeriod) > 1 ? 's' : ''))}
 			</ClickAbleInfoListItem>
 			<ClickAbleInfoListItem details={adjustmentBlockDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
 				{getLine("LAST PENALTY ADJUSTMENT BLOCK", lastAdjustmentBlock)}

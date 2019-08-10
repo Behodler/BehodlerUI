@@ -11,7 +11,7 @@ export interface PatienceRegulationEngine extends BaseContract, Secondary {
 	getCurrentPenalty: () => any
 	getLockedWeiDai: (hodler: address) => any
 	getClaimWaitWindow: () => any
-	calculateCurrentPenalty: (holder: address) => any
+	calculateCurrentPenalty: (holder: address, blockNumber: uint) => any
 	getPenaltyDrawdownPeriodForHolder: (holder: address) => any
 	setDependencies: (bank: address, weiDai: address) => any
 	setClaimWindowsPerAdjustment: (c: uint) => any

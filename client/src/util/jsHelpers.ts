@@ -14,8 +14,7 @@ export const formatNumberText = (text:string):string=>{
 		dotCounter = c === '.' ? dotCounter + 1 : dotCounter
 		if (dotCounter > 1)
 			return false
-		var code = c.charCodeAt(0)
-		return (c == '' || c == '.' || (code >= 48 && code < 57))
+		return (c == '' || c == '.' || !isNaN(parseInt(c)))
 	}).join('')
 	if (newText.length > 1 && newText.charAt(0) === '0' && newText.charAt(1) !== '.')
 		newText = newText.substring(1)
