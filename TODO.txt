@@ -1,4 +1,4 @@
-
+bug: claiming with penalty doesn't raise exchange rate.
 
 front end:
 1. Patience Regulation Engine page - use PRE.png
@@ -6,11 +6,13 @@ front end:
 1.2 Load immediately before first block -- DONE (without work)
 1.3 Make incubation only visible if incubating -- DONE
 1.4 Progress bar not getting correct numbers -- DONE
-1.5 Remove claim amount
-1.6 Popup when with penalty
-1.7 make claim text more visible or blue or something
-1.8 check for any public solidity methods that rely on block.number
-1.9 Round numbers that are >0
+1.5 Remove claim amount -- DONE
+1.6 Popup when with penalty -- DONE
+1.7 make claim text more visible or blue or something -- DONE
+1.8 Round numbers that are >0 -- DONE
+1.9 hide create section when incubating -- DONE
+1.10 check for any public solidity methods that rely on block.number
+
 2. Metamask not enabled landing page
 3. Metamask is enabled but not connected landing page
 4. Metamask is connected landing page

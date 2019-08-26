@@ -18,6 +18,8 @@ interface FormDialogProps {
 	title: string
 	isOpen: boolean
 	validationErrors: string[],
+	acceptLabel?: string,
+	rejectLabel?: string
 	classes?: any
 }
 
@@ -35,7 +37,7 @@ const formStyle = (theme: any) => ({
 })
 
 
-const getFields = (props:FormDialogProps) => {
+const getFields = (props: FormDialogProps) => {
 	return props.fieldNames.map((fieldName, index) => (
 		<TextField
 			autoFocus
@@ -47,7 +49,7 @@ const getFields = (props:FormDialogProps) => {
 			fullWidth
 			value={props.fieldText[index]}
 			InputLabelProps={{
-				className:props.classes.message
+				className: props.classes.message
 			}}
 			InputProps={{
 				className: props.classes.message,
@@ -87,11 +89,11 @@ function FormDialogComponent(props: FormDialogProps) {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={props.close} color="primary">
-						Cancel
-							</Button>
+						{!props.rejectLabel ? 'Cancel' : props.rejectLabel}
+					</Button>
 					<Button onClick={props.submit} color="primary">
-						Create
-						</Button>
+						{!props.acceptLabel ? 'Create' : props.acceptLabel}
+					</Button>
 				</DialogActions>
 			</Dialog>
 		</div>

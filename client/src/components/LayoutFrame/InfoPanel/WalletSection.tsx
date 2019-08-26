@@ -9,6 +9,7 @@ import * as storage from '../../../util/HTML5'
 import { truncate } from '../../../util/jsHelpers'
 import { DetailProps } from './Detail'
 import { ClickAbleInfoListItem } from './Common'
+import {formatDecimalStrings} from '../../../util/jsHelpers'
 
 const textStyle = (theme: any) => ({
 	text: {
@@ -39,7 +40,7 @@ function WalletSectionComponent(props: WalletProps) {
 	useEffect(() => {
 		const effect = API.weiDaiEffects.balanceOfEffect(props.walletAddress)
 		const subscription = effect.Observable.subscribe((balance) => {
-			setWeiDaiBalance(balance)
+			setWeiDaiBalance(formatDecimalStrings(balance))
 		})
 
 		return function () {
@@ -51,7 +52,7 @@ function WalletSectionComponent(props: WalletProps) {
 	useEffect(() => {
 		const effect = API.daiEffects.balanceOfEffect(props.walletAddress)
 		const subscription = effect.Observable.subscribe((balance) => {
-			setDaiBalance(balance)
+			setDaiBalance(formatDecimalStrings(balance))
 		})
 
 		return function () {
@@ -63,7 +64,7 @@ function WalletSectionComponent(props: WalletProps) {
 	useEffect(() => {
 		const effect = API.preEffects.incubatingWeiDai(props.walletAddress)
 		const subscription = effect.Observable.subscribe((balance) => {
-			setIncubatingWeiDai(balance)
+			setIncubatingWeiDai(formatDecimalStrings(balance))
 		})
 
 		return function () {

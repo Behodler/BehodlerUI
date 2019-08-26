@@ -5,7 +5,7 @@ import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
 import FormDialog from '../Common/FormDialog'
 import { IncubationProgress } from './IncubationProgress'
-import { formatNumberText } from '../../util/jsHelpers'
+import { formatNumberText, formatDecimalStrings } from '../../util/jsHelpers'
 
 interface PREprops {
 	currentUser: string
@@ -103,7 +103,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.preEffects.incubatingWeiDai(props.currentUser)
 		const subscription = effect.Observable.subscribe((incubating: string) => {
-			setIncubatingWeiDai(parseFloat(incubating))
+			setIncubatingWeiDai(parseFloat(formatDecimalStrings(incubating)))
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
@@ -186,6 +186,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					await API.Contracts.PRE.claimWeiDai().send({ from: props.currentUser })
 
 				}}
+				acceptLabel='claim'
 			/>
 			<Grid
 				container
@@ -238,6 +239,8 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Grid>
 					</Grid>
 				</Grid>
+				<Box component="div" display={incubatingWeiDai > 0 ? "none" : "inline"}>
+				<Divider className={props.classes.pageSplit} />
 				<Grid item>
 					<Grid container
 						direction="row"
@@ -312,6 +315,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Grid>
 					</Grid>
 				</Grid>
+				</Box>
 			</Grid>
 			<Box component="div" display={incubatingWeiDai > 0 ? "inline" : "none"}>
 				<Divider className={props.classes.pageSplit} />
@@ -337,7 +341,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					</Grid>
 					<Grid item>
 						<Typography variant="h6" color="secondary">
-							Current Penalty: {currentWithdrawalPenalty}
+							Current Penalty: {currentWithdrawalPenalty}%
 						</Typography>
 					</Grid>
 					<Grid item>
