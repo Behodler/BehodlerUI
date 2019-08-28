@@ -9,6 +9,7 @@ export interface EffectFactoryType {
 export const EffectFactory = (web3: Web3): EffectFactoryType => (
 	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect => {
 		const subscription = web3.eth.subscribe("newBlockHeaders")
+		let lastdata: any = null
 		const observable = Observable.create(async (observer) => {
 			const queryBlockChain = async (data) => {
 				let account = (await web3.eth.getAccounts())[0]
@@ -17,7 +18,10 @@ export const EffectFactory = (web3: Web3): EffectFactoryType => (
 				}
 				else {
 					const currentResult = await action({ account, blockNumber: data.number })
-					observer.next(currentResult)
+					if (currentResult != lastdata) {
+						lastdata = currentResult
+						observer.next(currentResult)
+					}
 				}
 			}
 			let blockNumber = await web3.eth.getBlockNumber()

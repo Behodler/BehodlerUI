@@ -1,7 +1,7 @@
 bug: claiming with penalty doesn't raise exchange rate.
 
 front end:
-1. Patience Regulation Engine page - use PRE.png
+1. Patience Regulation Engine page - use PRE.png --DONE
 1.1 Link to PRE page -- DONE
 1.2 Load immediately before first block -- DONE (without work)
 1.3 Make incubation only visible if incubating -- DONE
@@ -11,7 +11,8 @@ front end:
 1.7 make claim text more visible or blue or something -- DONE
 1.8 Round numbers that are >0 -- DONE
 1.9 hide create section when incubating -- DONE
-1.10 check for any public solidity methods that rely on block.number
+1.10 check for any public solidity methods that rely on block.number --DONE
+1.11 make sure observables are only publishing new data -- DONE but metamask is clearly at fault
 
 2. Metamask not enabled landing page
 3. Metamask is enabled but not connected landing page
@@ -20,7 +21,8 @@ front end:
 6. Bank
 7. Side panel: For how it works and FAQ, sliders, not buttons.
 8. small nav bar functionality
-
+9. Firefox breakpoint messes up PRE layout before shrinking.
+10. Metamask slowdown -> try on Kovan
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.
