@@ -11,6 +11,7 @@ import { Detail, DetailProps } from './InfoPanel/Detail'
 import Mobile from './ActionPanel/Mobile'
 import API from '../../blockchain/ethereumAPI'
 import { PatienceRegulationEngine } from '../PRE/index'
+import {MetamaskFailed} from '../Common/MetamaskFailed'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
@@ -100,20 +101,11 @@ function LayoutFrameComponent(props: any) {
 		}
 	})
 
-
 	const { classes } = props
+	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled = {metaMaskEnabled}/>
+	const showError:boolean =!(metaMaskConnected && metaMaskEnabled)
 
-	const noMetamask = "METAMASK NOT ENABLED"
-	const notConnected = "METAMASK NOT CONNECTED!"
-	let error: any = null
-	if (!metaMaskEnabled)
-		error = noMetamask
-	else if (!metaMaskConnected)
-		error = notConnected
-	else if (walletAddress === '0x0')
-		error = 'NO ACCOUNT'
-
-	return !!error ? error : (
+	return showError ? metamaskMessage : (
 		<div className={classes.root}>
 			<Router>
 				{renderRedirect}

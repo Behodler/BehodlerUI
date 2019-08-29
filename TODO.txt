@@ -14,7 +14,9 @@ front end:
 1.10 check for any public solidity methods that rely on block.number --DONE
 1.11 make sure observables are only publishing new data -- DONE but metamask is clearly at fault
 
-2. Metamask not enabled landing page
+2. Metamask not enabled landing page -- BUSY -- not inheriting theme
+	2.1 center image on screen: use materialUI
+	2.3 have friendly accompanying text
 3. Metamask is enabled but not connected landing page
 4. Metamask is connected landing page
 5. Handle Metamask user rejection. It causes uncaught error.

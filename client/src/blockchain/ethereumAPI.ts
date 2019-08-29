@@ -89,7 +89,7 @@ class ethereumAPI {
 			} catch (metaMaskDeniedException) {
 				this.metaMaskConnected = false
 			}
-
+			
 			web3 = new Web3(web3.currentProvider)
 			this.web3 = web3
 			this.currentAccount = (await web3.eth.getAccounts())[0]
@@ -114,11 +114,11 @@ class ethereumAPI {
 		return this.currentAccount
 	}
 
-	public toWei(eth:string){
+	public toWei(eth: string) {
 		return this.web3.utils.toWei(eth)
 	}
 
-	public fromWei(wei:string){
+	public fromWei(wei: string) {
 		return this.web3.utils.fromWei(wei)
 	}
 
@@ -167,7 +167,7 @@ class ethereumAPI {
 		let contractInstance: any;
 		try {
 			const contractInstance = await new this.web3.eth.Contract(abi, address)
-			
+
 			return { methods: contractInstance.methods, address };
 		}
 		catch (err) {
