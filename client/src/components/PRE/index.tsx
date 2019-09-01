@@ -1,16 +1,27 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Grid, Typography, Button, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
+import { withStyles, Grid, Typography, Button, Divider, Switch, FormGroup, FormControlLabel, Box, Theme } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
 import FormDialog from '../Common/FormDialog'
 import { IncubationProgress } from './IncubationProgress'
 import { formatNumberText, formatDecimalStrings } from '../../util/jsHelpers'
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface PREprops {
 	currentUser: string
 	classes?: any
 }
+
+const HtmlTooltip = withStyles((theme: Theme) => ({
+	tooltip: {
+		backgroundColor: '#f5f5f9',
+		color: 'rgba(0, 0, 0, 0.87)',
+		maxWidth: 220,
+		fontSize: theme.typography.pxToRem(16),
+		border: '1px solid #dadde9',
+	},
+}))(Tooltip);
 
 const style = (theme: any) => ({
 	pagebreak: {
@@ -48,6 +59,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [daiEnabled, setDaiEnabled] = useState<boolean>(false)
 	const [showInvalidDaiWarning, setShowInvalidDaiWarning] = useState<boolean>(false)
 	const [claimWithPenaltyPopup, setClaimWithPenaltyPopup] = useState<boolean>(false)
+	const [toolTipText, setToolTipText] = useState<string>("")
 
 	const invalidDaiWarning = function (show: boolean) {
 		if (show)
@@ -59,6 +71,13 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			</Grid>
 		return ""
 	}
+
+	useEffect(() => {
+		const parsedSplit = parseInt(split)
+		const numSplit = isNaN(parsedSplit) ? 10 : parsedSplit
+
+		setToolTipText(`When a user burns WeiDai (E.G. redeeming for Dai incurs a 2% burn fee), a certain percentage of the delegated amount to be burnt is sent to the developer as a donation. This percentage is determined by the Split Rate. The left over portion is then burnt (deleted), diminishing the supply of WeiDai, pushing up the Redeem rate. For instance, if 10 WeiDai are burnt with a split rate of ${numSplit} then ${numSplit/10} is donated to the developer and ${(100-numSplit)/100*10} is burnt. Since burning pushes up the redeem rate, it can be considered a donation to the WeiDai community.`)
+	}, [split])
 
 	useEffect(() => {
 		const effect = API.daiEffects.allowance(props.currentUser, API.Contracts.WeiDaiBank.address)
@@ -258,7 +277,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							<Grid item>
 								<Box component="div">
 									<Typography variant="h6" color="secondary">
-										{weiDaiToCreate.length==0?0:weiDaiToCreate} WeiDai
+										{weiDaiToCreate.length == 0 ? 0 : weiDaiToCreate} WeiDai
 									</Typography>
 								</Box>
 							</Grid>
@@ -284,20 +303,22 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							</Grid>
 							{invalidDaiWarning(showInvalidDaiWarning)}
 							<Grid item className={props.classes.splitRate}>
-								<FormGroup row>
-									<FormControlLabel
-										label="set custom split rate (advanced)"
-										control={
-											<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
-												setCustomSplitChecked(event.target.checked)
-												if (!event.target.checked)
-													setSplit("10")
+								<HtmlTooltip title={toolTipText} aria-label={toolTipText}>
+									<FormGroup row>
+										<FormControlLabel
+											label="set custom split rate (advanced)"
+											control={
+												<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
+													setCustomSplitChecked(event.target.checked)
+													if (!event.target.checked)
+														setSplit("10")
+												}
+												}
+												/>
 											}
-											}
-											/>
-										}
-									/>
-								</FormGroup>
+										/>
+									</FormGroup>
+								</HtmlTooltip>
 							</Grid>
 							<Grid item>
 								<Box component="div" visibility={customSplitChecked ? "visible" : "hidden"}>

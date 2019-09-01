@@ -5,8 +5,8 @@ import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 const theme = createMuiTheme({
 	typography: {
-		fontFamily: 'Syncopate',
-		fontSize:11
+		//fontFamily: 'Syncopate',
+		//fontSize:11
 	}
 })
 
