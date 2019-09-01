@@ -89,7 +89,7 @@ class ethereumAPI {
 			} catch (metaMaskDeniedException) {
 				this.metaMaskConnected = false
 			}
-			
+
 			web3 = new Web3(web3.currentProvider)
 			this.web3 = web3
 			this.currentAccount = (await web3.eth.getAccounts())[0]
@@ -115,10 +115,14 @@ class ethereumAPI {
 	}
 
 	public toWei(eth: string) {
+		if (eth == 'unset')
+			return 'unset'
 		return this.web3.utils.toWei(eth)
 	}
 
 	public fromWei(wei: string) {
+		if (wei == 'unset')
+			return 'unset'
 		return this.web3.utils.fromWei(wei)
 	}
 

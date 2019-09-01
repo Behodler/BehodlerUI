@@ -10,8 +10,9 @@ import { WalletSection } from './InfoPanel/WalletSection'
 import { Detail, DetailProps } from './InfoPanel/Detail'
 import Mobile from './ActionPanel/Mobile'
 import API from '../../blockchain/ethereumAPI'
-import { PatienceRegulationEngine } from '../PRE/index'
-import {MetamaskFailed} from '../Common/MetamaskFailed'
+import PatienceRegulationEngine from '../PRE/index'
+import Bank from '../Bank/index'
+import { MetamaskFailed } from '../Common/MetamaskFailed'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
@@ -102,8 +103,8 @@ function LayoutFrameComponent(props: any) {
 	})
 
 	const { classes } = props
-	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled = {metaMaskEnabled}/>
-	const showError:boolean =!(metaMaskConnected && metaMaskEnabled)
+	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled={metaMaskEnabled} />
+	const showError: boolean = !(metaMaskConnected && metaMaskEnabled)
 
 	return showError ? metamaskMessage : (
 		<div className={classes.root}>
@@ -115,7 +116,7 @@ function LayoutFrameComponent(props: any) {
 						className={classes.actionDrawer}
 						classes={{ paper: classes.actionDrawerPaper }}
 					>
-						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} />
+						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} />
 						<Divider />
 						{isPrimary ?
 							<AdminSection /> : ""
@@ -170,7 +171,7 @@ function LayoutFrameComponent(props: any) {
 							<PatienceRegulationEngine currentUser={walletAddress} />
 						</Route>
 						<Route path="/bank">
-							Bank
+							<Bank />
 						</Route>
 					</Switch>
 				</main>

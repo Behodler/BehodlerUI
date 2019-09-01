@@ -13,14 +13,20 @@ front end:
 1.9 hide create section when incubating -- DONE
 1.10 check for any public solidity methods that rely on block.number --DONE
 1.11 make sure observables are only publishing new data -- DONE but metamask is clearly at fault
+1.12 move will create and weidai boxes to verticle and replace weidai box with label -- DONE
+1.13 change split rate label to have a what's this in brackets with a tooltip rather than advanced -- BUSY
 
 2. Metamask not enabled landing page -- DONE
-3. Handle Metamask user rejection. It causes uncaught error.
+3. Handle Metamask user rejection. It causes uncaught error. -- DONE (unnecessary)
 4. Bank
-5. Side panel: For how it works and FAQ, sliders, not buttons.
+5. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
 6. small nav bar functionality
-7. Firefox breakpoint messes up PRE layout before shrinking.
-8. Metamask slowdown -> try on Kovan
+7. Set Dependencies, withdraw donations
+8. How it works
+9. Burn page - tell user this is dangerous but contributes to other users
+10. Firefox breakpoint messes up PRE layout before shrinking.
+11. Metamask slowdown -> try on Kovan
+12. In the future add a reload for network change event. Right now, functionality not supported.
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.

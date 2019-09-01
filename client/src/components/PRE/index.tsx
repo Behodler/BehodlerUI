@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Grid, List, ListItem, Typography, Button, TextField, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
+import { withStyles, Grid, Typography, Button, Divider, Switch, FormGroup, FormControlLabel, Box } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from './ValueTextBox'
 import FormDialog from '../Common/FormDialog'
@@ -25,9 +25,6 @@ const style = (theme: any) => ({
 	},
 	bottomBox: {
 		marginBottom: "100px"
-	},
-	joinText: {
-		marginTop: '50px'
 	},
 	createErrorMargin: {
 		marginTop: '10px'
@@ -240,81 +237,75 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					</Grid>
 				</Grid>
 				<Box component="div" display={incubatingWeiDai > 0 ? "none" : "inline"}>
-				<Divider className={props.classes.pageSplit} />
-				<Grid item>
-					<Grid container
-						direction="row"
-						justify="space-around"
-						spacing={1}
-						alignItems="flex-start">
-						<Grid item>
-							<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
-						</Grid>
-						<Grid item>
+					<Divider className={props.classes.pageSplit} />
+					<Grid item>
+						<Grid container
+							direction="column"
+							justify="space-around"
+							spacing={3}
+							alignItems="center">
+							<Grid item>
+								<ValueTextBox text={daiToIncubate} placeholder="Dai" changeText={setDaiToIncubateText} entireAction={() => setDaiToIncubateText(daiBalance)} />
+							</Grid>
+							<Grid item>
 
-							<Box component="div" className={props.classes.joinText}>
-								<Typography variant="caption">
-									will create
-						</Typography>
-							</Box>
+								<Box component="div">
+									<Typography variant="caption">
+										will create
+								</Typography>
+								</Box>
+							</Grid>
+							<Grid item>
+								<Box component="div">
+									<Typography variant="h6" color="secondary">
+										{weiDaiToCreate.length==0?0:weiDaiToCreate} WeiDai
+									</Typography>
+								</Box>
+							</Grid>
+							<Grid item>
+								&nbsp;
+							</Grid>
 						</Grid>
-						<Grid item>
-							<List>
-								<ListItem>
-									<TextField
-										label="WeiDai"
-										type="text"
-										name="WeiDai"
-										autoComplete="WeiDai"
-										margin="normal"
-										variant="outlined"
-										value={weiDaiToCreate}
+					</Grid>
+					<Grid item>
+						<Grid
+							container
+							direction="column"
+							justify="flex-start"
+							alignItems="center"
+							spacing={0}>
+							<Grid item>
+								{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, incubatingWeiDai == 0, setShowInvalidDaiWarning)}>Create</Button>
+									: <Button size="large" variant="contained" color="secondary" onClick={async () => {
+										await API.Contracts.Dai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
+									}}>Enable Dai</Button>
+								}
+
+							</Grid>
+							{invalidDaiWarning(showInvalidDaiWarning)}
+							<Grid item className={props.classes.splitRate}>
+								<FormGroup row>
+									<FormControlLabel
+										label="set custom split rate (advanced)"
+										control={
+											<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
+												setCustomSplitChecked(event.target.checked)
+												if (!event.target.checked)
+													setSplit("10")
+											}
+											}
+											/>
+										}
 									/>
-								</ListItem>
-								<ListItem></ListItem>
-							</List>
+								</FormGroup>
+							</Grid>
+							<Grid item>
+								<Box component="div" visibility={customSplitChecked ? "visible" : "hidden"}>
+									<ValueTextBox text={split} placeholder={"Split Rate"} changeText={setSplitText}></ValueTextBox>
+								</Box>
+							</Grid>
 						</Grid>
 					</Grid>
-				</Grid>
-				<Grid item>
-					<Grid
-						container
-						direction="column"
-						justify="flex-start"
-						alignItems="center"
-						spacing={0}>
-						<Grid item>
-							{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, incubatingWeiDai == 0, setShowInvalidDaiWarning)}>Create</Button>
-								: <Button size="large" variant="contained" color="secondary" onClick={async () => {
-									await API.Contracts.Dai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
-								}}>Enable Dai</Button>
-							}
-
-						</Grid>
-						{invalidDaiWarning(showInvalidDaiWarning)}
-						<Grid item className={props.classes.splitRate}>
-							<FormGroup row>
-								<FormControlLabel
-									label="set custom split rate (advanced)"
-									control={
-										<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
-											setCustomSplitChecked(event.target.checked)
-											if (!event.target.checked)
-												setSplit("10")
-										}
-										}
-										/>
-									}
-								/>
-							</FormGroup>
-						</Grid>
-						<Grid item>
-							<Box component="div" visibility={customSplitChecked ? "visible" : "hidden"}>
-								<ValueTextBox text={split} placeholder={"Split Rate"} changeText={setSplitText}></ValueTextBox>
-							</Box>
-						</Grid>
-					</Grid>
-				</Grid>
 				</Box>
 			</Grid>
 			<Box component="div" display={incubatingWeiDai > 0 ? "inline" : "none"}>
@@ -362,7 +353,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	)
 }
 
-export const PatienceRegulationEngine = withStyles(style)(patienceRegulationEngineComponent)
+export default withStyles(style)(patienceRegulationEngineComponent)
 
 const buyWeiDaiAction = async (dai: string, split: string, user: string, createEnabled: boolean, showError: (show: boolean) => void) => {
 	if (!createEnabled)
