@@ -22,7 +22,7 @@ front end:
 4. Bank 
 4.1 Consider journal to keep in mind points of consideration
 4.2 Make a diagram modelled on the PRE page so that styling is consistent.
-4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- BUSY
+4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- BUSY - number bugs
 
 
 

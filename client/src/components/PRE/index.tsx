@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useState, useEffect } from 'react'
 import { withStyles, Grid, Typography, Button, Divider, Switch, FormGroup, FormControlLabel, Box, Theme } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
-import { ValueTextBox } from './ValueTextBox'
+import { ValueTextBox } from '../Common/ValueTextBox'
 import FormDialog from '../Common/FormDialog'
 import { IncubationProgress } from './IncubationProgress'
 import { formatNumberText, formatDecimalStrings } from '../../util/jsHelpers'

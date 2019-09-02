@@ -171,7 +171,7 @@ function LayoutFrameComponent(props: any) {
 							<PatienceRegulationEngine currentUser={walletAddress} />
 						</Route>
 						<Route path="/bank">
-							<Bank />
+							<Bank currentUser={walletAddress} />
 						</Route>
 					</Switch>
 				</main>
