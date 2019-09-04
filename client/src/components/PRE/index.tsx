@@ -5,8 +5,9 @@ import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from '../Common/ValueTextBox'
 import FormDialog from '../Common/FormDialog'
 import { IncubationProgress } from './IncubationProgress'
-import { formatNumberText, formatDecimalStrings } from '../../util/jsHelpers'
+import { formatNumberText, formatDecimalStrings, isLoaded } from '../../util/jsHelpers'
 import Tooltip from '@material-ui/core/Tooltip';
+import { Loading } from '../Common/Loading';
 
 interface PREprops {
 	currentUser: string
@@ -43,15 +44,15 @@ const style = (theme: any) => ({
 })
 
 function patienceRegulationEngineComponent(props: PREprops) {
-	const [incubationDuration, setIncubationDuration] = useState<string>("_")
-	const [daiBalance, setDaiBalance] = useState<string>("_")
+	const [incubationDuration, setIncubationDuration] = useState<string>("unset")
+	const [daiBalance, setDaiBalance] = useState<string>("unset")
 	const [daiToIncubate, setDaiToIncubate] = useState<string>("")
 	const [weiDaiToCreate, setweiDaiToCreate] = useState<string>("")
 	const [exchangeRate, setExchangeRate] = useState<number>(0)
 	const [incubatingWeiDai, setIncubatingWeiDai] = useState<number>(0)
 	const [progressBlock, setProgressBlock] = useState<number>(0)
 	const [holderIncubationDuration, setHolderIncubationDuration] = useState<number>(0)
-	const [currentWithdrawalPenalty, setCurrentWithdrawalPenalty] = useState<string>("")
+	const [currentWithdrawalPenalty, setCurrentWithdrawalPenalty] = useState<string>("unset")
 	const [drawDownPeriodForUser, setDrawDownPeriodForUser] = useState(0)
 	const [split, setSplit] = useState<string>("")
 	const [customSplitChecked, setCustomSplitChecked] = useState<boolean>(false)
@@ -60,6 +61,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [showInvalidDaiWarning, setShowInvalidDaiWarning] = useState<boolean>(false)
 	const [claimWithPenaltyPopup, setClaimWithPenaltyPopup] = useState<boolean>(false)
 	const [toolTipText, setToolTipText] = useState<string>("")
+	const [loaded, setLoaded] = useState<boolean>(false)
 
 	const invalidDaiWarning = function (show: boolean) {
 		if (show)
@@ -71,6 +73,10 @@ function patienceRegulationEngineComponent(props: PREprops) {
 			</Grid>
 		return ""
 	}
+
+	useEffect(() => {
+		setLoaded(isLoaded([currentWithdrawalPenalty,daiBalance,currentWithdrawalPenalty]))
+	},[currentWithdrawalPenalty,daiBalance,incubationDuration])
 
 	useEffect(() => {
 		const parsedSplit = parseInt(split)
@@ -189,6 +195,9 @@ function patienceRegulationEngineComponent(props: PREprops) {
 		const weiNum = parseFloat(weiDaiToCreate)
 		return Math.round((weiNum * (1 - penaltyNum) * 1000)) / 1000
 	}
+
+	if (!loaded)
+		return  <Loading />
 
 	return (
 		<div className={props.classes.root}>

@@ -22,9 +22,9 @@ front end:
 4. Bank 
 4.1 Consider journal to keep in mind points of consideration
 4.2 Make a diagram modelled on the PRE page so that styling is consistent.
-4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- BUSY - number bugs
-
-
+4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- BUSY => redeeming not happening, consider making ganache verbose
+4.4 Reduce reserve by donations
+4.5 add loading functionality so that we don't see unset and all that. -- BUSY (make it look less 90s)
 
 5. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
 6. small nav bar functionality
