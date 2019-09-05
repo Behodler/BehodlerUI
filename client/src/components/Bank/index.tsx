@@ -109,7 +109,7 @@ function BankComponent(props: bankProps) {
 				</Grid>
 				<Grid item>
 					<Typography variant="h6">
-						Consider creating some using the Patience Regulation Engine by clicking Create/Redeem
+						Consider creating some using the Patience Regulation Engine by clicking Create/Claim
 				</Typography>
 				</Grid>
 			</Grid>

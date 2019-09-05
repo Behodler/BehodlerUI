@@ -36,8 +36,7 @@ function LoadingComponent(props: props) {
 						alignItems="center"
 						spacing={10}
 					>
-						<Grid item></Grid>
-						<Grid item></Grid>
+						<Grid item><h4>Loading from blockchain...</h4></Grid>
 						<Grid item>
 							<Grid
 								container
@@ -48,11 +47,11 @@ function LoadingComponent(props: props) {
 								<Grid item>
 									<Grid container
 										direction="column"
-										justify="center"
+										justify="flex-start"
 										alignItems="center"
 									>
 										<Grid item>
-											<img src={loading} width={256} />
+											<img src={loading} />
 										</Grid>
 									</Grid>
 								</Grid>
