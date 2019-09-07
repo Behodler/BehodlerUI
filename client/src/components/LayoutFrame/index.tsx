@@ -13,7 +13,7 @@ import API from '../../blockchain/ethereumAPI'
 import PatienceRegulationEngine from '../PRE/index'
 import Bank from '../Bank/index'
 import Home from '../Home/index'
-
+import FAQ from '../FAQ/index'
 import { MetamaskFailed } from '../Common/MetamaskFailed'
 
 const actionWidth: number = 250
@@ -44,7 +44,7 @@ let styleObject = {
 		width:"auto",
 		margin: "0 auto",
 		flexGrow:1,
-		height: "100vh"
+		height: "120vh"
 	},
 	heading: {
 		fontSize: 40,
@@ -125,7 +125,7 @@ function LayoutFrameComponent(props: any) {
 						className={classes.actionDrawer}
 						classes={{ paper: classes.actionDrawerPaper }}
 					>
-						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} />
+						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={()=>setRedirect('/FAQ')} />
 						<Divider />
 						{isPrimary ?
 							<AdminSection walletAddress={walletAddress} /> : ""
@@ -179,12 +179,13 @@ function LayoutFrameComponent(props: any) {
 									<Home />
 							</Route>
 								<Route path="/engine">
-
 									<PatienceRegulationEngine currentUser={walletAddress} />
-
 								</Route>
 								<Route path="/bank">
 									<Bank currentUser={walletAddress} />
+								</Route>
+								<Route path="/FAQ">
+									<FAQ />
 								</Route>
 							</Switch>
 						</Box>

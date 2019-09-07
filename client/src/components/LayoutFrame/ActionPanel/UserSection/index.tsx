@@ -11,6 +11,7 @@ interface UserSectionProps {
 	goToEngine: () => void
 	homePage: () => void,
 	goToBank: () => void
+	faq: () => void
 }
 
 function UserSectionComponent(props: UserSectionProps) {
@@ -30,7 +31,7 @@ function UserSectionComponent(props: UserSectionProps) {
 			<ListItemText primary="How it Works" />
 		</ListItem>
 		<Divider />
-		<ListItem button key="thrift">
+		<ListItem button key="thrift" onClick={props.faq}>
 			<ListItemIcon><QuestionAnswer /></ListItemIcon>
 			<ListItemText primary="FAQ" />
 		</ListItem>
