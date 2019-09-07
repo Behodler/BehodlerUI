@@ -1,5 +1,3 @@
-bug: claiming with penalty doesn't raise exchange rate.
-
 front end:
 1. Patience Regulation Engine page - use PRE.png --DONE
 1.1 Link to PRE page -- DONE
