@@ -38,6 +38,14 @@ front end:
 13. In the future add a reload for network change event. Right now, functionality not supported. -- FUTURE
 14. Add a light, dark switch -- DONE (not going to do it. Dark just looks better)
 15. FAQ --DONE
+16. In set Dependencies,
+	1. show all contract groups with addresses.
+	2. allow contract groups to be added or edited
+	3. Set active contract group.
+	4. Have a Choose version button in the actions.
+	5. Only show this navigation button if there are more than 1 versions.
+	6. When a user chooses a non active version, then PRE must just display a message saying weidai isn't active for this version.
+	
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.
