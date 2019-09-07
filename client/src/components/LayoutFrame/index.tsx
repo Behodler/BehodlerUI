@@ -126,7 +126,7 @@ function LayoutFrameComponent(props: any) {
 						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} />
 						<Divider />
 						{isPrimary ?
-							<AdminSection /> : ""
+							<AdminSection walletAddress={walletAddress} /> : ""
 						}
 					</Drawer>
 				</Hidden>

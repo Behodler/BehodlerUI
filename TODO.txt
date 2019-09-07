@@ -29,9 +29,10 @@ front end:
 5. Hide current penalty when no incubating weidai -- DONE
 6. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
 7. small nav bar functionality -- DONE
-8. Set Dependencies, withdraw donations
-9. How it works
-10. Burn page - tell user this is dangerous but contributes to other users
+8. Set Dependencies--Do after launch
+8.1 withdraw donations 
+9. How it works -- BUSY
+10. Burn page - tell user this is dangerous but contributes to other users -- DO after launch
 11. Firefox breakpoint messes up PRE layout before shrinking. --DONE
 12. Metamask slowdown -> try on Kovan
 13. In the future add a reload for network change event. Right now, functionality not supported.
