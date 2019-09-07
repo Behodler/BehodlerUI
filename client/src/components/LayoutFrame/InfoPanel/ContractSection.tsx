@@ -111,7 +111,7 @@ function getLineFactory(classes: any) {
 }
 
 const weiDaiDetail: DetailProps = {
-	header: "WEIDAI PRICE",
+	header: "WEIDAI REDEEM RATE (PRICE)",
 	content: "WEIDAI IS AN ERC20 TOKEN 100% BACKED BY THE DAI STABLE COIN. WEIDAI PRICE IS THE AMOUNT OF DAI THAT 1 WEIDAI CAN BE REDEEMED FOR. THIS NUMBER INCREASES WITH REGULAR USE",
 	linkText: "Learn more",
 	linkURL: "https://medium.com/"

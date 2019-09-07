@@ -12,6 +12,8 @@ import Mobile from './ActionPanel/Mobile'
 import API from '../../blockchain/ethereumAPI'
 import PatienceRegulationEngine from '../PRE/index'
 import Bank from '../Bank/index'
+import Home from '../Home/index'
+
 import { MetamaskFailed } from '../Common/MetamaskFailed'
 
 const actionWidth: number = 250
@@ -174,7 +176,7 @@ function LayoutFrameComponent(props: any) {
 							<Divider variant="middle" className={classes.headingDivider} />
 							<Switch>
 								<Route path="/" exact >
-									Content
+									<Home />
 							</Route>
 								<Route path="/engine">
 

@@ -30,8 +30,8 @@ front end:
 6. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
 7. small nav bar functionality -- DONE
 8. Set Dependencies--Do after launch
-8.1 withdraw donations 
-9. How it works -- BUSY
+8.1 withdraw donations --DONE
+9. How it works -- DONE
 10. Burn page - tell user this is dangerous but contributes to other users -- DO after launch
 11. Firefox breakpoint messes up PRE layout before shrinking. --DONE
 12. Metamask slowdown -> try on Kovan

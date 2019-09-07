@@ -3,6 +3,15 @@ interface friendlyField {
 	friendly: string
 }
 
+export const loadHomeActiveStep = () =>{
+	let activeStep = localStorage.getItem('activeStep')
+	return !!activeStep?parseInt(activeStep):0
+}
+
+export const setHomeActiveStep = (activeStep:number)=>{
+	localStorage.setItem("activeStep", `${activeStep}`);
+}
+
 const loadFriendlyArray = (): friendlyField[] => {
 	try {
 		let friendlies = localStorage.getItem("friendly");
