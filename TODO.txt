@@ -20,20 +20,22 @@ front end:
 3. Handle Metamask user rejection. It causes uncaught error. -- DONE (unnecessary)
 
 4. Bank 
-4.1 Consider journal to keep in mind points of consideration
-4.2 Make a diagram modelled on the PRE page so that styling is consistent.
-4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- BUSY => redeeming not happening, consider making ganache verbose
-4.4 Reduce reserve by donations
-4.5 add loading functionality so that we don't see unset and all that. -- BUSY (make it look less 90s)
+4.1 Consider journal to keep in mind points of consideration -- DONE
+4.2 Make a diagram modelled on the PRE page so that styling is consistent. --DONE
+4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- DONE => remember to scale front end numbers into wei
+4.4 Reduce reserve by donations -- DONE -> rather show global supply
+4.5 add loading functionality so that we don't see unset and all that. -- DONE
 
-5. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
-6. small nav bar functionality
-7. Set Dependencies, withdraw donations
-8. How it works
-9. Burn page - tell user this is dangerous but contributes to other users
-10. Firefox breakpoint messes up PRE layout before shrinking. --DONE
-11. Metamask slowdown -> try on Kovan
-12. In the future add a reload for network change event. Right now, functionality not supported.
+5. Hide current penalty when no incubating weidai -- DONE
+6. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
+7. small nav bar functionality
+8. Set Dependencies, withdraw donations
+9. How it works
+10. Burn page - tell user this is dangerous but contributes to other users
+11. Firefox breakpoint messes up PRE layout before shrinking. --DONE
+12. Metamask slowdown -> try on Kovan
+13. In the future add a reload for network change event. Right now, functionality not supported.
+14. Consider night mode if it's not a schlep
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.

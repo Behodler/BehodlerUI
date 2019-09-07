@@ -37,10 +37,8 @@ export const formatDecimalStrings = (value: string, decimalPlaces: number = 2): 
 export function isLoaded(stateParams:any[]):boolean {
 	for (let i = 0; i < stateParams.length; i++) {
 		if(typeof(stateParams[i]) == "string" && stateParams[i]=="unset"){
-			console.log(`not loaded (${i}): ${stateParams[i]}`)
 			return false;
 		}
 	}
-	console.log('returning true')
 	return true;
 }

@@ -75,14 +75,14 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	}
 
 	useEffect(() => {
-		setLoaded(isLoaded([currentWithdrawalPenalty,daiBalance,currentWithdrawalPenalty]))
-	},[currentWithdrawalPenalty,daiBalance,incubationDuration])
+		setLoaded(isLoaded([currentWithdrawalPenalty, daiBalance, currentWithdrawalPenalty]))
+	}, [currentWithdrawalPenalty, daiBalance, incubationDuration])
 
 	useEffect(() => {
 		const parsedSplit = parseInt(split)
 		const numSplit = isNaN(parsedSplit) ? 10 : parsedSplit
 
-		setToolTipText(`When a user burns WeiDai (E.G. redeeming for Dai incurs a 2% burn fee), a certain percentage of the delegated amount to be burnt is sent to the developer as a donation. This percentage is determined by the Split Rate. The left over portion is then burnt (deleted), diminishing the supply of WeiDai, pushing up the Redeem rate. For instance, if 10 WeiDai are burnt with a split rate of ${numSplit} then ${numSplit/10} is donated to the developer and ${(100-numSplit)/100*10} is burnt. Since burning pushes up the redeem rate, it can be considered a donation to the WeiDai community.`)
+		setToolTipText(`When a user burns WeiDai (E.G. redeeming for Dai incurs a 2% burn fee), a certain percentage of the delegated amount to be burnt is sent to the developer as a donation. This percentage is determined by the Split Rate. The left over portion is then burnt (deleted), diminishing the supply of WeiDai, pushing up the Redeem rate. For instance, if 10 WeiDai are burnt with a split rate of ${numSplit} then ${numSplit / 10} is donated to the developer and ${(100 - numSplit) / 100 * 10} is burnt. Since burning pushes up the redeem rate, it can be considered a donation to the WeiDai community.`)
 	}, [split])
 
 	useEffect(() => {
@@ -125,7 +125,12 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.preEffects.incubatingWeiDai(props.currentUser)
 		const subscription = effect.Observable.subscribe((incubating: string) => {
-			setIncubatingWeiDai(parseFloat(formatDecimalStrings(incubating)))
+			const incubatingWeiDaiNum: number = parseFloat(formatDecimalStrings(incubating))
+			if (incubatingWeiDaiNum > 0) {
+				setDaiToIncubate("")
+				setweiDaiToCreate("")
+			}
+			setIncubatingWeiDai(incubatingWeiDaiNum)
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
@@ -197,7 +202,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	}
 
 	if (!loaded)
-		return  <Loading />
+		return <Loading />
 
 	return (
 		<div className={props.classes.root}>
@@ -259,7 +264,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Grid>
 						<Grid item>
 							<Typography variant="h6" color="primary">
-								{daiBalance}
+								{formatDecimalStrings(daiBalance)}
 							</Typography>
 						</Grid>
 					</Grid>
@@ -278,7 +283,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							<Grid item>
 
 								<Box component="div">
-									<Typography variant="caption">
+									<Typography variant="subtitle2">
 										will create
 								</Typography>
 								</Box>
@@ -312,24 +317,24 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							</Grid>
 							{invalidDaiWarning(showInvalidDaiWarning)}
 							<Grid item className={props.classes.splitRate}>
-								{daiEnabled?
-								<HtmlTooltip title={toolTipText} aria-label={toolTipText}>
-									<FormGroup row>
-										<FormControlLabel
-											label="set custom split rate (advanced)"
-											control={
-												<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
-													setCustomSplitChecked(event.target.checked)
-													if (!event.target.checked)
-														setSplit("10")
+								{daiEnabled ?
+									<HtmlTooltip title={toolTipText} aria-label={toolTipText}>
+										<FormGroup row>
+											<FormControlLabel
+												label="set custom split rate (advanced)"
+												control={
+													<Switch color="primary" checked={customSplitChecked} onChange={(event) => {
+														setCustomSplitChecked(event.target.checked)
+														if (!event.target.checked)
+															setSplit("10")
+													}
+													}
+													/>
 												}
-												}
-												/>
-											}
-										/>
-									</FormGroup>
-								</HtmlTooltip>
-								:""
+											/>
+										</FormGroup>
+									</HtmlTooltip>
+									: ""
 								}
 							</Grid>
 							<Grid item>
@@ -372,7 +377,6 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						<Button variant="contained" color="secondary" onClick={async () => {
 							if (parseInt(currentWithdrawalPenalty) > 0) {
 								setClaimWithPenaltyPopup(true)
-								console.log(claimWithPenaltyPopup)
 							} else {
 								await API.Contracts.PRE.claimWeiDai().send({ from: props.currentUser })
 							}

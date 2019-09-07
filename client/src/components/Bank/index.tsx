@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Grid, Typography, Box, Button } from '@material-ui/core';
+import { withStyles, Grid, Typography, Box, Button, Divider } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { formatDecimalStrings, formatNumberText, isLoaded } from '../../util/jsHelpers'
 import { ValueTextBox } from '../Common/ValueTextBox';
@@ -11,9 +11,11 @@ interface bankProps {
 	classes?: any
 }
 
-const style = (theme: any) => {
-
-}
+const style = (theme: any) => ({
+	pageSplit: {
+		margin: "20px"
+	}
+})
 
 function BankComponent(props: bankProps) {
 	const [weiDaiBalance, setWeiDaiBalance] = useState<string>('unset')
@@ -23,17 +25,34 @@ function BankComponent(props: bankProps) {
 	const [exchangeRate, setExchangeRate] = useState<number>(0)
 	const [weiDaiEnabled, setWeiDaiEnabled] = useState<boolean>(false)
 	const [loaded, setLoaded] = useState<boolean>(false)
+	const [priorWeiDaiBalance, setPriorWeiDaiBalance] = useState<string>('unset')
+	const [totalWeiDai, setTotalWeiDai] = useState<string>('unset')
 
 	useEffect(() => {
 		const effect = API.weiDaiEffects.balanceOfEffect(props.currentUser)
 		const subscription = effect.Observable.subscribe((balance) => {
-			setWeiDaiBalance(formatDecimalStrings(balance))
+
+			if (priorWeiDaiBalance !== balance) {
+				console.log(priorWeiDaiBalance)
+				setWeiDaiBalance(formatDecimalStrings(balance))
+				setPriorWeiDaiBalance(balance)
+				setWeiDaiToRedeemText("")
+			}
 		})
 
 		return function () {
 			effect.cleanup()
 			subscription.unsubscribe()
 		}
+	})
+
+	useEffect(() => {
+		const effect = API.weiDaiEffects.totalSupplyEffect()
+		const subscription = effect.Observable.subscribe((balance) => {
+			setTotalWeiDai(formatDecimalStrings(balance))
+		})
+
+		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
 
 	useEffect(() => {
@@ -129,16 +148,37 @@ function BankComponent(props: bankProps) {
 					spacing={4}
 					alignItems="center">
 					<Grid item>
-						<Typography variant="h6">
+						<Typography variant="h5">
+							Global WeiDai Supply
+					</Typography>
+					</Grid>
+					<Grid item>
+						<Typography variant="h5" color="primary">
+							{totalWeiDai}
+						</Typography>
+					</Grid>
+				</Grid>
+			</Grid>
+			<Grid item>
+				<Grid container
+					direction="row"
+					justify="space-between"
+					spacing={4}
+					alignItems="center">
+					<Grid item>
+						<Typography variant="h5">
 							Dai held in reserve
 					</Typography>
 					</Grid>
 					<Grid item>
-						<Typography variant="h6" color="primary">
+						<Typography variant="h5" color="primary">
 							{reserveDai}
 						</Typography>
 					</Grid>
 				</Grid>
+			</Grid>
+			<Grid>
+				<Divider className={props.classes.pageSplit} />
 			</Grid>
 			<Grid item>
 				<Grid container
@@ -170,7 +210,7 @@ function BankComponent(props: bankProps) {
 					<Grid item>
 
 						<Box component="div">
-							<Typography variant="caption">
+							<Typography variant="subtitle1">
 								can redeem
 						</Typography>
 						</Box>
@@ -199,8 +239,9 @@ function BankComponent(props: bankProps) {
 							<Button variant="contained" color="primary" onClick={async () => {
 								if (isNaN(parseFloat(weiDaiToRedeem)))
 									return
+								let unscaledWeiDai = API.toWei(weiDaiToRedeem)
+								await API.Contracts.WeiDaiBank.redeemWeiDai(unscaledWeiDai).send({ from: props.currentUser })
 
-								await API.Contracts.WeiDaiBank.redeemWeiDai(weiDaiToRedeem).send({ from: props.currentUser })
 							}}>Redeem</Button> :
 							<Button variant="contained" color="secondary" onClick={async () => {
 								await API.Contracts.WeiDai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })

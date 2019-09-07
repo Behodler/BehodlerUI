@@ -128,7 +128,7 @@ function getList(classes: any, setDetailProps: (props: DetailProps) => void, set
 			<ClickAbleInfoListItem details={incubatingWeiDaiDetails} setDetailProps={setDetailProps} setDetailVisibility={setDetailVisibility}>
 				{getLine(classes, "Incubating WeiDai", incubatingWeiDai)}
 			</ClickAbleInfoListItem>
-			{parseInt(currentPenalty) > -1 ?
+			{parseInt(currentPenalty) > -1 && parseFloat(incubatingWeiDai)>0 ?
 				<ClickAbleInfoListItem details={currentPenaltyDetails} setDetailProps={setDetailProps} setDetailVisibility={setDetailVisibility}>
 					{getLine(classes, "Current Penalty", currentPenalty + '%')}
 				</ClickAbleInfoListItem> : ""
