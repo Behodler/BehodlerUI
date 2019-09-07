@@ -28,14 +28,14 @@ front end:
 
 5. Hide current penalty when no incubating weidai -- DONE
 6. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
-7. small nav bar functionality
+7. small nav bar functionality -- BUSY
 8. Set Dependencies, withdraw donations
 9. How it works
 10. Burn page - tell user this is dangerous but contributes to other users
 11. Firefox breakpoint messes up PRE layout before shrinking. --DONE
 12. Metamask slowdown -> try on Kovan
 13. In the future add a reload for network change event. Right now, functionality not supported.
-14. Add a light, dark switch
+14. Add a light, dark switch -- DONE (not going to do it. Dark just looks better)
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.
