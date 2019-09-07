@@ -41,8 +41,8 @@ front end:
 	2. allow contract groups to be added or edited
 	3. Set active contract group.
 	4. Have a Choose version button in the actions.
-	5. Only show this navigation button if there are more than 1 versions.
-	6. When a user chooses a non active version, then PRE must just display a message saying weidai isn't active for this version.
+	5. Only show this navigation button if there is more than 1 version.
+	6. When a user chooses a non active version, then PRE must just display a message saying weidai isn't active for this version. Take away create / Claim buttons
 	
 
 Governance:
