@@ -11,7 +11,8 @@ interface props {
 
 const style = (theme: any) => ({
 	link: {
-		marginTop: '-20px'
+		marginTop: '-20px',
+		color:'LightSlateGray'
 	}
 })
 
@@ -34,7 +35,7 @@ export function ValueTextBoxComponent(props: props) {
 				{!!props.entireAction?
 				<ListItem>
 					<Link className={props.classes.link}
-						variant="body2"
+					
 						href='#'
 						onClick={(e: any) => { e.preventDefault(); if (props.entireAction) props.entireAction(); }}>
 						entire balance

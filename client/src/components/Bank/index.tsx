@@ -153,7 +153,7 @@ function BankComponent(props: bankProps) {
 					</Typography>
 					</Grid>
 					<Grid item>
-						<Typography variant="h5" color="primary">
+						<Typography variant="h5">
 							{totalWeiDai}
 						</Typography>
 					</Grid>
@@ -171,7 +171,7 @@ function BankComponent(props: bankProps) {
 					</Typography>
 					</Grid>
 					<Grid item>
-						<Typography variant="h5" color="primary">
+						<Typography variant="h5">
 							{reserveDai}
 						</Typography>
 					</Grid>
@@ -192,7 +192,7 @@ function BankComponent(props: bankProps) {
 					</Typography>
 					</Grid>
 					<Grid item>
-						<Typography variant="h6" color="primary">
+						<Typography variant="h6">
 							{weiDaiBalance}
 						</Typography>
 					</Grid>
@@ -217,7 +217,7 @@ function BankComponent(props: bankProps) {
 					</Grid>
 					<Grid item>
 						<Box component="div">
-							<Typography variant="h6" color="secondary">
+							<Typography variant="h6">
 								{daiToBeRedeemed.length == 0 ? 0 : daiToBeRedeemed} Dai
 							</Typography>
 						</Box>

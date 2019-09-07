@@ -1,5 +1,5 @@
 import * as React from 'react'
-import loading from '../../images/blockchainloading.gif';
+import loading from '../../images/ethereumloading.gif';
 import { withStyles, Grid } from '@material-ui/core';
 const styleObject = {
 	root: {
@@ -16,6 +16,9 @@ const styleObject = {
 		fontSize: 16,
 		margin: "0px 0 5px 0"
 	},
+	image:{
+		maxWidth:'100px'
+	}
 }
 let styles = (theme: any) => styleObject
 
@@ -34,9 +37,19 @@ function LoadingComponent(props: props) {
 						direction="column"
 						justify="center"
 						alignItems="center"
-						spacing={10}
+						spacing={2}
 					>
-						<Grid item><h4>Loading from blockchain...</h4></Grid>
+						<Grid item>
+							<Grid container
+								direction="column"
+								alignItems="center"
+								spacing={1}
+							>
+								<Grid item>
+									<h3>Loading from the Ethereum blockchain...</h3>
+								</Grid>
+							</Grid>
+						</Grid>
 						<Grid item>
 							<Grid
 								container
@@ -49,16 +62,23 @@ function LoadingComponent(props: props) {
 										direction="column"
 										justify="flex-start"
 										alignItems="center"
+										spacing={3}
 									>
 										<Grid item>
-											<img src={loading} />
+										&nbsp;
+										</Grid>
+										<Grid item>
+											<img src={loading} className={props.classes.image} />
+										</Grid>
+										<Grid item>
+										&nbsp;
 										</Grid>
 									</Grid>
 								</Grid>
 							</Grid>
 						</Grid>
 						<Grid item>
-
+						<h5>If this takes too long, consider resetting the MetaMask extension or restarting your browser </h5>
 						</Grid>
 					</Grid>
 				</main>

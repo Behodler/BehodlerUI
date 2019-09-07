@@ -24,7 +24,7 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
 	},
 }))(Tooltip);
 
-const style = (theme: any) => ({
+const style = {
 	pagebreak: {
 		margin: "55px"
 	},
@@ -40,8 +40,11 @@ const style = (theme: any) => ({
 	},
 	createErrorMargin: {
 		marginTop: '10px'
+	},
+	incubationDuration:{
+		fontWeight:800
 	}
-})
+}
 
 function patienceRegulationEngineComponent(props: PREprops) {
 	const [incubationDuration, setIncubationDuration] = useState<string>("unset")
@@ -66,7 +69,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const invalidDaiWarning = function (show: boolean) {
 		if (show)
 			return <Grid item>
-				<Typography className={props.classes.createErrorMargin} color="secondary" variant="caption">
+				<Typography className={props.classes.createErrorMargin} variant="caption">
 					before clicking create, enter a valid number for dai (text box above)
 				</Typography>
 
@@ -245,7 +248,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				</Grid>
 				<Grid item>
 					<Typography variant="subtitle1">
-						It currently takes <Typography color="primary" display="inline">{incubationDuration}</Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
+						It currently takes <Typography className={props.classes.incubationDuration} display="inline">{incubationDuration}</Typography> block{parseInt(incubationDuration) !== 1 ? 's' : ''} to create WeiDai
 				</Typography>
 				</Grid>
 				<Grid item>
@@ -263,7 +266,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							</Typography>
 						</Grid>
 						<Grid item>
-							<Typography variant="h6" color="primary">
+							<Typography variant="h6" >
 								{formatDecimalStrings(daiBalance)}
 							</Typography>
 						</Grid>
@@ -290,7 +293,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							</Grid>
 							<Grid item>
 								<Box component="div">
-									<Typography variant="h6" color="secondary">
+									<Typography variant="h6" >
 										{weiDaiToCreate.length == 0 ? 0 : weiDaiToCreate} WeiDai
 									</Typography>
 								</Box>
@@ -356,7 +359,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 					alignItems="center"
 					spacing={0}>
 					<Grid item>
-						<Typography variant="h5" color="primary">
+						<Typography variant="h5">
 							Incubating WeiDai: {incubatingWeiDai}
 						</Typography>
 					</Grid>
@@ -369,7 +372,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						<IncubationProgress progress={progressBar} />
 					</Grid>
 					<Grid item>
-						<Typography variant="h6" color="secondary">
+						<Typography variant="h6">
 							Current Penalty: {currentWithdrawalPenalty}%
 						</Typography>
 					</Grid>

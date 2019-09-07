@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { withStyles, Drawer, Divider, Hidden, Grid, List, ListItem, ClickAwayListener } from '@material-ui/core';
+import { withStyles, Drawer, Divider, Hidden, Grid, List, ListItem, ClickAwayListener, Box, Paper } from '@material-ui/core';
 import WeidaiLogo from './WeidaiLogo'
 import { UserSection } from './ActionPanel/UserSection'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
@@ -38,6 +38,12 @@ let styleObject = {
 	content: {
 		flexGrow: 1
 	},
+	paper:{
+		width:"auto",
+		margin: "0 auto",
+		flexGrow:1,
+		height: "100vh"
+	},
 	heading: {
 		fontSize: 40,
 		margin: "10px 0 5px 0"
@@ -58,7 +64,6 @@ let styleObject = {
 }
 
 let styles = (theme: any) => styleObject
-
 
 function LayoutFrameComponent(props: any) {
 
@@ -106,6 +111,8 @@ function LayoutFrameComponent(props: any) {
 	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled={metaMaskEnabled} />
 	const showError: boolean = !(metaMaskConnected && metaMaskEnabled)
 
+
+
 	return showError ? metamaskMessage : (
 		<div className={classes.root}>
 			<Router>
@@ -123,58 +130,65 @@ function LayoutFrameComponent(props: any) {
 						}
 					</Drawer>
 				</Hidden>
-				<main className={classes.content}>
-					<Mobile />
-					<Grid
-						container
-						direction="row"
-						justify="center"
-						alignItems="center">
-						<Grid item>
+				<Paper className={classes.paper}>
+						<Box component="div" className={classes.content}>
+							<Mobile />
+
 							<Grid
 								container
-								direction="column"
+								direction="row"
 								justify="center"
-								alignItems="center"
-								spacing={0}>
+								alignItems="center">
 								<Grid item>
 									<Grid
 										container
-										direction="row"
-										justify="space-evenly"
+										direction="column"
+										justify="center"
 										alignItems="center"
-										spacing={7}>
+										spacing={0}>
 										<Grid item>
-											<p className={classes.heading}>
-												WEIDAI
-												</p>
+											<Grid
+												container
+												direction="row"
+												justify="space-evenly"
+												alignItems="center"
+												spacing={7}>
+												<Grid item>
+													<p className={classes.heading}>
+														WEIDAI
+													</p>
+												</Grid>
+												<Grid item>
+													<WeidaiLogo />
+												</Grid>
+											</Grid>
 										</Grid>
 										<Grid item>
-											<WeidaiLogo />
+											<p className={classes.subheading}>
+												THE WORLD'S FIRST THRIFTCOIN
+									</p>
 										</Grid>
 									</Grid>
 								</Grid>
-								<Grid item>
-									<p className={classes.subheading}>
-										THE WORLD'S FIRST THRIFTCOIN
-									</p>
-								</Grid>
 							</Grid>
-						</Grid>
-					</Grid>
-					<Divider variant="middle" className={classes.headingDivider} />
-					<Switch>
-						<Route path="/" exact >
-							Content
+
+							<Divider variant="middle" className={classes.headingDivider} />
+							<Switch>
+								<Route path="/" exact >
+									Content
 							</Route>
-						<Route path="/engine">
-							<PatienceRegulationEngine currentUser={walletAddress} />
-						</Route>
-						<Route path="/bank">
-							<Bank currentUser={walletAddress} />
-						</Route>
-					</Switch>
-				</main>
+								<Route path="/engine">
+
+									<PatienceRegulationEngine currentUser={walletAddress} />
+
+								</Route>
+								<Route path="/bank">
+									<Bank currentUser={walletAddress} />
+								</Route>
+							</Switch>
+						</Box>
+				</Paper>
+
 				<Hidden mdDown>
 					<ClickAwayListener onClickAway={() => setDetailVisibility(false)}>
 						<Drawer variant="persistent" anchor="right" open={true}

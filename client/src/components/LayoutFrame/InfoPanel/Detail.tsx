@@ -5,12 +5,12 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import lightBlue from '@material-ui/core/colors/lightBlue'
+import blueGrey from '@material-ui/core/colors/blueGrey'
 
 const style = (theme: any) => (
 	{
 		card: {
-			backgroundColor: lightBlue['50'],
+			backgroundColor: blueGrey['600'],
 
 		},
 		typography: {

@@ -25,10 +25,10 @@ interface FormDialogProps {
 
 const formStyle = (theme: any) => ({
 	title: {
-		fontSize: 16,
+		fontSize: 20,
 	},
 	message: {
-		fontSize: 12,
+		fontSize: 16,
 	},
 	errorLabel: {
 		paddingTop: 0,
@@ -88,10 +88,10 @@ function FormDialogComponent(props: FormDialogProps) {
 					{getFields(props)}
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={props.close} color="primary">
+					<Button onClick={props.close}>
 						{!props.rejectLabel ? 'Cancel' : props.rejectLabel}
 					</Button>
-					<Button onClick={props.submit} color="primary">
+					<Button onClick={props.submit}>
 						{!props.acceptLabel ? 'Create' : props.acceptLabel}
 					</Button>
 				</DialogActions>
