@@ -132,8 +132,7 @@ function LayoutFrameComponent(props: any) {
 				</Hidden>
 				<Paper className={classes.paper}>
 						<Box component="div" className={classes.content}>
-							<Mobile />
-
+							<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')}/>
 							<Grid
 								container
 								direction="row"

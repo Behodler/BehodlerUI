@@ -28,7 +28,7 @@ front end:
 
 5. Hide current penalty when no incubating weidai -- DONE
 6. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
-7. small nav bar functionality -- BUSY
+7. small nav bar functionality -- DONE
 8. Set Dependencies, withdraw donations
 9. How it works
 10. Burn page - tell user this is dangerous but contributes to other users
