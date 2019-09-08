@@ -5,11 +5,12 @@ import ArrowDownward from '@material-ui/icons/ArrowDownward'
 import API from '../../../../blockchain/ethereumAPI'
 interface AdminSectionProps {
 	walletAddress: string
+	contractDependencies: ()=>void
 }
 
 function AdminSectionComponent(props: AdminSectionProps) {
 	return (<List>
-		<ListItem button key="dependencies">
+		<ListItem button key="dependencies" onClick = {props.contractDependencies}>
 			<ListItemIcon><ArrowForward color="secondary" /></ListItemIcon>
 			<ListItemText primary="Set Dependencies" />
 		</ListItem>

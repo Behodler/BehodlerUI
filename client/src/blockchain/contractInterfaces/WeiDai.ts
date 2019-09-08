@@ -2,8 +2,9 @@ import { Secondary } from './Secondary'
 import { ERC20 } from './ERC20'
 import {address, uint } from './SolidityTypes'
 import { BaseContract } from './BaseContract';
+import {Versioned} from './Versioned'
 
-export interface WeiDai extends BaseContract, Secondary, ERC20 {
+export interface WeiDai extends BaseContract, Secondary, ERC20, Versioned {
 	name: () => any
 	symbol: () => any
 	decimals: () => any

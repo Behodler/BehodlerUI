@@ -16,7 +16,7 @@ contract WeiDaiVersionController is Secondary{
 	mapping (address=>uint) activeVersion;
 	uint defaultVersion;
 	
-	function setContractGroup(uint version, address   weiDai, address dai, address   pre, address   bank, bytes16 name) external onlyPrimary{
+	function setContractGroup(uint version, address weiDai, address dai, address pre, address bank, bytes16 name) external onlyPrimary{
 		require(version>0, "version zero reserved.");
 		versionedContractFamilies[version] = contractFamily({
 			weiDai:weiDai,
@@ -82,6 +82,10 @@ contract WeiDaiVersionController is Secondary{
 	function setDefaultVersion (uint version) external onlyPrimary {
 		require(versionedContractFamilies[version].dai != address(0),"invalid version");
 		defaultVersion = version;
+	}
+
+	function getDefaultVersion () external view returns (uint){
+		return defaultVersion;
 	}
 
 	function getContractVersion(address c) external view returns (uint) {

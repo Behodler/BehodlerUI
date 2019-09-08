@@ -3,6 +3,7 @@ import { PatienceRegulationEngine } from './contractInterfaces/PatienceRegulatio
 import { WeiDai } from './contractInterfaces/WeiDai'
 import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
 import { ERC20 } from './contractInterfaces/ERC20'
+import { WeiDaiVersionController } from './contractInterfaces/WeiDaiVersionController'
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
@@ -13,6 +14,7 @@ import PREJSON from '../contracts/PatienceRegulationEngine.json'
 import WDJSON from '../contracts/WeiDai.json'
 import bankJSON from '../contracts/WeiDaiBank.json'
 import ERC20JSON from '../contracts/ERC20.json'
+import VERSIONJSON from '../contracts/WeiDaiVersionController.json'
 import DaiAddressJSON from './daiNetworkAddresses.json'
 
 interface IContracts {
@@ -20,6 +22,7 @@ interface IContracts {
 	PRE: PatienceRegulationEngine
 	WeiDaiBank: WeiDaiBank
 	Dai: ERC20
+	VersionController: WeiDaiVersionController
 }
 
 interface AccountObservable {
@@ -28,7 +31,7 @@ interface AccountObservable {
 }
 
 class ethereumAPI {
-	private web3: Web3;
+
 	private metaMaskEnabled: boolean
 	private metaMaskConnected: boolean
 	private contractsInitialized: boolean
@@ -36,6 +39,7 @@ class ethereumAPI {
 	private accountSubscription: any
 	private interval: any
 	private network: string
+	private web3: Web3;
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
 	public daiEffects: ERC20Effects
@@ -67,10 +71,14 @@ class ethereumAPI {
 		const PRE: PatienceRegulationEngine = preDeployment.methods
 		PRE.address = preDeployment.address
 
+		const versionDeployment = await this.deploy(VERSIONJSON)
+		const VersionController: WeiDaiVersionController = versionDeployment.methods
+		VersionController.address = versionDeployment.address
+
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
 		Dai.address = DaiAddressJSON[this.network]
 
-		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai }
+		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController }
 		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
 		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
 		this.preEffects = new PatienceRegulationEffects(this.web3, this.Contracts.PRE)
@@ -133,6 +141,14 @@ class ethereumAPI {
 			}
 		})
 		clearInterval(this.interval)
+	}
+
+	public hexToNumberString(value: any): string {
+		return this.web3.utils.hexToNumberString(value["_hex"])
+	}
+
+	public hexToNumber(value: any): number {
+		return parseFloat(this.hexToNumberString(value))
 	}
 
 	private async setupSubscriptions(): Promise<void> {

@@ -69,7 +69,7 @@ const styles = {
 		backgroundColor: blueGrey['600'],
 	},
 	Grid: {
-		minHeight: "575px",
+		minHeight: "595px",
 
 	},
 	divider: {

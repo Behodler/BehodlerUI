@@ -14,6 +14,8 @@ import PatienceRegulationEngine from '../PRE/index'
 import Bank from '../Bank/index'
 import Home from '../Home/index'
 import FAQ from '../FAQ/index'
+import ContractDependencies from '../ContractDependencies/index'
+
 import { MetamaskFailed } from '../Common/MetamaskFailed'
 
 const actionWidth: number = 250
@@ -40,11 +42,11 @@ let styleObject = {
 	content: {
 		flexGrow: 1
 	},
-	paper:{
-		width:"auto",
+	paper: {
+		width: "auto",
 		margin: "0 auto",
-		flexGrow:1,
-		height: "120vh"
+		flexGrow: 1,
+		height: "140vh"
 	},
 	heading: {
 		fontSize: 40,
@@ -125,70 +127,73 @@ function LayoutFrameComponent(props: any) {
 						className={classes.actionDrawer}
 						classes={{ paper: classes.actionDrawerPaper }}
 					>
-						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={()=>setRedirect('/FAQ')} />
+						<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} />
 						<Divider />
 						{isPrimary ?
-							<AdminSection walletAddress={walletAddress} /> : ""
+							<AdminSection walletAddress={walletAddress} contractDependencies={() => setRedirect('/dependencies')} /> : ""
 						}
 					</Drawer>
 				</Hidden>
 				<Paper className={classes.paper}>
-						<Box component="div" className={classes.content}>
-							<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')}/>
-							<Grid
-								container
-								direction="row"
-								justify="center"
-								alignItems="center">
-								<Grid item>
-									<Grid
-										container
-										direction="column"
-										justify="center"
-										alignItems="center"
-										spacing={0}>
-										<Grid item>
-											<Grid
-												container
-												direction="row"
-												justify="space-evenly"
-												alignItems="center"
-												spacing={7}>
-												<Grid item>
-													<p className={classes.heading}>
-														WEIDAI
+					<Box component="div" className={classes.content}>
+						<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} />
+						<Grid
+							container
+							direction="row"
+							justify="center"
+							alignItems="center">
+							<Grid item>
+								<Grid
+									container
+									direction="column"
+									justify="center"
+									alignItems="center"
+									spacing={0}>
+									<Grid item>
+										<Grid
+											container
+											direction="row"
+											justify="space-evenly"
+											alignItems="center"
+											spacing={7}>
+											<Grid item>
+												<p className={classes.heading}>
+													WEIDAI
 													</p>
-												</Grid>
-												<Grid item>
-													<WeidaiLogo />
-												</Grid>
+											</Grid>
+											<Grid item>
+												<WeidaiLogo />
 											</Grid>
 										</Grid>
-										<Grid item>
-											<p className={classes.subheading}>
-												THE WORLD'S FIRST THRIFTCOIN
+									</Grid>
+									<Grid item>
+										<p className={classes.subheading}>
+											THE WORLD'S FIRST THRIFTCOIN
 									</p>
-										</Grid>
 									</Grid>
 								</Grid>
 							</Grid>
+						</Grid>
 
-							<Divider variant="middle" className={classes.headingDivider} />
-							<Switch>
-								<Route path="/" exact >
-									<Home />
+						<Divider variant="middle" className={classes.headingDivider} />
+						<Switch>
+							<Route path="/" exact >
+								<Home />
 							</Route>
-								<Route path="/engine">
-									<PatienceRegulationEngine currentUser={walletAddress} />
-								</Route>
-								<Route path="/bank">
-									<Bank currentUser={walletAddress} />
-								</Route>
-								<Route path="/FAQ">
-									<FAQ />
-								</Route>
-							</Switch>
-						</Box>
+							<Route path="/engine">
+								<PatienceRegulationEngine currentUser={walletAddress} />
+							</Route>
+							<Route path="/bank">
+								<Bank currentUser={walletAddress} />
+							</Route>
+							<Route path="/FAQ">
+								<FAQ />
+							</Route>
+							<Route path="/dependencies">
+								<ContractDependencies walletAddress={walletAddress} />
+							</Route>
+						</Switch>
+					</Box>
 				</Paper>
 
 				<Hidden mdDown>

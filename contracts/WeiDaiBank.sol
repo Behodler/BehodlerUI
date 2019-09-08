@@ -23,6 +23,10 @@ contract WeiDaiBank is Secondary, Versioned {
 		donationAddress = donation;
 	}
 
+	function getDonationAddress () external view returns (address) {
+		return donationAddress;
+	}
+
 	function daiPerMyriadWeidai() public view returns (uint) {
 		uint totalWeiDai = WeiDai(getWeiDai()).totalSupply();
 		
