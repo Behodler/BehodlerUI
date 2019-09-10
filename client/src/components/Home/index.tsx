@@ -22,15 +22,15 @@ const images = [
 const steps = [
 	{
 		heading: 'What is WeiDai?',
-		subtitle: 'WeiDai is a new type of stablecoin: a thriftcoin. A thriftcoin is the perfect token for savers who dislike short term price volatility.',
+		subtitle: 'WeiDai is a new type of stablecoin: a thriftcoin. A thriftcoin is the perfect token savers who also dislike short term price volatility.',
 		message: "Preserving wealth in volatile markets with price inflation shouldn't require a masters degree in finance. It should be something anyone can do.",
 		message2: "A thriftcoin is designed to bring back the days of piggy banks and money-under-the-mattress habits. It's a simple way for the unbanked and the risk-averse to save while still beating inflation.",
 	},
 	{
 		heading: "How does WeiDai work?",
-		subtitle: "Every unit of WeiDai is backed by MakerDAO's Dai stablecoin, held in a smart contract. At any given point in time, WeiDai can be redeemed for Dai according to a redeem rate set by the reserve smart contract. You can think of the redeem rate as the PRICE of WeiDai",
-		message: "The redeem rate is simply the number of WeiDai in circulation divided by the Dai in reserve. WeiDai can be issued at the prevailing redeem rate by putting Dai in the reserve contract",
-		message2: "WeiDai tokens can also be burnt. Burning just deletes tokens from supply. When WeiDai tokens are burnt, the supply of WeiDai falls but the Dai in reserve is the same as before. This means the redeem rate goes up!"
+		subtitle: "Every unit of WeiDai is backed by MakerDAO's Dai stablecoin, held in a smart contract. WeiDai can be redeemed at any time for Dai according to the 'redeem rate' set by the reserve smart contract. WeiDai can also be issued at the prevailing redeem rate by putting Dai in the reserve contract. You can think of the redeem rate as the PRICE of WeiDai",
+		message: "The redeem rate is simply the number of Dai held in reserve divided by the number of WeiDai in circulation. A higher redeem rate requires more Dai for every unit of WeiDai created and gives you more Dai for every unit of WeiDai redeemed. ",
+		message2: "WeiDai tokens can also be burnt. Burning just deletes tokens from supply without affecting Dai in reserve. This causes the redeem rate to go up!"
 	},
 	{
 		heading: "What makes WeiDai a Thriftcoin?",
@@ -47,7 +47,7 @@ const steps = [
 	{
 		heading: "Are there any other incentives to burn?",
 		subtitle: "Whenever WeiDai is redeemed for Dai, 2% is burnt in order to push up the redeem rate. This is another way patience is rewarded: those who redeem sooner push the redeem rate up for those who hold.",
-		message: "Beyond these 2 principle burn incentives, a whole ecosystem is planned around WeiDai with as much mutually beneficial burning as possible. For instance, a merchant who holds a large portion of WeiDai can sell to customers by burning their tokens instead of taking them, rewarding both themselves and the whole WeiDai community.",
+		message: "Beyond these 2 principle burn incentives, a whole ecosystem is planned around WeiDai with as much mutually beneficial burning as possible. For instance, a merchant who holds a large portion of WeiDai can sell to customers by burning the customer's tokens instead of taking them, rewarding both themselves and the whole WeiDai community.",
 		message2: "WeiDai is 100% managed on the Ethereum Blockchain so if you're an interested developer, you can immediately plug in to the smart contracts and build your own thriftcoin powered #DeFi killer Dapp without requiring permission. WeiDai is entirely open source."
 	},
 	{
@@ -69,7 +69,7 @@ const styles = {
 		backgroundColor: blueGrey['600'],
 	},
 	Grid: {
-		minHeight: "595px",
+		minHeight: "600px",
 
 	},
 	divider: {

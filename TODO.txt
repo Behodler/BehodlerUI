@@ -46,6 +46,8 @@ front end:
 17. Update api so it loads version controller and then fetches the addresses based on the current user's version --DONE
 18. have a drop down in set dependencies to allow you to change current version. Dependencies will now only ever show one set of contract group.
     You set your active and it refreshes everything. window.reload. --BUSY
+	18.1 Implement add group which brings a popup of
+		all the addresses, the name, version number (autofilled)
 
 Ongoing FAQ:
 Talk about difficulty adjustments, how often etc.

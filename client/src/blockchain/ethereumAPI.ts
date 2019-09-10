@@ -15,7 +15,7 @@ import WDJSON from '../contracts/WeiDai.json'
 import bankJSON from '../contracts/WeiDaiBank.json'
 import ERC20JSON from '../contracts/ERC20.json'
 import VERSIONJSON from '../contracts/WeiDaiVersionController.json'
-import DaiAddressJSON from './daiNetworkAddresses.json'
+// import DaiAddressJSON from './daiNetworkAddresses.json'
 
 interface IContracts {
 	WeiDai: WeiDai
@@ -38,8 +38,8 @@ class ethereumAPI {
 	private currentAccount: address
 	private accountSubscription: any
 	private interval: any
-	private network: string
 	private web3: Web3;
+	public activeVersion:string
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
 	public daiEffects: ERC20Effects
@@ -58,25 +58,32 @@ class ethereumAPI {
 		if (!this.isMetaMaskConnected) {
 			return;
 		}
-		this.network = await this.web3.eth.net.getNetworkType();
-		const weiDaiDeployment = await this.deploy(WDJSON)
-		const WeiDai: WeiDai = weiDaiDeployment.methods;
-		WeiDai.address = weiDaiDeployment.address;
-
-		const weiDaiBankDeployment = await this.deploy(bankJSON);
-		const WeiDaiBank: WeiDaiBank = weiDaiBankDeployment.methods
-		WeiDaiBank.address = weiDaiBankDeployment.address;
-
-		const preDeployment = await this.deploy(PREJSON)
-		const PRE: PatienceRegulationEngine = preDeployment.methods
-		PRE.address = preDeployment.address
-
+		console.log ("initialize called.")
 		const versionDeployment = await this.deploy(VERSIONJSON)
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
+		const options = {from:this.currentAccount};
+		this.activeVersion = "" + this.hexToNumber(await VersionController.getUserActiveVersion(this.currentAccount).call(options))
+		
+		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
+		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
+		const preAddress = await VersionController.getPRE(this.activeVersion).call(options)
+		const daiAddress = await VersionController.getDai(this.activeVersion).call(options)
 
-		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, DaiAddressJSON[this.network])).methods as unknown) as ERC20
-		Dai.address = DaiAddressJSON[this.network]
+		const weiDaiDeployment = await this.deploy(WDJSON,weiDaiAddress)
+		const WeiDai: WeiDai = weiDaiDeployment.methods;
+		WeiDai.address = weiDaiDeployment.address;
+
+		const weiDaiBankDeployment = await this.deploy(bankJSON,bankAddress);
+		const WeiDaiBank: WeiDaiBank = weiDaiBankDeployment.methods
+		WeiDaiBank.address = weiDaiBankDeployment.address;
+
+		const preDeployment = await this.deploy(PREJSON,preAddress)
+		const PRE: PatienceRegulationEngine = preDeployment.methods
+		PRE.address = preDeployment.address
+
+		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, daiAddress)).methods as unknown) as ERC20
+		Dai.address = daiAddress;
 
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController }
 		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
@@ -178,17 +185,15 @@ class ethereumAPI {
 		}
 	}
 
-	private async deploy(truffleJson: any) {
+	private async deploy(truffleJson: any, address?: string) {
 		const abi = truffleJson.abi
 
 		let keysOfNetworks = Object.keys(truffleJson.networks)
-		const address: string = truffleJson.networks[keysOfNetworks[0]].address
-
-		let contractInstance: any;
+		const deployAddress: string = address || truffleJson.networks[keysOfNetworks[0]].address || ""
 		try {
-			const contractInstance = await new this.web3.eth.Contract(abi, address)
+			const contractInstance = await new this.web3.eth.Contract(abi, deployAddress)
 
-			return { methods: contractInstance.methods, address };
+			return { methods: contractInstance.methods, address: deployAddress };
 		}
 		catch (err) {
 			console.log("contract failed to load: " + err);
@@ -197,7 +202,6 @@ class ethereumAPI {
 				primary: () => new Promise<string>((resolve, reject) => { resolve("NULL"); })
 			};
 		}
-		return contractInstance;
 	}
 }
 

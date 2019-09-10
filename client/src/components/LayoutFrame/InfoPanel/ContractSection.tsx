@@ -73,7 +73,7 @@ function ContractSectionComponent(props: ContractProps) {
 	return (
 		<List>
 			<ClickAbleInfoListItem details={weiDaiDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
-				{getLine("WEIDAI PRICE", `${weiDaiPrice} DAI`)}
+				{getLine("REDEEM RATE (PRICE)", `${weiDaiPrice} DAI`)}
 			</ClickAbleInfoListItem>
 			<ClickAbleInfoListItem details={penaltyReductionPeriodDetail} setDetailProps={props.setDetailProps} setDetailVisibility={props.setDetailVisibility}>
 				{getLine("PENALTY REDUCTION PERIOD", penaltyReductionPeriod + ' block' + (parseInt(penaltyReductionPeriod) > 1 ? 's' : ''))}
