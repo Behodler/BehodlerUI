@@ -18,21 +18,24 @@ front end:
 18. have a drop down in set dependencies to allow you to change current version. Dependencies will now only ever show one set of contract group.
     You set your active and it refreshes everything. window.reload. --BUSY
 	18.1 Implement add group which brings a popup of
-		all the addresses, the name, version number (autofilled) -- string to bytes16 bug
-19. Upgrade old versions
-	19.1 At page load, loop through versions and inspect user's weidai balance foreach. 
-	19.2 If balance exists on non default version, bring popup that says "You have WeiDai balances from prior versions of WeiDai. Then labels below with 
-			WeiDai version 2: Xdai 
-			Balance: 2000
-			Dai value: 1245
-			<Redeem />
-	19.3 Dialog can be closed if active version for user is default version.
-	19.4 Your active version of WeiDai is out of date. For your safety, functionality on the dapp is disabled until you upgrade your active version.
-	19.5 Why am I seeing this? Slide down explaining that MakerDAO releases new versions occasionally.
+		all the addresses, the name, version number  -- DONE
+19. Upgrade old versions --BUSY
+	1. method for getting balance by version in weidai.
+	2. method for getting incubating weidai from PRe? Bank? Figure out.
+	3. Move vArray population into API and call it in initialize.
+	4. Loop through versions and get values for incubating and actual
+	5. set disabledUI = !active_version.enabled && user != primary
+	6. if disabledUI hide everything and disable routing.
+	7. If balances exist for non active version, setWarningPopup = true.
+	8. Popup can only close if !disabledUI
+	9. Important notice: MakerDAO periodically releases new versions of Dai, setting the old versions to inactive. Since WeiDai wraps Dai, new versions of WeiDai are released in step with Dai and old versions are disabled. You have positive balances of old weiDai <and are currently using an inactive version of weidai>. For your safety, you may only redeem your balances of old WeiDai for old Dai. MakerDAO provides instructions for how to redeem old Dai for collateral.  
 
-Ongoing FAQ:
-Talk about difficulty adjustments, how often etc.
-Other coins can be burnt
+	For full functionality of WediDai, you will need to upgrade your version of WeiDai.
+	<upgrade now>
+
+	foreach balance of oldWeiDai
+	version: 1     balance: 100      <redeem>
+  
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.
