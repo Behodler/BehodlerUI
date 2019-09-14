@@ -1,30 +1,8 @@
 front end:
 1. Patience Regulation Engine page - use PRE.png --DONE
-1.1 Link to PRE page -- DONE
-1.2 Load immediately before first block -- DONE (without work)
-1.3 Make incubation only visible if incubating -- DONE
-1.4 Progress bar not getting correct numbers -- DONE
-1.5 Remove claim amount -- DONE
-1.6 Popup when with penalty -- DONE
-1.7 make claim text more visible or blue or something -- DONE
-1.8 Round numbers that are >0 -- DONE
-1.9 hide create section when incubating -- DONE
-1.10 check for any public solidity methods that rely on block.number --DONE
-1.11 make sure observables are only publishing new data -- DONE but metamask is clearly at fault
-1.12 move will create and weidai boxes to verticle and replace weidai box with label -- DONE
-1.13 change split rate label to have a what's this in brackets with a tooltip rather than advanced -- DONE
-
 2. Metamask not enabled landing page -- DONE
 3. Handle Metamask user rejection. It causes uncaught error. -- DONE (unnecessary)
-
 4. Bank 
-4.1 Consider journal to keep in mind points of consideration -- DONE
-4.2 Make a diagram modelled on the PRE page so that styling is consistent. --DONE
-4.3 Toggles message of you have no weidai to panel of controls depending if balance is zero. See bank page of journal -- DONE => remember to scale front end numbers into wei
-4.4 Reduce reserve by donations -- DONE -> rather show global supply
-4.5 add loading functionality so that we don't see unset and all that. -- DONE
-
-5. Hide current penalty when no incubating weidai -- DONE
 6. Side panel: For how it works and FAQ, sliders, not buttons. --DONE
 7. small nav bar functionality -- DONE
 8. Set Dependencies--Do after launch
@@ -36,18 +14,21 @@ front end:
 13. In the future add a reload for network change event. Right now, functionality not supported. -- FUTURE
 14. Add a light, dark switch -- DONE (not going to do it. Dark just looks better)
 15. FAQ --DONE
-16. In set Dependencies,
-	1. show all contract groups with addresses. -- DONE
-	2. allow contract groups to be added or edited -- BUSY -- implement update and add. Make layout a little nicer. Do 18 first
-	3. Set active contract group.
-	4. Have a Choose version button in the actions.
-	5. Only show this navigation button if the user is not using the current version
-	6. When a user chooses a non active version, then PRE must just display a message saying weidai isn't active for this version. Take away create / Claim buttons
 17. Update api so it loads version controller and then fetches the addresses based on the current user's version --DONE
 18. have a drop down in set dependencies to allow you to change current version. Dependencies will now only ever show one set of contract group.
     You set your active and it refreshes everything. window.reload. --BUSY
 	18.1 Implement add group which brings a popup of
-		all the addresses, the name, version number (autofilled)
+		all the addresses, the name, version number (autofilled) -- string to bytes16 bug
+19. Upgrade old versions
+	19.1 At page load, loop through versions and inspect user's weidai balance foreach. 
+	19.2 If balance exists on non default version, bring popup that says "You have WeiDai balances from prior versions of WeiDai. Then labels below with 
+			WeiDai version 2: Xdai 
+			Balance: 2000
+			Dai value: 1245
+			<Redeem />
+	19.3 Dialog can be closed if active version for user is default version.
+	19.4 Your active version of WeiDai is out of date. For your safety, functionality on the dapp is disabled until you upgrade your active version.
+	19.5 Why am I seeing this? Slide down explaining that MakerDAO releases new versions occasionally.
 
 Ongoing FAQ:
 Talk about difficulty adjustments, how often etc.
