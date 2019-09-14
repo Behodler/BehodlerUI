@@ -64,7 +64,6 @@ class ethereumAPI {
 		VersionController.address = versionDeployment.address
 		const options = {from:this.currentAccount};
 		this.activeVersion = "" + this.hexToNumber(await VersionController.getUserActiveVersion(this.currentAccount).call(options))
-		
 		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
 		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
 		const preAddress = await VersionController.getPRE(this.activeVersion).call(options)
@@ -127,6 +126,10 @@ class ethereumAPI {
 
 	public loggedInUser(): address {
 		return this.currentAccount
+	}
+
+	public toBytes(input:string){
+		return this.web3.utils.fromAscii(input)
 	}
 
 	public toWei(eth: string) {

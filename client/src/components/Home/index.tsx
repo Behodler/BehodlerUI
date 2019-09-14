@@ -22,7 +22,7 @@ const images = [
 const steps = [
 	{
 		heading: 'What is WeiDai?',
-		subtitle: 'WeiDai is a new type of stablecoin: a thriftcoin. A thriftcoin is the perfect token savers who also dislike short term price volatility.',
+		subtitle: 'WeiDai is a new type of stablecoin: a thriftcoin. A thriftcoin is the perfect token for savers who also dislike short term price volatility.',
 		message: "Preserving wealth in volatile markets with price inflation shouldn't require a masters degree in finance. It should be something anyone can do.",
 		message2: "A thriftcoin is designed to bring back the days of piggy banks and money-under-the-mattress habits. It's a simple way for the unbanked and the risk-averse to save while still beating inflation.",
 	},
@@ -52,8 +52,8 @@ const steps = [
 	},
 	{
 		heading: "How do I start?",
-		subtitle: "Head over to the Patience Regulation Engine by clicking the navigation button labelled 'Create / Redeem'. Once you've enabled Dai, you can create new WeiDai by clicking Create. Metamask will popup whenever you interact with a smart contract.",
-		message: "Your newly created WeiDai will first have to incubate. A progress bar will tell you how big the penalty for claiming early will be. For instance, if the bar is at 80 when you claim, you'll only get 20% of the created WeiDai. The rest is burnt. When the progress bar reaches zero, your WeiDai is ready to be claimed.",
+		subtitle: "Head over to the Patience Regulation Engine by clicking the navigation button labelled 'Create / Claim'. Once you've enabled Dai, you can create new WeiDai by clicking Create. Metamask will popup whenever you interact with a smart contract.",
+		message: "Your newly created WeiDai will first have to incubate. A progress bar will tell you how big the penalty for claiming early will be. For instance, if the bar is at 80 when you claim, you'll only get 20% of the created WeiDai. The rest is burnt. When the progress bar reaches zero, your WeiDai is ready to be claimed without penalty.",
 		message2: "If you want to redeem, click on the 'Redeem for Dai' navigation button to see the WeiDai reserve. Enter the amount you'd like to redeem. Bear in mind that there's a 2% redemption fee so try to wait until the redeem rate has risen by at least 2% before claiming. Have fun and may Vitalik smile upon your thriftiness."
 	}
 ]

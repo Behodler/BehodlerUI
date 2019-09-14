@@ -9,27 +9,27 @@ contract WeiDaiVersionController is Secondary{
 		address   patienceRegulationEngine;
 		address   weiDaiBank;
 		bool enabled;
-		bytes16 name;
+		bytes32 name;
 	}
 	mapping (uint=>contractFamily) versionedContractFamilies;
 	mapping (address=>uint) contractVersion;
 	mapping (address=>uint) activeVersion;
 	uint defaultVersion;
 	
-	function setContractGroup(uint version, address weiDai, address dai, address pre, address bank, bytes16 name) external onlyPrimary{
-		require(version>0, "version zero reserved.");
-		versionedContractFamilies[version] = contractFamily({
+	function setContractGroup(uint ver, address weiDai, address dai, address pre, address bank, bytes32 name, bool enabled) external onlyPrimary{
+		require(ver>0, "version zero reserved.");
+		versionedContractFamilies[ver] = contractFamily({
 			weiDai:weiDai,
 			dai:dai,
 			patienceRegulationEngine:pre,
 			weiDaiBank:bank,
-			enabled:true,
+			enabled:enabled,
 			name:name
 		});
-		contractVersion[weiDai] = version;
-		contractVersion[dai] = version;
-		contractVersion[pre] = version;
-		contractVersion[bank] = version;
+		contractVersion[weiDai] = ver;
+		contractVersion[dai] = ver;
+		contractVersion[pre] = ver;
+		contractVersion[bank] = ver;
 	}
 
 	function getWeiDai(uint version) external view returns (address ){
@@ -56,7 +56,7 @@ contract WeiDaiVersionController is Secondary{
 		return string(name);
 	}
 
-	function renameContractFamily (uint version, bytes16 name) external onlyPrimary {
+	function renameContractFamily (uint version, bytes32 name) external onlyPrimary {
 		versionedContractFamilies[version].name = name;
 	}
 

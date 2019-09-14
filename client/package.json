@@ -33,7 +33,6 @@
 		"@types/react-dom": "^16.8.3",
 		"@types/react-router-dom": "^4.3.2",
 		"@types/web3": "^1.0.18",
-		"truffle-security": "^1.5.5",
 		"types-web3-provider-engine": "0.0.2",
 		"typescript": "^3.3.4000"
 	}

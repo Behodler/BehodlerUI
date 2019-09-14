@@ -33,7 +33,8 @@ contract('VersionController', accounts => {
 			newDai.address,
 			newPRE.address,
 			newBank.address,
-			web3.utils.fromAscii("weidai5"))
+			web3.utils.fromAscii("weidai5"),
+			true)
 
 		await newDai.transfer(account, "10000", { from: accounts[0] })
 		await vcInstance.setActiveVersion(5, { from: account })
@@ -51,7 +52,8 @@ contract('VersionController', accounts => {
 			newDai.address,
 			newPRE.address,
 			newBank.address,
-			web3.utils.fromAscii("kweidai"))
+			web3.utils.fromAscii("kweidai"),
+			true)
 
 		const expectedWeiDai = await vcInstance.getWeiDai.call(100)
 		const expectedDai = await vcInstance.getDai.call(100)
@@ -99,7 +101,8 @@ contract('VersionController', accounts => {
 			newDai.address,
 			newPRE.address,
 			newBank.address,
-			web3.utils.fromAscii("weidai5"))
+			web3.utils.fromAscii("weidai5"),
+			true)
 
 		await newDai.transfer(account, "10000", { from: accounts[0] })
 
@@ -117,7 +120,8 @@ contract('VersionController', accounts => {
 			newDai.address,
 			newPRE.address,
 			newBank.address,
-			web3.utils.fromAscii("weidai5"))
+			web3.utils.fromAscii("weidai5"),
+			true)
 
 		await newWeiDai.setVersionController(vcInstance.address)
 		await newBank.setVersionController(vcInstance.address)
@@ -150,7 +154,8 @@ contract('VersionController', accounts => {
 			newDai.address,
 			newPRE.address,
 			newBank.address,
-			web3.utils.fromAscii("weidai120"))
+			web3.utils.fromAscii("weidai120"),
+			true)
 
 		await newWeiDai.setVersionController(vcInstance.address)
 		await newBank.setVersionController(vcInstance.address)

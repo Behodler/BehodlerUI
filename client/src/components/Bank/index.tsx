@@ -33,7 +33,6 @@ function BankComponent(props: bankProps) {
 		const subscription = effect.Observable.subscribe((balance) => {
 
 			if (priorWeiDaiBalance !== balance) {
-				console.log(priorWeiDaiBalance)
 				setWeiDaiBalance(formatDecimalStrings(balance))
 				setPriorWeiDaiBalance(balance)
 				setWeiDaiToRedeemText("")

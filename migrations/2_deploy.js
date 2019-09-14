@@ -24,7 +24,7 @@ module.exports = async function (deployer, network, accounts) {
 		vcInstance = await VersionController.deployed()
 		vcAddress = vcInstance.address
 		daiAddress = (await MockDai.deployed()).address
-		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"))
+		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"),true)
 		await vcInstance.setDefaultVersion(1)
 	}
 	else if (network === 'main') {

@@ -29,7 +29,7 @@ const questions = [
 	},
 	{
 		title: "Is WeiDai decentralized?",
-		answer: "The operation of WeiDai is 100% decentralized. The price feeds are outsourced to the MakerDAO oracle network via Dai. For now, WeiDai's contracts can be disabled and the donation address is fixed. This is a necessary safeguard in the early stages in case there are unforeseen bugs. However, once WeiDai is thriving and has an active community, the plan is to hand over full control to a 'WeiDAO'."
+		answer: "The operation of WeiDai is 100% decentralized. The price feeds are outsourced to the MakerDAO oracle network via Dai. For now, WeiDai's contracts can be disabled and the donation address is fixed. This is a necessary safeguard in the early stages in case there are unforeseen bugs. However, once WeiDai is thriving and has an active community, the plan is to hand over full control to a 'WeiDAO'. There is no central server. The site you're on is a static site using Javascript to communicate with the Ethereum blockchain. No personal data is collected by anyone. If you would like to run this site locally and not have it served, the Github page has built versions which can be downloaded."
 	},
 	{
 		title: "Is this an ICO?",
