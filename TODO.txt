@@ -1,3 +1,7 @@
+FOR NEXT TIME:
+redeem for is failing because msg.sender is the same within a contract.
+Solution: have a set delegate method like claim for and then check if msg.sender is delegate  OR if its weidaiversion controller!
+
 front end:
 1. Patience Regulation Engine page - use PRE.png --DONE
 2. Metamask not enabled landing page -- DONE
@@ -16,13 +20,13 @@ front end:
 15. FAQ --DONE
 17. Update api so it loads version controller and then fetches the addresses based on the current user's version --DONE
 18. have a drop down in set dependencies to allow you to change current version. Dependencies will now only ever show one set of contract group.
-    You set your active and it refreshes everything. window.reload. --BUSY
+    You set your active and it refreshes everything. window.reload. --DONE
 	18.1 Implement add group which brings a popup of
 		all the addresses, the name, version number  -- DONE
 19. Upgrade old versions --BUSY
-	1. method for getting balance by version in weidai.
-	2. method for getting incubating weidai from PRe? Bank? Figure out.
-	3. Move vArray population into API and call it in initialize.
+	1. method for getting balance by version in weidai. --DONE
+	2. method for getting incubating weidai from PRe? Bank? Figure out. -test --BUSY -- failing in live. Redeem in bank is mostly commented
+	3. Move vArray population into API and call it in initialize. 
 	4. Loop through versions and get values for incubating and actual
 	5. set disabledUI = !active_version.enabled && user != primary
 	6. if disabledUI hide everything and disable routing.
@@ -34,7 +38,7 @@ front end:
 	<upgrade now>
 
 	foreach balance of oldWeiDai
-	version: 1     balance: 100      <redeem>
+	version: 1     balance: 100      <enable weidai>/<redeem>
   
 
 Governance:
