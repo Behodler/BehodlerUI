@@ -35,7 +35,7 @@ front end:
 
 	foreach balance of oldWeiDai
 	version: 1     balance: 100      <enable weidai>/<redeem>
-  
+20. Figure out way to only subscribe to change?
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.
