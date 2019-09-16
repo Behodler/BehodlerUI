@@ -36,8 +36,8 @@ const questions = [
 		answer: "NO! WeiDai is fully functional and has full utility from day 1. There is no fundraising round and no promises for growth or profit are made. There are no WeiDai investors."
 	},
 	{
-		title: "Did the creator of WeiDai give himself free tokens?",
-		answer: "No, every WeiDai in existence is 100% backed by Dai. The only can only benefit from voluntary donations."
+		title: "Did the creator of WeiDai give themself free tokens?",
+		answer: "No, every WeiDai in existence is 100% backed by Dai. The creator only can only benefit from voluntary donations."
 	},
 	{
 		title: "Will WeiDai make me rich?",
@@ -49,23 +49,23 @@ const questions = [
 	},
 	{
 		title: "What is the split rate?",
-		answer: "Every holder of WeiDai has a split rate that determines how much of their burnt WeiDai is donated to the developer and how much is burnt. For instance, a split rate of 15 means that whenever your WeiDai is burnt, 15% of that is given to the developer as a donation and the remaining 85% is burnt."
+		answer: "Every holder of WeiDai has a split rate that determines how much of their burnt WeiDai is donated to the developer and how much is burnt. For instance, a split rate of 15 means that whenever your WeiDai is burnt, 15% of that is given to the developer as a donation and the remaining 85% is burnt. The default split rate is 10% but you can alter it on the Patience Regulation Engine when you create new WeiDai."
 	},
 	{
-		title: "Is WeiDai a for-profit enterprise",
+		title: "Is WeiDai a for-profit enterprise?",
 		answer: "If everyone sets their split rate to zero, the developer will receive zero compensation. Therefore the developer earns income only from donations."
 	},
 	{
 		title: "If I set the split rate lower, do I save money?",
-		answer: "The split rate does not determine how much is deducted from you during a burn. Rather it determines how that portion is split between donation and burning."
+		answer: "No, the split rate does not determine how much is deducted from you during a burn. Rather it determines how that portion is split between donation and burning."
 	},
 	{
 		title: "WeiDai is taking really long to load. What's going on?",
-		answer: "Currently Metamask slows down with regular use. This is a known issue and out of our hands, for now unfortunately. The best solution is to disable and enable the Metamask extension or to restart your browser."
+		answer: "Currently Metamask slows down with regular use. This is a known issue and out of our hands for now, unfortunately. The best solution is to disable and enable the Metamask extension or to restart your browser."
 	},
 	{
 		title: "How often is the incubation duration adjusted?",
-		answer: "The Patience Regulation Engine allows for 10 incubation durations worth of blocks to pass before adjusting the difficulty. This is the adjustment cycle. For instance, if the incubation duration is 40 blocks then 800 blocks pass before the duration is either halved or doubled."
+		answer: "The Patience Regulation Engine allows for 10 incubation durations worth of blocks to pass before adjusting the difficulty. This is the adjustment cycle. For instance, if the incubation duration is 40 blocks then 400 blocks pass before the duration is either halved or doubled. Suppose in this example that the duration is doubled to 80 blocks. The next adjustment won't happen until at least 800 blocks have passes. Conversely if the duration falls to 20 blocks, the next adjustment will happen after 200 blocks have passed."
 	},
 	{
 		title: "Is there a minimum duration for which WeiDai can be incubated?",
@@ -73,18 +73,18 @@ const questions = [
 	},
 	{
 		title: "What if everyone is patient? Is there an upper limit to how long it takes to incubate?",
-		answer: "There's no practical limit but it can't surpass 2^255 blocks because of EVM limits. However if the average block time is 15 seconds, that would have you waiting until the universe is populated with only supermassive black holes."
+		answer: "There's no practical limit but it can't surpass 2^255 blocks because of EVM limits. However if the average block time is 15 seconds, that would have you waiting until the universe is populated with only supermassive black holes which can only begin to decay when the energy intensity of their Hawking radiation exceeds the cosmic background radiation."
 	},
 	{
-		title: "How does the Patience Regulation Engine (PRE) know 'how patient' people are?",
-		answer: "At the end of a cycle (10 incubation durations worth of blocks), the PRE compares the WeiDai claimed early to the WeiDai claimed after incubation to figure out how patient users were. If more WeiDai is claimed early than left for full duration then the duration is considered 'too hard' and halved. Conversely if more is claimed after duration than early, it is considered too easy and doubled. In addition to this, the PRE can figure out how hard it was. To do this, it weights the claims by 'how early' they were claimed. Early claims are multiplied by the penalty expressed as a number between 0 and 100. So you claim 10 WeiDai when the penalty is 85% then you adjusted claim value is 850. If instead you claim when the penalty is 40% the adjusted claim value is 400. This means that people who claim very early and incur maximum penalty weight the PRE heavier in favour of impatience. The claims for those who wait the entire duration are multiplied by 100. At the end of a cycle, the PRE compares the two weighted totals to figure out whether to halve or double the duration."
+		title: "How does the Patience Regulation Engine (PRE) know how patient people are?",
+		answer: "At the end of a cycle (10 incubation durations worth of blocks), the PRE compares the WeiDai claimed early to the WeiDai claimed after incubation to figure out how patient users were. If more WeiDai is claimed early than left for full duration then the duration is considered 'too hard' and halved. Conversely if more is claimed after duration than early, it is considered too easy and doubled. In addition to this, the PRE can figure out how hard it was. To do this, it weighs the claims by 'how early' they were claimed. Early claims are multiplied by the penalty expressed as a number between 0 and 100. So if you claim 10 WeiDai when the penalty is 85% then your weighted claim value is 850. If instead you claim when the penalty is 40% the adjusted claim value is 400. This means that people who claim very early and incur maximum penalty weight the PRE heavier in favour of impatience. The claims for those who wait the entire duration are multiplied by 100. At the end of a cycle, the PRE compares the two weighted totals to figure out whether to halve or double the duration. E.G. Sheldon buys 100 WeiDai and is patient enough to wait until incubation is over. He claims the 100 and the PRE adds 100 *100 = 10000 to the patience aggregate. Raj and Stuart buy 30 and 200 respectively but are less than patient. Raj claims when the penalty is 85%, adding (30*85 =) 2550 to the impatience aggregate. Stuart almost makes it to the end but claims when the penalty is 5%, adding (5*200 =)1000 to the impatience aggregate. At the next adjustment, the PRE compares the patience aggregate of 10000 to the impatience aggregate of (1000+2550=)3550 and concludes that the difficulty is too easy, doubling the incubation duration."
 	},
 	{
-		title: "20 duration periods have passed but the difficulty hasn't been adjusted.",
-		answer: "Smart contracts on Ethereum cannot self execute at a given point in time. They lie dormant until used. The PRE adjusts the difficulty whenever someone claims WeiDai IF 20 incubation periods have passed. This means that if 40 pass without any claims, the duration remains unchanged. With increasing popularity of WeiDai, this discrepancy should fall away. There are tricks to guarantee regular adjustment but smart contracts should always be kept as simple as possible."
+		title: "10 incubation periods have passed but the difficulty hasn't been adjusted.",
+		answer: "Smart contracts on Ethereum cannot self execute at a given point in time. They lie dormant until used. The PRE adjusts the difficulty whenever someone claims WeiDai IF 10 incubation durations have passed. This means that if 40 pass without any claims, the duration remains unchanged. With increasing popularity of WeiDai, this discrepancy should fall away. There are incentive tricks to guarantee regular adjustment but smart contracts should always be kept as simple as possible."
 	},
 	{
-		title: "If most people are patient, can someone trick the Patience Regulation Engine with small purchases that are claimed early to keep the duration low?",
+		title: "If most people are patient, can someone spam the Patience Regulation Engine with small purchases that are claimed early to keep the duration low?",
 		answer: "To game the system, you would have to incur big penalties because the PRE weights early claims against patient claims. It also gives more weight to patient claims. A '51% attack' on WeiDai would also have the unintended consequence of pushing up the redeem rate so go ahead. Your sacrifice is appreciated."
 	},
 	{
@@ -113,11 +113,11 @@ const questions = [
 	},
 	{
 		title: "Is WeiDai in competition with cDai?",
-		answer: "No way. All of us in the DeFi space are in this together. Whenever a new primitive is created, innovative developers find new ways to compose amazing products. For instance, pooltogether uses Compound to create the world's first lossless lottery. To answer the question, cDai is based on interest bearing instruments. WeiDai is based on burn incentives. They likely both have their role to play and I certainly will be a holder of both."
+		answer: "No way. All of us in the DeFi space are in this together. Whenever a new primitive is created, innovative developers find new ways to compose amazing products. For instance, pooltogether uses Compound to create the world's first lossless lottery. To answer the question, cDai is based on interest bearing instruments. WeiDai is based on burn incentives. They likely both have their role to play and I certainly will be a HODLer of both."
 	},
 	{
 		title: "cDai creates wealth through interest markets. WeiDai just shuffles money around. Is WeiDai economically wasteful?",
-		answer: "Every currency has distributional implications. Purchasing power always flows from one group to another. There's no currency that can settle into perfect equality even if the money were dumped in equal portions on every citizen. National currencies tend to redistribute purchasing power from the last recipients of newly printed money to the first recipients of money through inflation. Financial markets, and in particular a select few institutions, are the first recipients of new money. Suppose a fictional institution JTBorgan receives a billion new dollars. It wants to speculate on real estate and notices a a neighbourhood of houses with average prices of $800 000. It purchases half the houses in the area to rent out to tenants. The remaining house sellers notice a sudden spike in demand for houses and raise their price to $900 000. Before JTBorgen was given new money, you were interested in one of the houses. You were about to make an offer when the asking prices all rose. You agree to the new price but are $100k poorer than you would have been all because new money was printed and given to someone else before you. In order to not be a sucker next time, you'd have to preserve your wealth better. Traditionally the best way to do this would be to enter financial markets. You decide to purchase funds through JTBorgen. In this way, inflation has not only stolen wealth from you but enticed you to hand over money to the beneficiaries of it. In addition you are forced to read up and master financial markets which might not be your area of expertise. This wasted time could have been spent elsewhere. All the time lost to inflation reduces the division of labour in the economy by draining the mental resources of non financial workers. This is one way in which inflationary fiat currencies actually reduce productivity in the economy. These and other reasons are why Bitcoin was invented, to be a currency for savers. In Bitcoin the distributional direction is from spenders to HODLers. The longer you hold, the better off you are. The volatility of Bitcoin also disappears the longer you hold, allowing you to ignore financial market complexities and focus on what you're good at and enjoy. Unfortunately people who can afford to hold onto bitcoin for very long periods of time are usually pretty well off to start with. In developing countries like the one I'm from, incomes are low, inflation is high and credit is a lifeblood. Very few people have money to put away for long periods of time. I wanted a currency that preserves your wealth, regardless of the time period. Dai is perfect for short term savings but if you hold it for 4 years or more, you have to start reconsidering financial markets. WeiDai is designed with uncertainty in mind. You can hold onto it for 1 day or 10 years, certain that your wealth is either preserved or has grown. In this way, finance won't be your master. You can return to doing what you enjoy and are good at, and the economy will prosper as a result."
+		answer: "Every currency has distributional implications. Purchasing power always flows from one group to another. There's no currency that can settle into perfect equality even if the money were dumped in equal portions on every citizen. National currencies tend to redistribute purchasing power from the last recipients of newly printed money to the first recipients of money through inflation. Financial markets, and in particular a select few institutions, are the first recipients of new money. Suppose a fictional institution, JTBorgan, receives a billion new dollars. It wants to speculate on real estate and notices a a neighbourhood of houses with average prices of $800 000. It purchases half the houses in the area to rent out to tenants. The remaining house sellers notice a sudden spike in demand for houses and raise their price to $900 000. Before JTBorgen was given new money, you were interested in one of the houses. You were about to make an offer when the asking prices all rose. You agree to the new price but are $100k poorer than you would have been all because new money was printed and given to someone else before you. In order to not be a sucker next time, you'd have to preserve your wealth better. Traditionally the best way to do this would be to enter financial markets. You decide to purchase funds through JTBorgen. In this way, inflation has not only stolen wealth from you but enticed you into handing over money to the beneficiaries of it. In addition you are forced to read up and master financial markets which might not be your area of expertise. This wasted time could have been spent elsewhere. All the time lost to inflation reduces the division of labour in the economy by draining the mental resources of non financial workers. This is one way in which inflationary fiat currencies actually reduce productivity in the economy. These and other reasons are why Bitcoin was invented, to be a currency for savers. In Bitcoin the distributional direction is from spenders to HODLers. The longer you hold, the better off you are. The volatility of Bitcoin also disappears the longer you hold, allowing you to ignore financial market complexities and focus on what you're good at and enjoy. Unfortunately people who can afford to hold onto bitcoin for very long periods of time are usually pretty well off to start with. In developing countries like the one I'm from, incomes are low, inflation is high and credit is a lifeblood. Very few people have money to put away for long periods of time. I wanted a currency that preserves your wealth, regardless of the time period. Dai is perfect for short term savings but if you hold it for 4 years or more, you have to start reconsidering financial markets. WeiDai is designed with uncertainty in mind. You can hold onto it for 1 day or 10 years, certain that your wealth is either preserved or has grown. In this way, finance won't be your master. You can return that lost time to doing what you enjoy and to sharpening your skills, and the economy will prosper as a result. There are other social impacts that thriftcoins will have such as naturally decentralizing new business financing and altering fundamental cultural norms. Fiat currency is a matrix whose implications are difficult to comprehend until you escape it entirely."
 	},
 	{
 		title: "Are thriftcoins better than bitcoin?",
@@ -128,8 +128,24 @@ const questions = [
 		answer: "WeiDai is versioned to match Dai versions. At any point in time there is only one active version of WeiDai that corresponds to the active version of Dai. If you own an inactive version of WeiDai, you can still redeem it for the old Dai. MakerDAO issues special instructions for how to liquidate old Dai. You cannot use inactive versions of WeiDai to create new WeiDai but you can redeem it to 'escape' the old version."
 	},
 	{
+		title: "Wait, if WeiDai is versioned, can the code be changed under my feet?",
+		answer:"The versioning system isn't open ended. The number of smart contracts and their interfaces have to be identical in each version. In practice, the only difference between versions will be the version of Dai acting as collateral. When WeiDai is handed over to a WeiDAO, this process will be trustlessly transparent and probably subject to a decentralized disciplining mechanism like Ulex to keep it mission focused and immune to democratic populism. I for one welcome our new Tom W. Bell overlords."
+	},
+	{
 		title: "Why the name WeiDai?",
 		answer: "Since WeiDai is a wrapper of Dai, I wanted the name to signal this. I also wanted the name to give a sense of how this wrapper is designed to protect wealth. At first, I chose UpDai because it was annoyingly catchy. Dai is a Chinese word for borrow/lend so to keep with the nomenclature, I went plumbing for suitable Chinese words on google translate and came across Wei which means guard or protect. It was more than perfect because Wei Dai is one of the big contributors to the foundations of Bitcoin. In fact, he's a potential Satoshi Candidate and he's the namesake for the smallest denomination of Ether. WeiDai thus means a guard or protection on Dai (from inflation) and is a homage to one of the founding fathers of cryptocurrency."
+	},
+	{
+		title: "Why is the background colour at the bottom of this FAQ section white?",
+		answer: "Material UI has a night mode which applies to its elements but not backgrounds. So all the elements on this dApp are on a paper component. Paper doesn't extend infinitely but has set dimensions so I chose a length for the central panel that didn't make the other pages look too long. The sacrifice is that this FAQ page goes off the paper. I'm sure there's a more elegant solution but is this really a problem? Imagine that WeiDai exists in the construct in the Matrix which is why there's a sudden white background. Now imagine you're reading this FAQ in Morpheus's voice. You might have the following question about WeiDai: 'what are you trying to tell me? That I can avoid inflation?' to which I'll respond 'No, DeFi-fan, what I'm trying to tell you is that when you have thriftcoins, you won' have to.'"
+	},
+	{
+		title: "Speaking of Material UI, what was your React state management solution?",
+		answer: "Well originally I used Redux + Saga which works really nicely with Typescript, at the cost of lots of boilerplate. Half way through production, Hooks was released and all I can say is 'wow!' (read in Owen Wilson's voice). The React team just keeps raising the bar. To monitor the blockchain, I used RXjs and wrapped events in special objects that slot nicely into React Hook's Effects functions as observables. It's my Hooks version of Truffleframework's Drizzle. I haven't given it a name but maybe it should follow the chocolate dessert nomenclature. I'll call it Carob because no one will ever want it for themselves."
+	},
+	{
+		title: "Do I get a prize for reading the entire FAQ?",
+		answer:"Have some carob."
 	}
 ]
 

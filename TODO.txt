@@ -21,8 +21,8 @@ front end:
 		all the addresses, the name, version number  -- DONE
 19. Upgrade old versions --BUSY
 	1. method for getting balance by version in weidai. --DONE
-	2. method for getting incubating weidai from PRe? Bank? Figure out. -- BUSY - retest traditional functionality in live
-	3. Move vArray population into API and call it in initialize. 
+	2. method for getting incubating weidai from PRe? Bank? Figure out. -- DONE
+	3. Move vArray population into API and call it in initialize. -- BUSY
 	4. Loop through versions and get values for incubating and actual
 	5. set disabledUI = !active_version.enabled && user != primary
 	6. if disabledUI hide everything and disable routing.
