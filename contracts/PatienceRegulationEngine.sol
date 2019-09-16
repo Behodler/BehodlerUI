@@ -87,13 +87,15 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	}
 
 	function claimWeiDaiFor(address recipient) external versionMatch {
-		require(claimDelegateReward[recipient][msg.sender]>0, "claimFor disabled for this user: recipient must invoke the setClaimDelegate function.");
+		require(msg.sender == versionController || claimDelegateReward[recipient][msg.sender]>0, "claimFor disabled for this user: recipient must invoke the setClaimDelegate function.");
 		claim(recipient, msg.sender, claimDelegateReward[recipient][msg.sender]);
 	}
 
 	function claim(address recipient, address delegate, uint reward) private {
 		uint penalty = calculateCurrentPenalty(recipient);
 		uint weiDai = lockedWeiDai[recipient];
+		if(weiDai == 0)
+			return;
 		if(penalty==0)
 		{
 			int adjustment = int(weiDai * 100);

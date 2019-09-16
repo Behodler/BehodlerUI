@@ -8,9 +8,12 @@ const bank = artifacts.require("WeiDaiBank")
 const mockdai = artifacts.require("MockDai")
 const versionController = artifacts.require("WeiDaiVersionController")
 const weidai = artifacts.require("WeiDai")
+const mockDai = artifacts.require("MockDai")
+
+const time = require('./helpers/time')
 
 contract('VersionController', accounts => {
-	let bankInstance, daiInstance, vcInstance, preInstance, weidaiInstance
+	let bankInstance, daiInstance, vcInstance, preInstance, weidaiInstance, mockDaiInstance
 
 	setup(async () => {
 		bankInstance = await bank.deployed()
@@ -18,6 +21,7 @@ contract('VersionController', accounts => {
 		daiInstance = await mockdai.deployed()
 		vcInstance = await versionController.deployed();
 		weidaiInstance = await weidai.deployed();
+		mockDaiInstance = await mockDai.deployed()
 		for (var i = 0; i < accounts.length; i++)
 			await daiInstance.transfer(accounts[i], "10000", { from: accounts[0] })
 	})
@@ -184,5 +188,107 @@ contract('VersionController', accounts => {
 		await daiInstance.approve(bankInstance.address, "10000", { from: account })
 		await expectThrow(preInstance.buyWeiDai("1000", "20", { from: account }), "version disabled")
 
+	})
+
+
+	test("claim and redeem for active version", async () => {
+		const primeAccount = accounts[0]
+		const account = accounts[1]
+		await vcInstance.setDefaultVersion(1, { from: primeAccount })
+		await vcInstance.setEnabled(1, true, { from: primeAccount })
+		await vcInstance.setActiveVersion(1, { from: primeAccount })
+
+		const giftAccount = accounts[2]
+
+		let currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		await mockDaiInstance.approve(bank.address, "10000", { from: giftAccount })
+		await preInstance.buyWeiDai("1000", "20", { from: giftAccount })
+
+		let purchaseBlock = (await preInstance.getBlockOfPurchase({ from: giftAccount })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + currentClaimWaitWindow; blockNumber = (await time.advanceBlock()));
+		await preInstance.claimWeiDai({ from: giftAccount })
+
+		const balanceOfGifter = (await weidaiInstance.balanceOf.call(giftAccount)).toNumber()
+		await weidaiInstance.transfer(account, balanceOfGifter, { from: giftAccount })
+
+		currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("1000", "20", { from: account })
+
+		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + 3; blockNumber = (await time.advanceBlock()));
+		await weidaiInstance.increaseAllowance(bankInstance.address, 1000000, { from: account })
+
+		const daiBalanceBefore = (await mockDaiInstance.balanceOf.call(account)).toNumber()
+		await vcInstance.claimAndRedeem(1, { from: account })
+
+		const balanceAfter = (await weidaiInstance.balanceOf.call(account)).toNumber()
+		const daiBalanceAfter = (await mockDaiInstance.balanceOf.call(account)).toNumber()
+		assert.equal(balanceAfter, 0)
+		assert.equal(daiBalanceAfter, daiBalanceBefore + 1758)
+	})
+
+	test("claim and redeem for inactive version", async () => {
+		const primeAccount = accounts[0]
+		const account = accounts[1]
+		const giftAccount = accounts[2]
+
+		const newWeiDai = (await weidai.new())
+		const newDai = (await mockdai.new())
+		const newPRE = (await pre.new())
+		const newBank = (await bank.new())
+
+		await vcInstance.setContractGroup(2, newWeiDai.address,
+			newDai.address,
+			newPRE.address,
+			newBank.address,
+			web3.utils.fromAscii("inactiveTest"),
+			true)
+
+
+		await vcInstance.setDefaultVersion(1, { from: primeAccount })
+		await vcInstance.setEnabled(1, true, { from: primeAccount })
+		await vcInstance.setActiveVersion(1, { from: primeAccount })
+		await vcInstance.setActiveVersion(1, { from: account })
+		await vcInstance.setActiveVersion(1, { from: giftAccount })
+
+
+		let currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+		await mockDaiInstance.approve(bank.address, "10000", { from: giftAccount })
+		await preInstance.buyWeiDai("1000", "20", { from: giftAccount })
+
+		let purchaseBlock = (await preInstance.getBlockOfPurchase({ from: giftAccount })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + currentClaimWaitWindow; blockNumber = (await time.advanceBlock()));
+		await preInstance.claimWeiDai({ from: giftAccount })
+
+		const balanceOfGifter = (await weidaiInstance.balanceOf.call(giftAccount)).toNumber()
+		await weidaiInstance.transfer(account, balanceOfGifter, { from: giftAccount })
+
+		currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
+
+		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		await preInstance.buyWeiDai("1000", "20", { from: account })
+
+		purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
+
+		for (let blockNumber = (await web3.eth.getBlockNumber()); blockNumber <= purchaseBlock + 3; blockNumber = (await time.advanceBlock()));
+		await weidaiInstance.increaseAllowance(bankInstance.address, 1000000, { from: account })
+
+		const daiBalanceBefore = (await mockDaiInstance.balanceOf.call(account)).toNumber()
+		await vcInstance.setEnabled(1, false, { from: primeAccount })
+		await vcInstance.setActiveVersion(2, { from: account })
+
+		await vcInstance.claimAndRedeem(1, { from: account })
+		await vcInstance.setEnabled(1, true, { from: primeAccount })
+		await vcInstance.setActiveVersion(1, { from: account })
+
+		const balanceAfter = (await weidaiInstance.balanceOf.call(account)).toNumber()
+		const daiBalanceAfter = (await mockDaiInstance.balanceOf.call(account)).toNumber()
+		assert.equal(balanceAfter, 0)
+		assert.equal(daiBalanceAfter, daiBalanceBefore + 1743)
 	})
 })

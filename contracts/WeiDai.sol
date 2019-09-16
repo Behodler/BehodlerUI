@@ -2,6 +2,7 @@ pragma solidity  0.5;
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
 import "./baseContracts/Versioned.sol";
+import "./WeiDaiVersionController.sol";
 
 contract WeiDai is Secondary, ERC20, Versioned {
 
@@ -14,6 +15,10 @@ contract WeiDai is Secondary, ERC20, Versioned {
 
 	function issue(address recipient, uint value) public onlyBank {
 		_mint(recipient, value);
+	}
+
+	function versionedBalanceOf(address holder, uint version) external view returns (uint){
+		return WeiDai(WeiDaiVersionController(versionController).getWeiDai(version)).balanceOf(holder);
 	}
 
 	function approveArson(address arsonist, uint value) external {

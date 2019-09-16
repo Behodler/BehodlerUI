@@ -11,6 +11,7 @@ contract WeiDaiBank is Secondary, Versioned {
 	address donationAddress;
 	address self;
 	uint lastKnownExchangeRate;
+	mapping (address => mapping (address=> uint)) redeemDelegateReward;
 
 	using SafeMath for uint;
 
@@ -44,28 +45,51 @@ contract WeiDaiBank is Secondary, Versioned {
 		WeiDai(getWeiDai()).issue(msg.sender, weidai);
 	}
 
+	function setClaimDelegate(address delegate, uint rewardPercentage) external versionMatch {
+		require(rewardPercentage<=10000, "reward must be % expressed as an integer between 0 and 10,000");
+		redeemDelegateReward[msg.sender][delegate] = rewardPercentage + 1;
+	}
+
+	function disableClaimDelegate(address delegate) external versionMatch {
+		redeemDelegateReward[msg.sender][delegate] = 0;
+	}
+
+	function redeemWeiDaiFor(uint weiDai, address recipient, address bankVersion) external {
+		require(msg.sender == versionController || redeemDelegateReward[recipient][msg.sender]>0, "delegate for disabled for this user: recipient must invoke the setClaimDelegate function.");
+		WeiDaiBank(bankVersion).redeem(weiDai,recipient,msg.sender,redeemDelegateReward[recipient][msg.sender]);
+	}
+
 	function redeemWeiDai(uint weiDai) external versionMatch {
+		redeem (weiDai, msg.sender,address(0),0);
+	}
+
+	function redeem(uint weiDai, address recipient, address delegate, uint reward) public {
 		uint exchangeRate = daiPerMyriadWeidai();
 		uint fee = WeiDai(getWeiDai()).totalSupply() - weiDai == 0? 0 : weiDai*2/100;
-		uint donation = (fee*PatienceRegulationEngine(getPRE()).getDonationSplit(msg.sender))/100;
+		uint donation = (fee*PatienceRegulationEngine(getPRE()).getDonationSplit(recipient))/100;
 
-		WeiDai(getWeiDai()).burn(msg.sender, weiDai-donation);
-		WeiDai(getWeiDai()).transferFrom(msg.sender, self,donation);
+
+		WeiDai(getWeiDai()).burn(recipient, weiDai-donation);
+		WeiDai(getWeiDai()).transferFrom(recipient, self,donation);
 
 		uint weiDaiToRedeem = weiDai - fee;
-		 
+
 		uint daiPayable = weiDaiToRedeem
 		.mul(exchangeRate)
 		.div(10000);
-		ERC20(getDai()).transfer(msg.sender, daiPayable);
+		uint delegateDai = 0;
+		if(delegate!=address(0) && delegate != versionController)
+		{
+			delegateDai = reward > 0? (daiPayable * (reward-1))/10000 : 0;
+			daiPayable = daiPayable.sub(delegateDai);
+			ERC20(getDai()).transfer(delegate, daiPayable);
+		}
+		ERC20(getDai()).transfer(recipient, daiPayable - delegateDai);
 		lastKnownExchangeRate = daiPerMyriadWeidai();
-		emit DaiPerMyriadWeiDai (lastKnownExchangeRate, block.timestamp, block.number);
 	}
 
 	function withdrawDonations() public onlyPrimary {
 		uint balance = ERC20(getWeiDai()).balanceOf(self);
 		ERC20(getWeiDai()).transfer(donationAddress,balance);
 	} 
-
-	event DaiPerMyriadWeiDai (uint amount, uint timestamp, uint blocknumber);
 }

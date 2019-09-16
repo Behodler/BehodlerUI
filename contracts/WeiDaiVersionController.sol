@@ -1,6 +1,9 @@
 pragma solidity 0.5;
 
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
+import "./PatienceRegulationEngine.sol";
+import "./WeiDaiBank.sol";
+import "./WeiDai.sol";
 
 contract WeiDaiVersionController is Secondary{
 	struct contractFamily{
@@ -32,19 +35,19 @@ contract WeiDaiVersionController is Secondary{
 		contractVersion[bank] = ver;
 	}
 
-	function getWeiDai(uint version) external view returns (address ){
+	function getWeiDai(uint version) public view returns (address ){
 		return versionedContractFamilies[version].weiDai;
 	}
 
-	function getDai(uint version) external view returns (address){
+	function getDai(uint version) public view returns (address){
 		return versionedContractFamilies[version].dai;
 	}
 
-	function getPRE(uint version) external view returns (address ){
+	function getPRE(uint version) public view returns (address ){
 		return versionedContractFamilies[version].patienceRegulationEngine;
 	}
 
-	function getWeiDaiBank(uint version) external view returns (address ){
+	function getWeiDaiBank(uint version) public view returns (address ){
 		return versionedContractFamilies[version].weiDaiBank;
 	}
 
@@ -91,5 +94,13 @@ contract WeiDaiVersionController is Secondary{
 	function getContractVersion(address c) external view returns (uint) {
 		require(contractVersion[c] > 0, "contract unversioned");
 		return contractVersion[c];
+	}
+
+	function claimAndRedeem (uint version) external {
+		PatienceRegulationEngine(getPRE(version)).claimWeiDaiFor(msg.sender);
+		address weiDai = getWeiDai(version);
+		uint balance = WeiDai(weiDai).balanceOf(msg.sender);
+		address bank = getWeiDaiBank(version);
+		WeiDaiBank(bank).redeemWeiDaiFor(balance, msg.sender,bank);
 	}
 }
