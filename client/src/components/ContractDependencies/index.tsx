@@ -47,6 +47,11 @@ export default function (props: props) {
 	const [group, setGroup] = useState<contractGroup>(emptyGroup)
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
+	const populateArray = async() =>{
+		let array = await API.populateVersionArray(options);
+		setVersionArray(array)
+	}
+
 	useEffect(() => {
 		const loadData = async () => {
 			setActiveVersion(API.activeVersion)
@@ -54,18 +59,8 @@ export default function (props: props) {
 				setOldActiveVersion(API.activeVersion)
 				location.reload()
 			}
-
-			let vArray: string[] = []
-			setVersionArray(vArray)
-			for (let versions: number = 1; ; versions++) {
-				const versionString = "" + versions;
-				const weiDaiAddress = await API.Contracts.VersionController.getWeiDai(versionString).call(options)
-				if (weiDaiAddress === "0x0000000000000000000000000000000000000000") {
-					setVersionArray(vArray)
-					break;
-				}
-				vArray.push(versionString)
-			}
+			populateArray()
+	
 			const defaultVersionHex = await API.Contracts.VersionController.getDefaultVersion().call(options)
 			setDefaultVersion("" + API.hexToNumber(defaultVersionHex))
 			const weiDaiAddress = await API.Contracts.VersionController.getWeiDai(activeVersion).call(options)
@@ -106,8 +101,6 @@ export default function (props: props) {
 				}
 			}
 			setGroup(contractGroup)
-
-
 		}
 		if (oldRefresh !== refresh) {
 			setOldRefresh(refresh)

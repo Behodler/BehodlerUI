@@ -30,16 +30,24 @@ interface AccountObservable {
 	isPrimary: boolean
 }
 
+interface userWeiDaiBalances {
+	version:string
+	incubating:string
+	actual
+}
+
 class ethereumAPI {
 
 	private metaMaskEnabled: boolean
+	private versionBalances: userWeiDaiBalances
 	private metaMaskConnected: boolean
 	private contractsInitialized: boolean
 	private currentAccount: address
 	private accountSubscription: any
 	private interval: any
 	private web3: Web3;
-	public activeVersion:string
+	private versionArray: string[]
+	public activeVersion: string
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
 	public daiEffects: ERC20Effects
@@ -53,31 +61,51 @@ class ethereumAPI {
 		this.metaMaskConnected = this.metaMaskEnabled = this.contractsInitialized = false
 	}
 
+	public async populateVersionArray(options: any) {
+		this.versionArray = []
+		for (let versions: number = 1; ; versions++) {
+			const versionString = "" + versions;
+			const weiDaiAddress = await API.Contracts.VersionController.getWeiDai(versionString).call(options)
+			if (weiDaiAddress === "0x0000000000000000000000000000000000000000") {
+				break;
+			}
+			this.versionArray.push(versionString)
+		}
+		return this.versionArray;
+	}
+
+	private async configureVersionWarnings(){
+		
+	}
+
 	private async initialize() {
 		this.contractsInitialized = false
 		if (!this.isMetaMaskConnected) {
 			return;
 		}
-		console.log ("initialize called.")
+
 		const versionDeployment = await this.deploy(VERSIONJSON)
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
-		const options = {from:this.currentAccount};
+		const options = { from: this.currentAccount };
+
+
+
 		this.activeVersion = "" + this.hexToNumber(await VersionController.getUserActiveVersion(this.currentAccount).call(options))
 		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
 		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
 		const preAddress = await VersionController.getPRE(this.activeVersion).call(options)
 		const daiAddress = await VersionController.getDai(this.activeVersion).call(options)
 
-		const weiDaiDeployment = await this.deploy(WDJSON,weiDaiAddress)
+		const weiDaiDeployment = await this.deploy(WDJSON, weiDaiAddress)
 		const WeiDai: WeiDai = weiDaiDeployment.methods;
 		WeiDai.address = weiDaiDeployment.address;
 
-		const weiDaiBankDeployment = await this.deploy(bankJSON,bankAddress);
+		const weiDaiBankDeployment = await this.deploy(bankJSON, bankAddress);
 		const WeiDaiBank: WeiDaiBank = weiDaiBankDeployment.methods
 		WeiDaiBank.address = weiDaiBankDeployment.address;
 
-		const preDeployment = await this.deploy(PREJSON,preAddress)
+		const preDeployment = await this.deploy(PREJSON, preAddress)
 		const PRE: PatienceRegulationEngine = preDeployment.methods
 		PRE.address = preDeployment.address
 
@@ -85,6 +113,7 @@ class ethereumAPI {
 		Dai.address = daiAddress;
 
 		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController }
+		await this.configureVersionWarnings()
 		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
 		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
 		this.preEffects = new PatienceRegulationEffects(this.web3, this.Contracts.PRE)
@@ -128,7 +157,7 @@ class ethereumAPI {
 		return this.currentAccount
 	}
 
-	public toBytes(input:string){
+	public toBytes(input: string) {
 		return this.web3.utils.fromAscii(input)
 	}
 
@@ -196,7 +225,7 @@ class ethereumAPI {
 		try {
 			const contractInstance = await new this.web3.eth.Contract(abi, deployAddress)
 
-			return { methods: contractInstance.methods, address: deployAddress };
+			return { methods: contractInstance.methods, address: deployAddress, contractInstance };
 		}
 		catch (err) {
 			console.log("contract failed to load: " + err);
