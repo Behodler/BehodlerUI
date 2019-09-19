@@ -73,6 +73,7 @@ function LayoutFrameComponent(props: any) {
 
 	const [metaMaskConnected, setMetaMaskConnected] = useState<boolean>(API.isMetaMaskConnected())
 	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(API.isMetaMaskEnabled())
+	const [activeNetwork, setActiveNetwork] = useState<boolean>(false)
 	const [detailProps, setDetailProps] = useState<DetailProps>({ header: '', content: '' })
 	const [detailVisibility, setDetailVisibility] = useState<boolean>(false)
 	const [walletAddress, setWalletAddress] = useState<string>("0x0")
@@ -80,7 +81,10 @@ function LayoutFrameComponent(props: any) {
 	const [isPrimary, setIsPrimary] = useState<boolean>(false)
 
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
-
+	useEffect(()=>{
+		API.NotifyOnInitialize(setActiveNetwork)
+	})
+	
 	useEffect(() => {
 		if (renderRedirect !== '')
 			setRedirect('')
@@ -96,7 +100,7 @@ function LayoutFrameComponent(props: any) {
 	})
 
 	useEffect(() => {
-		if (metaMaskConnected) {
+		if (metaMaskConnected && activeNetwork) {
 			const subscription = API.accountObservable.subscribe(account => {
 				setWalletAddress(account.account)
 				setIsPrimary(account.isPrimary)
@@ -110,11 +114,9 @@ function LayoutFrameComponent(props: any) {
 			return () => { }
 		}
 	})
-
 	const { classes } = props
-	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled={metaMaskEnabled} />
-	const showError: boolean = !(metaMaskConnected && metaMaskEnabled)
-
+	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled={metaMaskEnabled} wrongNetwork={!activeNetwork} />
+	const showError: boolean = !(metaMaskConnected && metaMaskEnabled && activeNetwork)
 
 
 	return showError ? metamaskMessage : (

@@ -11,5 +11,6 @@ export interface WeiDai extends BaseContract, Secondary, ERC20, Versioned {
 
 	setBank: (bank: address, authorize: boolean) => any
 	issue: (recipient: address, value: uint) => any
-	burn: (from: address, value: uint) => any
+	burn: (from: address, value: uint) => any,
+	versionedBalanceOf:(holder:address,version:address) => any
 }

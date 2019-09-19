@@ -60,6 +60,11 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return lockedWeiDai[hodler];
 	}
 
+	function versionedLockedWeiDai(address holder, uint version) external view returns (uint){
+		return PatienceRegulationEngine(WeiDaiVersionController(versionController).getPRE(version)).getLockedWeiDai(holder);
+	}
+
+
 	function buyWeiDai(uint dai, uint split) public versionMatch enabledOnly {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");
 		setDonationSplit(msg.sender,split);

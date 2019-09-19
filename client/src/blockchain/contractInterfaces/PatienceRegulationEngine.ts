@@ -18,4 +18,5 @@ export interface PatienceRegulationEngine extends BaseContract, Secondary, Versi
 	setClaimWindowsPerAdjustment: (c: uint) => any
 	buyWeiDai: (dai: uint, split: uint) => any
 	claimWeiDai: () => any
+	versionedLockedWeiDai: (holder: address, version: uint) => any
 }
