@@ -23,9 +23,8 @@ front end:
 	1. method for getting balance by version in weidai. --DONE
 	2. method for getting incubating weidai from PRe? Bank? Figure out. -- DONE
 	3. Move vArray population into API and call it in initialize. -- DONE
-	4. On initialize, loop through versions and get values for incubating and actual --BUSY
-		4.1 Got versions. Need balances
-	5. set disabledUI = !active_version.enabled && user != primary
+	4. On initialize, loop through versions and get values for incubating and actual --DONE
+	5. set disabledUI = !active_version.enabled && user != primary -- BUSY
 	6. if disabledUI hide everything and disable routing.
 	7. If balances exist for non active version, setWarningPopup = true.
 	8. Popup can only close if !disabledUI
@@ -38,6 +37,7 @@ front end:
 	version: 1     balance: 100      <enable weidai>/<redeem>
 20. Cleanup: react warnings on popups
 21. Start in wrong network. Don't get front end errors -- DONE
+22. Potential bug when claiming and redeeming in presence of multiple versions
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.

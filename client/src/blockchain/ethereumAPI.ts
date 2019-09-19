@@ -47,7 +47,7 @@ class ethereumAPI {
 	private web3: Web3;
 	private network: string
 	private versionArray: string[]
-	private activeNetworkChange: (b:boolean)=>void
+	private activeNetworkChange: (b: boolean) => void
 	public activeVersion: string
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
@@ -63,7 +63,7 @@ class ethereumAPI {
 		this.versionArray = []
 		this.versionBalances = []
 		this.network = "private"
-		this.activeNetworkChange = (p:boolean)=>console.log("active network notification unset")
+		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 	}
 
 	public async populateVersionArray(options: any) {
@@ -86,8 +86,8 @@ class ethereumAPI {
 		}
 
 		this.versionArray.forEach(async (version) => {
-			const incubating = await this.Contracts.PRE.versionedLockedWeiDai(this.currentAccount, version).call({ from: this.currentAccount })
-			const actual = await this.Contracts.WeiDai.versionedBalanceOf(this.currentAccount, version).call({ from: this.currentAccount })
+			const incubating = (await this.Contracts.PRE.versionedLockedWeiDai(this.currentAccount, version).call({ from: this.currentAccount })).toString()
+			const actual = (await this.Contracts.WeiDai.versionedBalanceOf(this.currentAccount, version).call({ from: this.currentAccount })).toString()
 			this.versionBalances.push({
 				version,
 				incubating,
@@ -97,7 +97,7 @@ class ethereumAPI {
 	}
 
 	private async initialize() {
-	
+
 		if (!this.isMetaMaskConnected) {
 			return;
 		}
@@ -159,13 +159,13 @@ class ethereumAPI {
 				await this.initialize()
 				this.activeNetworkChange(true)
 			}
-			else{
+			else {
 				this.activeNetworkChange(false)
 			}
 		}
 	}
 
-	public NotifyOnInitialize(activeNetwork:(b:boolean)=>void){
+	public NotifyOnInitialize(activeNetwork: (b: boolean) => void) {
 		this.activeNetworkChange = activeNetwork
 	}
 

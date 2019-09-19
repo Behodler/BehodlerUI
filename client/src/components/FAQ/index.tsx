@@ -138,18 +138,6 @@ const questions = [
 	{
 		title: "Are there different types of thriftcoins?",
 		answer: "I don't have an extensive taxonomy but I've identified 2 so far: First order thriftcoins surpass inflation of the target asset on an annual basis but have variable and possibly volatile growth rates. Second order thriftcoins have fixed growth rates so that savings can be perfectly planned. A hybrid may exist which has a 'inflation+X' target so that the real token price growth is fixed. WeiDai and cDai are both first order thriftcoins."
-	},
-	{
-		title: "Why is the background colour at the bottom of this FAQ section white?",
-		answer: "Material UI has a night mode which applies to its elements but not backgrounds. So all the elements on this dApp are on a paper component. Paper doesn't extend infinitely but has set dimensions so I chose a length for the central panel that didn't make the other pages look too long. The sacrifice is that this FAQ page goes off the paper. I'm sure there's a more elegant solution but is this really a problem? Imagine that WeiDai exists in the construct in the Matrix which is why there's a sudden white background. Now imagine you're reading this FAQ in Morpheus's voice. You might have the following question about WeiDai: 'what are you trying to tell me? That I can avoid inflation?' to which I'll respond 'No, DeFi-fan, what I'm trying to tell you is that when you have thriftcoins, you won' have to.'"
-	},
-	{
-		title: "Speaking of Material UI, what was your React state management solution?",
-		answer: "Well originally I used Redux + Saga which works really nicely with Typescript, at the cost of lots of boilerplate. Half way through production, Hooks was released and all I can say is 'wow!' (read in Owen Wilson's voice). The React team just keeps raising the bar. To monitor the blockchain, I used RXjs and wrapped events in special objects that slot nicely into React Hook's Effects functions as observables. It's my Hooks version of Truffleframework's Drizzle. I haven't given it a name but maybe it should follow the chocolate dessert nomenclature. I'll call it Carob because no one will ever want it for themselves."
-	},
-	{
-		title: "Do I get a prize for reading the entire FAQ?",
-		answer:"Have some carob."
 	}
 ]
 
