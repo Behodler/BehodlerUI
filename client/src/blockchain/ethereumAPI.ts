@@ -27,13 +27,17 @@ interface IContracts {
 
 interface AccountObservable {
 	account: string
-	isPrimary: boolean
+	isPrimary: boolean,
+	enabled: boolean,
+	versionBalances: userWeiDaiBalances[]
+	oldBalances: boolean
 }
 
-interface userWeiDaiBalances {
+export interface userWeiDaiBalances {
 	version: string
 	incubating: string
 	actual: string
+	enabled: boolean
 }
 
 class ethereumAPI {
@@ -42,7 +46,6 @@ class ethereumAPI {
 	private versionBalances: userWeiDaiBalances[]
 	private metaMaskConnected: boolean
 	private currentAccount: address
-	private accountSubscription: any
 	private interval: any
 	private web3: Web3;
 	private network: string
@@ -66,6 +69,10 @@ class ethereumAPI {
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 	}
 
+	public resetVersionArray() {
+		this.versionArray = []
+	}
+
 	public async populateVersionArray(options: any) {
 		this.versionArray = []
 		for (let versions: number = 1; ; versions++) {
@@ -79,21 +86,27 @@ class ethereumAPI {
 		return this.versionArray;
 	}
 
+	private async populateVersionBalances() {
+		await this.populateVersionArray({ from: this.currentAccount })
+		this.versionBalances = []
+		this.versionArray.forEach(async (version) => {
+			const incubating = (await this.Contracts.PRE.versionedLockedWeiDai(this.currentAccount, version).call({ from: this.currentAccount })).toString()
+			const actual = (await this.Contracts.WeiDai.versionedBalanceOf(this.currentAccount, version).call({ from: this.currentAccount })).toString()
+			const enabled = (await this.Contracts.VersionController.isEnabled(version).call({ from: this.currentAccount }))
+			this.versionBalances.push({
+				version,
+				incubating,
+				actual,
+				enabled
+			})
+		})
+	}
+
 	private async configureVersionWarnings() {
 		if (this.versionArray.length == 0) {
 			await this.populateVersionArray({ from: this.currentAccount })
 			this.versionBalances = []
 		}
-
-		this.versionArray.forEach(async (version) => {
-			const incubating = (await this.Contracts.PRE.versionedLockedWeiDai(this.currentAccount, version).call({ from: this.currentAccount })).toString()
-			const actual = (await this.Contracts.WeiDai.versionedBalanceOf(this.currentAccount, version).call({ from: this.currentAccount })).toString()
-			this.versionBalances.push({
-				version,
-				incubating,
-				actual
-			})
-		})
 	}
 
 	private async initialize() {
@@ -198,11 +211,6 @@ class ethereumAPI {
 	}
 
 	public unsubscribeAccount() {
-		this.accountSubscription.unsubscribe(function (error, success) {
-			if (success) {
-				console.log('Successfully unsubscribed!');
-			}
-		})
 		clearInterval(this.interval)
 	}
 
@@ -215,18 +223,27 @@ class ethereumAPI {
 	}
 
 	private async setupSubscriptions(): Promise<void> {
-		this.accountSubscription = this.web3.eth.subscribe("newBlockHeaders");
-
 		this.accountObservable = Observable.create(async (observer) => {
+
 			const accountObserver = async () => {
+
 				const account = (await this.web3.eth.getAccounts())[0]
+
 				this.currentAccount = account
 				const primary = await this.Contracts.WeiDai.primary.call({ from: account })
-				const observableResult: AccountObservable = { account, isPrimary: primary === account }
+				const enabled = await this.Contracts.VersionController.isEnabled(this.activeVersion).call({ from: account })
+				let oldBalances = false
+				if (this.versionBalances.length === 0 && this.versionArray.length > 0) {
+					await this.populateVersionBalances()
+					console.log("version aray: " + JSON.stringify(this.versionArray))
+					console.log('versions: ' + JSON.stringify(this.versionBalances, null, 4))
+				}
+				oldBalances = (this.versionBalances.filter(version => (parseFloat(version.actual) !== 0 || parseFloat(version.incubating) !== 0 && !version.enabled)).length > 0)
+				const observableResult: AccountObservable = { account, isPrimary: primary === account, enabled, oldBalances, versionBalances: this.versionBalances }
 				observer.next(observableResult)
 			};
 			await accountObserver();
-			this.interval = setInterval(accountObserver, 2000)
+			this.interval = setInterval(accountObserver, 5000)
 		})
 	}
 

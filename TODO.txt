@@ -1,3 +1,4 @@
+For next time: Claim and redeem isn't working. Give account 2 some incubating and real and check tests to see how it's down
 front end:
 1. Patience Regulation Engine page - use PRE.png --DONE
 2. Metamask not enabled landing page -- DONE
@@ -24,12 +25,12 @@ front end:
 	2. method for getting incubating weidai from PRe? Bank? Figure out. -- DONE
 	3. Move vArray population into API and call it in initialize. -- DONE
 	4. On initialize, loop through versions and get values for incubating and actual --DONE
-	5. set disabledUI = !active_version.enabled && user != primary -- BUSY
-	6. if disabledUI hide everything and disable routing.
-	7. If balances exist for non active version, setWarningPopup = true.
-	8. Popup can only close if !disabledUI
+	5. set disabledUI = !active_version.enabled && user != primary -- DONE
+	6. if disabledUI hide everything and disable routing. -- DONE
+	7. If balances exist for non active version, setWarningPopup --DONE.
+	8. Popup can only close if !disabledUI -- NO
 	9. Important notice: MakerDAO periodically releases new versions of Dai, setting the old versions to inactive. Since WeiDai wraps Dai, new versions of WeiDai are released in step with Dai and old versions are disabled. You have positive balances of old weiDai <and are currently using an inactive version of weidai>. For your safety, you may only redeem your balances of old WeiDai for old Dai. MakerDAO provides instructions for how to redeem old Dai for collateral.  
-
+	10. Implement versioned claim and versioned redeem
 	For full functionality of WediDai, you will need to upgrade your version of WeiDai.
 	<upgrade now>
 

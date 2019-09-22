@@ -17,4 +17,5 @@ export interface WeiDaiVersionController extends Secondary, BaseContract {
 	setDefaultVersion: (v: uint) => any
 	getDefaultVersion:()=>any
 	getContractVersion: (contract: address) => any
+	claimAndRedeem: (version:uint) => any
 }

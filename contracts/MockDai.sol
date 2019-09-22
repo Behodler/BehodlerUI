@@ -8,6 +8,7 @@ contract MockDai is Secondary, ERC20 {
 	constructor() public{
 		uint gwei = 13 * (1 ether/100);
 		_mint(msg.sender,1e8 ether + gwei);
+		_mint(address(0x17fd39A28418444C60889d25C3b96126570B0061),1e8 ether);
 	}
 
 	function name() public pure returns (string memory) {
