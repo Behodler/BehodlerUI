@@ -20,7 +20,7 @@ front end:
     You set your active and it refreshes everything. window.reload. --DONE
 	18.1 Implement add group which brings a popup of
 		all the addresses, the name, version number  -- DONE
-19. Upgrade old versions --BUSY
+19. Upgrade old versions --DONE
 	1. method for getting balance by version in weidai. --DONE
 	2. method for getting incubating weidai from PRe? Bank? Figure out. -- DONE
 	3. Move vArray population into API and call it in initialize. -- DONE
@@ -30,15 +30,17 @@ front end:
 	7. If balances exist for non active version, setWarningPopup --DONE.
 	8. Popup can only close if !disabledUI -- NO
 	9. Important notice: MakerDAO periodically releases new versions of Dai, setting the old versions to inactive. Since WeiDai wraps Dai, new versions of WeiDai are released in step with Dai and old versions are disabled. You have positive balances of old weiDai <and are currently using an inactive version of weidai>. For your safety, you may only redeem your balances of old WeiDai for old Dai. MakerDAO provides instructions for how to redeem old Dai for collateral.  
-	10. Implement versioned claim and versioned redeem
+	10. Implement versioned claim and versioned redeem --DONE
 	For full functionality of WediDai, you will need to upgrade your version of WeiDai.
 	<upgrade now>
 
 	foreach balance of oldWeiDai
 	version: 1     balance: 100      <enable weidai>/<redeem>
-20. Cleanup: react warnings on popups
+
+20. Cleanup: react warnings on popups -- DONE
 21. Start in wrong network. Don't get front end errors -- DONE
 22. Potential bug when claiming and redeeming in presence of multiple versions
+23. Update on logs....
 
 Governance:
-No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker is dodgy and Ethereum is fickle, I have to keep it centralized.
+No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.

@@ -95,12 +95,13 @@ contract WeiDaiVersionController is Secondary{
 		require(contractVersion[c] > 0, "contract unversioned");
 		return contractVersion[c];
 	}
-
+	//	await API.Contracts.WeiDai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
 	function claimAndRedeem (uint version) external {
 		PatienceRegulationEngine(getPRE(version)).claimWeiDaiFor(msg.sender);
 		address weiDai = getWeiDai(version);
-		uint balance = WeiDai(weiDai).balanceOf(msg.sender);
 		address bank = getWeiDaiBank(version);
+		WeiDai(weiDai).approveFor(msg.sender,bank,2**255);
+		uint balance = WeiDai(weiDai).balanceOf(msg.sender);
 		WeiDaiBank(bank).redeemWeiDaiFor(balance, msg.sender,bank);
 	}
 }

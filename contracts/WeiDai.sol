@@ -17,6 +17,11 @@ contract WeiDai is Secondary, ERC20, Versioned {
 		_mint(recipient, value);
 	}
 
+	function approveFor(address holder, address spender, uint amount) public {
+		require(msg.sender == versionController, "can only be invoked by version controller");
+		_approve(holder, spender, amount);
+	}
+
 	function versionedBalanceOf(address holder, uint version) external view returns (uint){
 		return WeiDai(WeiDaiVersionController(versionController).getWeiDai(version)).balanceOf(holder);
 	}

@@ -73,6 +73,10 @@ class ethereumAPI {
 		this.versionArray = []
 	}
 
+	public resetVersionBalances(){
+		this.versionBalances = []
+	}
+
 	public async populateVersionArray(options: any) {
 		this.versionArray = []
 		for (let versions: number = 1; ; versions++) {
@@ -228,15 +232,13 @@ class ethereumAPI {
 			const accountObserver = async () => {
 
 				const account = (await this.web3.eth.getAccounts())[0]
-
+				const changedAccount = this.currentAccount !==account
 				this.currentAccount = account
 				const primary = await this.Contracts.WeiDai.primary.call({ from: account })
 				const enabled = await this.Contracts.VersionController.isEnabled(this.activeVersion).call({ from: account })
 				let oldBalances = false
-				if (this.versionBalances.length === 0 && this.versionArray.length > 0) {
+				if (changedAccount || (this.versionBalances.length === 0 && this.versionArray.length > 0)) {
 					await this.populateVersionBalances()
-					console.log("version aray: " + JSON.stringify(this.versionArray))
-					console.log('versions: ' + JSON.stringify(this.versionBalances, null, 4))
 				}
 				oldBalances = (this.versionBalances.filter(version => (parseFloat(version.actual) !== 0 || parseFloat(version.incubating) !== 0 && !version.enabled)).length > 0)
 				const observableResult: AccountObservable = { account, isPrimary: primary === account, enabled, oldBalances, versionBalances: this.versionBalances }

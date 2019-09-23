@@ -79,11 +79,11 @@ function FormDialogComponent(props: FormDialogProps) {
 				open={props.isOpen}
 				onClose={props.close}
 				aria-labelledby="form-dialog-title">
-				<DialogTitle id="form-dialog-title"><div className={props.classes.title}>{props.title}</div></DialogTitle>
+				<DialogTitle id="form-dialog-title" className={props.classes.title}>{props.title}</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
+					<DialogContentText className={props.classes.message}>
 						{getValidationErrors(props)}
-						<div className={props.classes.message}>{props.message}</div>
+						{props.message}
 					</DialogContentText>
 					{getFields(props)}
 				</DialogContent>
