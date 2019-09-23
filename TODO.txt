@@ -11,7 +11,7 @@ front end:
 9. How it works -- DONE
 10. Burn page - tell user this is dangerous but contributes to other users -- DO after launch
 11. Firefox breakpoint messes up PRE layout before shrinking. --DONE
-12. Metamask slowdown -> try on Kovan
+12. Metamask slowdown -> try on Kovan -- BUSY
 13. In the future add a reload for network change event. Right now, functionality not supported. -- FUTURE
 14. Add a light, dark switch -- DONE (not going to do it. Dark just looks better)
 15. FAQ --DONE
@@ -40,7 +40,7 @@ front end:
 20. Cleanup: react warnings on popups -- DONE
 21. Start in wrong network. Don't get front end errors -- DONE
 22. Potential bug when claiming and redeeming in presence of multiple versions
-23. Update on logs....
+23. Update on logs.... -- NOT yet
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.

@@ -2,7 +2,7 @@
 import { Observable, Observer } from 'rxjs'
 import { distinctUntilChanged } from 'rxjs/operators'
 import Web3 from "web3";
-
+import API from '../../blockchain/ethereumAPI'
 export interface EffectFactoryType {
 	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect
 }
@@ -10,14 +10,13 @@ export interface EffectFactoryType {
 export const EffectFactory = (web3: Web3): EffectFactoryType => (
 	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect => {
 		const subscription = web3.eth.subscribe("newBlockHeaders")
-
 		const observable = Observable.create(async (observer: Observer<any>) => {
 			const queryBlockChain = async (data) => {
-				let account = (await web3.eth.getAccounts())[0]
+				let account = API.loggedInUser()
 				if (account === "0x0") {
 					observer.next("unset")
 				}
-				else {
+				else{
 					const currentResult = await action({ account, blockNumber: data.number })
 					observer.next(currentResult)
 				}
