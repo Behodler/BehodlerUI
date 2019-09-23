@@ -48,7 +48,7 @@ class ethereumAPI {
 	private currentAccount: address
 	private interval: any
 	private web3: Web3;
-	private network: string
+	private networks: string[]
 	private versionArray: string[]
 	private activeNetworkChange: (b: boolean) => void
 	public activeVersion: string
@@ -65,7 +65,7 @@ class ethereumAPI {
 		this.metaMaskConnected = this.metaMaskEnabled = false
 		this.versionArray = []
 		this.versionBalances = []
-		this.network = "private"
+		this.networks = ["private", "kovan"]
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 	}
 
@@ -73,7 +73,7 @@ class ethereumAPI {
 		this.versionArray = []
 	}
 
-	public resetVersionBalances(){
+	public resetVersionBalances() {
 		this.versionBalances = []
 	}
 
@@ -169,8 +169,8 @@ class ethereumAPI {
 			this.web3 = web3
 			this.currentAccount = (await web3.eth.getAccounts())[0]
 			const currentNetwork = await this.web3.eth.net.getNetworkType()
-
-			if (currentNetwork === this.network) {
+			console.log(currentNetwork)
+			if (currentNetwork === this.networks[0] || currentNetwork == this.networks[1]) {
 
 				await this.setupSubscriptions()
 				await this.initialize()
@@ -232,7 +232,7 @@ class ethereumAPI {
 			const accountObserver = async () => {
 
 				const account = (await this.web3.eth.getAccounts())[0]
-				const changedAccount = this.currentAccount !==account
+				const changedAccount = this.currentAccount !== account
 				this.currentAccount = account
 				const primary = await this.Contracts.WeiDai.primary.call({ from: account })
 				const enabled = await this.Contracts.VersionController.isEnabled(this.activeVersion).call({ from: account })

@@ -1,4 +1,3 @@
-For next time: Claim and redeem isn't working. Give account 2 some incubating and real and check tests to see how it's down
 front end:
 1. Patience Regulation Engine page - use PRE.png --DONE
 2. Metamask not enabled landing page -- DONE
@@ -45,9 +44,9 @@ front end:
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.
 
-
+FOR next time: deploying doesn't work, even with kovan infura key (maybe access denied?)
 Kovan:
-1. Give myself Kovan Dai.
+1. Give myself Kovan Dai. --DONE (address: 0xC4375B7De8af5a38a93548eb8453a498222C4fF2)
 2. Figure out how to deploy to Kovan with correct Dai contract.
 3. Test with multiple users, contract versions etc. Become comfortable deploying new contracts.
 4. Observe if metamask slowdown exists.
