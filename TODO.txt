@@ -44,3 +44,10 @@ front end:
 
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.
+
+
+Kovan:
+1. Give myself Kovan Dai.
+2. Figure out how to deploy to Kovan with correct Dai contract.
+3. Test with multiple users, contract versions etc. Become comfortable deploying new contracts.
+4. Observe if metamask slowdown exists.
