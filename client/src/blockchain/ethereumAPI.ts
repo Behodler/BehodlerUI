@@ -122,11 +122,18 @@ class ethereumAPI {
 		}
 	}
 
+	//await weidaiInstance.setVersionController(vcAddress)
+	//await weidaiBankInstance.setVersionController(vcAddress)
+	//await preInstance.setVersionController(vcAddress)
+
 	public async generateNewContracts(contract: string) {
 		if (contract == "weidai") {
 			new this.web3.eth.Contract(WDJSON.abi as any).deploy({ data: WDJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.weiDai = receipt.contractAddress || ""
+					this.deploy(WDJSON, this.newContracts.weiDai).then(result => {
+						result.methods.setVersionController(this.Contracts.VersionController.address).send({ from: this.currentAccount })
+					})
 				})
 		}
 
@@ -134,6 +141,9 @@ class ethereumAPI {
 			new this.web3.eth.Contract(bankJSON.abi as any).deploy({ data: bankJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.weiDaiBank = receipt.contractAddress || ""
+					this.deploy(bankJSON, this.newContracts.weiDaiBank).then(result => {
+						result.methods.setVersionController(this.Contracts.VersionController.address).send({ from: this.currentAccount })
+					})
 				})
 		}
 
@@ -141,6 +151,9 @@ class ethereumAPI {
 			new this.web3.eth.Contract(PREJSON.abi as any).deploy({ data: PREJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.PRE = receipt.contractAddress || ""
+					this.deploy(PREJSON, this.newContracts.PRE).then(result => {
+						result.methods.setVersionController(this.Contracts.VersionController.address).send({ from: this.currentAccount })
+					})
 				})
 		}
 	}
@@ -155,13 +168,13 @@ class ethereumAPI {
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
 		const options = { from: this.currentAccount };
-
-		this.activeVersion = "" + this.hexToNumber(await VersionController.getUserActiveVersion(this.currentAccount).call(options))
+		const version = await VersionController.getUserActiveVersion(this.currentAccount).call(options)
+		this.activeVersion = "" + this.hexToNumber(version)
 		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
 		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
 		const preAddress = await VersionController.getPRE(this.activeVersion).call(options)
 		const daiAddress = await VersionController.getDai(this.activeVersion).call(options)
-	
+
 		const weiDaiDeployment = await this.deploy(WDJSON, weiDaiAddress)
 		const WeiDai: WeiDai = weiDaiDeployment.methods;
 		WeiDai.address = weiDaiDeployment.address;
@@ -203,9 +216,9 @@ class ethereumAPI {
 			const currentNetwork = await this.web3.eth.net.getNetworkType()
 			console.log(currentNetwork)
 			if (currentNetwork === this.networks[0] || currentNetwork == this.networks[1]) {
-
-				await this.setupSubscriptions()
 				await this.initialize()
+				await this.setupSubscriptions()
+
 				this.activeNetworkChange(true)
 			}
 			else {
@@ -252,6 +265,7 @@ class ethereumAPI {
 
 	public hexToNumberString(value: any): string {
 		return this.web3.utils.hexToNumberString(value["_hex"])
+
 	}
 
 	public hexToNumber(value: any): number {

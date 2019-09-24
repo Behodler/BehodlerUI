@@ -42,7 +42,7 @@ front end:
 23. Update on logs.... -- NOT yet
 24. In set dependencies, need a way to contract.new() my contracts.
 	1. On click, make text loading and then new up an address and set it. -- DONE
-	2. Line 188 in ContractDeps/index, do all the deployish things via API -- Not necessary
+	2. Line 188 in ContractDeps/index, do all the deployish things via API -- see comments in API. DONE
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.
 

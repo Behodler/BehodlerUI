@@ -79,7 +79,7 @@ contract WeiDaiVersionController is Secondary{
 
 	function getUserActiveVersion(address user) external view returns (uint) {
 		require(defaultVersion!=0, "default version not set");
-		return activeVersion[user] == 0 ?defaultVersion: activeVersion[user];
+		return activeVersion[user] == 0 ? defaultVersion: activeVersion[user];
 	}
 
 	function setDefaultVersion (uint version) external onlyPrimary {
@@ -95,7 +95,7 @@ contract WeiDaiVersionController is Secondary{
 		require(contractVersion[c] > 0, "contract unversioned");
 		return contractVersion[c];
 	}
-	
+
 	function claimAndRedeem (uint version) external {
 		PatienceRegulationEngine(getPRE(version)).claimWeiDaiFor(msg.sender);
 		address weiDai = getWeiDai(version);
