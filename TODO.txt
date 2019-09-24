@@ -40,7 +40,9 @@ front end:
 21. Start in wrong network. Don't get front end errors -- DONE
 22. Potential bug when claiming and redeeming in presence of multiple versions
 23. Update on logs.... -- NOT yet
-
+24. In set dependencies, need a way to contract.new() my contracts.
+	1. On click, make text loading and then new up an address and set it. -- DONE
+	2. Line 188 in ContractDeps/index, do all the deployish things via API -- Not necessary
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.
 

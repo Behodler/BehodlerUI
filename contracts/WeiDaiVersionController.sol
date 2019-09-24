@@ -18,7 +18,7 @@ contract WeiDaiVersionController is Secondary{
 	mapping (address=>uint) contractVersion;
 	mapping (address=>uint) activeVersion;
 	uint defaultVersion;
-	
+
 	function setContractGroup(uint ver, address weiDai, address dai, address pre, address bank, bytes32 name, bool enabled) external onlyPrimary{
 		require(ver>0, "version zero reserved.");
 		versionedContractFamilies[ver] = contractFamily({
@@ -95,7 +95,7 @@ contract WeiDaiVersionController is Secondary{
 		require(contractVersion[c] > 0, "contract unversioned");
 		return contractVersion[c];
 	}
-	//	await API.Contracts.WeiDai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
+	
 	function claimAndRedeem (uint version) external {
 		PatienceRegulationEngine(getPRE(version)).claimWeiDaiFor(msg.sender);
 		address weiDai = getWeiDai(version);

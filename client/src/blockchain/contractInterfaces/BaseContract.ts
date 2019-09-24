@@ -1,6 +1,6 @@
-import {  address } from './SolidityTypes'
+import { address } from './SolidityTypes'
 
-export interface BaseContract{
-	address:address
+export interface BaseContract {
+	address: address
 }
 

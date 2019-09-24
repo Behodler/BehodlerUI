@@ -40,6 +40,12 @@ export interface userWeiDaiBalances {
 	enabled: boolean
 }
 
+interface newContracts {
+	weiDai: string
+	weiDaiBank: string
+	PRE: string
+}
+
 class ethereumAPI {
 
 	private metaMaskEnabled: boolean
@@ -48,6 +54,8 @@ class ethereumAPI {
 	private currentAccount: address
 	private interval: any
 	private web3: Web3;
+	private newContracts: newContracts
+	public newContractObservable: Observable<newContracts>
 	private networks: string[]
 	private versionArray: string[]
 	private activeNetworkChange: (b: boolean) => void
@@ -67,6 +75,7 @@ class ethereumAPI {
 		this.versionBalances = []
 		this.networks = ["private", "kovan"]
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
+		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
 
 	public resetVersionArray() {
@@ -113,6 +122,29 @@ class ethereumAPI {
 		}
 	}
 
+	public async generateNewContracts(contract: string) {
+		if (contract == "weidai") {
+			new this.web3.eth.Contract(WDJSON.abi as any).deploy({ data: WDJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
+				.on('receipt', (receipt) => {
+					this.newContracts.weiDai = receipt.contractAddress || ""
+				})
+		}
+
+		if (contract == "bank") {
+			new this.web3.eth.Contract(bankJSON.abi as any).deploy({ data: bankJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
+				.on('receipt', (receipt) => {
+					this.newContracts.weiDaiBank = receipt.contractAddress || ""
+				})
+		}
+
+		if (contract == "pre") {
+			new this.web3.eth.Contract(PREJSON.abi as any).deploy({ data: PREJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
+				.on('receipt', (receipt) => {
+					this.newContracts.PRE = receipt.contractAddress || ""
+				})
+		}
+	}
+
 	private async initialize() {
 
 		if (!this.isMetaMaskConnected) {
@@ -129,7 +161,7 @@ class ethereumAPI {
 		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
 		const preAddress = await VersionController.getPRE(this.activeVersion).call(options)
 		const daiAddress = await VersionController.getDai(this.activeVersion).call(options)
-
+	
 		const weiDaiDeployment = await this.deploy(WDJSON, weiDaiAddress)
 		const WeiDai: WeiDai = weiDaiDeployment.methods;
 		WeiDai.address = weiDaiDeployment.address;
@@ -227,6 +259,15 @@ class ethereumAPI {
 	}
 
 	private async setupSubscriptions(): Promise<void> {
+		this.newContractObservable = Observable.create(async (observer) => {
+			const newContractObserver = async () => {
+				if (this.newContracts.weiDai !== '' || this.newContracts.weiDaiBank !== '' || this.newContracts.PRE !== '')
+					observer.next(this.newContracts)
+			}
+
+			setInterval(newContractObserver, 1000)
+		})
+
 		this.accountObservable = Observable.create(async (observer) => {
 
 			const accountObserver = async () => {
@@ -259,7 +300,7 @@ class ethereumAPI {
 		}
 	}
 
-	private async deploy(truffleJson: any, address?: string) {
+	private async deploy(truffleJson: any, address?: string): Promise<deployment> {
 		const abi = truffleJson.abi
 
 		let keysOfNetworks = Object.keys(truffleJson.networks)
@@ -273,10 +314,17 @@ class ethereumAPI {
 			console.log("contract failed to load: " + err);
 			return {
 				address: "0x0",
-				primary: () => new Promise<string>((resolve, reject) => { resolve("NULL"); })
+				methods: {},
+				contractInstance: {}
 			};
 		}
 	}
+}
+
+interface deployment {
+	methods: any,
+	address: string,
+	contractInstance: any,
 }
 
 const API: ethereumAPI = new ethereumAPI()

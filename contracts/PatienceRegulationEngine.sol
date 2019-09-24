@@ -24,6 +24,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	constructor () public {
 		marginalPenaltyDrawdownPeriod = 1;
 		launchTimeStamp = block.timestamp;
+		claimWindowsPerAdjustment = 10;
 	}
 
 	function setClaimWindowsPerAdjustment(uint c) public onlyPrimary {

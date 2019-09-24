@@ -18,6 +18,7 @@ contract WeiDaiBank is Secondary, Versioned {
 	constructor() public{
 		self = address(this);
 		lastKnownExchangeRate = 100; //1 weidai == 1 US cent.
+		donationAddress = msg.sender;
 	}
 
 	function setDonationAddress(address donation) public onlyPrimary {

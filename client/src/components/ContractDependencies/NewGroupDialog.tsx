@@ -5,9 +5,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
-
+import API from '../../blockchain/ethereumAPI'
 
 interface dialogProps {
 	versionNumber: string
@@ -27,13 +27,24 @@ export default function (props: dialogProps) {
 		func(event.target.value)
 	}
 
-
 	const handleNameChange = (event, func) => {
 		const newValue = event.target.value
 		if (newValue && newValue.length <= 16) {
 			func(newValue)
 		}
 	}
+
+	useEffect(() => {
+		const subscription = API.newContractObservable.subscribe(contracts => {
+			setWeiDai(contracts.weiDai)
+			setWeiDaiBank(contracts.weiDaiBank)
+			setpatienceRegulationEngine(contracts.PRE)
+		})
+
+		return function () {
+			subscription.unsubscribe()
+		}
+	})
 
 	return <Dialog
 		open={props.isOpen}
@@ -47,16 +58,16 @@ export default function (props: dialogProps) {
 				spacing={1}
 				justify="center">
 				<Grid key="popupWeiDai" item>
-					<TextField label="WeiDai" onChange={(event) => handleChange(event, setWeiDai)}></TextField>
+				<TextField label="WeiDai" value={weiDai} onClick = {async()=>await API.generateNewContracts("weidai")}></TextField>
 				</Grid>
 				<Grid key="popupDai" item>
 					<TextField label="Dai" onChange={(event) => handleChange(event, setDai)}></TextField>
 				</Grid>
 				<Grid key="popupPre" item>
-					<TextField label="Pre" onChange={(event) => handleChange(event, setpatienceRegulationEngine)}></TextField>
+					<TextField label="Pre" value={patienceRegulationEngine}  onClick = {async()=>await API.generateNewContracts("pre")}></TextField>
 				</Grid>
 				<Grid key="popupBank" item>
-					<TextField label="Bank" onChange={(event) => handleChange(event, setWeiDaiBank)}></TextField>
+					<TextField label="Bank" value = {weiDaiBank}  onClick = {async()=>await API.generateNewContracts("bank")}></TextField>
 				</Grid>
 				<Grid key="popupName" item>
 					<TextField label="Name" onChange={(event) => handleNameChange(event, setName)}></TextField>
