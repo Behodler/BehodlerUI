@@ -24,7 +24,7 @@ module.exports = async function (deployer, network, accounts) {
 		vcInstance = await VersionController.deployed()
 		vcAddress = vcInstance.address
 		daiAddress = (await MockDai.deployed()).address
-		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"),true)
+		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"), true)
 		await vcInstance.setDefaultVersion(1)
 	}
 	else if (network === 'main') {
@@ -35,6 +35,16 @@ module.exports = async function (deployer, network, accounts) {
 		//TODO: await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, "WeiDai")
 		daiAddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
 	}
+	else if (network == 'kovan-fork') {
+		await deployer.deploy(VersionController)
+		vcInstance = await VersionController.deployed()
+		vcAddress = vcInstance.address
+		console.log('Version controller address: ' + vcAddress)
+		daiAddress = '0xC4375B7De8af5a38a93548eb8453a498222C4fF2'
+		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("kweidai"), true)
+		await vcInstance.setDefaultVersion(1)
+	}
+
 
 	await weidaiBankInstance.setDonationAddress(donationAddress)
 	await preInstance.setClaimWindowsPerAdjustment(10);

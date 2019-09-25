@@ -163,12 +163,17 @@ class ethereumAPI {
 		if (!this.isMetaMaskConnected) {
 			return;
 		}
+		const vcAddress = await this.web3.eth.net.getNetworkType() === 'kovan' ? '0xc0315E377d4b7740CF501Cd23f1066Cc59FC262a' : undefined;
+		console.log('vcaddress: ' + vcAddress)
 
-		const versionDeployment = await this.deploy(VERSIONJSON)
+		const versionDeployment = await this.deploy(VERSIONJSON, vcAddress)
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
 		const options = { from: this.currentAccount };
+		console.log("currentAccount: "+this.currentAccount)
+		console.log(VersionController.getUserActiveVersion)
 		const version = await VersionController.getUserActiveVersion(this.currentAccount).call(options)
+		console.log('version: ' + version)
 		this.activeVersion = "" + this.hexToNumber(version)
 		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
 		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
