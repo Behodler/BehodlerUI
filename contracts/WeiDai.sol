@@ -22,11 +22,11 @@ contract WeiDai is Secondary, ERC20, Versioned {
 		_approve(holder, spender, amount);
 	}
 
-	function versionedBalanceOf(address holder, uint version) external view returns (uint){
+	function versionedBalanceOf(address holder, uint version) public view returns (uint){
 		return WeiDai(WeiDaiVersionController(versionController).getWeiDai(version)).balanceOf(holder);
 	}
 
-	function approveArson(address arsonist, uint value) external {
+	function approveArson(address arsonist, uint value) public {
 		arsonAllowance[msg.sender][arsonist] = value;
 		emit arsonApproved(msg.sender,arsonist,value);
 	}
@@ -56,7 +56,7 @@ contract WeiDai is Secondary, ERC20, Versioned {
 	}
 
 	function symbol() public pure returns (string memory) {
-		return "WDAI";
+		return "WEIDAI";
 	}
 
 	function decimals() public pure returns (uint8) {

@@ -46,9 +46,15 @@ front end:
 Governance:
 No beta period. Give owner the ability to shut down indefinitely. At some point this power can be handed over to a true DAO but as long as Maker and Ethereum foundations are fickle, I have to keep it centralized.
 
-FOR next time: version call from version controller returning null. No need to redeploy
 Kovan:
 1. Give myself Kovan Dai. --DONE (address: 0xC4375B7De8af5a38a93548eb8453a498222C4fF2) --DONE
 2. Figure out how to deploy to Kovan with correct Dai contract.--DONE
-3. Test with multiple users, contract versions etc. Become comfortable deploying new contracts. --BUSY
+3. Test with multiple users, contract versions etc. Become comfortable deploying new contracts. --DONE
 4. Observe if metamask slowdown exists.
+
+Pre launch: 
+read medium's ts*&cs
+start a github organization? Investigate
+
+Post launch: 
+Set links correctly in action panel

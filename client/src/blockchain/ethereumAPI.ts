@@ -15,6 +15,7 @@ import WDJSON from '../contracts/WeiDai.json'
 import bankJSON from '../contracts/WeiDaiBank.json'
 import ERC20JSON from '../contracts/ERC20.json'
 import VERSIONJSON from '../contracts/WeiDaiVersionController.json'
+import networkVersionJSON from '../networkVersionControllers.json'
 // import DaiAddressJSON from './daiNetworkAddresses.json'
 
 interface IContracts {
@@ -73,7 +74,7 @@ class ethereumAPI {
 		this.metaMaskConnected = this.metaMaskEnabled = false
 		this.versionArray = []
 		this.versionBalances = []
-		this.networks = ["private", "kovan"]
+		this.networks = ["private", "gethdev", "kovan"]
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
@@ -103,6 +104,7 @@ class ethereumAPI {
 		await this.populateVersionArray({ from: this.currentAccount })
 		this.versionBalances = []
 		this.versionArray.forEach(async (version) => {
+
 			const incubating = (await this.Contracts.PRE.versionedLockedWeiDai(this.currentAccount, version).call({ from: this.currentAccount })).toString()
 			const actual = (await this.Contracts.WeiDai.versionedBalanceOf(this.currentAccount, version).call({ from: this.currentAccount })).toString()
 			const enabled = (await this.Contracts.VersionController.isEnabled(version).call({ from: this.currentAccount }))
@@ -121,10 +123,6 @@ class ethereumAPI {
 			this.versionBalances = []
 		}
 	}
-
-	//await weidaiInstance.setVersionController(vcAddress)
-	//await weidaiBankInstance.setVersionController(vcAddress)
-	//await preInstance.setVersionController(vcAddress)
 
 	public async generateNewContracts(contract: string) {
 		if (contract == "weidai") {
@@ -163,17 +161,13 @@ class ethereumAPI {
 		if (!this.isMetaMaskConnected) {
 			return;
 		}
-		const vcAddress = await this.web3.eth.net.getNetworkType() === 'kovan' ? '0xc0315E377d4b7740CF501Cd23f1066Cc59FC262a' : undefined;
-		console.log('vcaddress: ' + vcAddress)
-
-		const versionDeployment = await this.deploy(VERSIONJSON, vcAddress)
+		const networkName = await this.web3.eth.net.getNetworkType()
+		const detail = networkVersionJSON.networks.filter(net => net.name == networkName)[0]
+		const versionDeployment = await this.deploy(VERSIONJSON, detail.address)
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
 		const options = { from: this.currentAccount };
-		console.log("currentAccount: "+this.currentAccount)
-		console.log(VersionController.getUserActiveVersion)
 		const version = await VersionController.getUserActiveVersion(this.currentAccount).call(options)
-		console.log('version: ' + version)
 		this.activeVersion = "" + this.hexToNumber(version)
 		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
 		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
@@ -183,7 +177,7 @@ class ethereumAPI {
 		const weiDaiDeployment = await this.deploy(WDJSON, weiDaiAddress)
 		const WeiDai: WeiDai = weiDaiDeployment.methods;
 		WeiDai.address = weiDaiDeployment.address;
-
+		console.log("The WeiDai contract address is: " + WeiDai.address)
 		const weiDaiBankDeployment = await this.deploy(bankJSON, bankAddress);
 		const WeiDaiBank: WeiDaiBank = weiDaiBankDeployment.methods
 		WeiDaiBank.address = weiDaiBankDeployment.address;
@@ -219,8 +213,8 @@ class ethereumAPI {
 			this.web3 = web3
 			this.currentAccount = (await web3.eth.getAccounts())[0]
 			const currentNetwork = await this.web3.eth.net.getNetworkType()
-			console.log(currentNetwork)
-			if (currentNetwork === this.networks[0] || currentNetwork == this.networks[1]) {
+
+			if (this.networks.filter(net => net == currentNetwork).length > 0) {
 				await this.initialize()
 				await this.setupSubscriptions()
 
@@ -300,7 +294,8 @@ class ethereumAPI {
 				if (changedAccount || (this.versionBalances.length === 0 && this.versionArray.length > 0)) {
 					await this.populateVersionBalances()
 				}
-				oldBalances = (this.versionBalances.filter(version => (parseFloat(version.actual) !== 0 || parseFloat(version.incubating) !== 0 && !version.enabled)).length > 0)
+				console.log("version balaces:" + JSON.stringify(this.versionBalances))
+				oldBalances = (this.versionBalances.filter(version => ((parseFloat(version.actual) !== 0 || parseFloat(version.incubating) !== 0) && !version.enabled)).length > 0)
 				const observableResult: AccountObservable = { account, isPrimary: primary === account, enabled, oldBalances, versionBalances: this.versionBalances }
 				observer.next(observableResult)
 			};
@@ -319,7 +314,7 @@ class ethereumAPI {
 		}
 	}
 
-	private async deploy(truffleJson: any, address?: string): Promise<deployment> {
+	private async deploy(truffleJson: any, address: string): Promise<deployment> {
 		const abi = truffleJson.abi
 
 		let keysOfNetworks = Object.keys(truffleJson.networks)

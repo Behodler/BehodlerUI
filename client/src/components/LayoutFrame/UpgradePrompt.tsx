@@ -44,12 +44,11 @@ interface upgradeProps {
 
 function Upgrade(props: upgradeProps) {
 	if (!props.show)
-		return <div>hello</div>
+		return <div></div>
 	return <div>
 		<h4>To use the latest WeiDai, you will to upgrade your active version.</h4>
 		<Button color="secondary" variant="contained" onClick={async () => {
 			const defaultVersion = await API.Contracts.VersionController.getDefaultVersion().call({ from: props.walletAddress })
-			console.log("default version" + defaultVersion)
 			await API.Contracts.VersionController.setActiveVersion(defaultVersion).send({ from: props.walletAddress })
 		}}
 		>Upgrade Now</Button>
