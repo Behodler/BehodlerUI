@@ -71,7 +71,7 @@ contract WeiDaiVersionController is Secondary{
 		return versionedContractFamilies[version].enabled;
 	}
 
-	function setActiveVersion(uint version) external {
+	function setActiveVersion(uint version) public onlyPrimary {
 		require(defaultVersion!=0, "default version not set");
 		require(versionedContractFamilies[version].dai != address(0),"invalid version");
 		activeVersion[msg.sender] = version;
@@ -96,7 +96,7 @@ contract WeiDaiVersionController is Secondary{
 		return contractVersion[c];
 	}
 
-	function claimAndRedeem (uint version) external {
+	function claimAndRedeem (uint version) public {
 		PatienceRegulationEngine(getPRE(version)).claimWeiDaiFor(msg.sender);
 		address weiDai = getWeiDai(version);
 		address bank = getWeiDaiBank(version);

@@ -61,7 +61,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return lockedWeiDai[hodler];
 	}
 
-	function versionedLockedWeiDai(address holder, uint version) external view returns (uint){
+	function versionedLockedWeiDai(address holder, uint version) public view returns (uint){
 		return PatienceRegulationEngine(WeiDaiVersionController(versionController).getPRE(version)).getLockedWeiDai(holder);
 	}
 
@@ -77,22 +77,22 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		blockOfPurchase[msg.sender] = block.number;
 	}
 
-	function setClaimDelegate(address delegate, uint rewardPercentage) external versionMatch {
+	function setClaimDelegate(address delegate, uint rewardPercentage) public versionMatch {
 		require(rewardPercentage<=10000, "reward must be % expressed as an integer between 0 and 10,000");
 		claimDelegateReward[msg.sender][delegate] = rewardPercentage + 1;
 	}
 
-	function disableClaimDelegate(address delegate) external versionMatch {
+	function disableClaimDelegate(address delegate) public versionMatch {
 		claimDelegateReward[msg.sender][delegate] = 0;
 	}
 
-	function claimWeiDai() external versionMatch {
+	function claimWeiDai() public versionMatch {
 		if(lockedWeiDai[msg.sender] == 0)
 		    return;
 		claim(msg.sender, address(0), 0);
 	}
 
-	function claimWeiDaiFor(address recipient) external versionMatch {
+	function claimWeiDaiFor(address recipient) public {
 		require(msg.sender == versionController || claimDelegateReward[recipient][msg.sender]>0, "claimFor disabled for this user: recipient must invoke the setClaimDelegate function.");
 		claim(recipient, msg.sender, claimDelegateReward[recipient][msg.sender]);
 	}
@@ -171,7 +171,7 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return marginalPenaltyDrawdownPeriod * 20;
 	}
 
-	function setDonationSplit(uint split) external versionMatch {
+	function setDonationSplit(uint split) public versionMatch {
 		setDonationSplit(msg.sender,split);
 	}
 

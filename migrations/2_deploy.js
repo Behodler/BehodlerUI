@@ -57,7 +57,7 @@ module.exports = async function (deployer, network, accounts) {
 
 
 let writeNetworkObject = (network, address) => {
-	const fileLocation = '../client/src/networkVersionControllers.json'
+	const fileLocation = 'client/src/networkVersionControllers.json'
 	const fs = require('fs')
 	const exists = fs.existsSync(fileLocation)
 	const stringify = (data) => JSON.stringify(data, null, 4)

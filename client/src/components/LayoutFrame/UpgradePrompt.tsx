@@ -31,49 +31,35 @@ function UpgradePrompt(props: UpgradePromptProps) {
 		</DialogTitle>
 		<DialogContent>
 			<h4>{message}</h4>
-			<Upgrade show={!props.enabled} walletAddress={props.walletAddress} />
 			<BalancesPanel {...props} />
 		</DialogContent>
 	</Dialog>
 }
 
-interface upgradeProps {
-	show: boolean
-	walletAddress: string
-}
-
-function Upgrade(props: upgradeProps) {
-	if (!props.show)
-		return <div></div>
-	return <div>
-		<h4>To use the latest WeiDai, you will to upgrade your active version.</h4>
-		<Button color="secondary" variant="contained" onClick={async () => {
-			const defaultVersion = await API.Contracts.VersionController.getDefaultVersion().call({ from: props.walletAddress })
-			await API.Contracts.VersionController.setActiveVersion(defaultVersion).send({ from: props.walletAddress })
-		}}
-		>Upgrade Now</Button>
-	</div>
-}
-
 function BalancesPanel(props: UpgradePromptProps) {
 	if (!props.oldBalances)
 		return <div></div>
-	let key = 0;
+	let balances: userWeiDaiBalances[] = []
+	props.balances.forEach(balance => {
+		if (balances.filter(b => b.version == balance.version).length > 0)
+			return;
+		balances.push(balance)
+	})
 	return <div>
 		<h4>You should claim and redeem old WeiDai balances before proceeding</h4>
 		<List>
-			{props.balances.map(balance => (
-				<ListItem key={balance.version + key++}>
+			{balances.map(balance => (
+				<ListItem key={balance.version}>
 					<Grid container
 						direction="column"
 						spacing={1}
 						justify="center"
 						alignItems="stretch"
 					>
-						<Grid item key={"versionItem" + key}>
+						<Grid item>
 							<h3>Version: {balance.version}</h3>
 						</Grid>
-						<Grid item key={"incubating" + key}>
+						<Grid item>
 							<Grid container direction="row" justify="flex-start" alignItems="center" spacing={3}>
 								<Grid item>
 									<h4>Incubating: {formatDecimalStrings(API.fromWei(balance.incubating))}</h4>
@@ -83,8 +69,9 @@ function BalancesPanel(props: UpgradePromptProps) {
 								</Grid>
 								<Grid item>
 									<Button color="secondary" variant="contained" onClick={async () => {
+										const version = balance.version
 										API.resetVersionBalances()
-										await API.Contracts.VersionController.claimAndRedeem(balance.version).send({ from: props.walletAddress });
+										await API.Contracts.VersionController.claimAndRedeem(version).send({ from: props.walletAddress });
 									}}>Claim and Redeem</Button>
 								</Grid>
 							</Grid>

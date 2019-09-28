@@ -87,7 +87,7 @@ class ethereumAPI {
 		this.versionBalances = []
 	}
 
-	public async populateVersionArray(options: any) {
+	public async populateVersionArray(options: any): Promise<string[]> {
 		this.versionArray = []
 		for (let versions: number = 1; ; versions++) {
 			const versionString = "" + versions;
@@ -97,6 +97,7 @@ class ethereumAPI {
 			}
 			this.versionArray.push(versionString)
 		}
+		this.versionArray = Array.from(new Set(this.versionArray))
 		return this.versionArray;
 	}
 
@@ -294,7 +295,6 @@ class ethereumAPI {
 				if (changedAccount || (this.versionBalances.length === 0 && this.versionArray.length > 0)) {
 					await this.populateVersionBalances()
 				}
-				console.log("version balaces:" + JSON.stringify(this.versionBalances))
 				oldBalances = (this.versionBalances.filter(version => ((parseFloat(version.actual) !== 0 || parseFloat(version.incubating) !== 0) && !version.enabled)).length > 0)
 				const observableResult: AccountObservable = { account, isPrimary: primary === account, enabled, oldBalances, versionBalances: this.versionBalances }
 				observer.next(observableResult)

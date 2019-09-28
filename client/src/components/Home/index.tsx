@@ -48,7 +48,7 @@ const steps = [
 		heading: "Are there any other incentives to burn?",
 		subtitle: "Whenever WeiDai is redeemed for Dai, 2% is burnt in order to push up the redeem rate. This is another way patience is rewarded: those who redeem sooner push the redeem rate up for those who hold.",
 		message: "Beyond these two principle burn incentives, a whole ecosystem is planned around WeiDai with as much mutually beneficial burning as possible. For instance, a merchant who holds a large portion of WeiDai can sell to customers by burning the customer's tokens instead of taking them, rewarding both themselves and the whole WeiDai community.",
-		message2: "WeiDai is 100% managed on the Ethereum Blockchain so if you're an interested developer, you can immediately plug in to the smart contracts and build your own thriftcoin powered #DeFi killer Dapp without requiring permission. WeiDai is entirely open source."
+		message2: "WeiDai is completely managed on the Ethereum Blockchain by smart contracts so if you're an interested developer, you can immediately plug in to the smart contracts and build your own thriftcoin powered #DeFi killer Dapp without requiring permission. WeiDai is entirely open source."
 	},
 	{
 		heading: "How do I start?",

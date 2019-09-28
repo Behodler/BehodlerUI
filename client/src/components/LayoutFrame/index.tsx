@@ -17,6 +17,7 @@ import FAQ from '../FAQ/index'
 import ContractDependencies from '../ContractDependencies/index'
 import UpgradePrompt from './UpgradePrompt'
 import { MetamaskFailed } from '../Common/MetamaskFailed'
+import { Loading } from '../Common/Loading'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
@@ -71,8 +72,8 @@ let styles = (theme: any) => styleObject
 
 function LayoutFrameComponent(props: any) {
 
-	const [metaMaskConnected, setMetaMaskConnected] = useState<boolean>(API.isMetaMaskConnected())
-	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(API.isMetaMaskEnabled())
+	const [metaMaskConnected, setMetaMaskConnected] = useState<boolean>(true)
+	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(false)
 	const [activeNetwork, setActiveNetwork] = useState<boolean>(false)
 	const [detailProps, setDetailProps] = useState<DetailProps>({ header: '', content: '' })
 	const [detailVisibility, setDetailVisibility] = useState<boolean>(false)
@@ -82,7 +83,7 @@ function LayoutFrameComponent(props: any) {
 	const [versionEnabled, setVersionEnabled] = useState<boolean>(true)
 	const [oldBalances, setOldBalances] = useState<boolean>(false)
 	const [versionBalances, setVersionBalances] = useState<userWeiDaiBalances[]>([])
-
+	const [firstLoad, setFirstLoad] = useState<boolean>(true)
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
 
 	useEffect(() => {
@@ -95,16 +96,17 @@ function LayoutFrameComponent(props: any) {
 	})
 
 	useEffect(() => {
-		if (!metaMaskConnected || !metaMaskEnabled) {
+		if (!metaMaskConnected || !metaMaskEnabled || firstLoad) {
 			API.connectMetaMask().then(() => {
 				setMetaMaskEnabled(API.isMetaMaskEnabled())
 				setMetaMaskConnected(API.isMetaMaskConnected())
+				setFirstLoad(false)
 			})
 		}
 	})
 
 	useEffect(() => {
-		if (metaMaskConnected && activeNetwork) {
+		if (metaMaskConnected && activeNetwork && !firstLoad) {
 			const subscription = API.accountObservable.subscribe(account => {
 				setWalletAddress(account.account)
 				setIsPrimary(account.isPrimary)
@@ -123,8 +125,8 @@ function LayoutFrameComponent(props: any) {
 	})
 	const { classes } = props
 	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled={metaMaskEnabled} wrongNetwork={!activeNetwork} />
-	const showError: boolean = !(metaMaskConnected && metaMaskEnabled && activeNetwork)
-	const disableUI = (!versionEnabled || oldBalances) && !isPrimary
+	const showError: boolean = !firstLoad && !(metaMaskConnected && metaMaskEnabled && activeNetwork)
+	const disableUI = firstLoad || (!versionEnabled || oldBalances) && !isPrimary
 
 	return showError ? metamaskMessage : (
 		<div className={classes.root}>
@@ -149,7 +151,7 @@ function LayoutFrameComponent(props: any) {
 					</div>}
 				<Paper className={classes.paper}>
 					<Box component="div" className={classes.content}>
-						{disableUI ? <UpgradePrompt oldBalances={oldBalances} enabled={versionEnabled} balances={versionBalances} walletAddress={walletAddress} /> :
+						{disableUI && !firstLoad ? <UpgradePrompt oldBalances={oldBalances} enabled={versionEnabled} balances={versionBalances} walletAddress={walletAddress} /> :
 							<div>
 								<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} />
 								<Grid
@@ -189,27 +191,34 @@ function LayoutFrameComponent(props: any) {
 										</Grid>
 									</Grid>
 								</Grid>
-
 								<Divider variant="middle" className={classes.headingDivider} />
-								<Switch>
-									<Route path="/" exact >
-										<Home />
-									</Route>
-									<Route path="/engine">
-										<PatienceRegulationEngine currentUser={walletAddress} />
-									</Route>
-									<Route path="/bank">
-										<Bank currentUser={walletAddress} />
-									</Route>
-									<Route path="/FAQ">
-										<FAQ />
-									</Route>
-									{isPrimary ?
-										<Route path="/dependencies">
-											<ContractDependencies walletAddress={walletAddress} />
-										</Route> : ""
-									}
-								</Switch>
+								{firstLoad ? <Grid container
+									alignItems="center"
+									justify="center">
+									<Grid item>
+										<Loading />
+									</Grid>
+								</Grid> :
+									<Switch>
+										<Route path="/" exact >
+											<Home />
+										</Route>
+										<Route path="/engine">
+											<PatienceRegulationEngine currentUser={walletAddress} />
+										</Route>
+										<Route path="/bank">
+											<Bank currentUser={walletAddress} />
+										</Route>
+										<Route path="/FAQ">
+											<FAQ />
+										</Route>
+										{isPrimary ?
+											<Route path="/dependencies">
+												<ContractDependencies walletAddress={walletAddress} />
+											</Route> : ""
+										}
+									</Switch>
+								}
 							</div>}
 					</Box>
 				</Paper>
