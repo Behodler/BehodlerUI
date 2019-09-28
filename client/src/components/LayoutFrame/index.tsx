@@ -79,7 +79,7 @@ function LayoutFrameComponent(props: any) {
 	const [walletAddress, setWalletAddress] = useState<string>("0x0")
 	const [redirect, setRedirect] = useState<string>("")
 	const [isPrimary, setIsPrimary] = useState<boolean>(false)
-	const [versionEnabled, setVersionEnabled] = useState<boolean>(false)
+	const [versionEnabled, setVersionEnabled] = useState<boolean>(true)
 	const [oldBalances, setOldBalances] = useState<boolean>(false)
 	const [versionBalances, setVersionBalances] = useState<userWeiDaiBalances[]>([])
 
