@@ -58,3 +58,4 @@ start a github organization? Investigate
 Register domain
 Register email with domain. weidaidapp.com
 SSL with route53
+include the VC address file in the build step before syncing to s3
