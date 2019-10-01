@@ -55,7 +55,6 @@ Kovan:
 Pre launch: 
 read medium's ts*&cs
 start a github organization? Investigate
-
-Post launch: 
-Set links correctly in action panel
-put built static site on github
+Register domain
+Register email with domain. weidaidapp.com
+SSL with route53

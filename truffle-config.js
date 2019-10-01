@@ -17,6 +17,8 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+const fs = require('fs')
+const mnemonic = fs.readFileSync('./temp/list','utf8')
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
@@ -81,7 +83,17 @@ module.exports = {
     //   confirmations: 2,    // # of confs to wait between deployments. (default: 0)
     //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
     //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
-    },
+	},
+	
+	'main': {
+		provider: () => new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/879bf8d4f8d74e809de3176af688d53a`),
+		network_id: 1,       // Kovan's id
+		gas: '7000000',    
+		gasPrice:'2000000000'
+	  //   confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+	  //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+	  //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+	  },
 
     // Useful for private networks
     // private: {

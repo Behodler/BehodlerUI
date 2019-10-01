@@ -377,7 +377,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Typography>
 					</Grid>
 					<Grid item>
-						<Button variant="contained" color="secondary" onClick={async () => {
+						<Button variant="contained" color={parseInt(currentWithdrawalPenalty) > 0?"secondary":"primary"} onClick={async () => {
 							if (parseInt(currentWithdrawalPenalty) > 0) {
 								setClaimWithPenaltyPopup(true)
 							} else {

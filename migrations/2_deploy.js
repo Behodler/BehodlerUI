@@ -29,15 +29,18 @@ module.exports = async function (deployer, network, accounts) {
 		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"), true)
 		await vcInstance.setDefaultVersion(1)
 	}
-	else if (network === 'main') {
-		const version = 1
+	else if (network === 'main' || network=='main-fork') {
+		console.log('main deployment now')
+		await deployer.deploy(VersionController)
 		donationAddress = accounts[0];
-		vcAddress = "to be determined"
-		//TODO: instantiate vc using vcaddress and set contract group
-		//TODO: await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, "WeiDai")
+		vcInstance = await VersionController.deployed()
+		vcAddress = vcInstance.address
+		console.log('vcaddress: ' + vcAddress)
 		daiAddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("weidai"), true)
+		await vcInstance.setDefaultVersion(1)
 	}
-	else if (network == 'kovan-fork' || network=='kovan') {
+	else if (network == 'kovan-fork' || network == 'kovan') {
 		await deployer.deploy(VersionController)
 		vcInstance = await VersionController.deployed()
 		vcAddress = vcInstance.address

@@ -11,3 +11,4 @@ package-lock.json
 geth
 /client/src/networkVersionControllers.json
 eth_node/
+temp/

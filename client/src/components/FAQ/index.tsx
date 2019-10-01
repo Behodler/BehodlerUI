@@ -161,7 +161,7 @@ function FAQ(props: FAQProps) {
 	const Panels = () => {
 		return questions.map(function (value, index) {
 			const panel = "panel" + index
-			return <ExpansionPanel expanded={expanded === panel} onChange={handleChange(panel)}>
+			return <ExpansionPanel key={index} expanded={expanded === panel} onChange={handleChange(panel)}>
 				<ExpansionPanelSummary
 					expandIcon={<ExpandMoreIcon />}
 					aria-controls={`${panel}bh-content`}

@@ -74,7 +74,7 @@ class ethereumAPI {
 		this.metaMaskConnected = this.metaMaskEnabled = false
 		this.versionArray = []
 		this.versionBalances = []
-		this.networks = ["private", "gethdev", "kovan"]
+		this.networks = ["private", "gethdev", "kovan","main"]
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
@@ -178,7 +178,6 @@ class ethereumAPI {
 		const weiDaiDeployment = await this.deploy(WDJSON, weiDaiAddress)
 		const WeiDai: WeiDai = weiDaiDeployment.methods;
 		WeiDai.address = weiDaiDeployment.address;
-		console.log("The WeiDai contract address is: " + WeiDai.address)
 		const weiDaiBankDeployment = await this.deploy(bankJSON, bankAddress);
 		const WeiDaiBank: WeiDaiBank = weiDaiBankDeployment.methods
 		WeiDaiBank.address = weiDaiBankDeployment.address;
