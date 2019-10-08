@@ -1,2 +1,1 @@
-Only register with uniswap after multicol.
-Change dependencies page to allow custom addresses rather than regen (perhaps one of those little buttons in the text box)
+Uniswap page on weidai to only show user version. Also prevents users from losing pool tokens when the MCD upgrade happens
