@@ -26,7 +26,7 @@ function SocialComponent(props:SocialProps){
 		return (
 			<div>
 				<IconButton className={classes.Button}>
-					<Icon><img src={github} onClick={()=>window.open('https://github.com/gititGoro/weidai')} /></Icon>
+					<Icon><img src={github} onClick={()=>window.open('https://github.com/WeiDaiEcosystem/weidai')} /></Icon>
 				</IconButton>
 				<IconButton className={classes.Button} onClick={()=>window.open('https://medium.com/weidaithriftcoin')}>
 					<Icon><img src={medium} /></Icon>
