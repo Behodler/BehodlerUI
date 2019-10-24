@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
-
+import ButtonAdornedTextBox from '../Common/ButtonAdornedTextBox'
 interface dialogProps {
 	versionNumber: string
 	isOpen: boolean
@@ -58,16 +58,16 @@ export default function (props: dialogProps) {
 				spacing={1}
 				justify="center">
 				<Grid key="popupWeiDai" item>
-				<TextField label="WeiDai" value={weiDai} onClick = {async()=>await API.generateNewContracts("weidai")}></TextField>
+					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("weidai")} changeText={(text: string) => setWeiDai(text)} label="WeiDai" text={weiDai} />
 				</Grid>
 				<Grid key="popupDai" item>
 					<TextField label="Dai" onChange={(event) => handleChange(event, setDai)}></TextField>
 				</Grid>
 				<Grid key="popupPre" item>
-					<TextField label="Pre" value={patienceRegulationEngine}  onClick = {async()=>await API.generateNewContracts("pre")}></TextField>
+				<TextField label="Pre" onChange={(event) => handleChange(event, setpatienceRegulationEngine)}></TextField>
 				</Grid>
 				<Grid key="popupBank" item>
-					<TextField label="Bank" value = {weiDaiBank}  onClick = {async()=>await API.generateNewContracts("bank")}></TextField>
+					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("bank")} changeText={(text: string) => setWeiDaiBank(text)} label="Bank" text={weiDaiBank} />
 				</Grid>
 				<Grid key="popupName" item>
 					<TextField label="Name" onChange={(event) => handleNameChange(event, setName)}></TextField>

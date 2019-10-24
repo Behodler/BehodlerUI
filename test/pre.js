@@ -33,7 +33,7 @@ contract('Patience Regulation Engine: APPROVE', accounts => {
 		const initialExchangeRate = (await bankInstance.daiPerMyriadWeidai.call()).toString()
 		assert.equal(initialExchangeRate, "100")
 
-		await expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "satisfies all conditions set by Solidity `require` statements.")
+		await expectThrow(preInstance.buyWeiDai("1000", "20", { from: accounts[1] }), "{}")
 	})
 })
 
@@ -306,7 +306,7 @@ contract('Patience Regulation Engine: difficulty change', accounts => {
 
 	test("paitent claimer after adjustment window doubles difficulty, impatient claimer, halves difficulty, donate to donation address", async () => {
 		const account = accounts[5]
-		const donationAddress = accounts[3]
+		const donationAddress = await bankInstance.getDonationAddress.call()
 		let currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
 		const claimWindowsPerAdjustment = (await preInstance.getClaimWindowsPerAdjustment.call()).toNumber()
 		let lastAdjustmentBlock = (await preInstance.getLastAdjustmentBlockNumber.call()).toNumber()

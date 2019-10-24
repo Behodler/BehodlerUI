@@ -28,12 +28,12 @@ contract('bank', accounts => {
 
 	test("only primary can trigger a donation withdrawal", async () => {
 		let randomAddress = accounts[4]
-		await expectThrow(bankInstance.withdrawDonations({ from: randomAddress }), 'satisfies all conditions set by Solidity `require` statements.')
+		await expectThrow(bankInstance.withdrawDonations({ from: randomAddress }), '{}')
 	})
 
 	test("redeeming after buying preserves donation split", async () => {
 		const account = accounts[6]
-		const donationAddress = accounts[3]
+		const donationAddress = await bankInstance.getDonationAddress()
 
 		const currentBlock = await web3.eth.getBlockNumber();
 		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
@@ -69,7 +69,7 @@ contract('bank', accounts => {
 
 	test("redeeming everthing donates nothing", async () => {
 		const account = accounts[6]
-		const donationAddress = accounts[3]
+		const donationAddress =  await bankInstance.getDonationAddress()
 
 		const currentBlock = await web3.eth.getBlockNumber();
 		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
@@ -112,7 +112,7 @@ contract('bank', accounts => {
 	test("redeeming without ever having bought defaults to 10% split", async () => {
 		const account = accounts[6]
 		const otherAccount = accounts[9]
-		const donationAddress = accounts[3]
+		const donationAddress =  await bankInstance.getDonationAddress()
 
 		const currentBlock = await web3.eth.getBlockNumber();
 		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
@@ -158,7 +158,7 @@ contract('bank', accounts => {
 	test("manually changing donation split changes it on redeem", async () => {
 		const account = accounts[6]
 		const otherAccount = accounts[4]
-		const donationAddress = accounts[3]
+		const donationAddress =  await bankInstance.getDonationAddress()
 
 		const currentBlock = await web3.eth.getBlockNumber();
 		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();

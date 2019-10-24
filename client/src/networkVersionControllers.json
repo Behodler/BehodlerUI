@@ -1,0 +1,32 @@
+{
+    "networks": [
+        {
+            "name": "private",
+            "address": "0x1E4691302632e8C2a207736ED1BedAfe2D64b5e1"
+        },
+        {
+            "name": "development",
+            "address": "0x1E4691302632e8C2a207736ED1BedAfe2D64b5e1"
+        },
+        {
+            "name": "gethdev",
+            "address": "0x1E4691302632e8C2a207736ED1BedAfe2D64b5e1"
+        },
+        {
+            "name": "kovan-fork",
+            "address": "0x64cc03b2Cc220d650Dca86c083BB96E049Fb9Da1"
+        },
+        {
+            "name": "kovan",
+            "address": "0x64cc03b2Cc220d650Dca86c083BB96E049Fb9Da1"
+        },
+        {
+            "name": "main-fork",
+            "address": "0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA"
+        },
+        {
+            "name": "main",
+            "address": "0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA"
+        }
+    ]
+}

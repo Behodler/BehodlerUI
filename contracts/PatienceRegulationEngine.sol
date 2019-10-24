@@ -152,9 +152,9 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 	function adjustPatienceDifficulty() private {
 		if(nextPatienceAdjustment()){
 			if(currentAdjustmentWeight > 0)
-				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod << 1;//double penalty
+				marginalPenaltyDrawdownPeriod++;
 			else if(currentAdjustmentWeight < 0)
-				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod>>1==0?1:marginalPenaltyDrawdownPeriod >> 1;//halve penalty
+				marginalPenaltyDrawdownPeriod = marginalPenaltyDrawdownPeriod-1==0?1:marginalPenaltyDrawdownPeriod-1;
 
 			currentAdjustmentWeight = 0;
 			lastAdjustmentBlock = block.number;
