@@ -27,16 +27,17 @@ export const formatNumberText = (text: string): string => {
 
 export const formatDecimalStrings = (value: string, decimalPlaces: number = 2): string => {
 	const big = new BigNumber(value)
+
 	if (big.isNaN())
 		return ""
 	if (big.isGreaterThan(0))
-		return big.decimalPlaces(decimalPlaces).toString()
+		return big.decimalPlaces(decimalPlaces, 1).toString()
 	return value
 }
 
-export function isLoaded(stateParams:any[]):boolean {
+export function isLoaded(stateParams: any[]): boolean {
 	for (let i = 0; i < stateParams.length; i++) {
-		if(typeof(stateParams[i]) == "string" && stateParams[i]=="unset"){
+		if (typeof (stateParams[i]) == "string" && stateParams[i] == "unset") {
 			return false;
 		}
 	}
