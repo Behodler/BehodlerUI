@@ -125,8 +125,12 @@ class ethereumAPI {
 		}
 	}
 
-	public async generateNewContracts(contract: string) {
+	public async generateNewContracts(contract: string, existingAddress?:string) {
 		if (contract == "weidai") {
+			if(existingAddress){
+				this.newContracts.weiDai = existingAddress;
+				return
+			}
 			new this.web3.eth.Contract(WDJSON.abi as any).deploy({ data: WDJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.weiDai = receipt.contractAddress || ""
@@ -137,6 +141,10 @@ class ethereumAPI {
 		}
 
 		if (contract == "bank") {
+			if(existingAddress){
+				this.newContracts.weiDaiBank = existingAddress;
+				return
+			}
 			new this.web3.eth.Contract(bankJSON.abi as any).deploy({ data: bankJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.weiDaiBank = receipt.contractAddress || ""
@@ -147,6 +155,10 @@ class ethereumAPI {
 		}
 
 		if (contract == "pre") {
+			if(existingAddress){
+				this.newContracts.PRE = existingAddress;
+				return
+			}
 			new this.web3.eth.Contract(PREJSON.abi as any).deploy({ data: PREJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.PRE = receipt.contractAddress || ""

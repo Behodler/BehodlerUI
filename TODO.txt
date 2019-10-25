@@ -1,9 +1,0 @@
-For next time: bug in new group create. Use development to not waste ether
-Migrate new version of PRE with gentler difficulty adjustment.
-	difficulty adjustment--DONE.
-
-Steps to new PRE
-0. Foreach network
-1. Deploy PRE
-2. set VC address on PRE
-3. console.log(new pre address)

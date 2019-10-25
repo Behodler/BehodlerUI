@@ -58,16 +58,16 @@ export default function (props: dialogProps) {
 				spacing={1}
 				justify="center">
 				<Grid key="popupWeiDai" item>
-					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("weidai")} changeText={(text: string) => setWeiDai(text)} label="WeiDai" text={weiDai} />
+				<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("weidai")} changeText={async (text: string) => await API.generateNewContracts("weidai",text)} label="WeiDai" text={weiDai} />
 				</Grid>
 				<Grid key="popupDai" item>
 					<TextField label="Dai" onChange={(event) => handleChange(event, setDai)}></TextField>
 				</Grid>
 				<Grid key="popupPre" item>
-				<TextField label="Pre" onChange={(event) => handleChange(event, setpatienceRegulationEngine)}></TextField>
+				<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("pre")} changeText={async (text: string) => await API.generateNewContracts("pre",text)} label="PRE" text={patienceRegulationEngine} />
 				</Grid>
 				<Grid key="popupBank" item>
-					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("bank")} changeText={(text: string) => setWeiDaiBank(text)} label="Bank" text={weiDaiBank} />
+					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("bank")} changeText={async (text: string) => await API.generateNewContracts("bank",text)} label="Bank" text={weiDaiBank} />
 				</Grid>
 				<Grid key="popupName" item>
 					<TextField label="Name" onChange={(event) => handleNameChange(event, setName)}></TextField>
