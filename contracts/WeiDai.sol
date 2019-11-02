@@ -2,6 +2,7 @@ pragma solidity >=0.5.0 <0.6.0;
 import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
 import "./baseContracts/Versioned.sol";
+import "./PatienceRegulationEngine.sol";
 import "./WeiDaiVersionController.sol";
 
 contract WeiDai is Secondary, ERC20, Versioned {
@@ -35,19 +36,28 @@ contract WeiDai is Secondary, ERC20, Versioned {
 		return arsonAllowance[holder][arsonist];
 	}
 
-	function burn (address holder, uint value) public {
+	function burn (address holder, uint value) external {
 		bool canBurn = holder == msg.sender ||
 					getArsonAllowance(msg.sender,holder) >= value ||
 					getWeiDaiBank() == msg.sender ||
 		getPRE() == msg.sender;
 
 		require(canBurn, "unauthorized to burn WeiDai");
-
+		require(balanceOf(holder)>=value,"insufficient funds.");
 		if(getArsonAllowance(msg.sender,holder) >= value){
 			arsonAllowance[holder][msg.sender] -= value;
 		}
 
-		_burn(holder, value);
+		uint valueToBurn = value;
+		if(msg.sender != getWeiDaiBank()){
+			uint donationFee = PatienceRegulationEngine(getPRE()).getDonationSplit(holder);
+			uint donation = donationFee.mul(value).div(100);
+			if(donation>0){
+				_transfer(holder, getWeiDaiBank(),donation);
+			}
+			valueToBurn = value.sub(donation);
+		}
+		_burn(holder, valueToBurn);
 		emit weiDaiBurnt(msg.sender, holder, value);
 	}
 

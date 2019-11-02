@@ -113,16 +113,9 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 			int adjustment = int(weiDai * penalty);
 			weiDai = weiDai.sub(penaltyTax);
 
-			uint donation = getDonationSplit(recipient)
-			.mul(penaltyTax)
-			.div(100);
-
 			address self = address(this);
-			WeiDai(getWeiDai()).burn(self, penaltyTax.sub(donation));
+			WeiDai(getWeiDai()).burn(self, penaltyTax);
 
-			if(donation>0){
-				WeiDai(getWeiDai()).transfer(getWeiDaiBank(),donation);
-			}
 			currentAdjustmentWeight = currentAdjustmentWeight-adjustment<currentAdjustmentWeight?currentAdjustmentWeight-adjustment:currentAdjustmentWeight; //handle underflow
 		}
 		adjustPatienceDifficulty();

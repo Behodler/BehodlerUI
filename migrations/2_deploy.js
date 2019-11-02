@@ -3,7 +3,6 @@ const MockDai = artifacts.require('MockDai')
 const WeiDaiBank = artifacts.require("WeiDaiBank")
 const PRE = artifacts.require("PatienceRegulationEngine")
 const VersionController = artifacts.require("WeiDaiVersionController")
-const fs = require('fs')
 
 module.exports = async function (deployer, network, accounts) {
 	var weidaiInstance, weidaiBankInstance, preInstance, vcInstance
@@ -60,7 +59,7 @@ module.exports = async function (deployer, network, accounts) {
 
 
 let writeNetworkObject = (network, address) => {
-	const fileLocation = 'client/src/networkVersionControllers.json'
+	const fileLocation = './client/src/networkVersionControllers.json'
 	const fs = require('fs')
 	const exists = fs.existsSync(fileLocation)
 	const stringify = (data) => JSON.stringify(data, null, 4)

@@ -46,6 +46,7 @@ contract('bank', accounts => {
 		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
 		assert.equal(currentLockedWeiDai, 0)
 
+		
 		await mockDaiInstance.approve(bank.address, "10000", { from: account })
 		await preInstance.buyWeiDai("100", "13", { from: account })
 		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
@@ -56,16 +57,16 @@ contract('bank', accounts => {
 		await bankInstance.withdrawDonations({ from: accounts[0] })
 		const donationWeiDaiBalanceBefore = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
 
-
 		await weidaiInstance.approve(bank.address, "10000", { from: account })
+	
 		await bankInstance.redeemWeiDai("1000", { from: account })
+	
 		const expectedDonation = 2 //13% of 2%
 		await bankInstance.withdrawDonations({ from: accounts[0] })
 
 		const donationWeiDaiBalanceAfter = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
 		assert.equal(donationWeiDaiBalanceAfter, donationWeiDaiBalanceBefore + expectedDonation)
 	})
-
 
 	test("redeeming everthing donates nothing", async () => {
 		const account = accounts[6]

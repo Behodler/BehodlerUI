@@ -1,0 +1,12 @@
+deploy new weidai with external burn
+Shift donation fee deduction from Pre and Bank to WeiDai -- DONE
+Question: should reserve put funds in DSR?
+If so, 
+	This is the savings pot:
+	https://github.com/makerdao/dss/blob/master/src/pot.sol
+
+	To get balance, call pie.
+	To deposit, call join
+	To withdraw call exit.
+
+So Redeem rate won't call dai.balanceOf but pot.pie[self]
