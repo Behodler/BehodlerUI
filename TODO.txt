@@ -1,12 +1,8 @@
-deploy new weidai with external burn
-Shift donation fee deduction from Pre and Bank to WeiDai -- DONE
-Question: should reserve put funds in DSR?
-If so, 
-	This is the savings pot:
-	https://github.com/makerdao/dss/blob/master/src/pot.sol
 
-	To get balance, call pie.
-	To deposit, call join
-	To withdraw call exit.
+1. Create a reserve contract that the bank can call into to store dai for growth. -- DONE
+2. Add potreserve to bank:
+	2.1 new deposit function takes dai into pot reserve
+	2.2 withdraw function withdraws
+	2.3 balance function and change front end to query balance from contract.
 
-So Redeem rate won't call dai.balanceOf but pot.pie[self]
+

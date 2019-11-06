@@ -2,7 +2,7 @@
     "networks": [
         {
             "name": "private",
-            "address": "0x1E4691302632e8C2a207736ED1BedAfe2D64b5e1"
+            "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE"
         },
         {
             "name": "development",
