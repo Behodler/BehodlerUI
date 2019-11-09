@@ -1,8 +1,12 @@
 
 1. Create a reserve contract that the bank can call into to store dai for growth. -- DONE
-2. Add potreserve to bank:
-	2.1 new deposit function takes dai into pot reserve
-	2.2 withdraw function withdraws
-	2.3 balance function and change front end to query balance from contract.
-
+2. Add potReserve with mock pot -- DONE
+3. Add inert reserve and make it the reserve in WeiDaiBank
+	3.1 Unit test it works as before
+	3.2 dev chain test it works as before
+	3.3 Deploy to kovan and test it works as before
+4. Replace inert reserve with pot and update unit tests
+5. Test it works on Kovan with real kovan pot
+6. Change the enable logic to set uint(-1). Leave the detecting enabled as before.
+7. Rethink the dependencies section properly
 

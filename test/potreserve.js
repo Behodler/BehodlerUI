@@ -31,40 +31,47 @@ contract('Reserve', accounts => {
 		await mockDaiInstance.approve(potReserveInstance.address, "1000000")
 		await potReserveInstance.deposit(100, { from: primaryBank });
 		const balanceAfter = (await potReserveInstance.balance.call()).toNumber()
-		assert.equal(balanceAfter, balance + 100)
+		assert.isAtLeast(balanceAfter, balance + 99)
 		const newReserveInstance = (await potReserve.new())
 
 		const newReserveBalance = (await mockDaiInstance.balanceOf.call(newReserveInstance.address)).toNumber()
 		await potReserveInstance.transferToNewReserve(newReserveInstance.address, { from: primaryBank })
 		const newReserveBalanceAfter = (await mockDaiInstance.balanceOf.call(newReserveInstance.address)).toNumber()
 
-		assert.equal(newReserveBalanceAfter, newReserveBalance + 100)
+		assert.isAtLeast(newReserveBalanceAfter, newReserveBalance + 99)
 		const oldReserveBalance = (await potReserveInstance.balance.call()).toNumber()
 		assert.equal(oldReserveBalance, 0)
 	})
 
-	test("deposit and waiting 10 blocks grows the balance by 10%", async () => {
-		await mockDaiInstance.approve(potReserveInstance.address, "1000000")
-		await potReserveInstance.deposit(100, { from: primaryBank });
+	test("deposit and waiting increases balance, withdrawing also does", async () => {
+		await mockDaiInstance.approve(potReserveInstance.address, -1) // bank giving approval
+		let balanceBefore = (await potReserveInstance.balance.call({ from: primaryBank })).toNumber()
+		if (balanceBefore > 0)
+			await potReserveInstance.withdraw(balanceBefore, { from: primaryBank })
+
+		const pieBefore = (await mockPotInstance.pie.call(potReserveInstance.address)).toString()
+		assert.equal(pieBefore, "0")
+
+		await potReserveInstance.deposit("1000", { from: primaryBank });
+
+		let balanceAfter = (await potReserveInstance.balance.call()).toNumber()
+		assert.isAtLeast(balanceAfter, 998) //precision loss
+
 		let blockNumber = await web3.eth.getBlockNumber()
+		for (let i = 0; i < 100; i++)
+			await mockPotInstance.drip();
 
-		const finalBlockNumber = blockNumber + 9
+		const potBalanceAfterGrowth = (await potReserveInstance.balance.call({ from: primaryBank })).toNumber()
+		assert.isAtLeast(potBalanceAfterGrowth, 1060)
+
+		blockNumber = await web3.eth.getBlockNumber()
+		finalBlockNumber = blockNumber + 100
 		for (; blockNumber < finalBlockNumber; blockNumber = await time.advanceBlock());
-		await mockPotInstance.mockGrow(potReserveInstance.address)
-		const potBalanceAfterGrowth = (await potReserveInstance.balance.call()).toNumber()
-		assert.equal(potBalanceAfterGrowth, 110)
 
-	})
-
-	test("withdrawing after 20 blocks give a 20% larger balance", async () => {
-		await mockDaiInstance.approve(potReserveInstance.address, "1000000")
-		await potReserveInstance.deposit(100, { from: primaryBank });
-		let blockNumber = await web3.eth.getBlockNumber()
-
-		const finalBlockNumber = blockNumber + 19
-		for (; blockNumber < finalBlockNumber; blockNumber = await time.advanceBlock());
-		await potReserveInstance.withdraw(120, {from:primaryBank})
-		const daiBalanceAfter = (await mockDaiInstance.balanceOf.call(primaryBank)).toString()
-		assert.equal(daiBalanceAfter, "100000000129999999998999820")
+		const daiBalanceBefore = await mockDaiInstance.balanceOf.call(primaryBank)
+		await mockDaiInstance.transfer(accounts[8], daiBalanceBefore, { from: primaryBank }) //empty bank of dai
+		await potReserveInstance.withdraw(1070, { from: primaryBank })
+		balanceAfter = (await mockDaiInstance.balanceOf.call(primaryBank)).toNumber()
+		assert.equal(balanceAfter, 1070)
 	})
 })

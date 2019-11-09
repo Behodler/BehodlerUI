@@ -20,7 +20,11 @@ pragma solidity >=0.5.0 <0.6.0;
 */
 
 contract PotLike {
+	uint public chi;
+	uint public rho;
 	mapping (address => uint256) public pie;  // user Savings Dai
+
 	function join(uint wad) external; // deposit into pot
 	function exit(uint wad) external;	//withdraw
+	function drip() external returns (uint); //increase chi
 }
