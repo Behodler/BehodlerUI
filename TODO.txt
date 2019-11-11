@@ -9,4 +9,5 @@
 5. Test it works on Kovan with real kovan pot
 6. Change the enable logic to set uint(-1). Leave the detecting enabled as before.
 7. Rethink the dependencies section properly
+8. transferring weidai to self burns
 

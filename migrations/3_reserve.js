@@ -3,13 +3,17 @@ const MockPot = artifacts.require("MockPot")
 const MockDai = artifacts.require("MockDai")
 const MockVat = artifacts.require("MockVat")
 const WeiDaiBank = artifacts.require("WeiDaiBank")
+const InertReserve = artifacts.require("InertReserve")
 
 module.exports = async function (deployer, network, accounts) {
-	var potReserveInstance
+	var potReserveInstance, inertReserveInstance
 
 	await deployer.deploy(PotReserve)
 	potReserveInstance = await PotReserve.deployed()
 	await potReserveInstance.enable(true)
+
+	await deployer.deploy(InertReserve)
+	inertReserveInstance = await InertReserve.deployed()
 
 	if (network === 'development' || network == 'gethdev') {
 
@@ -27,6 +31,8 @@ module.exports = async function (deployer, network, accounts) {
 		await mockDaiInstance.transfer(mockPotInstance.address,"1000000000000000000",{from:accounts[0]})
 		const bankInstance = await WeiDaiBank.deployed()
 		await potReserveInstance.setBank(bankInstance.address)
+		await inertReserveInstance.setBank(bankInstance.address)
+		await inertReserveInstance.setDaiAddress(mockDaiInstance.address)
 	}
 	else if (network === 'main' || network=='main-fork') {
 		
