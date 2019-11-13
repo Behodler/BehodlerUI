@@ -46,7 +46,7 @@ contract('bank', accounts => {
 		const currentLockedWeiDai = (await preInstance.getLockedWeiDai.call(account)).toNumber()
 		assert.equal(currentLockedWeiDai, 0)
 
-		
+
 		await mockDaiInstance.approve(bank.address, "10000", { from: account })
 		await preInstance.buyWeiDai("100", "13", { from: account })
 		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
@@ -58,9 +58,9 @@ contract('bank', accounts => {
 		const donationWeiDaiBalanceBefore = (await weidaiInstance.balanceOf.call(donationAddress)).toNumber()
 
 		await weidaiInstance.approve(bank.address, "10000", { from: account })
-	
+
 		await bankInstance.redeemWeiDai("1000", { from: account })
-	
+
 		const expectedDonation = 2 //13% of 2%
 		await bankInstance.withdrawDonations({ from: accounts[0] })
 
@@ -113,7 +113,7 @@ contract('bank', accounts => {
 	test("redeeming without ever having bought defaults to 10% split", async () => {
 		const account = accounts[6]
 		const otherAccount = accounts[9]
-		const donationAddress =  await bankInstance.getDonationAddress()
+		const donationAddress = await bankInstance.getDonationAddress()
 
 		const currentBlock = await web3.eth.getBlockNumber();
 		const currentClaimWaitWindow = (await preInstance.getClaimWaitWindow.call()).toNumber();
@@ -127,6 +127,9 @@ contract('bank', accounts => {
 		assert.equal(currentLockedWeiDai, 0)
 
 		await mockDaiInstance.approve(bank.address, "10000", { from: account })
+		const balance = (await mockDaiInstance.balanceOf.call(account)).toNumber()
+		assert.isAtLeast(balance, 100)
+		await preInstance.grabUserUser(mockDaiInstance.address, { from: account })
 		await preInstance.buyWeiDai("100", "13", { from: account })
 		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
 

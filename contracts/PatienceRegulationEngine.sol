@@ -65,6 +65,12 @@ contract PatienceRegulationEngine is Secondary, Versioned {
 		return PatienceRegulationEngine(WeiDaiVersionController(versionController).getPRE(version)).getLockedWeiDai(holder);
 	}
 
+	event DaiDai (address test, address getDai);
+
+	function grabUserUser(address daiAddress)public versionMatch enabledOnly {
+		emit DaiDai(daiAddress,getDai());
+		WeiDaiBank(getWeiDaiBank()).userUser(msg.sender);
+	}
 
 	function buyWeiDai(uint dai, uint split) public versionMatch enabledOnly {
 		require(lockedWeiDai[msg.sender] == 0,"must claim weidai before buying more.");

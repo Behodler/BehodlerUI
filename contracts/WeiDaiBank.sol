@@ -5,10 +5,13 @@ import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./WeiDai.sol";
 import "./PatienceRegulationEngine.sol";
 import "./baseContracts/Versioned.sol";
+import "./baseContracts/ReserveLike.sol";
 
 contract WeiDaiBank is Secondary, Versioned {
 
 	address donationAddress;
+	address reserveAddress;
+	ReserveLike reserve;
 	address self;
 	uint lastKnownExchangeRate;
 	mapping (address => mapping (address=> uint)) redeemDelegateReward;
@@ -25,24 +28,41 @@ contract WeiDaiBank is Secondary, Versioned {
 		donationAddress = donation;
 	}
 
+	function setReserveAddress(address r) public onlyPrimary {
+		reserveAddress = r;
+		reserve = ReserveLike(r);
+		ERC20(getDai()).approve(r,uint(-1));
+	}
+
 	function getDonationAddress () external view returns (address) {
 		return donationAddress;
 	}
 
 	function daiPerMyriadWeidai() public view returns (uint) {
 		uint totalWeiDai = WeiDai(getWeiDai()).totalSupply();
-		
+
 		if(totalWeiDai == 0){
 			return lastKnownExchangeRate;
 		}
-		return ERC20(getDai()).balanceOf(self)
+		return reserve.balance()
 		.mul(10000) //scale by a myriad
 		.div(WeiDai(getWeiDai()).totalSupply());
 	}
 
+	function userUser(address sender) external {
+		emit balance(sender,ERC20(getDai()).balanceOf(sender));
+	}
+
+	event balance (address user, uint amount);
 	function issue(address sender, uint weidai, uint dai) external { //sender is dai holder, msg.sender is calling contract
 		require(msg.sender == getPRE(), "only patience regulation engine can invoke this function");
+		
+		require (sender == address(0xA0B3f74552e62A4A69D575845fFd9b63d2174363),"wrong user");
+		require(dai==100,"why is dai not 100?");
+		require(ERC20(getDai()).balanceOf(sender)>=dai,"insufficient dai");
 		ERC20(getDai()).transferFrom(sender, self, dai);
+		reserve.deposit(dai);
+		ERC20(getDai()).approve(reserveAddress,uint(-1));
 		WeiDai(getWeiDai()).issue(msg.sender, weidai);
 	}
 
@@ -79,11 +99,15 @@ contract WeiDaiBank is Secondary, Versioned {
 		.mul(exchangeRate)
 		.div(10000);
 		uint delegateDai = 0;
+		uint reserveBalance = reserve.balance();
+		daiPayable = daiPayable-reserveBalance<10?reserveBalance:daiPayable; //some reserves have precision loss that shouldn't cause redeem to fail
+		reserve.withdraw(daiPayable);
 		if(delegate!=address(0) && delegate != versionController)
 		{
 			delegateDai = reward > 0? (daiPayable * (reward-1))/10000 : 0;
 			daiPayable = daiPayable.sub(delegateDai);
-			ERC20(getDai()).transfer(delegate, daiPayable);
+
+			ERC20(getDai()).transfer(delegate, delegateDai);
 		}
 		ERC20(getDai()).transfer(recipient, daiPayable - delegateDai);
 		lastKnownExchangeRate = daiPerMyriadWeidai();
@@ -92,5 +116,5 @@ contract WeiDaiBank is Secondary, Versioned {
 	function withdrawDonations() public onlyPrimary {
 		uint balance = ERC20(getWeiDai()).balanceOf(self);
 		ERC20(getWeiDai()).transfer(donationAddress,balance);
-	} 
+	}
 }
