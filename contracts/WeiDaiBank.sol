@@ -31,7 +31,6 @@ contract WeiDaiBank is Secondary, Versioned {
 	function setReserveAddress(address r) public onlyPrimary {
 		reserveAddress = r;
 		reserve = ReserveLike(r);
-		ERC20(getDai()).approve(r,uint(-1));
 	}
 
 	function getDonationAddress () external view returns (address) {
@@ -49,20 +48,12 @@ contract WeiDaiBank is Secondary, Versioned {
 		.div(WeiDai(getWeiDai()).totalSupply());
 	}
 
-	function userUser(address sender) external {
-		emit balance(sender,ERC20(getDai()).balanceOf(sender));
-	}
-
-	event balance (address user, uint amount);
 	function issue(address sender, uint weidai, uint dai) external { //sender is dai holder, msg.sender is calling contract
 		require(msg.sender == getPRE(), "only patience regulation engine can invoke this function");
-		
-		require (sender == address(0xA0B3f74552e62A4A69D575845fFd9b63d2174363),"wrong user");
-		require(dai==100,"why is dai not 100?");
 		require(ERC20(getDai()).balanceOf(sender)>=dai,"insufficient dai");
 		ERC20(getDai()).transferFrom(sender, self, dai);
-		reserve.deposit(dai);
 		ERC20(getDai()).approve(reserveAddress,uint(-1));
+		reserve.deposit(dai);
 		WeiDai(getWeiDai()).issue(msg.sender, weidai);
 	}
 
