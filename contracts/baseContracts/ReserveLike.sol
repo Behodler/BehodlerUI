@@ -13,7 +13,7 @@ contract ReserveLike is Secondary{
 	}
 
 	function deposit (uint dai) public;
-	function withdraw(uint dai) public;
+	function withdraw(uint dai) public returns(uint);
 	function balance() public view returns (uint);
 	function transferToNewReserve(address reserve) public;
 }

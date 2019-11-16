@@ -34,7 +34,7 @@ const steps = [
 	},
 	{
 		heading: "What makes WeiDai a Thriftcoin?",
-		subtitle: "WeiDai is backed by Dai so it retains at least as much value as Dai. Burning WeiDai makes the redeem rate go up.",
+		subtitle: "WeiDai is backed by Dai which is stored in the Dai savings contract so its value grows at least as fast as the Dai Savings Rate (DSR). In addition to the DSR, burning WeiDai makes the redeem rate go up.",
 		message: "If WeiDai is burnt with enough regularity, the price of WeiDai (the redeem rate) will rise faster than the inflation rate of the US dollar. We call this 'thrift escape velocity'.",
 		message2: "After thrift escape velocity, WeiDai transitions from a stablecoin into a thriftcoin."
 	},

@@ -129,7 +129,6 @@ contract('bank', accounts => {
 		await mockDaiInstance.approve(bank.address, "10000", { from: account })
 		const balance = (await mockDaiInstance.balanceOf.call(account)).toNumber()
 		assert.isAtLeast(balance, 100)
-		await preInstance.grabUserUser(mockDaiInstance.address, { from: account })
 		await preInstance.buyWeiDai("100", "13", { from: account })
 		const purchaseBlock = (await preInstance.getBlockOfPurchase({ from: account })).toNumber()
 

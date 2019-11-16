@@ -4,7 +4,7 @@
 3. Add inert reserve and make it the reserve in WeiDaiBank -- BUSY
 	3.1 Unit test it works as before -- DONE
 	3.2 dev chain test it works as before on front end -- DONE WITH inert
-	3.3 Deploy to kovan and test it works as before -- BUSY- no way to get MCD on Kovan
+	3.3 Deploy to kovan and test it works as before -- DONE!
 		-> Contracts to newDeploy: 
 			WeiDai
 			PatienceRegulationEngine
@@ -12,7 +12,6 @@
 			PotReserve -> pot,dai,vat
 
 4. Replace inert reserve with pot and update unit tests -- DONE (PRE not tested)
-5. Test it works on Kovan with real kovan pot
-6. Change the enable logic to set uint(-1). Leave the detecting enabled as before.
+5. Test it works on Kovan with real kovan pot -- DONE
+6. Change the enable logic to set uint(-1). Leave the detecting enabled as before. --CAN'T BE DONE FROM FRONT END
 7. Rethink the dependencies section properly
-

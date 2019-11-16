@@ -5,4 +5,5 @@ contract VatLike{
 	function hope(address usr) external;
 	function nope(address usr) external;
 	function can(address, address) public view returns (uint);
+	function dai (address holder) public returns (uint);
 }

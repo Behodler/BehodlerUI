@@ -75,12 +75,16 @@ module.exports = {
 
 		//Useful for deploying to a public network.
 		// NB: It's important to wrap the provider as a function.
-
+		'testchain':{
+			host: "127.0.0.1",     // Localhost (default: none)
+			port: 2000,            // Standard Ethereum port (default: none)
+			network_id: "*",     
+		},
 		'kovan': {
 			provider: () => new HDWalletProvider(kovanMnemonic, `https://kovan.infura.io/v3/879bf8d4f8d74e809de3176af688d53a`),
-			network_id: 42,       // Kovan's id
+			network_id: 42,       // Kovan's id3_active
 			gas: '7000000',
-
+			gasPrice: '1000000000'
 			//   confirmations: 2,    // # of confs to wait between deployments. (default: 0)
 			//   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
 			//   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )

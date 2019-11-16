@@ -13,8 +13,9 @@ contract InertReserve is Secondary, ReserveLike{
 		require(ERC20(daiAddress).transferFrom(msg.sender,address(this),dai), "deposit failed on transfer");
 	}
 
-	function withdraw(uint dai) public onlyBank {
+	function withdraw(uint dai) public onlyBank returns (uint){
 		require(ERC20(daiAddress).transfer(msg.sender,dai), "deposit failed on transfer");
+		return dai;
 	}
 
 	function balance() public view returns (uint) {

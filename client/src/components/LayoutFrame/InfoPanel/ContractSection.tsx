@@ -36,8 +36,10 @@ function ContractSectionComponent(props: ContractProps) {
 	useEffect(() => {
 		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
 		const subscription = effect.Observable.subscribe((exchangeRate) => {
-			const weiDaiExchangeRate = parseInt(exchangeRate) / 10000
-			const growth = Math.round(((weiDaiExchangeRate - 0.01) / 0.01) * 10000)/100
+			let weiDaiExchangeRate = parseInt(exchangeRate) / 10000
+			weiDaiExchangeRate = Math.max(0.01, weiDaiExchangeRate)
+			let growth = Math.round(((weiDaiExchangeRate - 0.01) / 0.01) * 10000) / 100
+			growth = Math.max(0, growth)
 			setWeiDaiPrice(weiDaiExchangeRate)
 			setTotalPriceGrowth(growth)
 		})

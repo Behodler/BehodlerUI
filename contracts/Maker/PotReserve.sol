@@ -4,14 +4,18 @@ import "../baseContracts/ReserveLike.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/ownership/Secondary.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./VatLike.sol";
+import "./DaiJoinLike.sol";
 
 contract PotReserve is Secondary, ReserveLike{
 	address potAddress;
 	address daiAddress;
 	address vatAddress;
+	address daiJoinAddress;
 	bool enabled;
 	PotLike pot;
-	uint256 constant RAY = 10 ** 27;
+	VatLike vat;
+	DaiJoinLike daijoin;
+	uint constant RAY = 10 ** 27;
 
 	function mul(uint x, uint y) internal pure returns (uint z) {
 		require(y == 0 || (z = x * y) / y == x, "mul-overflow");
@@ -27,34 +31,62 @@ contract PotReserve is Secondary, ReserveLike{
 
 	function approveForTesting() public onlyPrimary {
 		require(potAddress!=address(0),"pot address not set");
-		ERC20(daiAddress).approve(potAddress,uint(-1));
+		daijoin.dai().approve(potAddress,uint(-1));
 	}
 
-	function setMakerAddresses(address p, address d, address v) public onlyPrimary {
-		if(potAddress != address(0)){
-			VatLike(v).nope(potAddress);
-		}
+	function setMakerAddresses(address p, address d, address j) public onlyPrimary {
 		potAddress = p;
 		daiAddress = d;
-		vatAddress = v;
-		VatLike(v).hope(p);
-		pot = PotLike(potAddress);
+		daiJoinAddress = j;
+
+		daijoin = DaiJoinLike(j);
+		pot = PotLike(p);
 	}
 
-	function deposit (uint dai) public onlyBank {
-		require(enabled,"reserve disabled");
-		pot.drip();
-		require(ERC20(daiAddress).transferFrom(msg.sender,address(this),dai),"transfer failed");
-		pot.join(mul(dai, RAY) / pot.chi());
+	function daiJoin_join(address urn, uint wad) public {
+		// Gets DAI from the user's wallet
+		daijoin.dai().transferFrom(msg.sender, address(this), wad);
+		// Approves adapter to take the DAI amount
+		daijoin.dai().approve(daiJoinAddress, wad);
+		// Joins DAI into the vat
+		daijoin.join(urn, wad);
 	}
 
-	function withdraw(uint dai) public onlyBank{
+	function deposit (uint dai_wad) public onlyBank {
 		require(enabled,"reserve disabled");
-		pot.drip();
-		uint sliceOfPie = mul(dai, RAY) / pot.chi(); //portion of pie in normalized units to draw
+		vat = daijoin.vat();
+		uint chi = pot.drip();
+		daiJoin_join(address(this), dai_wad);
+
+		if(vat.can(address(this), potAddress) == 0) {
+			vat.hope(potAddress);
+        }
+
+		uint wad = mul(dai_wad, RAY)/chi;
+		pot.join(wad);
+	}
+
+	function withdraw(uint dai_wad) public onlyBank returns (uint exitAmount){
+		require(enabled,"reserve disabled");
+		vat = daijoin.vat();
+		uint chi = pot.drip();
+		uint sliceOfPie = mul(dai_wad, RAY) / chi;
+
 		require (pot.pie(address(this)) >= sliceOfPie,"insufficient reserve");
 		pot.exit(sliceOfPie);
-		ERC20(daiAddress).transfer(msg.sender,dai);
+
+		uint bal = daijoin.vat().dai(address(this));
+        // Allows adapter to access to proxy's DAI balance in the vat
+		if (vat.can(address(this), address(daiJoinAddress)) == 0) {
+			vat.hope(daiJoinAddress);
+        }
+        // It is necessary to check if due rounding the exact wad amount can be exited by the adapter.
+        // Otherwise it will do the maximum DAI balance in the vat
+		exitAmount = bal >= mul(dai_wad, RAY) ? dai_wad : bal / RAY;
+		daijoin.exit(
+            msg.sender,
+            exitAmount
+		);
 	}
 
 	function balance() public view returns (uint) { //returns dai value in pot

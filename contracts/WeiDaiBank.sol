@@ -91,8 +91,9 @@ contract WeiDaiBank is Secondary, Versioned {
 		.div(10000);
 		uint delegateDai = 0;
 		uint reserveBalance = reserve.balance();
-		daiPayable = daiPayable-reserveBalance<10?reserveBalance:daiPayable; //some reserves have precision loss that shouldn't cause redeem to fail
-		reserve.withdraw(daiPayable);
+		daiPayable = daiPayable<reserveBalance?reserveBalance:daiPayable; //some reserves have precision loss that shouldn't cause redeem to fail
+		//reassign daiPayable to account for precision loss
+		daiPayable = reserve.withdraw(daiPayable);
 		if(delegate!=address(0) && delegate != versionController)
 		{
 			delegateDai = reward > 0? (daiPayable * (reward-1))/10000 : 0;

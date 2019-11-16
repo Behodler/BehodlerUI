@@ -14,12 +14,12 @@ module.exports = async function (deployer, network, accounts) {
 	const weiDaiBankInstance = await WeiDaiBank.deployed()
 	const preInstance = await PatienceRegulationEngine.deployed()
 	const potReserveInstance = await PotReserve.deployed()
-	const makerAddresses = { pot: '', dai: '', vat: '' }
+	const makerAddresses = { pot: '', dai: '', daijoin: '' }
 
 	if (network == 'kovan-fork' || network == 'kovan') {
 		makerAddresses.pot = '0xea190dbdc7adf265260ec4da6e9675fd4f5a78bb'
 		makerAddresses.dai = '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa'
-		makerAddresses.vat = '0xba987bdb501d131f766fee8180da5d81b34b69d9'
+		makerAddresses.daijoin = '0x5aa71a3ae1c0bd6ac27a1f28e1415fffb6f15b8c'
 	}
 
 	await weiDaiBankInstance.setReserveAddress(potReserveInstance.address)
@@ -27,8 +27,10 @@ module.exports = async function (deployer, network, accounts) {
 	await weiDaiBankInstance.setVersionController(vcAddress)
 	await weiDaiInstance.setVersionController(vcAddress)
 	await preInstance.setVersionController(vcAddress)
-
-	await potReserveInstance.setMakerAddresses(makerAddresses.pot, makerAddresses.dai, makerAddresses.vat)
+	
+	await potReserveInstance.setMakerAddresses(makerAddresses.pot, makerAddresses.dai, makerAddresses.daijoin)
+	await potReserveInstance.approveForTesting()
+	await potReserveInstance.setBank(weiDaiBankInstance.address)
 	const addressesForVC = {
 		'bank': weiDaiBankInstance.address,
 		'weidai': weiDaiInstance.address,
