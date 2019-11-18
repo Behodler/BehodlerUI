@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { Grid, Checkbox, TextField, Button, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
+import { Grid, Checkbox, TextField, Button, Select, MenuItem, InputLabel, FormControl, Typography } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import NewGroupDialog from './NewGroupDialog';
 
@@ -46,8 +46,21 @@ export default function (props: props) {
 	const [defaultVersion, setDefaultVersion] = useState<string>("")
 	const [group, setGroup] = useState<contractGroup>(emptyGroup)
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+	const [donationBalance, setDonationBalance] = useState<number>(0)
 
-	const populateArray = async() =>{
+	useEffect(() => {
+		const effect = API.weiDaiEffects.balanceOfEffect(API.Contracts.WeiDaiBank.address)
+		const subscription = effect.Observable.subscribe((balance) => {
+			setDonationBalance(balance)
+		})
+
+		return function () {
+			effect.cleanup()
+			subscription.unsubscribe()
+		}
+	})
+
+	const populateArray = async () => {
 		let array = await API.populateVersionArray(options);
 		setVersionArray(array)
 	}
@@ -60,7 +73,7 @@ export default function (props: props) {
 				location.reload()
 			}
 			populateArray()
-	
+
 			const defaultVersionHex = await API.Contracts.VersionController.getDefaultVersion().call(options)
 			setDefaultVersion("" + API.hexToNumber(defaultVersionHex))
 			const weiDaiAddress = await API.Contracts.VersionController.getWeiDai(activeVersion).call(options)
@@ -213,6 +226,11 @@ export default function (props: props) {
 					<Grid key="claim" item><TextField label="ClaimWindowsPerAdjustment" value={group.claimWindowsPerAdjustment} onChange={(event => { updateClaimWindowsPerAdjustment(event.target.value) })} /></Grid>
 					<Grid key="ena" item><Checkbox checked={group.enabled} onChange={(event => { updateEnabled(event.target.checked) })}></Checkbox>Enabled</Grid>
 					<Grid key="up" item><Button color="primary" variant="contained" onClick={() => updateRow()}>Update row</Button>
+						<Grid key="donationBalance">
+							<Typography variant="subtitle1" gutterBottom>
+								Unclaimed donations: {donationBalance}
+							</Typography>
+						</Grid>
 					</Grid>
 				</Grid>
 			</Grid>

@@ -27,7 +27,7 @@ function BankComponent(props: bankProps) {
 	const [loaded, setLoaded] = useState<boolean>(false)
 	const [priorWeiDaiBalance, setPriorWeiDaiBalance] = useState<string>('unset')
 	const [totalWeiDai, setTotalWeiDai] = useState<string>('unset')
-
+	const [totalWeiDaiNum, setTotalWeiDaiNum] = useState<number>(0)
 	useEffect(() => {
 		const effect = API.weiDaiEffects.balanceOfEffect(props.currentUser)
 		const subscription = effect.Observable.subscribe((balance) => {
@@ -48,16 +48,9 @@ function BankComponent(props: bankProps) {
 	useEffect(() => {
 		const effect = API.weiDaiEffects.totalSupplyEffect()
 		const subscription = effect.Observable.subscribe((balance) => {
+			const balanceNum = parseFloat(balance);
+			setTotalWeiDaiNum(isNaN(balanceNum) ? 0 : balanceNum)
 			setTotalWeiDai(formatDecimalStrings(balance))
-		})
-
-		return () => { subscription.unsubscribe(); effect.cleanup() }
-	})
-
-	useEffect(() => {
-		const effect = API.daiEffects.balanceOfEffect(API.Contracts.WeiDaiBank.address)
-		const subscription = effect.Observable.subscribe((balance) => {
-			setReserveDai(formatDecimalStrings(balance))
 		})
 
 		return () => { subscription.unsubscribe(); effect.cleanup() }
@@ -66,7 +59,10 @@ function BankComponent(props: bankProps) {
 	useEffect(() => {
 		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
 		const subscription = effect.Observable.subscribe((daiPerMyriadWeiDai: string) => {
-			setExchangeRate(parseInt(daiPerMyriadWeiDai)) //daiPerWeiDai
+			const daiPerMyriadWeiDaiNum = parseFloat(daiPerMyriadWeiDai)
+			const daiInReserve = daiPerMyriadWeiDaiNum * totalWeiDaiNum / 10000;
+			setReserveDai(formatDecimalStrings(`${daiInReserve}`))
+			setExchangeRate(daiPerMyriadWeiDaiNum) 
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})

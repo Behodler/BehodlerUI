@@ -41,8 +41,8 @@ const style = {
 	createErrorMargin: {
 		marginTop: '10px'
 	},
-	incubationDuration:{
-		fontWeight:800
+	incubationDuration: {
+		fontWeight: 800
 	}
 }
 
@@ -120,6 +120,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
 		const subscription = effect.Observable.subscribe((daiPerMyriadWeiDai: string) => {
+			console.log("daiPerMyriadWeiDai :" + daiPerMyriadWeiDai)
 			setExchangeRate(parseInt(daiPerMyriadWeiDai)) //daiPerWeiDai
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
@@ -377,7 +378,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 						</Typography>
 					</Grid>
 					<Grid item>
-						<Button variant="contained" color={parseInt(currentWithdrawalPenalty) > 0?"secondary":"primary"} onClick={async () => {
+						<Button variant="contained" color={parseInt(currentWithdrawalPenalty) > 0 ? "secondary" : "primary"} onClick={async () => {
 							if (parseInt(currentWithdrawalPenalty) > 0) {
 								setClaimWithPenaltyPopup(true)
 							} else {

@@ -3,10 +3,11 @@ import { WeiDaiBank } from '../contractInterfaces/WeiDaiBank'
 import { Effect, FetchNumber, FetchNumberFields } from './common'
 import EffectBase from './EffectBase'
 
+
 export class BankEffects extends EffectBase {
 	bankInstance: WeiDaiBank
 
-	constructor(web3: Web3, instance: WeiDaiBank) {
+	constructor(web3: Web3, instance: WeiDaiBank ) {
 		super(web3)
 		this.bankInstance = instance
 	}

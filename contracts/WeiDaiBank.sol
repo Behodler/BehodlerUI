@@ -37,13 +37,18 @@ contract WeiDaiBank is Secondary, Versioned {
 		return donationAddress;
 	}
 
+	function daiBalance() public view returns (uint) {
+		return reserve.balance();
+	}
+
 	function daiPerMyriadWeidai() public view returns (uint) {
 		uint totalWeiDai = WeiDai(getWeiDai()).totalSupply();
 
+		uint reserveBalance = reserve.balance();
 		if(totalWeiDai == 0){
 			return lastKnownExchangeRate;
 		}
-		return reserve.balance()
+		return reserveBalance
 		.mul(10000) //scale by a myriad
 		.div(WeiDai(getWeiDai()).totalSupply());
 	}
@@ -91,7 +96,7 @@ contract WeiDaiBank is Secondary, Versioned {
 		.div(10000);
 		uint delegateDai = 0;
 		uint reserveBalance = reserve.balance();
-		daiPayable = daiPayable<reserveBalance?reserveBalance:daiPayable; //some reserves have precision loss that shouldn't cause redeem to fail
+		daiPayable = daiPayable>reserveBalance?reserveBalance:daiPayable; //some reserves have precision loss that shouldn't cause redeem to fail
 		//reassign daiPayable to account for precision loss
 		daiPayable = reserve.withdraw(daiPayable);
 		if(delegate!=address(0) && delegate != versionController)
