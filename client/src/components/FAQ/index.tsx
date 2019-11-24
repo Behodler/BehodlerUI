@@ -24,12 +24,16 @@ const styleObject = (theme: any) => ({
 
 const questions = [
 	{
+		title: "Could you give me a 1 line definition of WeiDai?",
+		answer:"WeiDai is an ERC20 wrapper of Dai with a redeem rate that can go up through burning, effectively giving it the ability to beat inflation."
+	},
+	{
 		title: "How reliable is WeiDai?",
 		answer: "Since WeiDai is 100% backed by Dai, it can only be as reliable as Dai and no more. If the Dai system or MakerDAO were to stop functioning, WeiDai would also cease to work. Beyond that, the entire system of WeiDai is run on the blockchain with no oracles or human management."
 	},
 	{
 		title: "Is WeiDai decentralized?",
-		answer: "The operation of WeiDai is 100% decentralized. The price feeds are outsourced to the MakerDAO oracle network via Dai. For now, WeiDai's contracts can be disabled and the donation address is fixed. This is a necessary safeguard in the early stages in case there are unforeseen bugs. However, once WeiDai is thriving and has an active community, the plan is to hand over full control to a 'WeiDAO'. There is no central server. The site you're on is a static site using Javascript to communicate with the Ethereum blockchain. No personal data is collected by anyone. If you would like to run this site locally and not have it served, the Github page has built versions which can be downloaded."
+		answer: "The operation of WeiDai is 100% decentralized. The price feeds are outsourced to the MakerDAO oracle network via Dai. For now, WeiDai's contracts can be disabled. This is a necessary safeguard in the early stages in case there are unforeseen bugs. However, once WeiDai is thriving and has an active community, the plan is to hand over full control to a 'WeiDAO'. There is no central server. The site you're on is static HTML using Javascript to communicate with the Ethereum blockchain. No personal data is collected by anyone."
 	},
 	{
 		title: "Is this an ICO?",
@@ -142,6 +146,10 @@ const questions = [
 	{
 		title: "How many deployed smart contracts does the entire WeiDai system use and what are they for?",
 		answer: "6 if you include Dai. WeiDai is an ERC20 token with burn and issue capability. Bank is the only contract that can issue WeiDai and is the Dai custodian to maintain the wrapping of Dai into WeiDai as well as redeeming (unwrapping). Patience Regulation Engine acts as a broker between WeiDai buyers and the Bank contract, reducing the supply growth of WeiDai or actively burning the existing supply. PotReserve is the interface between Bank and the Dai Pot contract. PotReserve allows the Bank to accumulate interest on its Dai deposits which is automatically reflected as a higher redeem rate. Finally the VersionController exists because MakerDAO releases new versions of Dai and deactivates old versions, converting them into simple eth wrappers with fixed redeem rates. In the absence of this contract, WeiDai would eventually be a wrapper for old versions of Dai. We can't just swap out the underlying Dai contract because users with WeiDai wrapping old Dai would never be able to retrieve their old Dai and redeem it for Eth. Instead the VersionController allows users to gracefully claim and redeem their old WeiDai before moving on to use the latest version of WeiDai. In the future there will be at least 1 more contract for governance. If not for changing versions of Dai, WeiDai could survive as is without human intervention indefinitely. However, as it stands, versions are updated manually which means that when Dai upgrades, a human call to the versioning contract is required to inform it of a new version. Once the governance is decentralized, this process can be put to vote or some other sophisticated group consensus."
+	},
+	{
+		title:"What are the core contract addresses?",
+		answer:"WeiDai:0xaFEf0965576070D1608F374cb14049EefaD218Ec,Patience Regulation Engine: 0x2b645e669Fb54A7877dCFd6BaC1bc1790a3e5e8c, Bank: 0x30374E46d3E3faf57CE0dAdc5D28b44AE27216bc" 
 	},
 	{
 		title: "Are there different types of thriftcoins?",

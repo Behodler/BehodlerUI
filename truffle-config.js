@@ -91,15 +91,18 @@ module.exports = {
 			//   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
 		},
 
-		'main': {
-			provider: () => new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/879bf8d4f8d74e809de3176af688d53a`),
-			network_id: 1,       // Kovan's id
-			gas: '9000000',
-			gasPrice: '1300000000'
 
-			//   confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+		'main': {
+			provider: () => new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/0c432ce729d74782884e78129927d689`),
+			//eth.nownodes.io
+			//provider: () => new HDWalletProvider(mnemonic, `https://eth.nownodes.io`),
+			network_id: 1,       // Kovan's id
+			gas: '9500000',
+			gasPrice: '20000000000',
+
+			   confirmations: 10,    // # of confs to wait between deployments. (default: 0)
 			//   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-			//   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+		    // Skip dry run before migrations? (default: false for public nets )
 		},
 
 		// Useful for private networks

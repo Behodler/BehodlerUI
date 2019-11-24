@@ -34,7 +34,8 @@ contract PotReserve is Secondary, ReserveLike{
 		daijoin.dai().approve(potAddress,uint(-1));
 	}
 
-	function setMakerAddresses(address p, address d, address j) public onlyPrimary {
+	function setMakerAddresses(address p, address d, address j, address b) public onlyPrimary {
+		bank = b;
 		potAddress = p;
 		daiAddress = d;
 		daiJoinAddress = j;

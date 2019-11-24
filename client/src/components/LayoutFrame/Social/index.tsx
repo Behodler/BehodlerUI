@@ -3,6 +3,8 @@ import * as React from 'react'
 import github from '../../../customIcons/github.svg'
 import medium from '../../../customIcons/medium.svg'
 import discord from '../../../customIcons/discord.png'
+import twitter from '../../../customIcons/twitter.png'
+
 import { IconButton, Icon, withStyles } from '@material-ui/core';
 
 const style = (theme: any) => ({
@@ -33,6 +35,9 @@ function SocialComponent(props:SocialProps){
 				</IconButton>
 				<IconButton  onClick={()=>window.open('https://discord.gg/s6bKYjj')}>
 					<Icon><img className={classes.discord} src={discord} /></Icon>
+				</IconButton>
+				<IconButton  onClick={()=>window.open('https://twitter.com/WeiDaiDapp')}>
+					<Icon><img className={classes.discord} src={twitter} /></Icon>
 				</IconButton>
 			</div>
 		)
