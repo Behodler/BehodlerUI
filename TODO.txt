@@ -1,3 +1,11 @@
-1. Retrieve PotReserve address (see WeiDai trello, MCD upgrade path column). Include in FAQ
-2. Add section to dependencies for changing owner and test on Kovan. 
-3. Test on main by changing owner to another account in the same seed.
+1. Retrieve PotReserve address (see WeiDai trello, MCD upgrade path column). Include in FAQ -- DONE
+2. Add section to dependencies for changing owner and test on Kovan=> ownershipTransfer component -- DONE
+3. Test on main by changing owner to another account in the same seed. -- BUSY
+
+transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7baac55931827b3f
+address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
+
+MetaMask change Q12020:
+1. URGENT: replace web3 with Ethereum entirely https://medium.com/metamask/breaking-changes-to-the-metamask-inpage-provider-b4dde069dd0a
+2. add networkchange handler as per above article
+3. replace auto popup with button that prompts connect and hides columns when not connected. Think about this interaction and borrow from best practices

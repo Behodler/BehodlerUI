@@ -120,7 +120,6 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	useEffect(() => {
 		const effect = API.bankEffects.daiPerMyriadWeidaiEffect()
 		const subscription = effect.Observable.subscribe((daiPerMyriadWeiDai: string) => {
-			console.log("daiPerMyriadWeiDai :" + daiPerMyriadWeiDai)
 			setExchangeRate(parseInt(daiPerMyriadWeiDai)) //daiPerWeiDai
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }

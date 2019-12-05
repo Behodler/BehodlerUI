@@ -149,7 +149,7 @@ const questions = [
 	},
 	{
 		title:"What are the core contract addresses?",
-		answer:"WeiDai:0xaFEf0965576070D1608F374cb14049EefaD218Ec,Patience Regulation Engine: 0x2b645e669Fb54A7877dCFd6BaC1bc1790a3e5e8c, Bank: 0x30374E46d3E3faf57CE0dAdc5D28b44AE27216bc" 
+		answer:"WeiDai:0xaFEf0965576070D1608F374cb14049EefaD218Ec,Patience Regulation Engine: 0x2b645e669Fb54A7877dCFd6BaC1bc1790a3e5e8c, Bank: 0x30374E46d3E3faf57CE0dAdc5D28b44AE27216bc, DSR Adapter: 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA" 
 	},
 	{
 		title: "Are there different types of thriftcoins?",

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Grid, Checkbox, TextField, Button, Select, MenuItem, InputLabel, FormControl, Typography } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import NewGroupDialog from './NewGroupDialog';
+import OwnershipTransfer from './OwnershipTransfer'
 
 interface contractGroup {
 	weiDai: string
@@ -302,5 +303,6 @@ export default function (props: props) {
 				</Grid>
 			</Grid>
 		</Grid>
+		<OwnershipTransfer walletAddress={props.walletAddress} />
 	</div>
 }

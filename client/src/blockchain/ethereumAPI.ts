@@ -4,6 +4,7 @@ import { WeiDai } from './contractInterfaces/WeiDai'
 import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { WeiDaiVersionController } from './contractInterfaces/WeiDaiVersionController'
+import { PotReserve } from './contractInterfaces/PotReserve'
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
@@ -15,15 +16,23 @@ import WDJSON from '../contracts/WeiDai.json'
 import bankJSON from '../contracts/WeiDaiBank.json'
 import ERC20JSON from '../contracts/ERC20.json'
 import VERSIONJSON from '../contracts/WeiDaiVersionController.json'
+import potReserveJSON from '../contracts/PotReserve.json'
 import networkVersionJSON from '../networkVersionControllers.json'
-// import DaiAddressJSON from './daiNetworkAddresses.json'
+
+const potReserveAddresses =
+{
+	'private': '0x06f5D06d84b9aD11ef83C7C4491020Be4B274A4b',
+	'kovan': '',
+	'main': '0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA'
+}
 
 interface IContracts {
 	WeiDai: WeiDai
 	PRE: PatienceRegulationEngine
 	WeiDaiBank: WeiDaiBank
 	Dai: ERC20
-	VersionController: WeiDaiVersionController
+	VersionController: WeiDaiVersionController,
+	PotReserve: PotReserve
 }
 
 interface AccountObservable {
@@ -74,7 +83,7 @@ class ethereumAPI {
 		this.metaMaskConnected = this.metaMaskEnabled = false
 		this.versionArray = []
 		this.versionBalances = []
-		this.networks = ["private", "gethdev", "kovan","main"]
+		this.networks = ["private", "gethdev", "kovan", "main"]
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
@@ -125,9 +134,9 @@ class ethereumAPI {
 		}
 	}
 
-	public async generateNewContracts(contract: string, existingAddress?:string) {
+	public async generateNewContracts(contract: string, existingAddress?: string) {
 		if (contract == "weidai") {
-			if(existingAddress){
+			if (existingAddress) {
 				this.newContracts.weiDai = existingAddress;
 				return
 			}
@@ -141,7 +150,7 @@ class ethereumAPI {
 		}
 
 		if (contract == "bank") {
-			if(existingAddress){
+			if (existingAddress) {
 				this.newContracts.weiDaiBank = existingAddress;
 				return
 			}
@@ -155,7 +164,7 @@ class ethereumAPI {
 		}
 
 		if (contract == "pre") {
-			if(existingAddress){
+			if (existingAddress) {
 				this.newContracts.PRE = existingAddress;
 				return
 			}
@@ -176,6 +185,10 @@ class ethereumAPI {
 		}
 		const networkName = await this.web3.eth.net.getNetworkType()
 		const detail = networkVersionJSON.networks.filter(net => net.name == networkName)[0]
+		const potReserveAddress = potReserveAddresses[networkName]
+		const potReserveDeployment = await this.deploy(potReserveJSON, potReserveAddress)
+		const PotReserve: PotReserve = potReserveDeployment.methods
+
 		const versionDeployment = await this.deploy(VERSIONJSON, detail.address)
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
@@ -201,7 +214,7 @@ class ethereumAPI {
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, daiAddress)).methods as unknown) as ERC20
 		Dai.address = daiAddress;
 
-		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController }
+		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve }
 		await this.configureVersionWarnings()
 		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
 		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
@@ -211,6 +224,7 @@ class ethereumAPI {
 
 	public async connectMetaMask() {
 		let web3: Web3 = (window as any).web3 as Web3
+
 		this.setMetamaskEnabled(false)
 		if (typeof web3 !== 'undefined') {
 			this.setMetamaskEnabled(true)
@@ -300,7 +314,7 @@ class ethereumAPI {
 				const account = (await this.web3.eth.getAccounts())[0]
 				const changedAccount = this.currentAccount !== account
 				this.currentAccount = account
-				const primary = await this.Contracts.WeiDai.primary.call({ from: account })
+				const primary = await this.Contracts.VersionController.primary.call({ from: account })
 				const enabled = await this.Contracts.VersionController.isEnabled(this.activeVersion).call({ from: account })
 				let oldBalances = false
 				if (changedAccount || (this.versionBalances.length === 0 && this.versionArray.length > 0)) {
