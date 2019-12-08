@@ -10,6 +10,7 @@ import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
 import { PatienceRegulationEffects } from './observables/PatienceRegulationEngine'
 import { BankEffects } from './observables/WeiDaiBank'
+import { MetamaskStatus } from './metamaskStatusContext'
 
 import PREJSON from '../contracts/PatienceRegulationEngine.json'
 import WDJSON from '../contracts/WeiDai.json'
@@ -67,8 +68,11 @@ class ethereumAPI {
 	private newContracts: newContracts
 	public newContractObservable: Observable<newContracts>
 	private networks: string[]
+	private networkMapping: any
 	private versionArray: string[]
 	private activeNetworkChange: (b: boolean) => void
+	private ethereumProvider: any;
+	private chainId: string
 	public activeVersion: string
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
@@ -83,7 +87,15 @@ class ethereumAPI {
 		this.metaMaskConnected = this.metaMaskEnabled = false
 		this.versionArray = []
 		this.versionBalances = []
-		this.networks = ["private", "gethdev", "kovan", "main"]
+		this.networkMapping = {
+			'1': "main",
+			'2': "morden",
+			'3': "ropsten",
+			'4': "rinkeby",
+			'5': "goerli",
+			'42': "kovan",
+			"606060606": "private"
+		}
 		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
@@ -178,12 +190,15 @@ class ethereumAPI {
 		}
 	}
 
-	private async initialize() {
+	private async initialize(chainId: string) {
 
-		if (!this.isMetaMaskConnected) {
+		if (chainId == this.chainId) {
 			return;
 		}
-		const networkName = await this.web3.eth.net.getNetworkType()
+		this.metaMaskConnected = this.metaMaskEnabled = true;
+
+		this.chainId = chainId
+		const networkName = this.networkMapping[chainId]
 		const detail = networkVersionJSON.networks.filter(net => net.name == networkName)[0]
 		const potReserveAddress = potReserveAddresses[networkName]
 		const potReserveDeployment = await this.deploy(potReserveJSON, potReserveAddress)
@@ -220,6 +235,15 @@ class ethereumAPI {
 		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
 		this.preEffects = new PatienceRegulationEffects(this.web3, this.Contracts.PRE)
 		this.bankEffects = new BankEffects(this.web3, this.Contracts.WeiDaiBank)
+	}
+
+	public detectMetaMaskEnabled(): MetamaskStatus {
+		let status: MetamaskStatus = MetamaskStatus.disabled
+		this.ethereumProvider = (window as any).ethereum
+		if (!this.ethereumProvider || !this.ethereumProvider.isMetaMask) {
+			return status
+		}
+		return MetamaskStatus.disconnected
 	}
 
 	public async connectMetaMask() {
