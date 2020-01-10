@@ -7,18 +7,18 @@ import EffectBase from './EffectBase'
 export class BankEffects extends EffectBase {
 	bankInstance: WeiDaiBank
 
-	constructor(web3: Web3, instance: WeiDaiBank ) {
-		super(web3)
+	constructor(web3: Web3, instance: WeiDaiBank, account: string) {
+		super(web3, account)
 		this.bankInstance = instance
 	}
 
-	daiPerMyriadWeidaiEffect():Effect {
-		return this.createEffect(async({account,blockNumber})=>{
-			const params:FetchNumberFields = {
-				web3:this.web3,
-				defaultValue:"unset",
-				action: async(accounts)=> await this.bankInstance.daiPerMyriadWeidai().call({from:accounts[0]}),
-				accounts:[account]
+	daiPerMyriadWeidaiEffect(): Effect {
+		return this.createEffect(async ({ account, blockNumber }) => {
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				defaultValue: "unset",
+				action: async (accounts) => await this.bankInstance.daiPerMyriadWeidai().call({ from: accounts[0] }),
+				accounts: [account]
 			}
 			return await FetchNumber(params)
 		})

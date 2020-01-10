@@ -3,9 +3,10 @@ import './App.css';
 import { LayoutFrame } from './components/LayoutFrame/index'
 import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
+import { WalletContextProvider } from './components/Contexts/WalletStatusContext'
 const theme = createMuiTheme({
-	palette:{
-		type:'dark'
+	palette: {
+		type: 'dark'
 	},
 	typography: {
 		//fontFamily: 'Syncopate',
@@ -16,11 +17,13 @@ const theme = createMuiTheme({
 export class App extends React.Component<any, any> {
 	public render() {
 		return (
-			<ThemeProvider theme={theme}>
-				<div>
-					<LayoutFrame/>
-				</div>
-			</ThemeProvider>
+			<WalletContextProvider>
+				<ThemeProvider theme={theme}>
+					<div>
+						<LayoutFrame />
+					</div>
+				</ThemeProvider>
+			</WalletContextProvider>
 		);
 	}
 }

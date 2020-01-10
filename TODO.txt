@@ -1,21 +1,14 @@
-1. Create context with compound value of hooks and values (see article below) -- BUSY
-	1.1 hook for setting status, currentAccount, chainId
-	1.2 Wrap app in context
-	1.3 In context call api.detectenabled and api.subscribe, passing in updateAccountsHook
-		1.3.1 APi.detectEnabled sets its ethereum object
-		1.3.2  in accounts, if connected, subscribe to chainIdChange with API.initialize
-2. Button calls useContext(nameOfMetamaskConext) the connectionStatus
-	2.1 status, disabled then say install metamask else call connect as per gist 
-3. Replace wallet props all over the show with a call to context.
-4. Use context to set visibility of infopanel and optionally hide some actions (pre,redeem etc)
+1. Fix ownership change section
+2. switch ownership
 
 
 
-transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7baac55931827b3f
-address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
+
+TODO post launch: find an alternative to ganache
 
 
-Interactions with metmask post 2020:
+
+Interactions with metmask post 2020: -- DONE
 This article explains how to create an updatable context (no need to use redux) https://dev.to/oieduardorabelo/react-hooks-how-to-create-and-update-contextprovider-1f68
 
 1. On page load, top level calls ethereumAPI.detectMetaMaskEnabled() and gets 1 of 2 values["disabled","disconnected"]
@@ -23,3 +16,8 @@ This article explains how to create an updatable context (no need to use redux) 
 3. Subscribe to eth_accounts with a closure to setcontext as per https://gist.github.com/rekmarks/d318677c8fc89e5f7a2f526e00a0768a
 4. Button in header for connect/getmetamask. Always says connect wallet with popup of install/connect
 4. Use context to set visibility of infopanel and optionally hide some actions (pre,redeem etc)
+
+
+Useful:
+transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7baac55931827b3f
+address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA

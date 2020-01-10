@@ -1,13 +1,12 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { withStyles, Grid, Typography, Box, Button, Divider } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { formatDecimalStrings, formatNumberText, isLoaded } from '../../util/jsHelpers'
 import { ValueTextBox } from '../Common/ValueTextBox';
 import { Loading } from '../Common/Loading'
-
+import { WalletContext } from '../Contexts/WalletStatusContext'
 interface bankProps {
-	currentUser: string
 	classes?: any
 }
 
@@ -28,8 +27,10 @@ function BankComponent(props: bankProps) {
 	const [priorWeiDaiBalance, setPriorWeiDaiBalance] = useState<string>('unset')
 	const [totalWeiDai, setTotalWeiDai] = useState<string>('unset')
 	const [totalWeiDaiNum, setTotalWeiDaiNum] = useState<number>(0)
+	const walletContextProps = useContext(WalletContext)
+
 	useEffect(() => {
-		const effect = API.weiDaiEffects.balanceOfEffect(props.currentUser)
+		const effect = API.weiDaiEffects.balanceOfEffect(walletContextProps.account)
 		const subscription = effect.Observable.subscribe((balance) => {
 
 			if (priorWeiDaiBalance !== balance) {
@@ -62,20 +63,20 @@ function BankComponent(props: bankProps) {
 			const daiPerMyriadWeiDaiNum = parseFloat(daiPerMyriadWeiDai)
 			const daiInReserve = daiPerMyriadWeiDaiNum * totalWeiDaiNum / 10000;
 			setReserveDai(formatDecimalStrings(`${daiInReserve}`))
-			setExchangeRate(daiPerMyriadWeiDaiNum) 
+			setExchangeRate(daiPerMyriadWeiDaiNum)
 		})
 		return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
 
 	useEffect(() => {
-		const effect = API.weiDaiEffects.allowance(props.currentUser, API.Contracts.WeiDaiBank.address)
-		const subscription = effect.Observable.subscribe((allowance) => {
-			let ethScaledAllowance = parseFloat(API.fromWei(allowance))
-			const weiDaiBalanceFloat = parseFloat(weiDaiBalance)
-			const nan: boolean = isNaN(ethScaledAllowance) || isNaN(weiDaiBalanceFloat)
-			setWeiDaiEnabled(!nan && ethScaledAllowance > weiDaiBalanceFloat)
-		})
-		return () => { subscription.unsubscribe(); effect.cleanup() }
+			const effect = API.weiDaiEffects.allowance(walletContextProps.account, walletContextProps.contracts.WeiDaiBank.address)
+			const subscription = effect.Observable.subscribe((allowance) => {
+				let ethScaledAllowance = parseFloat(API.fromWei(allowance))
+				const weiDaiBalanceFloat = parseFloat(weiDaiBalance)
+				const nan: boolean = isNaN(ethScaledAllowance) || isNaN(weiDaiBalanceFloat)
+				setWeiDaiEnabled(!nan && ethScaledAllowance > weiDaiBalanceFloat)
+			})
+			return () => { subscription.unsubscribe(); effect.cleanup() }
 	})
 
 
@@ -94,7 +95,6 @@ function BankComponent(props: bankProps) {
 
 		setDaiToBeRedeemed(`${isNaN(daiToRedeem) ? '' : daiToRedeem}`)
 	}
-
 
 	if (!loaded)
 		return <Loading />
@@ -235,11 +235,11 @@ function BankComponent(props: bankProps) {
 								if (isNaN(parseFloat(weiDaiToRedeem)))
 									return
 								let unscaledWeiDai = API.toWei(weiDaiToRedeem)
-								await API.Contracts.WeiDaiBank.redeemWeiDai(unscaledWeiDai).send({ from: props.currentUser })
+								await walletContextProps.contracts.WeiDaiBank.redeemWeiDai(unscaledWeiDai).send({ from: walletContextProps.account })
 
 							}}>Redeem</Button> :
 							<Button variant="contained" color="secondary" onClick={async () => {
-								await API.Contracts.WeiDai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
+								await walletContextProps.contracts.WeiDai.approve(walletContextProps.contracts.WeiDaiBank.address, API.UINTMAX).send({ from: walletContextProps.account })
 							}}>Enable WeiDai
 						</Button>}
 					</Grid>

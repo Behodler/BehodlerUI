@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useContext } from 'react'
+import { WalletContext } from '../../Contexts/WalletStatusContext'
 import { Grid, withStyles, List, ListItem, IconButton } from '@material-ui/core';
 import { themedText } from './Common'
 import Edit from '@material-ui/icons/Edit'
@@ -24,21 +25,22 @@ const textStyle = (theme: any) => ({
 export interface WalletProps {
 	setDetailProps: (props: DetailProps) => void
 	setDetailVisibility: (visible: boolean) => void
-	walletAddress: string
 	classes?: any
 }
 
 function WalletSectionComponent(props: WalletProps) {
 	const classes = props.classes
+	const currentAccount = useContext(WalletContext).account
 	const [weiDaiBalance, setWeiDaiBalance] = useState<string>("unset")
 	const [daiBalance, setDaiBalance] = useState<string>("unset")
 	const [incubatingWeiDai, setIncubatingWeiDai] = useState<string>("unset")
 	const [editingFriendly, setEditingFriendly] = useState<boolean>(false)
-	const [friendlyText, setFriendlyText] = useState<string>(storage.loadFriendlyName(props.walletAddress))
+	const [friendlyText, setFriendlyText] = useState<string>(storage.loadFriendlyName(currentAccount))
 	const [currentPenalty, setCurrentPenalty] = useState<string>("0")
 
+
 	useEffect(() => {
-		const effect = API.weiDaiEffects.balanceOfEffect(props.walletAddress)
+		const effect = API.weiDaiEffects.balanceOfEffect(currentAccount)
 		const subscription = effect.Observable.subscribe((balance) => {
 			setWeiDaiBalance(formatDecimalStrings(balance))
 		})
@@ -50,7 +52,7 @@ function WalletSectionComponent(props: WalletProps) {
 	})
 
 	useEffect(() => {
-		const effect = API.daiEffects.balanceOfEffect(props.walletAddress)
+		const effect = API.daiEffects.balanceOfEffect(currentAccount)
 		const subscription = effect.Observable.subscribe((balance) => {
 			setDaiBalance(formatDecimalStrings(balance))
 		})
@@ -62,7 +64,7 @@ function WalletSectionComponent(props: WalletProps) {
 	})
 
 	useEffect(() => {
-		const effect = API.preEffects.incubatingWeiDai(props.walletAddress)
+		const effect = API.preEffects.incubatingWeiDai(currentAccount)
 		const subscription = effect.Observable.subscribe((balance) => {
 			setIncubatingWeiDai(formatDecimalStrings(balance))
 		})
@@ -74,7 +76,7 @@ function WalletSectionComponent(props: WalletProps) {
 	})
 
 	useEffect(() => {
-		const effect = API.preEffects.calculateCurrentPenaltyForHolder(props.walletAddress)
+		const effect = API.preEffects.calculateCurrentPenaltyForHolder(currentAccount)
 		const subscription = effect.Observable.subscribe((penalty) => {
 			setCurrentPenalty(penalty)
 		})
@@ -88,7 +90,7 @@ function WalletSectionComponent(props: WalletProps) {
 	const updateFriendly = () => {
 		if (friendlyText.length == 0)
 			return
-		storage.setFriendlyName(props.walletAddress, friendlyText)
+		storage.setFriendlyName(currentAccount, friendlyText)
 		setEditingFriendly(false)
 	}
 
@@ -105,7 +107,7 @@ function WalletSectionComponent(props: WalletProps) {
 				isOpen={editingFriendly}
 				fieldText={[friendlyText]}
 			></FormDialog>
-			{getList(classes, props.setDetailProps, props.setDetailVisibility, props.walletAddress, storage.loadFriendlyName(props.walletAddress), daiBalance, weiDaiBalance, incubatingWeiDai, currentPenalty, setEditingFriendly)}
+			{getList(classes, props.setDetailProps, props.setDetailVisibility, currentAccount, storage.loadFriendlyName(currentAccount), daiBalance, weiDaiBalance, incubatingWeiDai, currentPenalty, setEditingFriendly)}
 		</div>
 	)
 }

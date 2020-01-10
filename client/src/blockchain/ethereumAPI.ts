@@ -1,16 +1,17 @@
 import Web3 from "web3";
+import IContracts from './IContracts'
 import { PatienceRegulationEngine } from './contractInterfaces/PatienceRegulationEngine'
 import { WeiDai } from './contractInterfaces/WeiDai'
 import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { WeiDaiVersionController } from './contractInterfaces/WeiDaiVersionController'
 import { PotReserve } from './contractInterfaces/PotReserve'
+
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
 import { PatienceRegulationEffects } from './observables/PatienceRegulationEngine'
 import { BankEffects } from './observables/WeiDaiBank'
-import { MetamaskStatus } from './metamaskStatusContext'
 
 import PREJSON from '../contracts/PatienceRegulationEngine.json'
 import WDJSON from '../contracts/WeiDai.json'
@@ -25,15 +26,6 @@ const potReserveAddresses =
 	'private': '0x06f5D06d84b9aD11ef83C7C4491020Be4B274A4b',
 	'kovan': '',
 	'main': '0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA'
-}
-
-interface IContracts {
-	WeiDai: WeiDai
-	PRE: PatienceRegulationEngine
-	WeiDaiBank: WeiDaiBank
-	Dai: ERC20
-	VersionController: WeiDaiVersionController,
-	PotReserve: PotReserve
 }
 
 interface AccountObservable {
@@ -59,32 +51,26 @@ interface newContracts {
 
 class ethereumAPI {
 
-	private metaMaskEnabled: boolean
 	private versionBalances: userWeiDaiBalances[]
-	private metaMaskConnected: boolean
-	private currentAccount: address
-	private interval: any
-	private web3: Web3;
-	private newContracts: newContracts
-	public newContractObservable: Observable<newContracts>
-	private networks: string[]
-	private networkMapping: any
 	private versionArray: string[]
-	private activeNetworkChange: (b: boolean) => void
-	private ethereumProvider: any;
-	private chainId: string
-	public activeVersion: string
+
+	private interval: any
+
+	private newContracts: newContracts
+	public initialized: boolean
+	public newContractObservable: Observable<newContracts>
+	private networkMapping: any
+	public currentAccount: address
+	public web3: Web3;
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
 	public daiEffects: ERC20Effects
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
-	public Contracts: IContracts
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
 	constructor() {
-		this.metaMaskConnected = this.metaMaskEnabled = false
 		this.versionArray = []
 		this.versionBalances = []
 		this.networkMapping = {
@@ -94,9 +80,9 @@ class ethereumAPI {
 			'4': "rinkeby",
 			'5': "goerli",
 			'42': "kovan",
-			"606060606": "private"
+			"66": "private",
+			"1337": "private"
 		}
-		this.activeNetworkChange = (p: boolean) => console.log("active network notification unset")
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
 
@@ -108,11 +94,11 @@ class ethereumAPI {
 		this.versionBalances = []
 	}
 
-	public async populateVersionArray(options: any): Promise<string[]> {
+	public async populateVersionArray(contracts: IContracts, options: any): Promise<string[]> {
 		this.versionArray = []
 		for (let versions: number = 1; ; versions++) {
 			const versionString = "" + versions;
-			const weiDaiAddress = await API.Contracts.VersionController.getWeiDai(versionString).call(options)
+			const weiDaiAddress = await contracts.VersionController.getWeiDai(versionString).call(options)
 			if (weiDaiAddress === "0x0000000000000000000000000000000000000000") {
 				break;
 			}
@@ -122,14 +108,14 @@ class ethereumAPI {
 		return this.versionArray;
 	}
 
-	private async populateVersionBalances() {
-		await this.populateVersionArray({ from: this.currentAccount })
+	public async populateVersionBalances(currentAccount: string, contracts: IContracts) {
+		await this.populateVersionArray(contracts, { from: currentAccount })
 		this.versionBalances = []
 		this.versionArray.forEach(async (version) => {
 
-			const incubating = (await this.Contracts.PRE.versionedLockedWeiDai(this.currentAccount, version).call({ from: this.currentAccount })).toString()
-			const actual = (await this.Contracts.WeiDai.versionedBalanceOf(this.currentAccount, version).call({ from: this.currentAccount })).toString()
-			const enabled = (await this.Contracts.VersionController.isEnabled(version).call({ from: this.currentAccount }))
+			const incubating = (await contracts.PRE.versionedLockedWeiDai(currentAccount, version).call({ from: currentAccount })).toString()
+			const actual = (await contracts.WeiDai.versionedBalanceOf(currentAccount, version).call({ from: currentAccount })).toString()
+			const enabled = (await contracts.VersionController.isEnabled(version).call({ from: currentAccount }))
 			this.versionBalances.push({
 				version,
 				incubating,
@@ -137,26 +123,27 @@ class ethereumAPI {
 				enabled
 			})
 		})
+		return this.versionBalances;
 	}
 
-	private async configureVersionWarnings() {
+	private async configureVersionWarnings(contracts: IContracts, currentAccount: string) {
 		if (this.versionArray.length == 0) {
-			await this.populateVersionArray({ from: this.currentAccount })
+			await this.populateVersionArray(contracts, { from: currentAccount })
 			this.versionBalances = []
 		}
 	}
 
-	public async generateNewContracts(contract: string, existingAddress?: string) {
+	public async generateNewContracts(contract: string, contracts: IContracts, currentAccount: string, existingAddress?: string) {
 		if (contract == "weidai") {
 			if (existingAddress) {
 				this.newContracts.weiDai = existingAddress;
 				return
 			}
-			new this.web3.eth.Contract(WDJSON.abi as any).deploy({ data: WDJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
+			new this.web3.eth.Contract(WDJSON.abi as any).deploy({ data: WDJSON.bytecode, arguments: [] }).send({ from: currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.weiDai = receipt.contractAddress || ""
 					this.deploy(WDJSON, this.newContracts.weiDai).then(result => {
-						result.methods.setVersionController(this.Contracts.VersionController.address).send({ from: this.currentAccount })
+						result.methods.setVersionController(contracts.VersionController.address).send({ from: currentAccount })
 					})
 				})
 		}
@@ -166,11 +153,11 @@ class ethereumAPI {
 				this.newContracts.weiDaiBank = existingAddress;
 				return
 			}
-			new this.web3.eth.Contract(bankJSON.abi as any).deploy({ data: bankJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
+			new this.web3.eth.Contract(bankJSON.abi as any).deploy({ data: bankJSON.bytecode, arguments: [] }).send({ from: currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.weiDaiBank = receipt.contractAddress || ""
 					this.deploy(bankJSON, this.newContracts.weiDaiBank).then(result => {
-						result.methods.setVersionController(this.Contracts.VersionController.address).send({ from: this.currentAccount })
+						result.methods.setVersionController(contracts.VersionController.address).send({ from: currentAccount })
 					})
 				})
 		}
@@ -180,24 +167,17 @@ class ethereumAPI {
 				this.newContracts.PRE = existingAddress;
 				return
 			}
-			new this.web3.eth.Contract(PREJSON.abi as any).deploy({ data: PREJSON.bytecode, arguments: [] }).send({ from: this.currentAccount })
+			new this.web3.eth.Contract(PREJSON.abi as any).deploy({ data: PREJSON.bytecode, arguments: [] }).send({ from: currentAccount })
 				.on('receipt', (receipt) => {
 					this.newContracts.PRE = receipt.contractAddress || ""
 					this.deploy(PREJSON, this.newContracts.PRE).then(result => {
-						result.methods.setVersionController(this.Contracts.VersionController.address).send({ from: this.currentAccount })
+						result.methods.setVersionController(contracts.VersionController.address).send({ from: currentAccount })
 					})
 				})
 		}
 	}
 
-	private async initialize(chainId: string) {
-
-		if (chainId == this.chainId) {
-			return;
-		}
-		this.metaMaskConnected = this.metaMaskEnabled = true;
-
-		this.chainId = chainId
+	public async initialize(chainId, currentAccount: string): Promise<IContracts> {
 		const networkName = this.networkMapping[chainId]
 		const detail = networkVersionJSON.networks.filter(net => net.name == networkName)[0]
 		const potReserveAddress = potReserveAddresses[networkName]
@@ -207,14 +187,14 @@ class ethereumAPI {
 		const versionDeployment = await this.deploy(VERSIONJSON, detail.address)
 		const VersionController: WeiDaiVersionController = versionDeployment.methods
 		VersionController.address = versionDeployment.address
-		const options = { from: this.currentAccount };
-		const version = await VersionController.getUserActiveVersion(this.currentAccount).call(options)
-		this.activeVersion = "" + this.hexToNumber(version)
-		const weiDaiAddress = await VersionController.getWeiDai(this.activeVersion).call(options)
-		const bankAddress = await VersionController.getWeiDaiBank(this.activeVersion).call(options)
-		const preAddress = await VersionController.getPRE(this.activeVersion).call(options)
-		const daiAddress = await VersionController.getDai(this.activeVersion).call(options)
+		const options = { from: currentAccount };
+		const version = await VersionController.getUserActiveVersion(currentAccount).call(options)
+		var activeVersion = "" + this.hexToNumber(version)
 
+		const weiDaiAddress = await VersionController.getWeiDai(activeVersion).call(options)
+		const bankAddress = await VersionController.getWeiDaiBank(activeVersion).call(options)
+		const preAddress = await VersionController.getPRE(activeVersion).call(options)
+		const daiAddress = await VersionController.getDai(activeVersion).call(options)
 		const weiDaiDeployment = await this.deploy(WDJSON, weiDaiAddress)
 		const WeiDai: WeiDai = weiDaiDeployment.methods;
 		WeiDai.address = weiDaiDeployment.address;
@@ -229,67 +209,15 @@ class ethereumAPI {
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, daiAddress)).methods as unknown) as ERC20
 		Dai.address = daiAddress;
 
-		this.Contracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve }
-		await this.configureVersionWarnings()
-		this.weiDaiEffects = new ERC20Effects(this.web3, this.Contracts.WeiDai)
-		this.daiEffects = new ERC20Effects(this.web3, this.Contracts.Dai)
-		this.preEffects = new PatienceRegulationEffects(this.web3, this.Contracts.PRE)
-		this.bankEffects = new BankEffects(this.web3, this.Contracts.WeiDaiBank)
-	}
-
-	public detectMetaMaskEnabled(): MetamaskStatus {
-		let status: MetamaskStatus = MetamaskStatus.disabled
-		this.ethereumProvider = (window as any).ethereum
-		if (!this.ethereumProvider || !this.ethereumProvider.isMetaMask) {
-			return status
-		}
-		return MetamaskStatus.disconnected
-	}
-
-	public async connectMetaMask() {
-		let web3: Web3 = (window as any).web3 as Web3
-
-		this.setMetamaskEnabled(false)
-		if (typeof web3 !== 'undefined') {
-			this.setMetamaskEnabled(true)
-			try {
-				await ((window as any).ethereum.enable())
-				this.metaMaskConnected = true;
-			} catch (metaMaskDeniedException) {
-				this.metaMaskConnected = false
-			}
-
-			web3 = new Web3(web3.currentProvider)
-			this.web3 = web3
-			this.currentAccount = (await web3.eth.getAccounts())[0]
-			const currentNetwork = await this.web3.eth.net.getNetworkType()
-
-			if (this.networks.filter(net => net == currentNetwork).length > 0) {
-				await this.initialize()
-				await this.setupSubscriptions()
-
-				this.activeNetworkChange(true)
-			}
-			else {
-				this.activeNetworkChange(false)
-			}
-		}
-	}
-
-	public NotifyOnInitialize(activeNetwork: (b: boolean) => void) {
-		this.activeNetworkChange = activeNetwork
-	}
-
-	public isMetaMaskEnabled(): boolean {
-		return this.metaMaskEnabled
-	}
-
-	public isMetaMaskConnected(): boolean {
-		return this.metaMaskConnected
-	}
-
-	public loggedInUser(): address {
-		return this.currentAccount
+		let contracts: IContracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve, activeVersion }
+		await this.configureVersionWarnings(contracts, currentAccount)
+		this.weiDaiEffects = new ERC20Effects(this.web3, contracts.WeiDai, currentAccount)
+		this.daiEffects = new ERC20Effects(this.web3, contracts.Dai, currentAccount)
+		this.preEffects = new PatienceRegulationEffects(this.web3, contracts.PRE, currentAccount)
+		this.bankEffects = new BankEffects(this.web3, contracts.WeiDaiBank, currentAccount)
+		this.initialized = true
+		await this.setupSubscriptions()
+		return contracts
 	}
 
 	public toBytes(input: string) {
@@ -321,6 +249,15 @@ class ethereumAPI {
 		return parseFloat(this.hexToNumberString(value))
 	}
 
+	public pureHexToNumberString(value: any): string {
+		return this.web3.utils.hexToNumberString(value)
+
+	}
+
+	public pureHexToNumber(value: any): number {
+		return parseFloat(this.pureHexToNumberString(value))
+	}
+
 	private async setupSubscriptions(): Promise<void> {
 		this.newContractObservable = Observable.create(async (observer) => {
 			const newContractObserver = async () => {
@@ -330,37 +267,6 @@ class ethereumAPI {
 
 			setInterval(newContractObserver, 1000)
 		})
-
-		this.accountObservable = Observable.create(async (observer) => {
-
-			const accountObserver = async () => {
-
-				const account = (await this.web3.eth.getAccounts())[0]
-				const changedAccount = this.currentAccount !== account
-				this.currentAccount = account
-				const primary = await this.Contracts.VersionController.primary.call({ from: account })
-				const enabled = await this.Contracts.VersionController.isEnabled(this.activeVersion).call({ from: account })
-				let oldBalances = false
-				if (changedAccount || (this.versionBalances.length === 0 && this.versionArray.length > 0)) {
-					await this.populateVersionBalances()
-				}
-				oldBalances = (this.versionBalances.filter(version => ((parseFloat(version.actual) !== 0 || parseFloat(version.incubating) !== 0) && !version.enabled)).length > 0)
-				const observableResult: AccountObservable = { account, isPrimary: primary === account, enabled, oldBalances, versionBalances: this.versionBalances }
-				observer.next(observableResult)
-			};
-			await accountObserver();
-			this.interval = setInterval(accountObserver, 5000)
-		})
-	}
-
-	private setMetamaskEnabled(enabled: boolean) {
-		if (!enabled) {
-			this.metaMaskEnabled = false
-			this.metaMaskConnected = false
-		}
-		else {
-			this.metaMaskEnabled = true
-		}
 	}
 
 	private async deploy(truffleJson: any, address: string): Promise<deployment> {

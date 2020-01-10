@@ -6,11 +6,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { withStyles, Grid, List, ListItem } from '@material-ui/core';
 import API, { userWeiDaiBalances } from '../../blockchain/ethereumAPI'
 import { formatDecimalStrings } from '../../util/jsHelpers'
+import {useContext} from 'react'
+import { WalletContext } from '../Contexts/WalletStatusContext'
+
 interface UpgradePromptProps {
-	balances: userWeiDaiBalances[]
-	enabled: boolean,
-	oldBalances: boolean
-	walletAddress: string
 	classes?: any
 }
 
@@ -21,8 +20,8 @@ const style = (theme: any) => ({
 let titleBaseString = `Important notice: MakerDAO periodically releases new versions of Dai which means new versions of WeiDai have to be released.`
 
 function UpgradePrompt(props: UpgradePromptProps) {
-
-	let message = props.enabled ? "You are currently using an old version of WeiDai. All functionality except redeem has been disabled." : ""
+	const walletContextProps = useContext(WalletContext)
+	let message = walletContextProps.enabled ? "You are currently using an old version of WeiDai. All functionality except redeem has been disabled." : ""
 	return <Dialog
 		open={true}
 	>
@@ -37,10 +36,11 @@ function UpgradePrompt(props: UpgradePromptProps) {
 }
 
 function BalancesPanel(props: UpgradePromptProps) {
-	if (!props.oldBalances)
+	const walletContextProps = useContext(WalletContext)
+	if (!walletContextProps.oldBalances)
 		return <div></div>
 	let balances: userWeiDaiBalances[] = []
-	props.balances.forEach(balance => {
+	walletContextProps.versionBalances.forEach(balance => {
 		if (balances.filter(b => b.version == balance.version).length > 0)
 			return;
 		balances.push(balance)
@@ -71,7 +71,7 @@ function BalancesPanel(props: UpgradePromptProps) {
 									<Button color="secondary" variant="contained" onClick={async () => {
 										const version = balance.version
 										API.resetVersionBalances()
-										await API.Contracts.VersionController.claimAndRedeem(version).send({ from: props.walletAddress });
+										await walletContextProps.contracts.VersionController.claimAndRedeem(version).send({ from: walletContextProps.account });
 									}}>Claim and Redeem</Button>
 								</Grid>
 							</Grid>

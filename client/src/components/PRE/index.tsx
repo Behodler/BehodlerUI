@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { withStyles, Grid, Typography, Button, Divider, Switch, FormGroup, FormControlLabel, Box, Theme } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import { ValueTextBox } from '../Common/ValueTextBox'
@@ -8,9 +8,9 @@ import { IncubationProgress } from './IncubationProgress'
 import { formatNumberText, formatDecimalStrings, isLoaded } from '../../util/jsHelpers'
 import Tooltip from '@material-ui/core/Tooltip';
 import { Loading } from '../Common/Loading';
-
+import { WalletContext } from "../Contexts/WalletStatusContext"
+import IContracts from 'src/blockchain/IContracts';
 interface PREprops {
-	currentUser: string
 	classes?: any
 }
 
@@ -47,6 +47,7 @@ const style = {
 }
 
 function patienceRegulationEngineComponent(props: PREprops) {
+	const walletContextProps = useContext(WalletContext)
 	const [incubationDuration, setIncubationDuration] = useState<string>("unset")
 	const [daiBalance, setDaiBalance] = useState<string>("unset")
 	const [daiToIncubate, setDaiToIncubate] = useState<string>("")
@@ -66,6 +67,8 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	const [toolTipText, setToolTipText] = useState<string>("")
 	const [loaded, setLoaded] = useState<boolean>(false)
 
+
+
 	const invalidDaiWarning = function (show: boolean) {
 		if (show)
 			return <Grid item>
@@ -77,9 +80,13 @@ function patienceRegulationEngineComponent(props: PREprops) {
 		return ""
 	}
 
+	if(!walletContextProps.initialized)
+	return <div></div>
+
 	useEffect(() => {
 		setLoaded(isLoaded([currentWithdrawalPenalty, daiBalance, currentWithdrawalPenalty]))
 	}, [currentWithdrawalPenalty, daiBalance, incubationDuration])
+
 
 	useEffect(() => {
 		const parsedSplit = parseInt(split)
@@ -89,7 +96,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	}, [split])
 
 	useEffect(() => {
-		const effect = API.daiEffects.allowance(props.currentUser, API.Contracts.WeiDaiBank.address)
+		const effect = API.daiEffects.allowance(walletContextProps.account, walletContextProps.contracts.WeiDaiBank.address)
 		const subscription = effect.Observable.subscribe((allowance) => {
 			let ethScaledAllowance = parseFloat(API.fromWei(allowance))
 			const daiBalanceFloat = parseFloat(daiBalance)
@@ -110,7 +117,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	})
 
 	useEffect(() => {
-		const effect = API.daiEffects.balanceOfEffect(props.currentUser)
+		const effect = API.daiEffects.balanceOfEffect(walletContextProps.account)
 		const subscription = effect.Observable.subscribe((balance: string) => {
 			setDaiBalance(balance)
 		})
@@ -126,7 +133,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	})
 
 	useEffect(() => {
-		const effect = API.preEffects.incubatingWeiDai(props.currentUser)
+		const effect = API.preEffects.incubatingWeiDai(walletContextProps.account)
 		const subscription = effect.Observable.subscribe((incubating: string) => {
 			const incubatingWeiDaiNum: number = parseFloat(formatDecimalStrings(incubating))
 			if (incubatingWeiDaiNum > 0) {
@@ -139,7 +146,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	})
 
 	useEffect(() => {
-		const effect = API.preEffects.calculateCurrentPenaltyForHolder(props.currentUser)
+		const effect = API.preEffects.calculateCurrentPenaltyForHolder(walletContextProps.account)
 		const subscription = effect.Observable.subscribe(penalty => {
 			setCurrentWithdrawalPenalty(penalty)
 		})
@@ -147,7 +154,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 	})
 
 	useEffect(() => {
-		const effect = API.preEffects.getPenaltyDrawdownPeriodForHolder(props.currentUser)
+		const effect = API.preEffects.getPenaltyDrawdownPeriodForHolder(walletContextProps.account)
 		const subscription = effect.Observable.subscribe(period => {
 			setDrawDownPeriodForUser(period)
 		})
@@ -216,7 +223,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 				close={() => { setClaimWithPenaltyPopup(false) }}
 				submit={async () => {
 					setClaimWithPenaltyPopup(false)
-					await API.Contracts.PRE.claimWeiDai().send({ from: props.currentUser })
+					await walletContextProps.contracts.PRE.claimWeiDai().send({ from: walletContextProps.account })
 
 				}}
 				acceptLabel='claim'
@@ -311,9 +318,9 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							alignItems="center"
 							spacing={0}>
 							<Grid item>
-								{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, props.currentUser, incubatingWeiDai == 0, setShowInvalidDaiWarning)}>Create</Button>
+								{daiEnabled ? <Button variant="contained" color="primary" onClick={async () => buyWeiDaiAction(daiToIncubate, split, walletContextProps.account, incubatingWeiDai == 0, setShowInvalidDaiWarning, walletContextProps.contracts)}>Create</Button>
 									: <Button size="large" variant="contained" color="secondary" onClick={async () => {
-										await API.Contracts.Dai.approve(API.Contracts.WeiDaiBank.address, API.UINTMAX).send({ from: props.currentUser })
+										await walletContextProps.contracts.Dai.approve(walletContextProps.contracts.WeiDaiBank.address, API.UINTMAX).send({ from: walletContextProps.account })
 									}}>Enable Dai</Button>
 								}
 
@@ -381,7 +388,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 							if (parseInt(currentWithdrawalPenalty) > 0) {
 								setClaimWithPenaltyPopup(true)
 							} else {
-								await API.Contracts.PRE.claimWeiDai().send({ from: props.currentUser })
+								await walletContextProps.contracts.PRE.claimWeiDai().send({ from: walletContextProps.account })
 							}
 						}}>
 							Claim{parseInt(currentWithdrawalPenalty) > 0 ? ' with penalty' : ''}
@@ -395,7 +402,7 @@ function patienceRegulationEngineComponent(props: PREprops) {
 
 export default withStyles(style)(patienceRegulationEngineComponent)
 
-const buyWeiDaiAction = async (dai: string, split: string, user: string, createEnabled: boolean, showError: (show: boolean) => void) => {
+const buyWeiDaiAction = async (dai: string, split: string, user: string, createEnabled: boolean, showError: (show: boolean) => void, contracts: IContracts) => {
 	if (!createEnabled)
 		return
 	let splitInt = parseInt(split)
@@ -407,5 +414,5 @@ const buyWeiDaiAction = async (dai: string, split: string, user: string, createE
 	}
 	showError(false)
 	let unscaledDai = API.toWei(dai)
-	await API.Contracts.PRE.buyWeiDai(unscaledDai, `${splitInt}`).send({ from: user })
+	await contracts.PRE.buyWeiDai(unscaledDai, `${splitInt}`).send({ from: user })
 }

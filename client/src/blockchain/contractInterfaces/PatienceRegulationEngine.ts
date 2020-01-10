@@ -4,7 +4,6 @@ import { BaseContract } from './BaseContract';
 import { Versioned } from './Versioned'
 
 export interface PatienceRegulationEngine extends BaseContract, Secondary, Versioned {
-	methodFactory: any
 	getCurrentAdjustmentWeight: () => any
 	getBlockOfPurchase: () => any
 	getClaimWindowsPerAdjustment: () => any

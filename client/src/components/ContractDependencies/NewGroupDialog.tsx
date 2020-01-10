@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import ButtonAdornedTextBox from '../Common/ButtonAdornedTextBox'
+import { WalletContext } from '../Contexts/WalletStatusContext'
 interface dialogProps {
 	versionNumber: string
 	isOpen: boolean
@@ -17,6 +18,9 @@ interface dialogProps {
 }
 
 export default function (props: dialogProps) {
+	const walletContextProps = React.useContext(WalletContext)
+	if(!walletContextProps.initialized)
+	return <div></div>
 	const [weiDai, setWeiDai] = useState<string>("");
 	const [dai, setDai] = useState<string>("");
 	const [patienceRegulationEngine, setpatienceRegulationEngine] = useState<string>("");
@@ -58,16 +62,16 @@ export default function (props: dialogProps) {
 				spacing={1}
 				justify="center">
 				<Grid key="popupWeiDai" item>
-				<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("weidai")} changeText={async (text: string) => await API.generateNewContracts("weidai",text)} label="WeiDai" text={weiDai} />
+				<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("weidai",walletContextProps.contracts,walletContextProps.account)} changeText={async (text: string) => await API.generateNewContracts("weidai",walletContextProps.contracts,walletContextProps.account,text)} label="WeiDai" text={weiDai} />
 				</Grid>
 				<Grid key="popupDai" item>
 					<TextField label="Dai" onChange={(event) => handleChange(event, setDai)}></TextField>
 				</Grid>
 				<Grid key="popupPre" item>
-				<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("pre")} changeText={async (text: string) => await API.generateNewContracts("pre",text)} label="PRE" text={patienceRegulationEngine} />
+				<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("pre",walletContextProps.contracts,walletContextProps.account)} changeText={async (text: string) => await API.generateNewContracts("pre",walletContextProps.contracts,walletContextProps.account,text)} label="PRE" text={patienceRegulationEngine} />
 				</Grid>
 				<Grid key="popupBank" item>
-					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("bank")} changeText={async (text: string) => await API.generateNewContracts("bank",text)} label="Bank" text={weiDaiBank} />
+					<ButtonAdornedTextBox buttonEvent={async () => await API.generateNewContracts("bank",walletContextProps.contracts,walletContextProps.account)} changeText={async (text: string) => await API.generateNewContracts("bank",walletContextProps.contracts,walletContextProps.account,text)} label="Bank" text={weiDaiBank} />
 				</Grid>
 				<Grid key="popupName" item>
 					<TextField label="Name" onChange={(event) => handleNameChange(event, setName)}></TextField>

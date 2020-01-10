@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Grid, Checkbox, TextField, Button, Select, MenuItem, InputLabel, FormControl, Typography } from '@material-ui/core';
 import API from '../../blockchain/ethereumAPI'
 import NewGroupDialog from './NewGroupDialog';
 import OwnershipTransfer from './OwnershipTransfer'
+import { WalletContext } from '../Contexts/WalletStatusContext'
 
 interface contractGroup {
 	weiDai: string
@@ -31,17 +32,17 @@ const emptyGroup: contractGroup = {
 }
 
 interface props {
-	walletAddress: string,
 	children?: any
 }
 
 export default function (props: props) {
-	const options = { from: props.walletAddress }
-	if (props.walletAddress === '0x0')
+	const walletContextProps = useContext(WalletContext)
+	const options = { from:walletContextProps.account }
+	if (!walletContextProps.initialized)
 		return <div></div>
 	const [refresh, setRefresh] = useState<number>(0)
 	const [oldRefresh, setOldRefresh] = useState<number>(-1)
-	const [activeVersion, setActiveVersion] = useState<string>(API.activeVersion)
+	const [activeVersion, setActiveVersion] = useState<string>(walletContextProps.contracts.activeVersion)
 	const [oldActiveVesion, setOldActiveVersion] = useState<string>(activeVersion)
 	const [versionArray, setVersionArray] = useState<string[]>([])
 	const [defaultVersion, setDefaultVersion] = useState<string>("")
@@ -50,7 +51,7 @@ export default function (props: props) {
 	const [donationBalance, setDonationBalance] = useState<number>(0)
 
 	useEffect(() => {
-		const effect = API.weiDaiEffects.balanceOfEffect(API.Contracts.WeiDaiBank.address)
+		const effect = API.weiDaiEffects.balanceOfEffect(walletContextProps.contracts.WeiDaiBank.address)
 		const subscription = effect.Observable.subscribe((balance) => {
 			setDonationBalance(balance)
 		})
@@ -62,35 +63,35 @@ export default function (props: props) {
 	})
 
 	const populateArray = async () => {
-		let array = await API.populateVersionArray(options);
+		let array = await API.populateVersionArray(walletContextProps.contracts,options);
 		setVersionArray(array)
 	}
 
 	useEffect(() => {
 		const loadData = async () => {
-			setActiveVersion(API.activeVersion)
+			setActiveVersion(walletContextProps.contracts.activeVersion)
 			if (oldActiveVesion !== activeVersion) {
-				setOldActiveVersion(API.activeVersion)
+				setOldActiveVersion(walletContextProps.contracts.activeVersion)
 				location.reload()
 			}
 			populateArray()
 
-			const defaultVersionHex = await API.Contracts.VersionController.getDefaultVersion().call(options)
+			const defaultVersionHex = await walletContextProps.contracts.VersionController.getDefaultVersion().call(options)
 			setDefaultVersion("" + API.hexToNumber(defaultVersionHex))
-			const weiDaiAddress = await API.Contracts.VersionController.getWeiDai(activeVersion).call(options)
+			const weiDaiAddress = await walletContextProps.contracts.VersionController.getWeiDai(activeVersion).call(options)
 
-			const daiAddress = await API.Contracts.VersionController.getDai(activeVersion).call(options)
-			const preAddress = await API.Contracts.VersionController.getPRE(activeVersion).call(options)
-			const bankAddress = await API.Contracts.VersionController.getWeiDaiBank(activeVersion).call(options)
-			const groupNameBytes: string = await API.Contracts.VersionController.getContractFamilyName(activeVersion).call(options)
+			const daiAddress = await walletContextProps.contracts.VersionController.getDai(activeVersion).call(options)
+			const preAddress = await walletContextProps.contracts.VersionController.getPRE(activeVersion).call(options)
+			const bankAddress = await walletContextProps.contracts.VersionController.getWeiDaiBank(activeVersion).call(options)
+			const groupNameBytes: string = await walletContextProps.contracts.VersionController.getContractFamilyName(activeVersion).call(options)
 			let groupName = ""
 			for (let i = 0; i < groupNameBytes.length; i++) {
 				if (groupNameBytes.charCodeAt(i) !== 0)
 					groupName += groupNameBytes.charAt(i)
 			}
-			const claimWindowsPerAdjustment = await API.Contracts.PRE.getClaimWindowsPerAdjustment().call(options)
-			const donationAddress = await API.Contracts.WeiDaiBank.getDonationAddress().call(options)
-			const enabled = await API.Contracts.VersionController.isEnabled(activeVersion).call(options)
+			const claimWindowsPerAdjustment = await walletContextProps.contracts.PRE.getClaimWindowsPerAdjustment().call(options)
+			const donationAddress = await walletContextProps.contracts.WeiDaiBank.getDonationAddress().call(options)
+			const enabled = await walletContextProps.contracts.VersionController.isEnabled(activeVersion).call(options)
 
 			const contractGroup: contractGroup = {
 				weiDai: weiDaiAddress,
@@ -182,16 +183,16 @@ export default function (props: props) {
 		if (originalValues === null)
 			return;
 		if (currentGroup.claimWindowsPerAdjustment !== originalValues.claimWindowsPerAdjustment) {
-			API.Contracts.PRE.setClaimWindowsPerAdjustment("" + currentGroup.claimWindowsPerAdjustment).send(options)
+			walletContextProps.contracts.PRE.setClaimWindowsPerAdjustment("" + currentGroup.claimWindowsPerAdjustment).send(options)
 		}
 		if (currentGroup.donationAddress !== originalValues.donationAddress) {
-			API.Contracts.WeiDaiBank.setDonationAddress(currentGroup.donationAddress).send(options)
+			walletContextProps.contracts.WeiDaiBank.setDonationAddress(currentGroup.donationAddress).send(options)
 		}
 
 		if (currentGroup.dai !== originalValues.dai || currentGroup.weiDai !== originalValues.weiDai || currentGroup.patienceRegulationEngine !== originalValues.patienceRegulationEngine ||
 			currentGroup.version !== originalValues.version || currentGroup.weiDaiBank !== originalValues.weiDaiBank ||
 			currentGroup.name !== originalValues.name || currentGroup.enabled !== originalValues.enabled) {
-			API.Contracts.VersionController.setContractGroup("" + currentGroup.version, currentGroup.weiDai, currentGroup.dai,
+			walletContextProps.contracts.VersionController.setContractGroup("" + currentGroup.version, currentGroup.weiDai, currentGroup.dai,
 				currentGroup.patienceRegulationEngine, currentGroup.weiDaiBank, API.toBytes(currentGroup.name), currentGroup.enabled).send(options)
 		}
 
@@ -199,7 +200,7 @@ export default function (props: props) {
 	}
 
 	const createNewGroup = async (weiDai: string, dai: string, pre: string, bank: string, name: string, version: string) => {
-		await API.Contracts.VersionController.setContractGroup(version, weiDai, dai, pre, bank, API.toBytes(name), true).send(options)
+		await walletContextProps.contracts.VersionController.setContractGroup(version, weiDai, dai, pre, bank, API.toBytes(name), true).send(options)
 	}
 	const nextVersion: string = `${parseInt(versionArray[versionArray.length - 1]) + 1}`
 	return <div>
@@ -262,7 +263,7 @@ export default function (props: props) {
 					</Grid>
 					<Grid item>
 						<Button color="primary" variant="contained" onClick={async () => {
-							await API.Contracts.VersionController.setActiveVersion(activeVersion).send(options)
+							await walletContextProps.contracts.VersionController.setActiveVersion(activeVersion).send(options)
 						}}>Set Active Version for this User</Button>
 					</Grid>
 				</Grid>
@@ -293,7 +294,7 @@ export default function (props: props) {
 						</Grid>
 						<Grid item>
 							<Button color="primary" variant="contained" onClick={async () => {
-								await API.Contracts.VersionController.setDefaultVersion(defaultVersion).send(options)
+								await walletContextProps.contracts.VersionController.setDefaultVersion(defaultVersion).send(options)
 							}}>Set Default Version</Button>
 						</Grid>
 					</Grid>
@@ -303,6 +304,6 @@ export default function (props: props) {
 				</Grid>
 			</Grid>
 		</Grid>
-		<OwnershipTransfer walletAddress={props.walletAddress} />
+		<OwnershipTransfer />
 	</div>
 }

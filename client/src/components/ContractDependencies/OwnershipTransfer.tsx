@@ -1,15 +1,12 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useContext } from 'react'
 import { Grid, TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
-import API from '../../blockchain/ethereumAPI'
+import { WalletContext } from '../Contexts/WalletStatusContext'
 
-interface props{
-	walletAddress
-}
-
-export default function (props:props) {
-	const [contractAddress, setContractAddress] = useState<string>(API.Contracts.VersionController.address)
+export default function () {
+	const walletContextProps = useContext(WalletContext)
+	const [contractAddress, setContractAddress] = useState<string>(walletContextProps.contracts.VersionController.address)
 	const [newOwner, setNewOwner] = useState<string>("")
 	const [primaryAddress, setPrimaryAddress] = useState<string>("")
 
@@ -19,16 +16,16 @@ export default function (props:props) {
 	}
 	const getPrimaryAddress = async()=>{
 		switch (contractAddress) {
-			case API.Contracts.PRE.address:
-				return await API.Contracts.PRE.primary.call({from:props.walletAddress})
-			case API.Contracts.PotReserve.address:
-					return await API.Contracts.PotReserve.primary.call({from:props.walletAddress})
-			case API.Contracts.WeiDai.address:
-					return await API.Contracts.WeiDai.primary.call({from:props.walletAddress})
-			case API.Contracts.WeiDaiBank.address:
-					return await API.Contracts.WeiDaiBank.primary.call({from:props.walletAddress})
-			case API.Contracts.VersionController.address:
-					return await API.Contracts.VersionController.primary.call({from:props.walletAddress})
+			case walletContextProps.contracts.PRE.address:
+				return await walletContextProps.contracts.PRE.primary.call({from:walletContextProps.account})
+			case walletContextProps.contracts.PotReserve.address:
+					return await walletContextProps.contracts.PotReserve.primary.call({from:walletContextProps.account})
+			case walletContextProps.contracts.WeiDai.address:
+					return await walletContextProps.contracts.WeiDai.primary.call({from:walletContextProps.account})
+			case walletContextProps.contracts.WeiDaiBank.address:
+					return await walletContextProps.contracts.WeiDaiBank.primary.call({from:walletContextProps.account})
+			case walletContextProps.contracts.VersionController.address:
+					return await walletContextProps.contracts.VersionController.primary.call({from:walletContextProps.account})
 		}
 	}
 
@@ -40,16 +37,16 @@ export default function (props:props) {
 
 	let updateOwner = async () => {
 		switch (contractAddress) {
-			case API.Contracts.PRE.address:
-				await API.Contracts.PRE.transferPrimary(newOwner).send({from:props.walletAddress})
-			case API.Contracts.PotReserve.address:
-				await API.Contracts.PotReserve.transferPrimary(newOwner).send({from:props.walletAddress})
-			case API.Contracts.WeiDai.address:
-				await API.Contracts.WeiDai.transferPrimary(newOwner).send({from:props.walletAddress})
-			case API.Contracts.WeiDaiBank.address:
-				await API.Contracts.WeiDaiBank.transferPrimary(newOwner).send({from:props.walletAddress})
-			case API.Contracts.VersionController.address:
-				await API.Contracts.VersionController.transferPrimary(newOwner).send({from:props.walletAddress})
+			case walletContextProps.contracts.PRE.address:
+				await walletContextProps.contracts.PRE.transferPrimary(newOwner).send({from:walletContextProps.account})
+			case walletContextProps.contracts.PotReserve.address:
+				await walletContextProps.contracts.PotReserve.transferPrimary(newOwner).send({from:walletContextProps.account})
+			case walletContextProps.contracts.WeiDai.address:
+				await walletContextProps.contracts.WeiDai.transferPrimary(newOwner).send({from:walletContextProps.account})
+			case walletContextProps.contracts.WeiDaiBank.address:
+				await walletContextProps.contracts.WeiDaiBank.transferPrimary(newOwner).send({from:walletContextProps.account})
+			case walletContextProps.contracts.VersionController.address:
+				await walletContextProps.contracts.VersionController.transferPrimary(newOwner).send({from:walletContextProps.account})
 		}
 	}
 
@@ -69,11 +66,11 @@ export default function (props:props) {
 						value={contractAddress}
 						onChange={handleChange}
 					>
-						<MenuItem value={API.Contracts.PRE.address}>PRE</MenuItem>
-						<MenuItem value={API.Contracts.PotReserve.address}>Pot Reserve</MenuItem>
-						<MenuItem value={API.Contracts.WeiDai.address}>WeiDai</MenuItem>
-						<MenuItem value={API.Contracts.WeiDaiBank.address}>Bank</MenuItem>
-						<MenuItem value={API.Contracts.VersionController.address}>Version Controller</MenuItem>
+						<MenuItem value={walletContextProps.contracts.PRE.address}>PRE</MenuItem>
+						<MenuItem value={walletContextProps.contracts.PotReserve.address}>Pot Reserve</MenuItem>
+						<MenuItem value={walletContextProps.contracts.WeiDai.address}>WeiDai</MenuItem>
+						<MenuItem value={walletContextProps.contracts.WeiDaiBank.address}>Bank</MenuItem>
+						<MenuItem value={walletContextProps.contracts.VersionController.address}>Version Controller</MenuItem>
 					</Select>
 				</FormControl>
 			</Grid>

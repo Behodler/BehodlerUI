@@ -1,14 +1,15 @@
 import * as React from 'react'
+import {useContext } from 'react'
+import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { List, ListItem, ListItemIcon, ListItemText, Divider } from '@material-ui/core';
 import ArrowForward from '@material-ui/icons/ArrowForward'
 import ArrowDownward from '@material-ui/icons/ArrowDownward'
-import API from '../../../../blockchain/ethereumAPI'
 interface AdminSectionProps {
-	walletAddress: string
 	contractDependencies: ()=>void
 }
 
 function AdminSectionComponent(props: AdminSectionProps) {
+	const walletContextProps = useContext(WalletContext)
 	return (<List>
 		<ListItem button key="dependencies" onClick = {props.contractDependencies}>
 			<ListItemIcon><ArrowForward color="secondary" /></ListItemIcon>
@@ -16,7 +17,7 @@ function AdminSectionComponent(props: AdminSectionProps) {
 		</ListItem>
 		<Divider />
 		<ListItem button key="withdraw" onClick={async () => {
-			await API.Contracts.WeiDaiBank.withdrawDonations().send({ from: props.walletAddress })
+			await walletContextProps.contracts.WeiDaiBank.withdrawDonations().send({ from: walletContextProps.account })
 		}}>
 			<ListItemIcon><ArrowDownward color="secondary" /></ListItemIcon>
 			<ListItemText primary="Withdraw Donations" />

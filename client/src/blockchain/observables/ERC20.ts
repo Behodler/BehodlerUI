@@ -6,8 +6,8 @@ import EffectBase from './EffectBase'
 export class ERC20Effects extends EffectBase {
 	tokenInstance: ERC20
 
-	constructor(web3: Web3, tokenInstance: ERC20) {
-		super(web3)
+	constructor(web3: Web3, tokenInstance: ERC20, account: string) {
+		super(web3, account)
 		this.tokenInstance = tokenInstance
 	}
 

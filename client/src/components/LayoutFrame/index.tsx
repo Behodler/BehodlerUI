@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
-import { withStyles, Drawer, Divider, Hidden, Grid, List, ListItem, ClickAwayListener, Box, Paper } from '@material-ui/core';
+import { useState, useEffect, useContext } from 'react'
+import { withStyles, Drawer, Divider, Hidden, Grid, List, ListItem, ClickAwayListener, Box, Paper, Button } from '@material-ui/core';
 import WeidaiLogo from './WeidaiLogo'
 import { UserSection } from './ActionPanel/UserSection'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
@@ -9,15 +9,15 @@ import { ContractSection } from './InfoPanel/ContractSection'
 import { WalletSection } from './InfoPanel/WalletSection'
 import { Detail, DetailProps } from './InfoPanel/Detail'
 import Mobile from './ActionPanel/Mobile'
-import API, { userWeiDaiBalances } from '../../blockchain/ethereumAPI'
 import PatienceRegulationEngine from '../PRE/index'
 import Bank from '../Bank/index'
 import Home from '../Home/index'
 import FAQ from '../FAQ/index'
 import ContractDependencies from '../ContractDependencies/index'
 import UpgradePrompt from './UpgradePrompt'
-import { MetamaskFailed } from '../Common/MetamaskFailed'
-import { Loading } from '../Common/Loading'
+// import { Loading } from '../Common/Loading'
+import MetamaskNotFound from './MetamaskNotFound'
+import { WalletContext } from '../Contexts/WalletStatusContext'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
@@ -65,6 +65,9 @@ let styleObject = {
 	},
 	listItem: {
 		display: "list-item"
+	},
+	connectButton: {
+		margin: "20px 0 0 0"
 	}
 }
 
@@ -72,86 +75,55 @@ let styles = (theme: any) => styleObject
 
 function LayoutFrameComponent(props: any) {
 
-	const [metaMaskConnected, setMetaMaskConnected] = useState<boolean>(true)
-	const [metaMaskEnabled, setMetaMaskEnabled] = useState<boolean>(false)
-	const [activeNetwork, setActiveNetwork] = useState<boolean>(false)
 	const [detailProps, setDetailProps] = useState<DetailProps>({ header: '', content: '' })
 	const [detailVisibility, setDetailVisibility] = useState<boolean>(false)
-	const [walletAddress, setWalletAddress] = useState<string>("0x0")
 	const [redirect, setRedirect] = useState<string>("")
-	const [isPrimary, setIsPrimary] = useState<boolean>(false)
-	const [versionEnabled, setVersionEnabled] = useState<boolean>(true)
-	const [oldBalances, setOldBalances] = useState<boolean>(false)
-	const [versionBalances, setVersionBalances] = useState<userWeiDaiBalances[]>([])
-	const [firstLoad, setFirstLoad] = useState<boolean>(true)
+	const [showMetamaskInstallPopup, setShowMetamaskInstallPopup] = useState<boolean>(false)
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
-
-	useEffect(() => {
-		API.NotifyOnInitialize(setActiveNetwork)
-	})
-
+	const walletContextProps = useContext(WalletContext)
 	useEffect(() => {
 		if (renderRedirect !== '')
 			setRedirect('')
 	})
 
-	useEffect(() => {
-		if (!metaMaskConnected || !metaMaskEnabled || firstLoad) {
-			API.connectMetaMask().then(() => {
-				setMetaMaskEnabled(API.isMetaMaskEnabled())
-				setMetaMaskConnected(API.isMetaMaskConnected())
-				setFirstLoad(false)
-			})
-		}
-	})
-
-	useEffect(() => {
-		if (metaMaskConnected && activeNetwork && !firstLoad) {
-			const subscription = API.accountObservable.subscribe(account => {
-				setWalletAddress(account.account)
-				setIsPrimary(account.isPrimary)
-				setVersionEnabled(account.enabled)
-				setOldBalances(account.oldBalances)
-				setVersionBalances(account.versionBalances)
-			})
-
-			return function () {
-				subscription.unsubscribe()
-			}
-		}
-		else {
-			return () => { }
-		}
-	})
 	const { classes } = props
-	const metamaskMessage = <MetamaskFailed connected={metaMaskConnected} enabled={metaMaskEnabled} wrongNetwork={!activeNetwork} />
-	const showError: boolean = !firstLoad && !(metaMaskConnected && metaMaskEnabled && activeNetwork)
-	const disableUI = firstLoad || (!versionEnabled || oldBalances) && !isPrimary
+	const notConnected: boolean = !walletContextProps.connected || !walletContextProps.enabled
+	const upgradeRequired: boolean = walletContextProps.connected && ((walletContextProps.oldBalances) && !walletContextProps.primary)
 
-	return showError ? metamaskMessage : (
+	/*const tabular = {
+		'enabled': walletContextProps.enabled,
+		'oldBalances': walletContextProps.oldBalances,
+		'primary': walletContextProps.primary,
+		'connected': walletContextProps.connected,
+		'not connected': notConnected,
+		'isMetaMask': walletContextProps.isMetamask,
+		'initialized': walletContextProps.initialized
+	}
+	console.table(tabular)*/
+	return (
 		<div className={classes.root}>
+			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
 			<Router>
-				{disableUI ? "" :
-					<div>
-						{renderRedirect}
-						<Hidden mdDown>
-							<Drawer variant="persistent"
-								open={true}
-								className={classes.actionDrawer}
-								classes={{ paper: classes.actionDrawerPaper }}
-							>
-								<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} />
-								<Divider />
-								{isPrimary ?
-									<AdminSection walletAddress={walletAddress} contractDependencies={() => setRedirect('/dependencies')} /> : ""
-								}
-							</Drawer>
+				<div>
+					{renderRedirect}
+					<Hidden mdDown>
+						<Drawer variant="persistent"
+							open={true}
+							className={classes.actionDrawer}
+							classes={{ paper: classes.actionDrawerPaper }}
+						>
+							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} />
+							<Divider />
+							{walletContextProps.primary ?
+								<AdminSection contractDependencies={() => setRedirect('/dependencies')} /> : ""
+							}
+						</Drawer>
 
-						</Hidden>
-					</div>}
+					</Hidden>
+				</div>
 				<Paper className={classes.paper}>
 					<Box component="div" className={classes.content}>
-						{disableUI && !firstLoad ? <UpgradePrompt oldBalances={oldBalances} enabled={versionEnabled} balances={versionBalances} walletAddress={walletAddress} /> :
+						{upgradeRequired ? <UpgradePrompt /> :
 							<div>
 								<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} />
 								<Grid
@@ -188,41 +160,43 @@ function LayoutFrameComponent(props: any) {
 													THE WORLD'S FIRST THRIFTCOIN
 									</p>
 											</Grid>
+											{notConnected || !walletContextProps.isMetamask ?
+												<Grid item>
+													<Button className={classes.connectButton} color="primary" variant="contained" onClick={async () => {
+														walletContextProps.isMetamask ? walletContextProps.connectAction.action() : setShowMetamaskInstallPopup(true)
+													}}>Connect You Wallet</Button>
+												</Grid>
+												: <div></div>}
 										</Grid>
 									</Grid>
 								</Grid>
 								<Divider variant="middle" className={classes.headingDivider} />
-								{firstLoad ? <Grid container
-									alignItems="center"
-									justify="center">
-									<Grid item>
-										<Loading />
-									</Grid>
-								</Grid> :
-									<Switch>
-										<Route path="/" exact >
-											<Home />
-										</Route>
-										<Route path="/engine">
-											<PatienceRegulationEngine currentUser={walletAddress} />
-										</Route>
-										<Route path="/bank">
-											<Bank currentUser={walletAddress} />
-										</Route>
-										<Route path="/FAQ">
-											<FAQ />
-										</Route>
-										{isPrimary ?
-											<Route path="/dependencies">
-												<ContractDependencies walletAddress={walletAddress} />
-											</Route> : ""
-										}
-									</Switch>
-								}
+
+								<Switch>
+									<Route path="/" exact >
+										<Home />
+									</Route>
+									<Route path="/engine">
+										{notConnected ? <Redirect to={"/"} /> : <PatienceRegulationEngine />}
+									</Route>
+									<Route path="/bank">
+										{notConnected ? <Redirect to={"/"} /> : <Bank />}
+									</Route>
+									<Route path="/FAQ">
+										<FAQ />
+									</Route>
+									{walletContextProps.primary ?
+										<Route path="/dependencies">
+											<ContractDependencies />
+										</Route> : ""
+									}
+									<Route component={Home} />
+								</Switch>
+
 							</div>}
 					</Box>
 				</Paper>
-				{disableUI ? "" :
+				{notConnected ? "" :
 					<Hidden mdDown>
 						<ClickAwayListener onClickAway={() => setDetailVisibility(false)}>
 							<Drawer variant="persistent" anchor="right" open={true}
@@ -230,7 +204,7 @@ function LayoutFrameComponent(props: any) {
 								classes={{ paper: classes.infoDrawerPaper }}
 							>
 								<List>
-									<ListItem className={classes.listItem}><WalletSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} walletAddress={walletAddress} /></ListItem>
+									<ListItem className={classes.listItem}><WalletSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} /></ListItem>
 									<ListItem className={classes.listItem}><Divider className={classes.infoDivider} /></ListItem>
 									<ListItem className={classes.listItem}><ContractSection setDetailVisibility={setDetailVisibility} setDetailProps={setDetailProps} /></ListItem>
 									<ListItem className={classes.listItem}><Divider className={classes.infoDivider} /> </ListItem>
