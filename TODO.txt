@@ -1,7 +1,9 @@
-1. add decimal places to redeem rate
-
 Interactions with metmask post 2020: -- DONE
 This article explains how to create an updatable context (no need to use redux) https://dev.to/oieduardorabelo/react-hooks-how-to-create-and-update-contextprovider-1f68
+
+1. implement front end transfer to new reserve
+2. Write a ReserveContract that just wraps chai and stores it.
+3. ^do this after behodler. With fast enough growth, it might be worthwhile to unplug from DSR altogether.
 
 1. On page load, top level calls ethereumAPI.detectMetaMaskEnabled() and gets 1 of 2 values["disabled","disconnected"]
 2. set the context value. 
