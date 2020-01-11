@@ -1,12 +1,4 @@
-1. Fix ownership change section
-2. switch ownership
-
-
-
-
-TODO post launch: find an alternative to ganache
-
-
+1. add decimal places to redeem rate
 
 Interactions with metmask post 2020: -- DONE
 This article explains how to create an updatable context (no need to use redux) https://dev.to/oieduardorabelo/react-hooks-how-to-create-and-update-contextprovider-1f68
