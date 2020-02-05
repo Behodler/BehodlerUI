@@ -164,7 +164,7 @@ function LayoutFrameComponent(props: any) {
 												<Grid item>
 													<Button className={classes.connectButton} color="primary" variant="contained" onClick={async () => {
 														walletContextProps.isMetamask ? walletContextProps.connectAction.action() : setShowMetamaskInstallPopup(true)
-													}}>Connect You Wallet</Button>
+													}}>Connect Your Wallet</Button>
 												</Grid>
 												: <div></div>}
 										</Grid>
