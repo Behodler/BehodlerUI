@@ -28,7 +28,7 @@ module.exports = async function (deployer, network, accounts) {
 		await vcInstance.setContractGroup(1, weidaiInstance.address, daiAddress, preInstance.address, weidaiBankInstance.address, web3.utils.fromAscii("dweidai"), true)
 		await vcInstance.setDefaultVersion(1)
 	}
-	else if (network === 'main' || network=='main-fork') {
+	else if (network === 'main' || network == 'main-fork') {
 		console.log('main deployment now')
 		await deployer.deploy(VersionController)
 		donationAddress = accounts[0];
@@ -55,8 +55,22 @@ module.exports = async function (deployer, network, accounts) {
 	await weidaiInstance.setVersionController(vcAddress)
 	await weidaiBankInstance.setVersionController(vcAddress)
 	await preInstance.setVersionController(vcAddress)
+
+	let messageObject = {
+		dai: daiAddress,
+		weiDai: weidaiInstance.address,
+		bank: weidaiBankInstance.address,
+		pre:preInstance.address
+	}
+	 writeMessageObject(messageObject)
 }
 
+let writeMessageObject = (messageObject) =>{
+	const fileLocation = '../messageLocation.json'
+	const fs = require('fs')
+	const stringify = (data) => JSON.stringify(data, null, 4)
+	fs.writeFileSync(fileLocation,stringify(messageObject))
+}
 
 let writeNetworkObject = (network, address) => {
 	const fileLocation = './client/src/networkVersionControllers.json'

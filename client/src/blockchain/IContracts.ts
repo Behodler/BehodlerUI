@@ -33,7 +33,10 @@ const defaultERC20 = {
 	approve: (spender: address, value: uint) => {},
 	transferFrom: (from: address, to: address, value: uint) => {},
 	increaseAllowance: (spender: address, addedValue: uint) => {},
-	decreaseAllowance: (spender: address, subtractedValue: uint) => {}
+	decreaseAllowance: (spender: address, subtractedValue: uint) => {},
+	decimals:()=>{},
+	symbol:()=>{},
+	name:()=>{}
 }
 
 const defaultVersioned = {

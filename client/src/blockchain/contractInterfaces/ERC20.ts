@@ -10,4 +10,7 @@ export interface ERC20 extends BaseContract {
 	transferFrom: (from: address, to: address, value: uint) => any
 	increaseAllowance: (spender: address, addedValue: uint) => any
 	decreaseAllowance: (spender: address, subtractedValue: uint) => any
+	decimals: () => any
+	symbol: () => any
+	name: () => any
 }

@@ -15,3 +15,10 @@ This article explains how to create an updatable context (no need to use redux) 
 Useful:
 transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7baac55931827b3f
 address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
+
+
+
+
+Behodler:
+Interfaces --DONE
+For next time: during behodler migrate, populate a json file in weidai directory with contract names and addresses so that admin can populate

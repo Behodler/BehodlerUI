@@ -14,6 +14,7 @@ import Bank from '../Bank/index'
 import Home from '../Home/index'
 import FAQ from '../FAQ/index'
 import ContractDependencies from '../ContractDependencies/index'
+import Admin from '../Behodler/Admin/index'
 import UpgradePrompt from './UpgradePrompt'
 // import { Loading } from '../Common/Loading'
 import MetamaskNotFound from './MetamaskNotFound'
@@ -115,7 +116,7 @@ function LayoutFrameComponent(props: any) {
 							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} />
 							<Divider />
 							{walletContextProps.primary ?
-								<AdminSection contractDependencies={() => setRedirect('/dependencies')} /> : ""
+								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodleradmin')} /> : ""
 							}
 						</Drawer>
 
@@ -188,7 +189,14 @@ function LayoutFrameComponent(props: any) {
 									{walletContextProps.primary ?
 										<Route path="/dependencies">
 											<ContractDependencies />
-										</Route> : ""
+										</Route>
+										: ""
+									}
+									{walletContextProps.primary ?
+										<Route path="/behodleradmin">
+											<Admin />
+										</Route>
+										: ""
 									}
 									<Route component={Home} />
 								</Switch>
