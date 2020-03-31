@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import IContracts from './IContracts'
+import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
 import { PatienceRegulationEngine } from './contractInterfaces/PatienceRegulationEngine'
 import { WeiDai } from './contractInterfaces/WeiDai'
 import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
@@ -20,6 +20,8 @@ import ERC20JSON from '../contracts/ERC20.json'
 import VERSIONJSON from '../contracts/WeiDaiVersionController.json'
 import potReserveJSON from '../contracts/PotReserve.json'
 import networkVersionJSON from '../networkVersionControllers.json'
+
+import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 
 const potReserveAddresses =
 {
@@ -209,7 +211,9 @@ class ethereumAPI {
 		const Dai: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, daiAddress)).methods as unknown) as ERC20
 		Dai.address = daiAddress;
 
-		let contracts: IContracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve, activeVersion }
+		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
+
+		let contracts: IContracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve, activeVersion, behodler: behodlerContracts }
 		await this.configureVersionWarnings(contracts, currentAccount)
 		this.weiDaiEffects = new ERC20Effects(this.web3, contracts.WeiDai, currentAccount)
 		this.daiEffects = new ERC20Effects(this.web3, contracts.Dai, currentAccount)
@@ -288,6 +292,39 @@ class ethereumAPI {
 			};
 		}
 	}
+
+	private async deployBehodlerContract(abi: any, address: string): Promise<deployment> {
+		try {
+			const contractInstance = await new this.web3.eth.Contract(abi, address)
+
+			return { methods: contractInstance.methods, address: address, contractInstance };
+		}
+		catch (err) {
+			console.log("contract failed to load: " + err);
+			return {
+				address: "0x0",
+				methods: {},
+				contractInstance: {}
+			};
+		}
+	}
+
+	private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
+		let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
+		if (network == 'private')
+			network = 'development'
+		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
+		const keys = Object.keys(behodlerContracts)
+		keys.forEach(async (key) => {
+			const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
+			const currentMapping = mappingsList.filter(mapping => mapping.contract == key || mapping.contract == alternateKey)[0]
+			const deployment = await this.deployBehodlerContract(currentMapping.abi, currentMapping.address)
+			behodlerContracts[key] = deployment.methods
+			behodlerContracts[key].address = deployment.address
+		})
+		return behodlerContracts
+	}
+
 }
 
 interface deployment {

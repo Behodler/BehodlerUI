@@ -7,3 +7,4 @@ sleep 2
 truffle migrate
 cd ../behodler
 truffle migrate
+cp BehodlerABIAddressMapping.json ../weidai/client/src/temp/

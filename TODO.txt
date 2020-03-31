@@ -21,4 +21,6 @@ address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
 
 Behodler:
 Interfaces --DONE
-For next time: during behodler migrate, populate a json file in weidai directory with contract names and addresses so that admin can populate
+1. populate contracts interface with behodler contracts --DONE
+2. web3 instantiate behodler -- DONE
+3. Get Behodler Admin contract list populated using context of IContracts
