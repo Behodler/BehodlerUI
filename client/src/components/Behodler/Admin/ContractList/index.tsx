@@ -1,24 +1,25 @@
 import * as React from 'react'
-// import { useState } from 'react'
-// import { useTheme, withStyles } from '@material-ui/core/styles';
+import { useContext } from 'react'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { ListItemText } from '@material-ui/core';
+import {Typography, Button } from '@material-ui/core';
+import { WalletContext } from "../../../Contexts/WalletStatusContext"
 interface contractListProps {
     selectContract: (contract: string) => void
 }
 
 function ContractList(props: contractListProps) {
-
-    return (
-        <List>
-            <ListItem button>
-                <ListItemText primary="Lachesis: 0xdeadbeef101010" onClick={() => props.selectContract('Lachesis')} />
+    const walletContextProps = useContext(WalletContext)
+    const contractList = Object.keys(walletContextProps.contracts.behodler)
+    return (<List>
+        {contractList.map(contract => {
+            const nonClickText = ` -> ${walletContextProps.contracts.behodler[contract].address}`
+            return <ListItem key={contract}>
+                <Button onClick={() => props.selectContract(contract)}>{contract}</Button>
+                <Typography variant="caption">{nonClickText}</Typography>
             </ListItem>
-            <ListItem button>
-                <ListItemText primary="Bellows: 0xacadbeea202020" onClick={() => props.selectContract('Bellows')} />
-            </ListItem>
-        </List>
+        })}
+    </List>
     )
 }
 

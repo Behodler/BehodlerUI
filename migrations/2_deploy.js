@@ -18,7 +18,7 @@ module.exports = async function (deployer, network, accounts) {
 	weidaiBankInstance = await WeiDaiBank.deployed()
 	preInstance = await PRE.deployed();
 
-	if (network === 'development' || network == 'gethdev') {
+	if (network === 'development' || network == 'gethdev' || network == 'private') {
 		await deployer.deploy(VersionController)
 		await deployer.deploy(MockDai)
 		vcInstance = await VersionController.deployed()
@@ -60,16 +60,16 @@ module.exports = async function (deployer, network, accounts) {
 		dai: daiAddress,
 		weiDai: weidaiInstance.address,
 		bank: weidaiBankInstance.address,
-		pre:preInstance.address
+		pre: preInstance.address
 	}
-	 writeMessageObject(messageObject)
+	writeMessageObject(messageObject)
 }
 
-let writeMessageObject = (messageObject) =>{
+let writeMessageObject = (messageObject) => {
 	const fileLocation = '../messageLocation.json'
 	const fs = require('fs')
 	const stringify = (data) => JSON.stringify(data, null, 4)
-	fs.writeFileSync(fileLocation,stringify(messageObject))
+	fs.writeFileSync(fileLocation, stringify(messageObject))
 }
 
 let writeNetworkObject = (network, address) => {

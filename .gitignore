@@ -12,3 +12,4 @@ geth
 eth_node/
 temp/
 truffleBuild/
+ganacheID.txt
