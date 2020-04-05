@@ -24,5 +24,7 @@ Interfaces --DONE
 1. populate contracts interface with behodler contracts --DONE
 2. web3 instantiate behodler -- DONE
 3. Get Behodler Admin contract list populated using context of IContracts --DONE
-4. On behodler context, populate owner text box with existing owner.
+4. On behodler context, populate owner text box with existing owner.--DONE
     4.1 Allow user to change text from default owner text
+5. Execute seed function on Behodler section. -- DONE
+6. Complete the rest

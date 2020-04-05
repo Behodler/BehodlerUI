@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { Grid, Container, Typography, TextField, Button, Paper } from '@material-ui/core'
+import { useContext, useState, useEffect } from 'react'
+import { Grid, Container, Typography, Button, Paper } from '@material-ui/core'
 // import { useState } from 'react'
 // import { useTheme, withStyles } from '@material-ui/core/styles';
 import Behodler from './ContractContexts/Behodler'
@@ -12,6 +13,8 @@ import Prometheus from './ContractContexts/Prometheus'
 import PyroTokenRegistry from './ContractContexts/PyroTokenRegistry'
 import Scarcity from './ContractContexts/Scarcity'
 import Weth from './ContractContexts/Weth'
+import { WalletContext } from '../../../Contexts/WalletStatusContext'
+import { ValueTextBox } from 'src/components/Common/ValueTextBox'
 
 interface contextPaneProps {
     selectedContract: string
@@ -20,6 +23,23 @@ interface contextPaneProps {
 function ContextPane(props: contextPaneProps) {
     if (props.selectedContract.length == 0)
         return <div></div>
+
+    const walletContextProps = useContext(WalletContext)
+
+    const [currentOwner, setCurrentOwner] = useState<string>("")
+
+    useEffect(() => {
+        walletContextProps.contracts.behodler[props.selectedContract].primary()
+            .call()
+            .then(account => {
+                setCurrentOwner(account)
+            })
+    }, [])
+
+
+    let changeOwner = async () => {
+        await walletContextProps.contracts.behodler[props.selectedContract].transferPrimary(currentOwner).send({ from: walletContextProps.account })
+    }
 
     return (
         <Paper>
@@ -43,8 +63,10 @@ function ContextPane(props: contextPaneProps) {
                         alignItems="center"
                         spacing={3}
                     >
-                        <Grid item>  <TextField id="filled-helperText" label="Change Owner" defaultValue="0xfdabc123123f" variant="filled" /></Grid>
-                        <Grid item><Button color="primary" variant="contained">Change</Button></Grid>
+                        <Grid item>
+                            <ValueTextBox text={currentOwner} placeholder="Owner" changeText={setCurrentOwner} />
+                        </Grid>
+                        <Grid item><Button color="primary" variant="contained" onClick={changeOwner}>Change</Button></Grid>
 
                     </Grid>
                 </Grid>
@@ -57,6 +79,8 @@ function ContextPane(props: contextPaneProps) {
         </Paper>
     )
 }
+
+
 
 function ChooseContext(props: { contractName: string }) {
     switch (props.contractName) {

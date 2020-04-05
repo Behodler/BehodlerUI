@@ -11,7 +11,7 @@ interface adminProps {
 }
 
 function Admin(props: adminProps) {
-    const [ selectedContract, setSelectedContract] = useState<string>("")
+    const [selectedContract, setSelectedContract] = useState<string>("")
 
     return (
         <Grid
@@ -34,14 +34,10 @@ function Admin(props: adminProps) {
                     spacing={10}
                 >
                     <Grid item>
-                        <Typography variant="h5" gutterBottom>
-                            <ContractList selectContract={setSelectedContract} />
-                        </Typography>
+                        <ContractList selectContract={setSelectedContract} />
                     </Grid>
                     <Grid item>
-                        <Typography variant="h5" gutterBottom>
-                            <ContextPane selectedContract={selectedContract} />
-                        </Typography>
+                        <ContextPane selectedContract={selectedContract} />
                     </Grid>
                 </Grid>
             </Grid>
