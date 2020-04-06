@@ -110,7 +110,7 @@ function EthToToken(props: ethToTokenProps) {
     const [maxPrice, setMaxPrice] = useState<string>("")
 
     return <Paper>
-        <Typography variant="h5">tokenToToken</Typography>
+        <Typography variant="h5">ethToToken</Typography>
         <List>
             <ListItem key="output">
                 <ValueTextBox text={output} placeholder="Output" changeText={setOutput} />
@@ -140,7 +140,7 @@ function TokenToEth(props: tokenToEthProps) {
     const [maxPrice, setMaxPrice] = useState<string>("")
 
     return <Paper>
-        <Typography variant="h5">tokenToToken</Typography>
+        <Typography variant="h5">tokenToEth</Typography>
         <List>
             <ListItem key="input">
                 <ValueTextBox text={input} placeholder="Input" changeText={setInput} />

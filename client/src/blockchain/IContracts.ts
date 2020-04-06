@@ -186,8 +186,7 @@ const defaultPrometheus: Prometheus = {
 	...defaultBase,
 	...defaultSecondary,
 	seed: (kharon: address, scarcity: address, weidai: address, dai: address, registry: address) => { },
-	stealFlame: (token: address, value: uint) => { },
-	withdrawDonations: (token: address) => { }
+	stealFlame: (token: address, kharonToll: uint, buyer: address) => { },
 }
 
 const defaultScarcity: Scarcity = {
@@ -236,7 +235,9 @@ const defaultPyroTokenRegistry: PyroTokenRegistry = {
 	...defaultBase,
 	...defaultSecondary,
 	seed: (bellows: address, lachesis: address, kharon: address) => { },
-	addToken: (name: string, symbol: string, baseToken: address) => { }
+	addToken: (name: string, symbol: string, baseToken: address) => { },
+	baseTokenMapping: (base: address) => { },
+	pyroTokenMapping: (pToken: address) => { }
 }
 
 export const DefaultBehodlerContracts: BehodlerContracts = {
