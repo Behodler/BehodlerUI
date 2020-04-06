@@ -20,7 +20,6 @@ export default function Behodler(props: behodlerProps) {
     const [average, setAverage] = useState("")
 
     const executeSeed = async () => {
-        console.log("params: " + lachesis + "  " + kharon + "  " + janus + " " + chronos)
         await walletContextProps.contracts.behodler.Behodler.seed(lachesis, kharon, janus, chronos).send({ from: walletContextProps.account })
     }
     const getAverage = async () => {
