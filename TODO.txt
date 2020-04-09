@@ -29,15 +29,14 @@ Interfaces --DONE
 5. Execute seed function on Behodler section. -- DONE
 6. Complete the rest --DONE
 
+Design TODO:
+1. Design a section for redeeming pyrotokens.
+
 Contract onboarding:
-Registry can create the mapping but it can't act as a list. Instead we need a text list of approved tokens that 
-ships with the UI. On initial load in blockchain API, the list is consulted and run against registry. The positive results
-are added as mappings to local storage. In the UI is a folder with images where the names of the images are contract addresses.
+A text file of approved contracts is shipped with UI. This causes the dropdown to be populated. A folder with images with names equal to the index of the text file is shipped. The image appears in 
+drop down. (pallette?)
 
-When behodler user system loads, the input and output boxes are populated from local storage and associated with images if possible
-
-If local storage already contains a mapping, registry isn't consulted.
-
+A similar file for pyroTokens with similar folder
 
 Behodler User Screen:
 1. Create uniswap looking textbox. Include a twirly that can be turned on with a state.
