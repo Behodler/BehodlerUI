@@ -29,6 +29,15 @@ Interfaces --DONE
 5. Execute seed function on Behodler section. -- DONE
 6. Complete the rest --DONE
 
+Contract onboarding:
+Registry can create the mapping but it can't act as a list. Instead we need a text list of approved tokens that 
+ships with the UI. On initial load in blockchain API, the list is consulted and run against registry. The positive results
+are added as mappings to local storage. In the UI is a folder with images where the names of the images are contract addresses.
+
+When behodler user system loads, the input and output boxes are populated from local storage and associated with images if possible
+
+If local storage already contains a mapping, registry isn't consulted.
+
 
 Behodler User Screen:
 1. Create uniswap looking textbox. Include a twirly that can be turned on with a state.
