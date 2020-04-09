@@ -27,4 +27,14 @@ Interfaces --DONE
 4. On behodler context, populate owner text box with existing owner.--DONE
     4.1 Allow user to change text from default owner text
 5. Execute seed function on Behodler section. -- DONE
-6. Complete the rest --BUSY --> remember with scarcity and Weth to implement entire ERC20
+6. Complete the rest --DONE
+
+
+Behodler User Screen:
+1. Create uniswap looking textbox. Include a twirly that can be turned on with a state.
+2. create trade panel with exchange rate calculation under output box.
+3. add slide down advanced with slippage numbers. Remember to figure out how this relates to max and min price
+4. Implement Swap button that activates twirly
+
+Later:
+Implement Chronos powered price history
