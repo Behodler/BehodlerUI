@@ -13,3 +13,4 @@ eth_node/
 temp/
 truffleBuild/
 ganacheID.txt
+client/src/blockchain/behodlerUI/images/private

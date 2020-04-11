@@ -35,6 +35,7 @@ Design TODO:
 Contract onboarding:
 A text file of approved contracts is shipped with UI. This causes the dropdown to be populated. A folder with images with names equal to the index of the text file is shipped. The image appears in 
 drop down. (pallette?)
+- baseTokens.js is complete.
 
 A similar file for pyroTokens with similar folder
 

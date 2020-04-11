@@ -4,7 +4,10 @@ ganache-cli -l "0x6691b7" -q --account 0xcf4a9e84114acde4e307c37c27f91ea161516b8
 ganacheBID=$!
 echo $ganacheBID > ganacheID.txt
 sleep 2
+cd '/home/justin/weidai ecosystem/weidai'
 truffle migrate
-cd ../behodler
+cd '/home/justin/weidai ecosystem/behodler'
 truffle migrate
 cp BehodlerABIAddressMapping.json ../weidai/client/src/temp/
+cd ../weidai
+node scripts/captureDevTokens.js
