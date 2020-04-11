@@ -313,6 +313,7 @@ class ethereumAPI {
 		let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
 		if (network == 'private')
 			network = 'development'
+		
 		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
 		const keys = Object.keys(behodlerContracts)
 		keys.forEach(async (key) => {

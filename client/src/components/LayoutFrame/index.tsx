@@ -13,10 +13,11 @@ import PatienceRegulationEngine from '../PRE/index'
 import Bank from '../Bank/index'
 import Home from '../Home/index'
 import FAQ from '../FAQ/index'
+import Swap from '../Behodler/Swap/index'
 import ContractDependencies from '../ContractDependencies/index'
 import Admin from '../Behodler/Admin/index'
 import UpgradePrompt from './UpgradePrompt'
-// import { Loading } from '../Common/Loading'
+
 import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
 
@@ -113,7 +114,7 @@ function LayoutFrameComponent(props: any) {
 							className={classes.actionDrawer}
 							classes={{ paper: classes.actionDrawerPaper }}
 						>
-							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} />
+							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={()=>setRedirect('/swap')} />
 							<Divider />
 							{walletContextProps.primary ?
 								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodleradmin')} /> : ""
@@ -185,6 +186,9 @@ function LayoutFrameComponent(props: any) {
 									</Route>
 									<Route path="/FAQ">
 										<FAQ />
+									</Route>
+									<Route path="/swap">
+										{notConnected ? <Redirect to={"/"} /> : <Swap />}
 									</Route>
 									{walletContextProps.primary ?
 										<Route path="/dependencies">

@@ -3,6 +3,7 @@ import { List, ListItem, ListItemIcon, ListItemText, Divider } from '@material-u
 import AddIcon from '@material-ui/icons/Add'
 import Computer from '@material-ui/icons/Computer'
 import CompareArrows from '@material-ui/icons/CompareArrows'
+import Loop from '@material-ui/icons/Loop'
 import { Social } from '../../Social/index'
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
@@ -12,6 +13,7 @@ interface UserSectionProps {
 	goToEngine: () => void
 	homePage: () => void,
 	goToBank: () => void
+	behodlerSwap: () => void
 	faq: () => void
 }
 
@@ -19,13 +21,18 @@ function UserSectionComponent(props: UserSectionProps) {
 	const walletContextProps = React.useContext(WalletContext)
 	return (<List>
 		{walletContextProps.initialized ? <div><ListItem button key="create" onClick={props.goToEngine}>
-				<ListItemIcon><AddIcon /></ListItemIcon>
-				<ListItemText primary="Create / Claim" />
-			</ListItem>
+			<ListItemIcon><AddIcon /></ListItemIcon>
+			<ListItemText primary="Create / Claim" />
+		</ListItem>
 			<Divider />
 			<ListItem button key="bank" onClick={props.goToBank}>
 				<ListItemIcon><CompareArrows /></ListItemIcon>
 				<ListItemText primary="Redeem for Dai" />
+			</ListItem>
+			<Divider />
+			<ListItem button key="swap" onClick={props.behodlerSwap}>
+				<ListItemIcon><Loop /></ListItemIcon>
+				<ListItemText primary="Swap Tokens" />
 			</ListItem>
 			<Divider />
 		</div>
