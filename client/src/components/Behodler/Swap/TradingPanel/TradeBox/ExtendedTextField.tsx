@@ -1,9 +1,19 @@
 import * as React from 'react'
 
-interface props {
-    text: string
+interface DropDownField {
+  name: string,
+  address: string
 }
 
+interface props {
+  label: string
+  dropDownFields: DropDownField[],
+}
+
+
+
 export default function ExtendedTextField(props: props) {
-    return <div>{props.text}</div>
+
+
+  return <div>{props.label}</div>
 }

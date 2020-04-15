@@ -22,13 +22,14 @@ interface walletProps {
 	isMetamask: boolean
 	connected: boolean
 	account: string
-	contracts: IContracts,
+	contracts: IContracts
 	connectAction: any
 	versionBalances: any
 	oldBalances: any
 	primary: boolean
-	enabled: boolean,
+	enabled: boolean
 	initialized: boolean
+	networkName: string
 }
 
 let WalletContext = React.createContext<walletProps>({
@@ -36,19 +37,34 @@ let WalletContext = React.createContext<walletProps>({
 	isMetamask: false,
 	connected: false,
 	account: "0x0",
-	connectAction: async () => { console.log('hello') },
+	connectAction: async () => { console.log('connect action not set') },
 	versionBalances: [],
 	oldBalances: [],
 	primary: false,
 	enabled: false,
 	contracts: DefaultContracts,
-	initialized: false
+	initialized: false,
+	networkName: 'private'
 });
 
-let chainIdUpdater = (account: string, setChainId: (id: number) => void, setContracts: (contracts: IContracts) => void, setVersionBalances: (contracts: IContracts, account: string) => Promise<void>, setInitialized: (boolean) => void) => {
+const networkNameMapper = (id: number): string => {
+	switch (id) {
+		case 1: return "main"
+		case 2: return "morden"
+		case 3: return "ropsten"
+		case 4: return "rinkeby"
+		case 5: return "goerli"
+		case 42: return "kovan"
+		case 66: return "private"
+		default: return "private"
+	}
+}
+
+let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setVersionBalances: (contracts: IContracts, account: string) => Promise<void>, setInitialized: (boolean) => void) => {
 	return (response: rpcResult) => {
 		const chainIDNum = API.pureHexToNumber(response.result)
 		setChainId(chainIDNum)
+		setNetworkName(networkNameMapper(chainIDNum))
 		setInitialized(false)
 	}
 }
@@ -100,6 +116,7 @@ function WalletContextProvider(props: any) {
 	const [loaded, setLoaded] = useState<boolean>(false)
 	const [connectAction, setConnectAction] = useState<any>()
 	const [initialized, setInitialized] = useState<boolean>(false)
+	const [networkName, setNetworkName] = useState<string>("")
 	const chainVersionUpdate = chainVersionUpdater((input: []) => setVersionBalances(input), setOldBalances, setPrimary, setEnabled)
 
 
@@ -130,8 +147,8 @@ function WalletContextProvider(props: any) {
 			window.ethereum.send('eth_accounts')
 				.then(accountUpdateHandlerOnce)
 				.then((acc) => {
-					let chainIdUpdateHandlerOnce = chainIdUpdater(acc, setChainId, setContracts, chainVersionUpdate, () => { })
-					let chainIdUpdateHandler = chainIdUpdater(acc, setChainId, setContracts, chainVersionUpdate, setInitialized)
+					let chainIdUpdateHandlerOnce = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, chainVersionUpdate, () => { })
+					let chainIdUpdateHandler = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, chainVersionUpdate, setInitialized)
 					window.ethereum.send('eth_chainId')
 						.then(chainIdUpdateHandlerOnce)
 						.then(() => {
@@ -176,7 +193,8 @@ function WalletContextProvider(props: any) {
 		oldBalances,
 		primary,
 		enabled,
-		initialized
+		initialized,
+		networkName
 	}
 	WalletContext = React.createContext<walletProps>(providerProps);
 	return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>

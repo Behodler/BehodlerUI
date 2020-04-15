@@ -6,9 +6,21 @@
     "goerli": [],
     "kovan": [],
     "private": [
-        "0x744f403f3a9f15578127D52193442C94909c5324",
-        "0xf5e8345b94e243e4b67e03092062CcF441B43EAc",
-        "0xb031a3BEC56F44aCB45B1E52f6cAC12C9AD2185A",
-        "0x189B51c422d3668F0695F776A3e7cdf0589cD79E"
+        {
+            "name": "Scarcity",
+            "address": "0x744f403f3a9f15578127D52193442C94909c5324"
+        },
+        {
+            "name": "MockToken1",
+            "address": "0xf5e8345b94e243e4b67e03092062CcF441B43EAc"
+        },
+        {
+            "name": "MockToken2",
+            "address": "0xb031a3BEC56F44aCB45B1E52f6cAC12C9AD2185A"
+        },
+        {
+            "name": "MockWeth",
+            "address": "0x189B51c422d3668F0695F776A3e7cdf0589cD79E"
+        }
     ]
 }
