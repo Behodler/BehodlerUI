@@ -27,13 +27,14 @@ function ContextPane(props: contextPaneProps) {
     const walletContextProps = useContext(WalletContext)
 
     const [currentOwner, setCurrentOwner] = useState<string>("")
-
+    console.log(props.selectedContract)
     useEffect(() => {
-        walletContextProps.contracts.behodler[props.selectedContract].primary()
-            .call()
-            .then(account => {
-                setCurrentOwner(account)
-            })
+        if (props.selectedContract.toLowerCase() !== 'weth')
+            walletContextProps.contracts.behodler[props.selectedContract].primary()
+                .call()
+                .then(account => {
+                    setCurrentOwner(account)
+                })
     }, [])
 
 

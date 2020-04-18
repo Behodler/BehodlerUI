@@ -249,6 +249,11 @@ class ethereumAPI {
 
 	}
 
+	public async getBalanceOfToken(address: string, account: string): Promise<string> {
+		const token: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, address)).methods as unknown) as ERC20
+		return (await token.balanceOf(account).call({ from: account })).toString()
+	}
+
 	public hexToNumber(value: any): number {
 		return parseFloat(this.hexToNumberString(value))
 	}
@@ -313,7 +318,7 @@ class ethereumAPI {
 		let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
 		if (network == 'private')
 			network = 'development'
-		
+
 		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
 		const keys = Object.keys(behodlerContracts)
 		keys.forEach(async (key) => {
