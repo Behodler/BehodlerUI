@@ -249,9 +249,14 @@ class ethereumAPI {
 
 	}
 
-	public async getBalanceOfToken(address: string, account: string): Promise<string> {
-		const token: ERC20 = ((await new this.web3.eth.Contract(ERC20JSON.abi as any, address)).methods as unknown) as ERC20
-		return (await token.balanceOf(account).call({ from: account })).toString()
+	public async enableToken(tokenAddress: string, owner: string, spender: string): Promise<void> {
+		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		await token.approve(spender, this.UINTMAX).send({ from: owner })
+	}
+
+	public generateNewEffects(tokenAddress:string, currentAccount:string):ERC20Effects {
+		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		return new ERC20Effects(this.web3, token, currentAccount)
 	}
 
 	public hexToNumber(value: any): number {

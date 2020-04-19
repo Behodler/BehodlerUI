@@ -66,7 +66,7 @@ module.exports = async function (deployer, network, accounts) {
 }
 
 let writeMessageObject = (messageObject) => {
-	const fileLocation = '../messageLocation.json'
+	const fileLocation = './client/src/tokenLocation.json'
 	const fs = require('fs')
 	const stringify = (data) => JSON.stringify(data, null, 4)
 	fs.writeFileSync(fileLocation, stringify(messageObject))

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import TradingPanel from './TradingPanel/index'
+import TradingBox from './TradingBox/index'
 import { Container } from '@material-ui/core'
 
 interface props {
@@ -8,6 +8,6 @@ interface props {
 
 export default function Swap(props: props) {
     return <Container>
-        <TradingPanel />
+        <TradingBox />
     </Container>
 }

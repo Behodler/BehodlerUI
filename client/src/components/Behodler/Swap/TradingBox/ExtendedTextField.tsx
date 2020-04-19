@@ -6,7 +6,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Search from '@material-ui/icons/Search'
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import {
-  FormControl,/* InputLabel, Select,*/ ListItemText, ListItem, ListItemAvatar,
+  FormControl, ListItemText, ListItem, ListItemAvatar,
   Dialog,
   DialogTitle,
   Grid,
@@ -17,10 +17,12 @@ import {
   DialogContentText,
   Typography,
 } from '@material-ui/core';
-import { isNullOrWhiteSpace } from '../../../../../util/jsHelpers'
+import { isNullOrWhiteSpace, formatNumberText } from '../../../../util/jsHelpers'
 import { Images } from './ImageLoader'
-import { WalletContext } from "../../../../Contexts/WalletStatusContext"
-import API from '../../../../../blockchain/ethereumAPI'
+import { WalletContext } from "../../../Contexts/WalletStatusContext"
+import API from '../../../../blockchain/ethereumAPI'
+
+
 interface DropDownField {
   name: string,
   address: string,
@@ -30,9 +32,14 @@ interface DropDownField {
 interface props {
   label: string
   dropDownFields: DropDownField[],
+  valid: boolean,
+  setValid: (v: boolean) => void
+  setValue: (v: string) => void
+  value:string
+  setEnabled?: (e: boolean) => void
+  setTokenAddress: (a: string) => void
+  address: string
 }
-
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,6 +54,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     flex: 1,
     width: 400
+  },
+  inputError: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
+    width: 400,
+    color: theme.palette.secondary.main
   },
   balance: {
     marginRight: theme.spacing(1),
@@ -77,17 +90,52 @@ export default function ExtendedTextField(props: props) {
   const classes = useStyles();
   const walletContextProps = useContext(WalletContext)
 
-  const [selectedAddress, setSelectedAddress] = useState<string>(props.dropDownFields[0].address)
   const indexOfAddress = (address: string) => props.dropDownFields.findIndex(t => t.address == address)
   const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address == address)[0].name
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
-
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
+  const [enabled, setEnabled] = useState<boolean>(false)
+
+  const setFormattedInput = (value: string) => {
+    if (isNullOrWhiteSpace(value)) {
+      props.setValue("")
+      props.setValid(true)
+    }
+    const fomattedText = formatNumberText(value)
+    props.setValue(value)
+    const parsedValue = parseFloat(fomattedText)
+    const isValid = !isNaN(parsedValue) && parsedValue <= parseFloat(currentBalance)
+    props.setValid(isValid)
+  }
+
+
+  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account) 
 
   useEffect(() => {
-    API.getBalanceOfToken(selectedAddress, walletContextProps.account).then(balance => setCurrentBalance(API.fromWei(balance))).catch(() => setCurrentBalance("-"))
+    const effect = currentTokenEffects.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)
+    const subscription = effect.Observable.subscribe(allowance => {
+      const scaledAllowance = API.fromWei(allowance)
+      const allowanceFloat = parseFloat(scaledAllowance)
+      const balanceFloat = parseFloat(currentBalance)
+      const en = !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
+      setEnabled(en)
+      if (props.setEnabled)
+        props.setEnabled(en)
+    })
+
+    return () => { subscription.unsubscribe(); effect.cleanup() }
   })
+
+  useEffect(() => {
+    const effect = currentTokenEffects.balanceOfEffect(walletContextProps.account)
+    const subscription = effect.Observable.subscribe(balance => {
+      setCurrentBalance(balance)
+    })
+    return () => { subscription.unsubscribe(); effect.cleanup() }
+  })
+
+
   const listTokens = isNullOrWhiteSpace(filteredText) ? props.dropDownFields : props.dropDownFields.filter(t => t.name.toLowerCase().indexOf(filteredText.toLowerCase()) !== -1)
 
   return (<div>
@@ -111,9 +159,9 @@ export default function ExtendedTextField(props: props) {
                 button
                 key={t.address}
                 alignItems="flex-start"
-                onClick={() => { setSelectedAddress(t.address); setDialogOpen(false) }}>
+                onClick={() => { props.setTokenAddress(t.address); setDialogOpen(false); props.setValue(""); props.setValid(true) }}>
                 <ListItemAvatar>
-                  <img alt="Remy Sharp" src={t.image} width="32" />
+                  <img alt="token" src={t.image} width="32" />
                 </ListItemAvatar>
                 <ListItemText
                   primary={t.name}
@@ -160,8 +208,10 @@ export default function ExtendedTextField(props: props) {
             alignItems="center">
             <Grid item>
               <InputBase
-                className={classes.input}
+                className={props.valid ? classes.input : classes.inputError}
                 placeholder="0.0"
+                value={props.value}
+                onChange={(event) => setFormattedInput(event.target.value)}
               />
             </Grid>
             <Grid item>
@@ -169,12 +219,16 @@ export default function ExtendedTextField(props: props) {
                 <Button
 
                   className={classes.button}
-                  startIcon={<img src={Images[indexOfAddress(selectedAddress)]} width="32" />}
+                  startIcon={<img src={Images[indexOfAddress(props.address)]} width="32" />}
                   endIcon={<ExpandMoreRoundedIcon />}
                   onClick={() => setDialogOpen(true)}
                 >
-                  {nameOfSelectedAddress(selectedAddress)}
+                  {nameOfSelectedAddress(props.address)}
                 </Button>
+                {enabled || props.setEnabled===undefined ? <div></div> :
+                  <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)}>
+                    Enable Token for Trade
+                  </Button>}
               </FormControl>
             </Grid>
           </Grid>

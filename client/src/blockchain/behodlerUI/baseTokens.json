@@ -23,8 +23,12 @@
             "address": "0x189B51c422d3668F0695F776A3e7cdf0589cD79E"
         },
         {
-            "name": "ERC20",
+            "name": "dai",
             "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE"
+        },
+        {
+            "name": "weidai",
+            "address": "0x8a16E29CaC5e50c9aa2a497589a02004e83e10e2"
         }
     ]
 }

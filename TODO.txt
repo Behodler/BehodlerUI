@@ -40,10 +40,11 @@ drop down. (pallette?)
 A similar file for pyroTokens with similar folder
 
 Behodler User Screen:
-1. Create uniswap looking textbox. Include a twirly that can be turned on with a state. --BUSY
-2. create trade panel with exchange rate calculation under output box.
+1. Create uniswap looking textbox. Include a twirly that can be turned on with a state. --DONE, no need for twirly
+        On enable, should see twirly followed by enable vanishing -- DONE
+2. On number change, call behodler.calculateAverageScarcity bla bla to report exchange rate just below output box
 3. add slide down advanced with slippage numbers. Remember to figure out how this relates to max and min price
-4. Implement Swap button that activates twirly
+4. Implement Swap button
 
 Later:
 Implement Chronos powered price history
