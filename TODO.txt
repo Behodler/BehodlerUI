@@ -45,17 +45,15 @@ A similar file for pyroTokens with similar folder
 Behodler User Screen:
 1. Create uniswap looking textbox. Include a twirly that can be turned on with a state. --DONE, no need for twirly
         On enable, should see twirly followed by enable vanishing -- DONE
-2. On number change, call behodler.calculateAverageScarcity bla bla to report exchange rate just below output box
-    - port the calculateAverageScarcity function to javascript and write an inverse version. Provide custom obligation parameter to calculate slippage after trade.
 (Uniswap slippage is what happens after. Limit additional slippage is from front runners etc.)
-3. Wording: "You are selling 10 oxt which will cause the behodler token bonding curve to produce 10 scarcity (scx) <remember fees>. This will then be used to purchase 50 Loom."
+2. Wording: "You are selling 10 oxt which will cause the behodler token bonding curve to produce 10 scarcity (scx) <remember fees>. This will then be used to purchase 50 Loom."
     You can set bounds on how much scarcity is produced or required to limit your losses from front running or late block inclusion:
     Min scx required to produce 10 oxt  <text box>
     Max scx required to purchase 50 Loom <text box>
-4. Implement Swap button
-5. Add a swap token toggle to switch out and in
-6. Don't require enabling for scarcity
-7. Display how many pyrotokens you'll earn
+3. Implement Swap button -- DONE
+4. Add a swap token toggle to switch out and in
+5. Don't require enabling for scarcity --DONE
+6. Display how many pyrotokens you'll earn
 
 Later:
 Implement Chronos powered price history
