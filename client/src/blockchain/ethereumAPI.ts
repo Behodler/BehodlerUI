@@ -231,6 +231,11 @@ class ethereumAPI {
 	public toWei(eth: string) {
 		if (eth == 'unset')
 			return 'unset'
+
+		if (eth.indexOf('.') !== -1) {
+			if (eth.length - eth.indexOf('.') > 18)
+				eth = eth.substring(0, eth.indexOf('.') + 18)
+		}
 		return this.web3.utils.toWei(eth)
 	}
 
@@ -254,7 +259,7 @@ class ethereumAPI {
 		await token.approve(spender, this.UINTMAX).send({ from: owner })
 	}
 
-	public generateNewEffects(tokenAddress:string, currentAccount:string):ERC20Effects {
+	public generateNewEffects(tokenAddress: string, currentAccount: string): ERC20Effects {
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
 		return new ERC20Effects(this.web3, token, currentAccount)
 	}

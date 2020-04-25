@@ -19,7 +19,10 @@ address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
 
 
 
+
 Behodler:
+FOR NEXT TIME: exchange rate calculations don't match actual scarcity produced
+
 Interfaces --DONE
 1. populate contracts interface with behodler contracts --DONE
 2. web3 instantiate behodler -- DONE
@@ -50,6 +53,9 @@ Behodler User Screen:
     Min scx required to produce 10 oxt  <text box>
     Max scx required to purchase 50 Loom <text box>
 4. Implement Swap button
+5. Add a swap token toggle to switch out and in
+6. Don't require enabling for scarcity
+7. Display how many pyrotokens you'll earn
 
 Later:
 Implement Chronos powered price history

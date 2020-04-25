@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Search from '@material-ui/icons/Search'
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
+
 import {
   FormControl, ListItemText, ListItem, ListItemAvatar,
   Dialog,
@@ -17,7 +18,7 @@ import {
   DialogContentText,
   Typography,
 } from '@material-ui/core';
-import { isNullOrWhiteSpace, formatNumberText } from '../../../../util/jsHelpers'
+import { isNullOrWhiteSpace, formatNumberText, formatDecimalStrings } from '../../../../util/jsHelpers'
 import { Images } from './ImageLoader'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import API from '../../../../blockchain/ethereumAPI'
@@ -29,16 +30,25 @@ interface DropDownField {
   image: any
 }
 
+interface exchangeRateFields {
+  inputAddress: string
+  ratio: string,
+  valid
+}
+
 interface props {
   label: string
   dropDownFields: DropDownField[],
   valid: boolean,
   setValid: (v: boolean) => void
   setValue: (v: string) => void
-  value:string
+  value: string
   setEnabled?: (e: boolean) => void
   setTokenAddress: (a: string) => void
-  address: string
+  address: string,
+  exchangeRate?: exchangeRateFields,
+  scarcityAddress?: string
+  clear: () => void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -84,6 +94,9 @@ const useStyles = makeStyles((theme) => ({
     width: '500px',
     marginBottom: theme.spacing(2),
   },
+  exchangeRate: {
+    color: "darkGrey"
+  }
 }));
 
 export default function ExtendedTextField(props: props) {
@@ -108,9 +121,15 @@ export default function ExtendedTextField(props: props) {
     const isValid = !isNaN(parsedValue) && parsedValue <= parseFloat(currentBalance)
     props.setValid(isValid)
   }
-
-
-  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account) 
+  let exchangeRateString = ''
+  if (props.exchangeRate) {
+    let ratio = formatDecimalStrings(props.exchangeRate.ratio, 4)
+    for (let i = 5; i < 19 && ratio === '0'; i++) {
+      ratio = formatDecimalStrings(props.exchangeRate.ratio, i)
+    }
+    exchangeRateString = `1 ${nameOfSelectedAddress(props.exchangeRate.inputAddress)} = ${ratio} ${nameOfSelectedAddress(props.address)}`
+  }
+  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account)
 
   useEffect(() => {
     const effect = currentTokenEffects.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)
@@ -118,10 +137,11 @@ export default function ExtendedTextField(props: props) {
       const scaledAllowance = API.fromWei(allowance)
       const allowanceFloat = parseFloat(scaledAllowance)
       const balanceFloat = parseFloat(currentBalance)
-      const en = !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
+      const en = (props.scarcityAddress !== undefined && props.address.trim().toLowerCase() === props.scarcityAddress.trim().toLowerCase()) || !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
       setEnabled(en)
-      if (props.setEnabled)
+      if (props.setEnabled) {
         props.setEnabled(en)
+      }
     })
 
     return () => { subscription.unsubscribe(); effect.cleanup() }
@@ -159,7 +179,7 @@ export default function ExtendedTextField(props: props) {
                 button
                 key={t.address}
                 alignItems="flex-start"
-                onClick={() => { props.setTokenAddress(t.address); setDialogOpen(false); props.setValue(""); props.setValid(true) }}>
+                onClick={() => { props.setTokenAddress(t.address); setDialogOpen(false); props.setValid(true); props.clear() }}>
                 <ListItemAvatar>
                   <img alt="token" src={t.image} width="32" />
                 </ListItemAvatar>
@@ -172,7 +192,7 @@ export default function ExtendedTextField(props: props) {
         }
       </Container>
     </Dialog>
-    <Paper component="form" className={classes.root} >
+    <Paper className={classes.root} >
       <Grid container
         direction="column"
         justify="flex-start"
@@ -225,13 +245,36 @@ export default function ExtendedTextField(props: props) {
                 >
                   {nameOfSelectedAddress(props.address)}
                 </Button>
-                {enabled || props.setEnabled===undefined ? <div></div> :
+                {enabled || props.setEnabled === undefined ? <div></div> :
                   <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)}>
                     Enable Token for Trade
                   </Button>}
               </FormControl>
             </Grid>
+
           </Grid>
+          {props.exchangeRate && props.exchangeRate.valid ?
+            <Grid item>
+              <Grid
+                container
+                direction="row"
+                justify="space-between"
+                alignItems="flex-start"
+              >
+                <Grid item>
+                  <Typography variant="caption" className={classes.exchangeRate}>
+                    Exchange Rate
+                    </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="caption" className={classes.exchangeRate}>
+                    {exchangeRateString}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+            </Grid>
+            : <div></div>}
         </Grid>
       </Grid>
     </Paper>

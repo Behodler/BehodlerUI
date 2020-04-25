@@ -155,7 +155,10 @@ const defaultBehodler: Behodler = {
 	...defaultBase,
 	...defaultSecondary,
 	seed: (lachesis: address, kharon: address, janus: address, chronos: address) => { },
-	calculateAverageScarcityPerToken: (token: address, value: uint) => { }
+	calculateAverageScarcityPerToken: (token: address, value: uint) => { },
+	tokenScarcityObligations: (token: string) => { },
+	buyDryRun: (tokenAddress: address, value: uint, minPrice: uint) => {},
+    sellDryRun: (tokenAddress: address, scarcityValue: uint, maxPrice: uint) => {}
 }
 
 const defaultChronos: Chronos = {
