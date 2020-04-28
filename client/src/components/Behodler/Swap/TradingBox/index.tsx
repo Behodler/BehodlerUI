@@ -174,7 +174,7 @@ export default function TradeBox(props: props) {
                                 setOutputValue(API.fromWei(tokensToPurchase.toString()))
                             })
                             .catch(err => {
-                               setInputValid(false)
+                                setInputValid(false)
                             })
                     })
             }
@@ -226,6 +226,6 @@ export default function TradeBox(props: props) {
             <Grid item>
                 <Button variant="contained" color="primary" onClick={() => setSwapClicked(true)}>SWAP</Button>
             </Grid>
-            : <Grid item>No Swap</Grid>}
+            : ""}
     </Grid >
 }

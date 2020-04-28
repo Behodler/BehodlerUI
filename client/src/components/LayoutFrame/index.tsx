@@ -114,10 +114,10 @@ function LayoutFrameComponent(props: any) {
 							className={classes.actionDrawer}
 							classes={{ paper: classes.actionDrawerPaper }}
 						>
-							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={()=>setRedirect('/swap')} />
+							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={()=>setRedirect('/behodler/swap')} />
 							<Divider />
 							{walletContextProps.primary ?
-								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodleradmin')} /> : ""
+								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodler/admin')} /> : ""
 							}
 						</Drawer>
 
@@ -187,7 +187,7 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/FAQ">
 										<FAQ />
 									</Route>
-									<Route path="/swap">
+									<Route path="/behodler/swap">
 										{notConnected ? <Redirect to={"/"} /> : <Swap />}
 									</Route>
 									{walletContextProps.primary ?
@@ -197,7 +197,7 @@ function LayoutFrameComponent(props: any) {
 										: ""
 									}
 									{walletContextProps.primary ?
-										<Route path="/behodleradmin">
+										<Route path="/behodler/admin">
 											<Admin />
 										</Route>
 										: ""
