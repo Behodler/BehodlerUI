@@ -60,7 +60,7 @@ Behodler User Screen:
     6.4 Different for WeiDai and Dai
 7. show total token in reserve -- DONE
 8. Make an exception for weth --DONE
-9. Deal with insufficient balance problem
+9. Deal with insufficient balance problem --DONE
 10. Add swap to minified app bar
 
 Pyrotoken page

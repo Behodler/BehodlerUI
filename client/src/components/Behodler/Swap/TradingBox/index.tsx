@@ -173,6 +173,9 @@ export default function TradeBox(props: props) {
                                 setExchangeRate(ex.toString())
                                 setOutputValue(API.fromWei(tokensToPurchase.toString()))
                             })
+                            .catch(err => {
+                               setInputValid(false)
+                            })
                     })
             }
 
