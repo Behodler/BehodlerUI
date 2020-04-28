@@ -108,6 +108,7 @@ export default function ExtendedTextField(props: props) {
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
   const [enabled, setEnabled] = useState<boolean>(false)
+  const [reserve, setReserve] = useState<string>("")
 
   const setFormattedInput = (value: string) => {
     if (isNullOrWhiteSpace(value)) {
@@ -155,6 +156,16 @@ export default function ExtendedTextField(props: props) {
     return () => { subscription.unsubscribe(); effect.cleanup() }
   })
 
+  useEffect(() => {
+    if (props.exchangeRate && props.exchangeRate.valid) {
+      const effect = currentTokenEffects.balanceOfEffect(walletContextProps.contracts.behodler.Behodler.address)
+      const subscription = effect.Observable.subscribe(balance => {
+        setReserve(balance)
+      })
+      return () => { subscription.unsubscribe(); effect.cleanup() }
+    }
+    return () => { }
+  })
 
   const listTokens = isNullOrWhiteSpace(filteredText) ? props.dropDownFields : props.dropDownFields.filter(t => t.name.toLowerCase().indexOf(filteredText.toLowerCase()) !== -1)
 
@@ -254,26 +265,48 @@ export default function ExtendedTextField(props: props) {
 
           </Grid>
           {props.exchangeRate && props.exchangeRate.valid ?
-            <Grid item>
-              <Grid
-                container
-                direction="row"
-                justify="space-between"
-                alignItems="flex-start"
-              >
-                <Grid item>
-                  <Typography variant="caption" className={classes.exchangeRate}>
-                    Exchange Rate
+            <div>
+              <Grid item>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="flex-start"
+                >
+                  <Grid item>
+                    <Typography variant="caption" className={classes.exchangeRate}>
+                      Exchange Rate
                     </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="caption" className={classes.exchangeRate}>
+                      {exchangeRateString}
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography variant="caption" className={classes.exchangeRate}>
-                    {exchangeRateString}
-                  </Typography>
-                </Grid>
-              </Grid>
 
-            </Grid>
+              </Grid>
+              {nameOfSelectedAddress(props.address) === 'Scarcity' ? "" :
+                <Grid item>
+                  <Grid
+                    container
+                    direction="row"
+                    justify="space-between"
+                    alignItems="flex-start"
+                  >
+                    <Grid item>
+                      <Typography variant="caption" className={classes.exchangeRate}>
+                        Total in reserve
+                    </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="caption" className={classes.exchangeRate}>
+                        {reserve}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>}
+            </div>
             : <div></div>}
         </Grid>
       </Grid>

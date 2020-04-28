@@ -58,7 +58,7 @@ Behodler User Screen:
     6.2 Pyrotoken, explaining how this is a reward for trading
     6.3 Fee, explaining how this is an optional fee to support the system.
     6.4 Different for WeiDai and Dai
-7. show total token in reserve
+7. show total token in reserve -- DONE
 8. Make an exception for weth --DONE
 9. Deal with insufficient balance problem
 10. Add swap to minified app bar
