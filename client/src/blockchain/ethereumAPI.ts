@@ -10,6 +10,8 @@ import { PotReserve } from './contractInterfaces/PotReserve'
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
+import { EtherEffects } from './observables/Ether'
+import Token from './observables/Token'
 import { PatienceRegulationEffects } from './observables/PatienceRegulationEngine'
 import { BankEffects } from './observables/WeiDaiBank'
 
@@ -259,7 +261,11 @@ class ethereumAPI {
 		await token.approve(spender, this.UINTMAX).send({ from: owner })
 	}
 
-	public generateNewEffects(tokenAddress: string, currentAccount: string): ERC20Effects {
+	public generateNewEffects(tokenAddress: string, currentAccount: string): Token {
+		
+		if(tokenAddress === '0x0'){
+			return new EtherEffects(this.web3,currentAccount)
+		}
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
 		return new ERC20Effects(this.web3, token, currentAccount)
 	}

@@ -102,7 +102,6 @@ const useStyles = makeStyles((theme) => ({
 export default function ExtendedTextField(props: props) {
   const classes = useStyles();
   const walletContextProps = useContext(WalletContext)
-
   const indexOfAddress = (address: string) => props.dropDownFields.findIndex(t => t.address == address)
   const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address == address)[0].name
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
@@ -129,7 +128,8 @@ export default function ExtendedTextField(props: props) {
     }
     exchangeRateString = `1 ${nameOfSelectedAddress(props.exchangeRate.inputAddress)} = ${ratio} ${nameOfSelectedAddress(props.address)}`
   }
-  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account)
+  const addressForEffect = nameOfSelectedAddress(props.address).toLowerCase() === 'eth' ? '0x0' : props.address
+  const currentTokenEffects = API.generateNewEffects(addressForEffect, walletContextProps.account)
 
   useEffect(() => {
     const effect = currentTokenEffects.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)

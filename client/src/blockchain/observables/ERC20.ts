@@ -1,9 +1,9 @@
 import Web3 from "web3";
 import { ERC20 } from '../contractInterfaces/ERC20'
 import { Effect, FetchEthereumNumber, FetchNumberFields, FetchNumber } from './common'
-import EffectBase from './EffectBase'
+import Token from './Token'
 
-export class ERC20Effects extends EffectBase {
+export class ERC20Effects extends Token {
 	tokenInstance: ERC20
 
 	constructor(web3: Web3, tokenInstance: ERC20, account: string) {

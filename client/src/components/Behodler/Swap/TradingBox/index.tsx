@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { useEffect, useCallback } from 'react'
 import ExtendedTextField from "./ExtendedTextField"
-import { Grid, Button } from '@material-ui/core'
+import { Grid, Button, IconButton } from '@material-ui/core'
 import { useContext, useState } from 'react'
 import tokenListJSON from "../../../../blockchain/behodlerUI/baseTokens.json"
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
-import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
 import { Images } from './ImageLoader'
-// import { AverageScarcityPerToken, AverageTokenPerScarcity, BuyDryRunProducer, SellDryRunProducer } from '../../../../blockchain/behodlerUI/TradeCalculations'
-import baseTokenJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
+import SwapVertIcon from '@material-ui/icons/SwapVert';
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 
@@ -19,8 +17,18 @@ export default function TradeBox(props: props) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 })
 
     const walletContextProps = useContext(WalletContext)
-    const tokenList = tokenListJSON[walletContextProps.networkName]
-    let tokenDropDownList = tokenList.map((t, i) => ({ ...t, image: Images[i] }))
+
+    const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
+    const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
+
+    let tokenDropDownList = tokenList.map((t, i) => {
+        let item = { ...t, image: Images[i] }
+        if (i === indexOfWeth) {
+            item.name = "Eth"
+        }
+        return item
+    })
+
     const [inputValid, setInputValid] = useState<boolean>(true)
     const [outputValid, setOutputValid] = useState<boolean>(true)
     const [inputValue, setInputValue] = useState<string>("")
@@ -32,11 +40,15 @@ export default function TradeBox(props: props) {
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
 
     const clearInput = () => { setInputValue(""); setOutputValue("") }
-
-    const scarcityAddress = baseTokenJSON[walletContextProps.networkName].filter(t => t.name === 'Scarcity')[0].address.toLowerCase()
-
+    const scarcityAddress = tokenDropDownList.filter(t => t.name === 'Scarcity')[0].address.toLowerCase()
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter(t => t.address !== inputAddress)[0].address)
+    }
+
+    const swapInputAddresses = () => {
+        const temp = inputAddress
+        setInputAddress(outputAddress)
+        setOutputAddress(temp)
     }
 
     const parsedInputValue = parseFloat(inputValue)
@@ -50,12 +62,61 @@ export default function TradeBox(props: props) {
 
     const primaryOptions = { from: walletContextProps.account }
 
+    const isEthPredicate = (textBoxAddress: string): boolean => {
+        return tokenDropDownList.filter(item => item.address.trim().toLowerCase() === textBoxAddress.trim().toLowerCase())[0].name === 'Eth'
+    }
+
     const swapCallBack = useCallback(async () => {
         if (swapClicked) {
             setSwapClicked(false)
-            await walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
-                clearInput();
-            });
+            if (isEthPredicate(inputAddress)) {
+                console.log('input is eth')
+                const behodlerAddress = walletContextProps.contracts.behodler.Behodler.address
+                walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, behodlerAddress).call(primaryOptions)
+                    .then(behodlerAllowance => {
+                        if (new BigNumber(behodlerAllowance).isLessThan(new BigNumber(inputValWei))) {
+                            console.log('approving behodler')
+                            walletContextProps.contracts.behodler.Weth.approve(behodlerAddress, API.UINTMAX).send(primaryOptions, () => {
+                                console.log('approved')
+                                walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, "0", "0").send({ from: walletContextProps.account, value: inputValWei }, () => {
+                                    clearInput();
+                                });
+                            })
+                        }
+                        else {
+                            console.log('no need to approve')
+                            walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, "0", "0").send({ from: walletContextProps.account, value: inputValWei }, () => {
+                                clearInput();
+                            });
+                        }
+                    })
+            }
+            else if (isEthPredicate(outputAddress)) {
+                console.log('output is eth')
+                const janusAddress = walletContextProps.contracts.behodler.Janus.address
+                walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, janusAddress).call(primaryOptions)
+                    .then(jAllowance => {
+                        const outputValWei = API.toWei(outputValue)
+                        if (new BigNumber(jAllowance).isLessThan(new BigNumber(outputValWei))) {
+
+                            walletContextProps.contracts.behodler.Weth.approve(janusAddress, API.UINTMAX).send(primaryOptions, () => {
+                                console.log('approved')
+                                walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
+                                    clearInput();
+                                });
+                            })
+                        } else {
+                            console.log('regular janus stuff')
+                            walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
+                                clearInput();
+                            });
+                        }
+                    })
+            } else {
+                walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
+                    clearInput();
+                });
+            }
         }
         setSwapClicked(false)
     }, [swapClicked, inputAddress, outputAddress, inputValWei, primaryOptions])
@@ -125,8 +186,9 @@ export default function TradeBox(props: props) {
         alignItems="center"
         spacing={2}>
         <Grid item>
-            <ExtendedTextField label="Input (estimated)" dropDownFields={tokenDropDownList}
-                valid={inputValid} setValid={setInputValid}
+            <ExtendedTextField label="Input" dropDownFields={tokenDropDownList}
+                valid={inputValid}
+                setValid={setInputValid}
                 setValue={setInputValue}
                 setEnabled={setInputEnabled}
                 setTokenAddress={setInputAddress}
@@ -137,7 +199,9 @@ export default function TradeBox(props: props) {
             />
         </Grid >
         <Grid item>
-            <ArrowDownwardRoundedIcon color="secondary" />
+            <IconButton aria-label="delete" onClick={swapInputAddresses}>
+                <SwapVertIcon color="secondary" />
+            </IconButton>
         </Grid>
         <Grid item>
             <ExtendedTextField label="Output (estimated)" dropDownFields={tokenDropDownList}
