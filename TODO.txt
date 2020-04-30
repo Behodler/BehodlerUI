@@ -43,11 +43,11 @@ drop down. (pallette?)
 A similar file for pyroTokens with similar folder
 
 Behodler User Screen:
+TODO FOR NEXT TIME: min price and max price are causing reversion. Also exchange rate is fucky
 1. Create uniswap looking textbox. Include a twirly that can be turned on with a state. --DONE, no need for twirly
         On enable, should see twirly followed by enable vanishing -- DONE
-(Uniswap slippage is what happens after. Limit additional slippage is from front runners etc.)
 2. Wording: "You are selling 10 oxt which will cause the behodler token bonding curve to produce 10 scarcity (scx) <remember fees>. This will then be used to purchase 50 Loom."
-    You can set bounds on how much scarcity is produced or required to limit your losses from front running or late block inclusion:
+    You can set bounds on how much scarcity is produced or required to limit your losses from front running or late block inclusion: -- DONE
     Min scx required to produce 10 oxt  <text box>
     Max scx required to purchase 50 Loom <text box>
 3. Implement Swap button -- DONE

@@ -9,13 +9,13 @@ import { Images } from './ImageLoader'
 import SwapVertIcon from '@material-ui/icons/SwapVert';
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
+import AdvancedDetails, { configuration } from './AdvancedDetails'
 
 interface props {
 }
 
 export default function TradeBox(props: props) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 })
-
     const walletContextProps = useContext(WalletContext)
 
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
@@ -38,17 +38,35 @@ export default function TradeBox(props: props) {
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[1].address)
     const [exchangeRate, setExchangeRate] = useState<string>("")
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
+    const [dryRunSCX, setDryRunSCX] = useState<string>("")
+    const [dryRunTokens, setDryRunTokens] = useState<string>("")
+    const [showAdvanced, setShowAdvanced] = useState<boolean>(false)
+    const [minPrice, setMinPrice] = useState<string>("0")
+    const [maxPrice, setMaxPrice] = useState<string>("0")
 
-    const clearInput = () => { setInputValue(""); setOutputValue("") }
-    const scarcityAddress = tokenDropDownList.filter(t => t.name === 'Scarcity')[0].address.toLowerCase()
+    const correctPrice = (price: string) => {
+        if (new BigNumber(price).isNaN())
+            return '0'
+        return API.toWei(price)
+    }
+    const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter(t => t.address == address)[0].name
+    const clearInput = () => { setInputValue(""); setOutputValue(""); setShowAdvanced(false); setMinPrice("0"); setMaxPrice("0"); setSwapClicked(false) }
+    const scarcityAddress = tokenDropDownList.filter(t => t.name === 'Scarcity')[0].address.toLowerCase().trim()
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter(t => t.address !== inputAddress)[0].address)
+    }
+    let advancedConfig: configuration = configuration.TOKENTOTOKEN
+    if (inputAddress.toLowerCase().trim() === scarcityAddress) {
+        advancedConfig = configuration.SCARCITYIN
+    } else if (outputAddress.toLowerCase().trim() === scarcityAddress) {
+        advancedConfig = configuration.SCARCITYOUT
     }
 
     const swapInputAddresses = () => {
         const temp = inputAddress
         setInputAddress(outputAddress)
         setOutputAddress(temp)
+        clearInput()
     }
 
     const parsedInputValue = parseFloat(inputValue)
@@ -70,29 +88,24 @@ export default function TradeBox(props: props) {
         if (swapClicked) {
             setSwapClicked(false)
             if (isEthPredicate(inputAddress)) {
-                console.log('input is eth')
                 const behodlerAddress = walletContextProps.contracts.behodler.Behodler.address
                 walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, behodlerAddress).call(primaryOptions)
                     .then(behodlerAllowance => {
                         if (new BigNumber(behodlerAllowance).isLessThan(new BigNumber(inputValWei))) {
-                            console.log('approving behodler')
                             walletContextProps.contracts.behodler.Weth.approve(behodlerAddress, API.UINTMAX).send(primaryOptions, () => {
-                                console.log('approved')
-                                walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, "0", "0").send({ from: walletContextProps.account, value: inputValWei }, () => {
+                                walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(minPrice), correctPrice(maxPrice)).send({ from: walletContextProps.account, value: inputValWei }, () => {
                                     clearInput();
                                 });
                             })
                         }
                         else {
-                            console.log('no need to approve')
-                            walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, "0", "0").send({ from: walletContextProps.account, value: inputValWei }, () => {
+                            walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(minPrice), correctPrice(maxPrice)).send({ from: walletContextProps.account, value: inputValWei }, () => {
                                 clearInput();
                             });
                         }
                     })
             }
             else if (isEthPredicate(outputAddress)) {
-                console.log('output is eth')
                 const janusAddress = walletContextProps.contracts.behodler.Janus.address
                 walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, janusAddress).call(primaryOptions)
                     .then(jAllowance => {
@@ -100,26 +113,24 @@ export default function TradeBox(props: props) {
                         if (new BigNumber(jAllowance).isLessThan(new BigNumber(outputValWei))) {
 
                             walletContextProps.contracts.behodler.Weth.approve(janusAddress, API.UINTMAX).send(primaryOptions, () => {
-                                console.log('approved')
-                                walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
+                                walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, () => {
                                     clearInput();
                                 });
                             })
                         } else {
-                            console.log('regular janus stuff')
-                            walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
+                            walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, (err) => {
                                 clearInput();
                             });
                         }
                     })
             } else {
-                walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, "0", "0").send(primaryOptions, () => {
+                 walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, (err) => {
                     clearInput();
                 });
             }
         }
         setSwapClicked(false)
-    }, [swapClicked, inputAddress, outputAddress, inputValWei, primaryOptions])
+    }, [swapClicked])
 
     useEffect(() => {
         swapCallBack()
@@ -136,39 +147,41 @@ export default function TradeBox(props: props) {
                             setInputValue(API.fromWei(obligations.toString()))
                             return;
                         }
-                        walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, inputValWei, "0")
+                        walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, inputValWei, correctPrice(maxPrice))
                             .call(primaryOptions)
                             .then(tokensToPurchase => {
+                                setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
                                 setExchangeRate(ex.toString())
                                 setOutputValue(API.fromWei(tokensToPurchase.toString()))
                             })
                             .catch(error => {
-                                console.log('caught error: ' + error)
                             })
                     })
 
 
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
-                walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, "0")
+                walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, correctPrice(minPrice))
                     .call(primaryOptions)
                     .then(scxToPurchase => {
+                        setDryRunSCX(scxToPurchase)
                         const ex = new BigNumber(scxToPurchase).dividedBy(inputValWei)
                         setExchangeRate(ex.toString())
                         setOutputValue(API.fromWei(scxToPurchase.toString()))
                     })
-                    .catch(error => {
-                        console.log('caught error: ' + error)
+                    .catch(err => {
                     })
 
             }
             else {
-                walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, "0")
+                walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, correctPrice(minPrice))
                     .call(primaryOptions)
                     .then(scxToPurchase => {
-                        walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, scxToPurchase, "0")
+                        setDryRunSCX(scxToPurchase)
+                        walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, scxToPurchase, correctPrice(maxPrice))
                             .call(primaryOptions)
                             .then(tokensToPurchase => {
+                                setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
                                 setExchangeRate(ex.toString())
                                 setOutputValue(API.fromWei(tokensToPurchase.toString()))
@@ -180,16 +193,17 @@ export default function TradeBox(props: props) {
             }
 
         }
-    })
+    }, [inputReadyToSwap, inputValue, maxPrice, minPrice])
 
     return <Grid
         container
         direction="column"
         justify="space-between"
         alignItems="center"
-        spacing={2}>
+        spacing={3}>
         <Grid item>
-            <ExtendedTextField label="Input" dropDownFields={tokenDropDownList}
+            <ExtendedTextField label="Input"
+                dropDownFields={tokenDropDownList}
                 valid={inputValid}
                 setValid={setInputValid}
                 setValue={setInputValue}
@@ -207,7 +221,8 @@ export default function TradeBox(props: props) {
             </IconButton>
         </Grid>
         <Grid item>
-            <ExtendedTextField label="Output (estimated)" dropDownFields={tokenDropDownList}
+            <ExtendedTextField label="Output (estimated)"
+                dropDownFields={tokenDropDownList}
                 valid={outputValid}
                 setValid={setOutputValid}
                 setValue={setOutputValue}
@@ -216,12 +231,37 @@ export default function TradeBox(props: props) {
                 value={outputValue}
                 exchangeRate={{ inputAddress, ratio: exchangeRate, valid: swapEnabled }}
                 clear={clearInput}
+                disabledInput
             />
-        </Grid>
-        <Grid item>
-            Advanced
-        </Grid>
-
+        </Grid>{swapEnabled ?
+            <Grid item>
+                {showAdvanced ? <Grid
+                    container
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                >
+                    <Grid item>
+                        <AdvancedDetails setMaxPrice={setMaxPrice}
+                            setMinPrice={setMinPrice}
+                            nameOfInput={nameOfSelectedAddress(inputAddress)}
+                            nameOfOutput={nameOfSelectedAddress(outputAddress)}
+                            inputValue={inputValue}
+                            outputValue={outputValue}
+                            DryRunSCX={dryRunSCX}
+                            DryRunTokens={dryRunTokens}
+                            configuration={advancedConfig}
+                            minPrice={minPrice}
+                            maxPrice={maxPrice}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Button color="secondary" onClick={() => { setShowAdvanced(false); setMinPrice("0"); setMaxPrice("0") }}>Hide Advanced</Button>
+                    </Grid>
+                </Grid> :
+                    <Button color="secondary" onClick={() => setShowAdvanced(true)}>Show Advanced</Button>}
+            </Grid>
+            : ""}
         {swapEnabled ?
             <Grid item>
                 <Button variant="contained" color="primary" onClick={() => setSwapClicked(true)}>SWAP</Button>

@@ -9,6 +9,7 @@ import AssignmentReturned from '@material-ui/icons/AssignmentReturned'
 import Timeline from '@material-ui/icons/Timeline'
 import Computer from '@material-ui/icons/Computer'
 import { Hidden } from '@material-ui/core';
+import CompareArrows from '@material-ui/icons/CompareArrows'
 
 const styles = {
 	root: {
@@ -20,7 +21,7 @@ const styles = {
 	menuButton: {
 		marginLeft: -12,
 		marginRight: 20,
-		fontSize:12
+		fontSize: 12
 	},
 };
 
@@ -29,34 +30,38 @@ interface MobileProps {
 	goToEngine: () => void
 	homePage: () => void,
 	goToBank: () => void
+	goToSwap: () => void
 }
 
-function Mobile (props:MobileProps){
-		const { classes } = props;
-		return (
-			<Hidden lgUp>
-				<div className={classes.root}>
-					<AppBar position="static">
-						<Toolbar>
-							<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToEngine}>
-								<AddIcon />&nbsp; Create / Claim
+function Mobile(props: MobileProps) {
+	const { classes } = props;
+	return (
+		<Hidden lgUp>
+			<div className={classes.root}>
+				<AppBar position="static">
+					<Toolbar>
+						<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToEngine}>
+							<AddIcon />&nbsp; Create / Claim
 							</IconButton>
-							<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToBank}>
-								<AssignmentReturned />&nbsp; Redeem
+						<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToBank}>
+							<AssignmentReturned />&nbsp; Redeem
 							</IconButton>
-							<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick ={props.homePage}>
-								<Timeline />&nbsp; How it Works
+						<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.homePage}>
+							<Timeline />&nbsp; How it Works
 							</IconButton>
-							<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>{
-								window.open('https://medium.com','_blank')
-							}}>
+						<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={() => {
+							window.open('https://medium.com', '_blank')
+						}}>
 							<Computer />&nbsp; Learn More
 							</IconButton>
-						</Toolbar>
-					</AppBar>
-				</div>
-			</Hidden>
-		);
+						<IconButton className={classes.menuButton} color="inherit" aria-label="Swap" onClick={props.goToSwap}>
+							<CompareArrows />&nbsp; Swap
+							</IconButton>
+					</Toolbar>
+				</AppBar>
+			</div>
+		</Hidden>
+	);
 }
 
 

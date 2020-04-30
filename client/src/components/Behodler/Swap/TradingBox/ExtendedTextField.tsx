@@ -49,6 +49,7 @@ interface props {
   exchangeRate?: exchangeRateFields,
   scarcityAddress?: string
   clear: () => void
+  disabledInput?:boolean
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -99,6 +100,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
+
 export default function ExtendedTextField(props: props) {
   const classes = useStyles();
   const walletContextProps = useContext(WalletContext)
@@ -111,6 +114,8 @@ export default function ExtendedTextField(props: props) {
   const [reserve, setReserve] = useState<string>("")
 
   const setFormattedInput = (value: string) => {
+    if(props.disabledInput)
+    return
     if (isNullOrWhiteSpace(value)) {
       props.setValue("")
       props.setValid(true)
