@@ -7,4 +7,5 @@ export interface Kharon extends BaseContract, Secondary {
     seed: (bellows: address, behodler: address, prometheus: address, weiDaiBank: address, dai: address, weidai: address, scar: address, cut: uint, donationAddress: address) => any
     toll: (token: address, value: uint) => any
     withdrawDonations: (token: address) => any
+    demandPaymentRewardDryRun: (token: address, value: uint) => any
 }

@@ -43,6 +43,8 @@ export default function TradeBox(props: props) {
     const [showAdvanced, setShowAdvanced] = useState<boolean>(false)
     const [minPrice, setMinPrice] = useState<string>("0")
     const [maxPrice, setMaxPrice] = useState<string>("0")
+    const [fee, setFee] = useState<string>("0")
+    const [reward, setReward] = useState<string>("0")
 
     const correctPrice = (price: string) => {
         if (new BigNumber(price).isNaN())
@@ -69,14 +71,14 @@ export default function TradeBox(props: props) {
         clearInput()
     }
 
-    const parsedInputValue = parseFloat(inputValue)
-    const parsedOutputValue = parseFloat(outputValue)
+    const bigInputValue = new BigNumber(inputValue)
+    const bigOutputValue = new BigNumber(outputValue)
 
-    const swapPossible = inputValid && outputValid && !isNaN(parsedInputValue) && !isNaN(parsedOutputValue)
-    const inputReadyToSwap = inputValid && !isNaN(parsedInputValue)
+    const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
+    const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
     const swapEnabled = swapPossible && inputEnabled
 
-    const inputValWei = inputValid && !isNaN(parsedInputValue) ? API.toWei(inputValue) : "0"
+    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
 
@@ -124,7 +126,7 @@ export default function TradeBox(props: props) {
                         }
                     })
             } else {
-                 walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, (err) => {
+                walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, (err) => {
                     clearInput();
                 });
             }
@@ -139,6 +141,29 @@ export default function TradeBox(props: props) {
 
     useEffect(() => {
         if (inputReadyToSwap) {
+            const nameOfInput = nameOfSelectedAddress(inputAddress).toLowerCase()
+
+
+            walletContextProps.contracts.behodler.Kharon.toll(inputAddress, inputValWei).call(primaryOptions)
+                .then(feeResult => {
+                    const decimalFee = API.hexToNumberString(feeResult)
+                    if (!new BigNumber(decimalFee).isNaN())
+                        setFee(API.fromWei(decimalFee))
+                    if (nameOfInput === 'scarcity' || nameOfInput === 'weidai' || nameOfInput === 'dai')
+                        setReward("")
+                    else
+                        walletContextProps.contracts.behodler.Kharon.demandPaymentRewardDryRun(inputAddress, inputValWei)
+                            .call(primaryOptions)
+                            .then(rewardResult => {
+
+                                const decimalReward = API.hexToNumberString(rewardResult)
+                                if (!new BigNumber(decimalReward).isNaN()) {
+                                    setReward(API.fromWei(decimalReward))
+                                    setFee(API.fromWei(new BigNumber(decimalFee).minus(decimalReward).toString()))
+                                }
+                            })
+                })
+
             if (inputAddress.toLowerCase() === scarcityAddress) {
                 walletContextProps.contracts.behodler.Behodler.tokenScarcityObligations(outputAddress)
                     .call(primaryOptions)
@@ -195,6 +220,12 @@ export default function TradeBox(props: props) {
         }
     }, [inputReadyToSwap, inputValue, maxPrice, minPrice])
 
+    const feeRewardBreakdown = swapEnabled ? {
+        fee,
+        reward: reward !== '' ? reward : undefined,
+        donation: '0'
+    } : undefined
+
     return <Grid
         container
         direction="column"
@@ -213,6 +244,7 @@ export default function TradeBox(props: props) {
                 value={inputValue}
                 scarcityAddress={scarcityAddress}
                 clear={clearInput}
+                feeReward={feeRewardBreakdown}
             />
         </Grid >
         <Grid item>

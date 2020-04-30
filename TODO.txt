@@ -43,7 +43,6 @@ drop down. (pallette?)
 A similar file for pyroTokens with similar folder
 
 Behodler User Screen:
-TODO FOR NEXT TIME: min price and max price are causing reversion. Also exchange rate is fucky
 1. Create uniswap looking textbox. Include a twirly that can be turned on with a state. --DONE, no need for twirly
         On enable, should see twirly followed by enable vanishing -- DONE
 2. Wording: "You are selling 10 oxt which will cause the behodler token bonding curve to produce 10 scarcity (scx) <remember fees>. This will then be used to purchase 50 Loom."
@@ -61,7 +60,7 @@ TODO FOR NEXT TIME: min price and max price are causing reversion. Also exchange
 7. show total token in reserve -- DONE
 8. Make an exception for weth --DONE
 9. Deal with insufficient balance problem --DONE
-10. Add swap to minified app bar
+10. Add swap to minified app bar --DONE
 
 Pyrotoken page
 1. Firstly change routing so that swap is /behodler/swap, pyroTokens are /behodler/pyroTokens and chronos has its owner

@@ -157,8 +157,8 @@ const defaultBehodler: Behodler = {
 	seed: (lachesis: address, kharon: address, janus: address, chronos: address) => { },
 	calculateAverageScarcityPerToken: (token: address, value: uint) => { },
 	tokenScarcityObligations: (token: string) => { },
-	buyDryRun: (tokenAddress: address, value: uint, minPrice: uint) => {},
-    sellDryRun: (tokenAddress: address, scarcityValue: uint, maxPrice: uint) => {}
+	buyDryRun: (tokenAddress: address, value: uint, minPrice: uint) => { },
+	sellDryRun: (tokenAddress: address, scarcityValue: uint, maxPrice: uint) => { }
 }
 
 const defaultChronos: Chronos = {
@@ -183,6 +183,7 @@ const defaultKharon: Kharon = {
 	seed: (bellows: address, behodler: address, prometheus: address, weiDaiBank: address, dai: address, weidai: address, scar: address, cut: uint, donationAddress: address) => { },
 	toll: (token: address, value: uint) => { },
 	withdrawDonations: (token: address) => { },
+	demandPaymentRewardDryRun: (token: address, value: uint) => { }
 }
 
 const defaultPrometheus: Prometheus = {

@@ -36,6 +36,12 @@ interface exchangeRateFields {
   valid
 }
 
+interface feeBreakdownFields {
+  fee: string
+  reward?: string
+  donation: string
+}
+
 interface props {
   label: string
   dropDownFields: DropDownField[],
@@ -49,7 +55,8 @@ interface props {
   exchangeRate?: exchangeRateFields,
   scarcityAddress?: string
   clear: () => void
-  disabledInput?:boolean
+  disabledInput?: boolean
+  feeReward?: feeBreakdownFields
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -95,8 +102,11 @@ const useStyles = makeStyles((theme) => ({
     width: '500px',
     marginBottom: theme.spacing(2),
   },
-  exchangeRate: {
+  subfields: {
     color: "darkGrey"
+  },
+  feeGrid: {
+    paddingLeft: "20px"
   }
 }));
 
@@ -114,8 +124,8 @@ export default function ExtendedTextField(props: props) {
   const [reserve, setReserve] = useState<string>("")
 
   const setFormattedInput = (value: string) => {
-    if(props.disabledInput)
-    return
+    if (props.disabledInput)
+      return
     if (isNullOrWhiteSpace(value)) {
       props.setValue("")
       props.setValid(true)
@@ -173,6 +183,8 @@ export default function ExtendedTextField(props: props) {
   })
 
   const listTokens = isNullOrWhiteSpace(filteredText) ? props.dropDownFields : props.dropDownFields.filter(t => t.name.toLowerCase().indexOf(filteredText.toLowerCase()) !== -1)
+
+  const nameOfToken = nameOfSelectedAddress(props.address).toLowerCase()
 
   return (<div>
     <Dialog fullWidth={true} open={dialogOpen} onClose={() => setDialogOpen(false)}>
@@ -279,19 +291,19 @@ export default function ExtendedTextField(props: props) {
                   alignItems="flex-start"
                 >
                   <Grid item>
-                    <Typography variant="caption" className={classes.exchangeRate}>
+                    <Typography variant="caption" className={classes.subfields}>
                       Exchange Rate
                     </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="caption" className={classes.exchangeRate}>
+                    <Typography variant="caption" className={classes.subfields}>
                       {exchangeRateString}
                     </Typography>
                   </Grid>
                 </Grid>
 
               </Grid>
-              {nameOfSelectedAddress(props.address) === 'Scarcity' ? "" :
+              {nameOfToken === 'scarcity' ? "" :
                 <Grid item>
                   <Grid
                     container
@@ -300,12 +312,12 @@ export default function ExtendedTextField(props: props) {
                     alignItems="flex-start"
                   >
                     <Grid item>
-                      <Typography variant="caption" className={classes.exchangeRate}>
+                      <Typography variant="caption" className={classes.subfields}>
                         Total in reserve
                     </Typography>
                     </Grid>
                     <Grid item>
-                      <Typography variant="caption" className={classes.exchangeRate}>
+                      <Typography variant="caption" className={classes.subfields}>
                         {reserve}
                       </Typography>
                     </Grid>
@@ -313,6 +325,59 @@ export default function ExtendedTextField(props: props) {
                 </Grid>}
             </div>
             : <div></div>}
+
+          {props.feeReward ? <Grid item>
+            <Typography variant="caption" className={classes.subfields}>
+              Fee and reward breakdown:
+             </Typography>
+
+            {props.feeReward ? <Grid
+              container
+              direction="column"
+              justify="space-around"
+              alignItems="stretch"
+            >
+              <Grid item>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="flex-start"
+                  className={classes.feeGrid}
+                >
+                  <Grid item>
+                    <Typography variant="caption" className={classes.subfields}>
+                      Portion to burn
+                      </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="caption" className={classes.subfields}>
+                      {props.feeReward.fee}
+                    </Typography>
+
+                  </Grid>
+                </Grid>
+                {props.feeReward.reward ? <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="flex-start"
+                  className={classes.feeGrid}
+                >
+                  <Grid item>
+                    <Typography variant="caption" className={classes.subfields}>
+                     Portion converted to PyroToken trader reward
+                      </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="caption" className={classes.subfields}>
+                      {props.feeReward.reward}
+                    </Typography>
+                  </Grid>
+                </Grid> : ""}
+              </Grid>
+            </Grid> : ""}
+          </Grid> : ""}
         </Grid>
       </Grid>
     </Paper>

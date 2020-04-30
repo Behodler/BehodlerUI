@@ -84,7 +84,7 @@ function Measure(props: measureProps) {
 
 
 interface cutProps {
-    execute: (token: string) => Promise<void>
+    execute: (token: string) => Promise<string>
 }
 
 function Cut(props: cutProps) {
@@ -98,8 +98,9 @@ function Cut(props: cutProps) {
             </ListItem>
 
             <ListItem>
-                <Button variant="contained" color="secondary" onClick={async () => await props.execute(token)}>Execute</Button>
+                <Button variant="contained" color="secondary" onClick={async () => { await props.execute(token) }}>Execute</Button>
             </ListItem>
+
         </List>
     </Paper>
 }
