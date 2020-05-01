@@ -30,13 +30,13 @@ const filterPredicate = ((item) => {
 export default function BaseTokens(props: props) {
     const walletContextProps = useContext(WalletContext)
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
-    const pyroTokenDropDownList = tokenList
+    const baseTokenDropDownList = tokenList
         .filter(filterPredicate)
         .map((t, i) => (
             { ...t, image: BaseImages[i] }
         ))
 
-    const baseTokenDropDownList = pyroTokenDropDownList.map((t, i) => (
+    const pyroTokenDropDownList = baseTokenDropDownList.map((t, i) => (
         { ...t, image: PyroImages[i] }
     ))
 

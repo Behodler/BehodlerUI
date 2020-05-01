@@ -63,11 +63,14 @@ Behodler User Screen:
 10. Add swap to minified app bar --DONE
 
 Pyrotoken page
-1. Firstly change routing so that swap is /behodler, pyroTokens are /behodler/pyroTokens and chronos has its owner
-2. On each page have a slidy selector thing at the top like uniswap with swap/pyrotokens/chronos (https://material-ui.com/components/tabs/)
-3. On Pyrotoken page, have the extended view boxes like swap but instead of input to output, have pyrotoken -> base token
-4. Instead of swap button have redeem
-5. Below the base token textbox have the redeem rate and the total redeem rate growth
+1. Firstly change routing so that swap is /behodler, pyroTokens are /behodler/pyroTokens and chronos has its owner -- DONE
+2. On each page have a slidy selector thing at the top like uniswap with swap/pyrotokens/chronos (https://material-ui.com/components/tabs/) --DONE
+3. On Pyrotoken page, have the extended view boxes like swap but instead of input to output, have pyrotoken -> base token -- DONE
+4. Instead of swap button have redeem -- DONE
+5. Below the base token textbox have the redeem rate and the total redeem rate growth -- BUSY
+6. See if enable still necessary and change wording if it is
+7. Show balance of PyroToken and balance of base Token
+8. Add more mocktokens to behodler to match images and reoorder deployment script to match images. In mainnet we'll just switch addresses
 
 SECURITY: see reentrancy attack: https://www.cryptonewtech.com/2020/04/26/storage-markets-and-the-rise-of-the-interplanetary-file-system-ipfs/
 
