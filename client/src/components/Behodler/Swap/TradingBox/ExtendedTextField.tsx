@@ -19,7 +19,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import { isNullOrWhiteSpace, formatNumberText, formatDecimalStrings } from '../../../../util/jsHelpers'
-import { Images } from './ImageLoader'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import API from '../../../../blockchain/ethereumAPI'
 
@@ -116,6 +115,7 @@ export default function ExtendedTextField(props: props) {
   const classes = useStyles();
   const walletContextProps = useContext(WalletContext)
   const indexOfAddress = (address: string) => props.dropDownFields.findIndex(t => t.address == address)
+  const selectedImage = props.dropDownFields[indexOfAddress(props.address)].image
   const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address == address)[0].name
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
@@ -267,7 +267,7 @@ export default function ExtendedTextField(props: props) {
                 <Button
 
                   className={classes.button}
-                  startIcon={<img src={Images[indexOfAddress(props.address)]} width="32" />}
+                  startIcon={<img src={selectedImage} width="32" />}
                   endIcon={<ExpandMoreRoundedIcon />}
                   onClick={() => setDialogOpen(true)}
                 >

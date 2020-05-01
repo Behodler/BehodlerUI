@@ -114,7 +114,7 @@ function LayoutFrameComponent(props: any) {
 							className={classes.actionDrawer}
 							classes={{ paper: classes.actionDrawerPaper }}
 						>
-							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={() => setRedirect('/behodler/swap')} />
+							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={() => setRedirect('/behodler')} />
 							<Divider />
 							{walletContextProps.primary ?
 								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodler/admin')} /> : ""
@@ -127,7 +127,7 @@ function LayoutFrameComponent(props: any) {
 					<Box component="div" className={classes.content}>
 						{upgradeRequired ? <UpgradePrompt /> :
 							<div>
-								<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} goToSwap={() => setRedirect('/behodler/swap')} />
+								<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} goToSwap={() => setRedirect('/behodler')} />
 								<Grid
 									container
 									direction="row"
@@ -187,7 +187,7 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/FAQ">
 										<FAQ />
 									</Route>
-									<Route path="/behodler/swap">
+									<Route path="/behodler">
 										{notConnected ? <Redirect to={"/"} /> : <Swap />}
 									</Route>
 									{walletContextProps.primary ?

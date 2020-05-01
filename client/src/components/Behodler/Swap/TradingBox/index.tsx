@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState, useContext } from 'react'
 import ExtendedTextField from "./ExtendedTextField"
 import { Grid, Button, IconButton } from '@material-ui/core'
-import { useContext, useState } from 'react'
 import tokenListJSON from "../../../../blockchain/behodlerUI/baseTokens.json"
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import { Images } from './ImageLoader'

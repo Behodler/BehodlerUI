@@ -63,7 +63,7 @@ Behodler User Screen:
 10. Add swap to minified app bar --DONE
 
 Pyrotoken page
-1. Firstly change routing so that swap is /behodler/swap, pyroTokens are /behodler/pyroTokens and chronos has its owner
+1. Firstly change routing so that swap is /behodler, pyroTokens are /behodler/pyroTokens and chronos has its owner
 2. On each page have a slidy selector thing at the top like uniswap with swap/pyrotokens/chronos (https://material-ui.com/components/tabs/)
 3. On Pyrotoken page, have the extended view boxes like swap but instead of input to output, have pyrotoken -> base token
 4. Instead of swap button have redeem
