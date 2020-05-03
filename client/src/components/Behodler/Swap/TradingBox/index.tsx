@@ -260,7 +260,7 @@ export default function TradeBox(props: props) {
                 setTokenAddress={setOutputAddress}
                 address={outputAddress}
                 value={outputValue}
-                exchangeRate={{ inputAddress, ratio: exchangeRate, valid: swapEnabled }}
+                exchangeRate={{ baseAddress: inputAddress, baseName:nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, showReserve: true }}
                 clear={clearInput}
                 disabledInput
             />

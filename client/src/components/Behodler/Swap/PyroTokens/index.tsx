@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Grid, Button } from '@material-ui/core'
-import { useEffect, useContext, useState } from 'react'
+import { useEffect, useContext, useState, useCallback } from 'react'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import ExtendedTextField from "../TradingBox/ExtendedTextField"
 import { Images as PyroImages } from './PyroImageLoader'
@@ -10,12 +10,16 @@ import API from '../../../../blockchain/ethereumAPI'
 import BigNumber from 'bignumber.js'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
-
+export interface basePyroPair {
+    base: string
+    pyro: string
+    name: string
+}
 interface props {
-
+    tokens: basePyroPair[]
 }
 
-const filterPredicate = ((item) => {
+export const filterPredicate = ((item) => {
     const lower = item.name.toLowerCase()
     switch (lower) {
         case 'scarcity':
@@ -27,18 +31,25 @@ const filterPredicate = ((item) => {
 
 })
 
-export default function BaseTokens(props: props) {
+export default function PyroTokens(props: props) {
     const walletContextProps = useContext(WalletContext)
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
-    const baseTokenDropDownList = tokenList
-        .filter(filterPredicate)
-        .map((t, i) => (
-            { ...t, image: BaseImages[i] }
-        ))
+    const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
 
-    const pyroTokenDropDownList = baseTokenDropDownList.map((t, i) => (
-        { ...t, image: PyroImages[i] }
-    ))
+    const baseTokenDropDownList = tokenList
+        .map((t, i) => {
+            let item = { ...t, image: BaseImages[i] }
+            if (i === indexOfWeth) {
+                item.name = "Eth"
+            }
+            return item
+        })
+        .filter(filterPredicate)
+
+    const pyroTokenDropDownList = baseTokenDropDownList.map((t, i) => {
+        const pair = props.tokens.filter(p => p.base === t.address)[0]
+        return { name: pair.name, address: pair.pyro, image: PyroImages[i] }
+    })
 
     const [pyroTokenValid, setPyroTokenValid] = useState<boolean>(true)
     const [baseTokenValid, setBaseTokenValid] = useState<boolean>(true)
@@ -46,31 +57,77 @@ export default function BaseTokens(props: props) {
     const [baseTokenValue, setBaseTokenValue] = useState<string>("")
     const [pyroTokenEnabled, setPyroTokenEnabled] = useState<boolean>(false)
     const [pyroTokenAddress, setPyroTokenAddress] = useState<string>(pyroTokenDropDownList[0].address)
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>(pyroTokenDropDownList[1].address)
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>(baseTokenDropDownList[1].address)
     const [redeemClicked, setRedeemClicked] = useState<boolean>(false)
     const [redeemRate, setRedeemRate] = useState<string>("")
+    const [selectionChange, setSelectionChange] = useState<boolean>(true)
+    const [baseTokenName, setBaseTokenName] = useState<string>("")
 
     const bigPyroTokenValue = new BigNumber(pyroTokenValue)
     const bigBaseTokenValue = new BigNumber(baseTokenValue)
 
     const redeemPossible = pyroTokenValid && baseTokenValid && !bigPyroTokenValue.isNaN() && !bigBaseTokenValue.isNaN()
-    const pyroTokenReadyToSwap = pyroTokenValid && !bigPyroTokenValue.isNaN()
+    const pyroTokenReadyToRedeem = pyroTokenValid && !bigPyroTokenValue.isNaN()
     const redeemEnabled = redeemPossible && pyroTokenEnabled
-
     const pyroTokenValWei = pyroTokenValid && !bigPyroTokenValue.isNaN() && bigPyroTokenValue.isGreaterThanOrEqualTo("0") ? API.toWei(pyroTokenValue) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
 
-    console.log('unused vars' + pyroTokenReadyToSwap + pyroTokenValWei + JSON.stringify(primaryOptions))
-    if(3<2)
-    setRedeemRate("hello there!")
+    const handlePyrotokenSelectionChange = (address: string) => {
+        setSelectionChange(true)
+        setPyroTokenAddress(address)
+    }
+
+    const changeBaseToken = useCallback(async () => {
+        if (selectionChange) {
+            const baseToken = await walletContextProps.contracts.behodler.PyroTokenRegistry.pyroTokenMapping(pyroTokenAddress).call(primaryOptions)
+            setBaseTokenAddress(baseToken)
+            setSelectionChange(false)
+            setBaseTokenName(baseTokenDropDownList.filter(b => b.address == baseToken)[0].name)
+        }
+    }, [selectionChange])
 
     useEffect(() => {
-        if (redeemClicked) {
-            console.log('redeem button clicked')
+        changeBaseToken()
+    }, [selectionChange])
+
+    useEffect(() => {
+        const effect = API.bellowsEffects.getRedeemRateEffect(pyroTokenAddress)
+        const subscription = effect.Observable.subscribe(r => {
+            const rp = new BigNumber(r).dividedBy(10000)
+            setRedeemRate(rp.toString())
+        })
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    }, [selectionChange])
+
+    const redeemClickCallback = useCallback(async () => {
+        setRedeemClicked(false)
+       
+        await walletContextProps.contracts.behodler.Bellows.blast(pyroTokenAddress, pyroTokenValWei).send(primaryOptions, () => {
+           const ethAmount = API.toWei(baseTokenValue)
+            if(baseTokenName==='Eth'){
+                walletContextProps.contracts.behodler.Weth.withdraw(ethAmount).send(primaryOptions,()=>{
+                    clearInput()
+                })
+            }else{
+                clearInput()
+            }
+        })
+
+    }, [redeemClicked, pyroTokenValue])
+
+    useEffect(() => {
+        if (redeemClicked && pyroTokenReadyToRedeem) {
+            redeemClickCallback()
         }
         setRedeemClicked(false)
     }, [redeemClicked])
+
+    useEffect(() => {
+        if (pyroTokenReadyToRedeem) {
+            setBaseTokenValue(new BigNumber(redeemRate).times(new BigNumber(pyroTokenValue)).toString())
+        }
+    }, [pyroTokenReadyToRedeem, pyroTokenValue])
 
     const clearInput = () => { setPyroTokenValue(""); setBaseTokenValue(""); setRedeemClicked(false) }
 
@@ -87,28 +144,34 @@ export default function BaseTokens(props: props) {
                 setValid={setPyroTokenValid}
                 setValue={setPyroTokenValue}
                 setEnabled={setPyroTokenEnabled}
-                setTokenAddress={setPyroTokenAddress}
+                setTokenAddress={handlePyrotokenSelectionChange}
                 address={pyroTokenAddress}
                 value={pyroTokenValue}
                 clear={clearInput}
+                enableCustomMessage="Enable PyroToken to be redeemed"
+                exchangeRate={{ baseAddress: baseTokenAddress, baseName: baseTokenName, ratio: redeemRate, valid: redeemEnabled }}
+                addressToEnableFor={walletContextProps.contracts.behodler.Bellows.address}
             />
         </Grid >
         <Grid item>
             <ArrowDownwardIcon color="secondary" />
         </Grid>
         <Grid item>
-            <ExtendedTextField label="BaseToken (estimated)"
-                dropDownFields={baseTokenDropDownList}
-                valid={baseTokenValid}
-                setValid={setBaseTokenValid}
-                setValue={setBaseTokenValue}
-                setTokenAddress={setBaseTokenAddress}
-                address={baseTokenAddress}
-                value={baseTokenValue}
-                exchangeRate={{ inputAddress: pyroTokenAddress, ratio: redeemRate, valid: redeemEnabled }}
-                clear={clearInput}
-                disabledInput
-            />
+            {baseTokenAddress === '' ? '' :
+                <ExtendedTextField label="BaseToken (estimated)"
+                    dropDownFields={baseTokenDropDownList}
+                    valid={baseTokenValid}
+                    setValid={setBaseTokenValid}
+                    setValue={setBaseTokenValue}
+                    setTokenAddress={setBaseTokenAddress}
+                    address={baseTokenAddress}
+                    value={baseTokenValue}
+
+                    clear={clearInput}
+                    disabledInput
+                    disabledDropDown
+                />}
+
         </Grid>
         {redeemEnabled ?
             <Grid item>

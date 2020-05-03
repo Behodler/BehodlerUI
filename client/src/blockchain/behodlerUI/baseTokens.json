@@ -7,10 +7,6 @@
     "kovan": [],
     "private": [
         {
-            "name": "Scarcity",
-            "address": "0x744f403f3a9f15578127D52193442C94909c5324"
-        },
-        {
             "name": "MockToken1",
             "address": "0xf5e8345b94e243e4b67e03092062CcF441B43EAc"
         },
@@ -19,16 +15,28 @@
             "address": "0xb031a3BEC56F44aCB45B1E52f6cAC12C9AD2185A"
         },
         {
-            "name": "MockWeth",
-            "address": "0x189B51c422d3668F0695F776A3e7cdf0589cD79E"
-        },
-        {
             "name": "dai",
             "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE"
         },
         {
+            "name": "MockWeth",
+            "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D"
+        },
+        {
+            "name": "MockToken3",
+            "address": "0xD28b888333eaC54dCF3D11A5eC5CfBDDEC6528E8"
+        },
+        {
             "name": "weidai",
             "address": "0x8a16E29CaC5e50c9aa2a497589a02004e83e10e2"
+        },
+        {
+            "name": "MockToken4",
+            "address": "0x189B51c422d3668F0695F776A3e7cdf0589cD79E"
+        },
+        {
+            "name": "Scarcity",
+            "address": "0x744f403f3a9f15578127D52193442C94909c5324"
         }
     ]
 }

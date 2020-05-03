@@ -4,6 +4,7 @@ import { PatienceRegulationEngine } from './contractInterfaces/PatienceRegulatio
 import { WeiDai } from './contractInterfaces/WeiDai'
 import { WeiDaiBank } from './contractInterfaces/WeiDaiBank'
 import { ERC20 } from './contractInterfaces/ERC20'
+import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
 import { WeiDaiVersionController } from './contractInterfaces/WeiDaiVersionController'
 import { PotReserve } from './contractInterfaces/PotReserve'
 
@@ -22,6 +23,7 @@ import ERC20JSON from '../contracts/ERC20.json'
 import VERSIONJSON from '../contracts/WeiDaiVersionController.json'
 import potReserveJSON from '../contracts/PotReserve.json'
 import networkVersionJSON from '../networkVersionControllers.json'
+import { BellowsEffects } from './observables/Bellows'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 
@@ -71,6 +73,7 @@ class ethereumAPI {
 	public daiEffects: ERC20Effects
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
+	public bellowsEffects: BellowsEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
@@ -222,6 +225,7 @@ class ethereumAPI {
 		this.preEffects = new PatienceRegulationEffects(this.web3, contracts.PRE, currentAccount)
 		this.bankEffects = new BankEffects(this.web3, contracts.WeiDaiBank, currentAccount)
 		this.initialized = true
+		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}
@@ -261,10 +265,15 @@ class ethereumAPI {
 		await token.approve(spender, this.UINTMAX).send({ from: owner })
 	}
 
+	public async getPyroToken(tokenAddress: string, network: string): Promise<PyroToken> {
+		network = network === 'private' || network === 'development' ? 'development' : network
+		return await ((new this.web3.eth.Contract(this.getPyroTokenABI(network) as any, tokenAddress)).methods as unknown) as PyroToken
+	}
+
 	public generateNewEffects(tokenAddress: string, currentAccount: string): Token {
-		
-		if(tokenAddress === '0x0'){
-			return new EtherEffects(this.web3,currentAccount)
+
+		if (tokenAddress === '0x0') {
+			return new EtherEffects(this.web3, currentAccount)
 		}
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
 		return new ERC20Effects(this.web3, token, currentAccount)
@@ -328,6 +337,11 @@ class ethereumAPI {
 				contractInstance: {}
 			};
 		}
+	}
+
+	private getPyroTokenABI(network: string): any {
+		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
+		return mappingsList.filter(m => m.contract === 'PyroToken')[0].abi
 	}
 
 	private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {

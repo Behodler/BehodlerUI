@@ -5,5 +5,6 @@ import Four from '../../../../images/behodler/4.png'
 import Five from '../../../../images/behodler/5.png'
 import Six from '../../../../images/behodler/6.png'
 import Seven from '../../../../images/behodler/7.png'
+import Eight from '../../../../images/behodler/8.png'
 
-export const Images = [One, Two, Three, Four, Five, Six, Seven]
+export const Images = [One, Two, Three, Four, Five, Six,Seven, Eight]

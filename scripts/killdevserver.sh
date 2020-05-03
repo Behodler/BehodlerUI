@@ -7,3 +7,4 @@ do
 done < "$input"
 killall node
 echo "dev server shutdown"
+rm ganacheID.txt

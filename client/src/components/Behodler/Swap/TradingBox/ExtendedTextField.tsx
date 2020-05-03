@@ -30,9 +30,11 @@ interface DropDownField {
 }
 
 interface exchangeRateFields {
-  inputAddress: string
+  baseAddress: string
   ratio: string,
-  valid
+  valid: boolean,
+  showReserve?: boolean
+  baseName: string
 }
 
 interface feeBreakdownFields {
@@ -56,6 +58,9 @@ interface props {
   clear: () => void
   disabledInput?: boolean
   feeReward?: feeBreakdownFields
+  enableCustomMessage?: string,
+  addressToEnableFor?: string
+  disabledDropDown?: boolean
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -117,6 +122,7 @@ export default function ExtendedTextField(props: props) {
   const indexOfAddress = (address: string) => props.dropDownFields.findIndex(t => t.address == address)
   const selectedImage = props.dropDownFields[indexOfAddress(props.address)].image
   const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address == address)[0].name
+
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
@@ -137,18 +143,22 @@ export default function ExtendedTextField(props: props) {
     props.setValid(isValid)
   }
   let exchangeRateString = ''
-  if (props.exchangeRate) {
+  if (props.exchangeRate && props.exchangeRate.baseAddress !== '') {
     let ratio = formatDecimalStrings(props.exchangeRate.ratio, 4)
     for (let i = 5; i < 19 && ratio === '0'; i++) {
       ratio = formatDecimalStrings(props.exchangeRate.ratio, i)
     }
-    exchangeRateString = `1 ${nameOfSelectedAddress(props.exchangeRate.inputAddress)} = ${ratio} ${nameOfSelectedAddress(props.address)}`
+
+    if (props.exchangeRate.showReserve)
+      exchangeRateString = `1 ${props.exchangeRate.baseName} = ${ratio} ${nameOfSelectedAddress(props.address)}`
+    else
+      exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
   }
   const addressForEffect = nameOfSelectedAddress(props.address).toLowerCase() === 'eth' ? '0x0' : props.address
   const currentTokenEffects = API.generateNewEffects(addressForEffect, walletContextProps.account)
 
   useEffect(() => {
-    const effect = currentTokenEffects.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)
+    const effect = currentTokenEffects.allowance(walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)
     const subscription = effect.Observable.subscribe(allowance => {
       const scaledAllowance = API.fromWei(allowance)
       const allowanceFloat = parseFloat(scaledAllowance)
@@ -172,7 +182,7 @@ export default function ExtendedTextField(props: props) {
   })
 
   useEffect(() => {
-    if (props.exchangeRate && props.exchangeRate.valid) {
+    if (props.exchangeRate && props.exchangeRate.valid && props.exchangeRate.showReserve) {
       const effect = currentTokenEffects.balanceOfEffect(walletContextProps.contracts.behodler.Behodler.address)
       const subscription = effect.Observable.subscribe(balance => {
         setReserve(balance)
@@ -268,14 +278,14 @@ export default function ExtendedTextField(props: props) {
 
                   className={classes.button}
                   startIcon={<img src={selectedImage} width="32" />}
-                  endIcon={<ExpandMoreRoundedIcon />}
-                  onClick={() => setDialogOpen(true)}
+                  endIcon={props.disabledDropDown ? "" : <ExpandMoreRoundedIcon />}
+                  onClick={() => props.disabledDropDown ? {} : setDialogOpen(true)}
                 >
                   {nameOfSelectedAddress(props.address)}
                 </Button>
                 {enabled || props.setEnabled === undefined ? <div></div> :
-                  <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, walletContextProps.contracts.behodler.Behodler.address)}>
-                    Enable Token for Trade
+                  <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)}>
+                    {props.enableCustomMessage || "Enable Token for Trade"}
                   </Button>}
               </FormControl>
             </Grid>
@@ -303,7 +313,7 @@ export default function ExtendedTextField(props: props) {
                 </Grid>
 
               </Grid>
-              {nameOfToken === 'scarcity' ? "" :
+              {nameOfToken === 'scarcity' || !props.exchangeRate.showReserve ? "" :
                 <Grid item>
                   <Grid
                     container
@@ -366,7 +376,7 @@ export default function ExtendedTextField(props: props) {
                 >
                   <Grid item>
                     <Typography variant="caption" className={classes.subfields}>
-                     Portion converted to PyroToken trader reward
+                      Portion converted to PyroToken trader reward
                       </Typography>
                   </Grid>
                   <Grid item>

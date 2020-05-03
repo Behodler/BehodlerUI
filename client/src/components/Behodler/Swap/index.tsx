@@ -1,11 +1,15 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox from './TradingBox/index'
-import PyroTokens from './PyroTokens/index'
+import PyroTokens, { basePyroPair, filterPredicate } from './PyroTokens/index'
 import { Container, Chip, Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { WalletContext } from "../../Contexts/WalletStatusContext"
+import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
+import API from '../../../blockchain/ethereumAPI'
+import { PyroToken } from 'src/blockchain/contractInterfaces/behodler/hephaestus/PyroToken'
 
 interface props {
 
@@ -27,6 +31,33 @@ const useStyles = makeStyles({
 
 
 export default function Swap(props: props) {
+
+    const walletContextProps = useContext(WalletContext)
+    const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
+    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(filterPredicate)
+    const primaryOptions = { from: walletContextProps.account }
+    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
+        const pyroAddress = await walletContextProps.contracts.behodler.PyroTokenRegistry.baseTokenMapping(baseToken).call(primaryOptions)
+        const token: PyroToken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
+        const name = await token.name().call(primaryOptions)
+        return {
+            name,
+            base: baseToken,
+            pyro: pyroAddress
+        }
+    }
+
+    const pytoTokenPopulator = useCallback(async () => {
+        let mapping: basePyroPair[] = []
+        for (let i = 0; i < tokenList.length; i++) {
+            mapping.push(await fetchPyroTokenDetails(tokenList[i].address))
+        }
+        setPyroTokenMapping(mapping)
+    }, [walletContextProps.networkName])
+
+    useEffect(() => {
+        pytoTokenPopulator()
+    }, [])
 
     const classes = useStyles();
     const [value, setValue] = useState(0);
@@ -60,16 +91,18 @@ export default function Swap(props: props) {
             <Tab label="Pyrotokens" />
             <Tab label="Chronos" />
         </Tabs>
-        <RenderScreen value={value} />
+        <RenderScreen value={value} tokens={pyroTokenMapping} />
     </Container>
 }
 
-function RenderScreen(props: { value: number }) {
+function RenderScreen(props: { value: number, tokens: basePyroPair[] }) {
     switch (props.value) {
         case 0:
             return <TradingBox />
         case 1:
-            return <PyroTokens />
+            if (props.tokens.length > 0)
+                return <PyroTokens tokens={props.tokens} />
+            return <div></div>
         default:
             return <div>Chronos</div>
     }
