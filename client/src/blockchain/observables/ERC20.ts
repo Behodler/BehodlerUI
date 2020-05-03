@@ -35,6 +35,18 @@ export class ERC20Effects extends Token {
 		})
 	}
 
+	balanceOfTokenEffect(holder: string): Effect {
+		return this.createEffect(async ({ account, blockNumber }) => {
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				action: async (accounts) => await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] }),
+				defaultValue: "unset",
+				accounts: [holder, account]
+			}
+			return await FetchEthereumNumber(params)
+		})
+	}
+
 	allowance(owner: string, spender: string): Effect {
 		return this.createEffect(async ({ account, blockNumber }) => {
 			const params: FetchNumberFields = {

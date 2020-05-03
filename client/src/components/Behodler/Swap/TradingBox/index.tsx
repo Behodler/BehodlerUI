@@ -80,6 +80,7 @@ export default function TradeBox(props: props) {
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
+    const highGasOptions = { from: walletContextProps.account }
 
     const isEthPredicate = (textBoxAddress: string): boolean => {
         return tokenDropDownList.filter(item => item.address.trim().toLowerCase() === textBoxAddress.trim().toLowerCase())[0].name === 'Eth'
@@ -172,7 +173,7 @@ export default function TradeBox(props: props) {
                             return;
                         }
                         walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, inputValWei, correctPrice(maxPrice))
-                            .call(primaryOptions)
+                            .call(highGasOptions)
                             .then(tokensToPurchase => {
                                 setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
@@ -186,7 +187,7 @@ export default function TradeBox(props: props) {
 
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
                 walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, correctPrice(minPrice))
-                    .call(primaryOptions)
+                    .call(highGasOptions)
                     .then(scxToPurchase => {
                         setDryRunSCX(scxToPurchase)
                         const ex = new BigNumber(scxToPurchase).dividedBy(inputValWei)
@@ -199,11 +200,11 @@ export default function TradeBox(props: props) {
             }
             else {
                 walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, correctPrice(minPrice))
-                    .call(primaryOptions)
+                    .call(highGasOptions)
                     .then(scxToPurchase => {
                         setDryRunSCX(scxToPurchase)
                         walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, scxToPurchase, correctPrice(maxPrice))
-                            .call(primaryOptions)
+                            .call(highGasOptions)
                             .then(tokensToPurchase => {
                                 setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
@@ -260,7 +261,7 @@ export default function TradeBox(props: props) {
                 setTokenAddress={setOutputAddress}
                 address={outputAddress}
                 value={outputValue}
-                exchangeRate={{ baseAddress: inputAddress, baseName:nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, showReserve: true }}
+                exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, showReserve: true }}
                 clear={clearInput}
                 disabledInput
             />

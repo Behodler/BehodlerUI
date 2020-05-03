@@ -1,11 +1,14 @@
 import Web3 from "web3";
-import { Effect, FetchNumberFields } from './common'
+import { Effect, FetchNumberFields,FetchEthereumNumber } from './common'
 import Token from './Token'
 import API from '../ethereumAPI'
+import { ERC20 } from '../contractInterfaces/ERC20'
 
 export class EtherEffects extends Token {
-	constructor(web3: Web3, account: string) {
+	tokenInstance: ERC20
+	constructor(web3: Web3, tokenInstance: ERC20, account: string) {
 		super(web3, account)
+		this.tokenInstance = tokenInstance
 	}
 
 	balanceOfEffect(holder: string): Effect {
@@ -17,6 +20,18 @@ export class EtherEffects extends Token {
 				accounts: [holder, account]
 			}
 			return API.fromWei(await params.action(params.accounts))
+		})
+	}
+
+	balanceOfTokenEffect(holder: string): Effect {
+		return this.createEffect(async ({ account, blockNumber }) => {
+			const params: FetchNumberFields = {
+				web3: this.web3,
+				action: async (accounts) => await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] }),
+				defaultValue: "unset",
+				accounts: [holder, account]
+			}
+			return await FetchEthereumNumber(params)
 		})
 	}
 

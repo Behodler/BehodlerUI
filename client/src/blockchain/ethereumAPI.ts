@@ -270,12 +270,12 @@ class ethereumAPI {
 		return await ((new this.web3.eth.Contract(this.getPyroTokenABI(network) as any, tokenAddress)).methods as unknown) as PyroToken
 	}
 
-	public generateNewEffects(tokenAddress: string, currentAccount: string): Token {
-
-		if (tokenAddress === '0x0') {
-			return new EtherEffects(this.web3, currentAccount)
-		}
+	public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean): Token {
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		if (useEth) {
+			return new EtherEffects(this.web3, token, currentAccount)
+		}
+
 		return new ERC20Effects(this.web3, token, currentAccount)
 	}
 

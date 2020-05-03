@@ -187,6 +187,12 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/FAQ">
 										<FAQ />
 									</Route>
+									{walletContextProps.primary ?
+										<Route path="/behodler/admin">
+											<Admin />
+										</Route>
+										: ""
+									}
 									<Route path="/behodler">
 										{notConnected ? <Redirect to={"/"} /> : <Swap />}
 									</Route>
@@ -196,12 +202,7 @@ function LayoutFrameComponent(props: any) {
 										</Route>
 										: ""
 									}
-									{walletContextProps.primary ?
-										<Route path="/behodler/admin">
-											<Admin />
-										</Route>
-										: ""
-									}
+
 									<Route component={Home} />
 								</Switch>
 

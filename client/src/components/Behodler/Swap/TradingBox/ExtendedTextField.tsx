@@ -154,8 +154,8 @@ export default function ExtendedTextField(props: props) {
     else
       exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
   }
-  const addressForEffect = nameOfSelectedAddress(props.address).toLowerCase() === 'eth' ? '0x0' : props.address
-  const currentTokenEffects = API.generateNewEffects(addressForEffect, walletContextProps.account)
+  const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
+  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth)
 
   useEffect(() => {
     const effect = currentTokenEffects.allowance(walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)
@@ -183,7 +183,7 @@ export default function ExtendedTextField(props: props) {
 
   useEffect(() => {
     if (props.exchangeRate && props.exchangeRate.valid && props.exchangeRate.showReserve) {
-      const effect = currentTokenEffects.balanceOfEffect(walletContextProps.contracts.behodler.Behodler.address)
+      const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Behodler.address)
       const subscription = effect.Observable.subscribe(balance => {
         setReserve(balance)
       })
