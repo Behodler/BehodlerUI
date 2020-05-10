@@ -2,13 +2,18 @@ import Web3 from "web3";
 import { ERC20 } from '../contractInterfaces/ERC20'
 import { Effect, FetchEthereumNumber, FetchNumberFields, FetchNumber } from './common'
 import Token from './Token'
+import BigNumber from 'bignumber.js';
 
 export class ERC20Effects extends Token {
 	tokenInstance: ERC20
-
-	constructor(web3: Web3, tokenInstance: ERC20, account: string) {
+	decimalFactor: BigNumber
+	constructor(web3: Web3, tokenInstance: ERC20, account: string, decimalPlaces:number = 18) {
 		super(web3, account)
 		this.tokenInstance = tokenInstance
+		this.decimalFactor = new BigNumber(10).pow(decimalPlaces)
+		try {
+			tokenInstance.decimals().call({ from: account }).then(d => this.decimalFactor = new BigNumber(10).pow(d)).catch(e => { })
+		} catch{ }
 	}
 
 	totalSupplyEffect(): Effect {
@@ -27,11 +32,11 @@ export class ERC20Effects extends Token {
 		return this.createEffect(async ({ account, blockNumber }) => {
 			const params: FetchNumberFields = {
 				web3: this.web3,
-				action: async (accounts) => await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] }),
+				action: async (accounts) => new BigNumber(await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] })).dividedBy(this.decimalFactor).toString(),
 				defaultValue: "unset",
 				accounts: [holder, account]
 			}
-			return await FetchEthereumNumber(params)
+			return await params.action(params.accounts)
 		})
 	}
 
@@ -39,11 +44,11 @@ export class ERC20Effects extends Token {
 		return this.createEffect(async ({ account, blockNumber }) => {
 			const params: FetchNumberFields = {
 				web3: this.web3,
-				action: async (accounts) => await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] }),
+				action: async (accounts) => new BigNumber(await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] })).dividedBy(this.decimalFactor).toString(),
 				defaultValue: "unset",
 				accounts: [holder, account]
 			}
-			return await FetchEthereumNumber(params)
+			return await params.action(params.accounts)
 		})
 	}
 

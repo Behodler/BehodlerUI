@@ -47,7 +47,7 @@ export default function PyroTokens(props: props) {
         .filter(filterPredicate)
 
     const pyroTokenDropDownList = baseTokenDropDownList.map((t, i) => {
-        const pair = props.tokens.filter(p => p.base === t.address)[0]
+        const pair = props.tokens.filter(p => p.base.toLowerCase().trim() === t.address.toLowerCase().trim())[0]
         return { name: pair.name, address: pair.pyro, image: PyroImages[i] }
     })
 
@@ -83,7 +83,7 @@ export default function PyroTokens(props: props) {
             const baseToken = await walletContextProps.contracts.behodler.PyroTokenRegistry.pyroTokenMapping(pyroTokenAddress).call(primaryOptions)
             setBaseTokenAddress(baseToken)
             setSelectionChange(false)
-            setBaseTokenName(baseTokenDropDownList.filter(b => b.address == baseToken)[0].name)
+            setBaseTokenName(baseTokenDropDownList.filter(b => b.address.toLowerCase().trim() == baseToken.toLowerCase().trim())[0].name)
         }
     }, [selectionChange])
 
@@ -102,14 +102,14 @@ export default function PyroTokens(props: props) {
 
     const redeemClickCallback = useCallback(async () => {
         setRedeemClicked(false)
-       
+
         await walletContextProps.contracts.behodler.Bellows.blast(pyroTokenAddress, pyroTokenValWei).send(primaryOptions, () => {
-           const ethAmount = API.toWei(baseTokenValue)
-            if(baseTokenName==='Eth'){
-                walletContextProps.contracts.behodler.Weth.withdraw(ethAmount).send(primaryOptions,()=>{
+            const ethAmount = API.toWei(baseTokenValue)
+            if (baseTokenName === 'Eth') {
+                walletContextProps.contracts.behodler.Weth.withdraw(ethAmount).send(primaryOptions, () => {
                     clearInput()
                 })
-            }else{
+            } else {
                 clearInput()
             }
         })

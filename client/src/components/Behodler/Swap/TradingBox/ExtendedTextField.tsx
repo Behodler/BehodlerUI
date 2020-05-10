@@ -119,9 +119,11 @@ const useStyles = makeStyles((theme) => ({
 export default function ExtendedTextField(props: props) {
   const classes = useStyles();
   const walletContextProps = useContext(WalletContext)
-  const indexOfAddress = (address: string) => props.dropDownFields.findIndex(t => t.address == address)
-  const selectedImage = props.dropDownFields[indexOfAddress(props.address)].image
-  const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address == address)[0].name
+  const indexOfAddressFunc = (address: string) => props.dropDownFields.findIndex(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())
+  const indexOfAddress = indexOfAddressFunc(props.address)
+  const selectedImage = props.dropDownFields[indexOfAddress].image
+  const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())[0].name
+
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
@@ -155,7 +157,8 @@ export default function ExtendedTextField(props: props) {
       exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
   }
   const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
-  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth)
+  const decimalPlaces = nameOfSelectedAddress(props.address).toLowerCase() === 'wbtc' ? 8 : 18
+  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, decimalPlaces)
 
   useEffect(() => {
     const effect = currentTokenEffects.allowance(walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)

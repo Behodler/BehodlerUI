@@ -116,7 +116,7 @@ function LayoutFrameComponent(props: any) {
 						>
 							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={() => setRedirect('/behodler')} />
 							<Divider />
-							{walletContextProps.primary ?
+							{walletContextProps.primary || true ?
 								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodler/admin')} /> : ""
 							}
 						</Drawer>
@@ -187,7 +187,7 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/FAQ">
 										<FAQ />
 									</Route>
-									{walletContextProps.primary ?
+									{walletContextProps.primary || true ?
 										<Route path="/behodler/admin">
 											<Admin />
 										</Route>

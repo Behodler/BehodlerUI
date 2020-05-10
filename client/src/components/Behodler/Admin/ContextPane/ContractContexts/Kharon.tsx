@@ -12,7 +12,7 @@ interface kharonProps {
 export default function Kharon(props: kharonProps) {
     const walletContextProps = useContext(WalletContext)
     const primaryOptions = { from: walletContextProps.account }
-    const executeSeed = async (bellows: string, behodler: string, prometheus: string, weiDaiBank: string, dai: string, weidai: string, scar: string, cut: string, donationAddress: string) => walletContextProps.contracts.behodler.Kharon.seed(bellows, behodler, prometheus, weiDaiBank, dai, weidai, scar, cut, donationAddress).send(primaryOptions)
+    const executeSeed = async (bellows: string, behodler: string, prometheus: string, pre: string, weiDaiBank: string, dai: string, weidai: string, scar: string, cut: string, donationAddress: string) => walletContextProps.contracts.behodler.Kharon.seed(bellows, behodler, prometheus, pre, weiDaiBank, dai, weidai, scar, cut, donationAddress).send(primaryOptions)
     const executeSetTollRate = async (toll: string) => walletContextProps.contracts.behodler.Kharon.setTollRate(toll).send(primaryOptions)
     const executeToll = async (token: string, value: string) => walletContextProps.contracts.behodler.Kharon.toll(token, value).call(primaryOptions)
     const executeWithDrawDonations = async (token: string) => walletContextProps.contracts.behodler.Kharon.withdrawDonations(token).send(primaryOptions)
@@ -35,12 +35,13 @@ export default function Kharon(props: kharonProps) {
 
 
 interface seedProps {
-    execute: (bellows: string, behodler: string, prometheus: string, weiDaiBank: string, dai: string, weidai: string, scar: string, cut: string, donationAddress: string) => Promise<void>
+    execute: (bellows: string, behodler: string, prometheus: string, pre: string, weiDaiBank: string, dai: string, weidai: string, scar: string, cut: string, donationAddress: string) => Promise<void>
 }
 
 function Seed(props: seedProps) {
     const [bellows, setBellows] = useState<string>("")
     const [behodler, setBehodler] = useState<string>("")
+    const [pre, setPre] = useState<string>("")
     const [prometheus, setPrometheus] = useState<string>("")
     const [weiDaiBank, setWeiDaiBank] = useState<string>("")
     const [dai, setDai] = useState<string>("")
@@ -61,6 +62,9 @@ function Seed(props: seedProps) {
             <ListItem key="prometheus">
                 <ValueTextBox text={prometheus} placeholder="prometheus" changeText={setPrometheus} />
             </ListItem>
+            <ListItem key="PRE">
+                <ValueTextBox text={pre} placeholder="PRE" changeText={setPre} />
+            </ListItem>
             <ListItem key="weiDaiBank">
                 <ValueTextBox text={weiDaiBank} placeholder="WeiDaiBank" changeText={setWeiDaiBank} />
             </ListItem>
@@ -80,7 +84,7 @@ function Seed(props: seedProps) {
                 <ValueTextBox text={donation} placeholder="Donation Account" changeText={setDonation} />
             </ListItem>
             <ListItem>
-                <Button variant="contained" color="secondary" onClick={async () => await props.execute(bellows, behodler, prometheus, weiDaiBank, dai, weiDai, scx, cut, donation)}>Execute</Button>
+                <Button variant="contained" color="secondary" onClick={async () => await props.execute(bellows, behodler, prometheus, pre, weiDaiBank, dai, weiDai, scx, cut, donation)}>Execute</Button>
             </ListItem>
         </List>
     </Paper>

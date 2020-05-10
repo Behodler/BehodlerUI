@@ -4,8 +4,9 @@ import { BaseContract } from '../BaseContract';
 
 export interface Kharon extends BaseContract, Secondary {
     setTollRate: (toll: uint) => any
-    seed: (bellows: address, behodler: address, prometheus: address, weiDaiBank: address, dai: address, weidai: address, scar: address, cut: uint, donationAddress: address) => any
+    seed: (bellows: address, behodler: address, prometheus: address, pre: address, weiDaiBank: address, dai: address, weidai: address, scar: address, cut: uint, donationAddress: address) => any
     toll: (token: address, value: uint) => any
     withdrawDonations: (token: address) => any
     demandPaymentRewardDryRun: (token: address, value: uint) => any
 }
+

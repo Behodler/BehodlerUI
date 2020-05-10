@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { Effect, FetchNumberFields,FetchEthereumNumber } from './common'
+import { Effect, FetchNumberFields, FetchEthereumNumber } from './common'
 import Token from './Token'
 import API from '../ethereumAPI'
 import { ERC20 } from '../contractInterfaces/ERC20'
@@ -59,5 +59,4 @@ export class EtherEffects extends Token {
 			return await params.action(params.accounts)
 		})
 	}
-
 }

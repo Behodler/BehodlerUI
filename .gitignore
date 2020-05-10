@@ -10,7 +10,7 @@ client/contracts
 package-lock.json
 geth
 eth_node/
-temp/
+temp/list
 truffleBuild/
 ganacheID.txt
 client/src/blockchain/behodlerUI/images/private

@@ -1,4 +1,4 @@
-import { Effect  } from './common'
+import { Effect } from './common'
 import EffectBase from './EffectBase'
 
 export default abstract class Token extends EffectBase {
