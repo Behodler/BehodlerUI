@@ -33,7 +33,8 @@ interface exchangeRateFields {
   baseAddress: string
   ratio: string,
   valid: boolean,
-  showReserve?: boolean
+  reserve?: string
+  setReserve?: (r: string) => void
   baseName: string
 }
 
@@ -124,12 +125,10 @@ export default function ExtendedTextField(props: props) {
   const selectedImage = props.dropDownFields[indexOfAddress].image
   const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())[0].name
 
-
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
   const [enabled, setEnabled] = useState<boolean>(false)
-  const [reserve, setReserve] = useState<string>("")
 
   const setFormattedInput = (value: string) => {
     if (props.disabledInput)
@@ -151,7 +150,7 @@ export default function ExtendedTextField(props: props) {
       ratio = formatDecimalStrings(props.exchangeRate.ratio, i)
     }
 
-    if (props.exchangeRate.showReserve)
+    if (props.exchangeRate.setReserve)
       exchangeRateString = `1 ${props.exchangeRate.baseName} = ${ratio} ${nameOfSelectedAddress(props.address)}`
     else
       exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
@@ -185,10 +184,11 @@ export default function ExtendedTextField(props: props) {
   })
 
   useEffect(() => {
-    if (props.exchangeRate && props.exchangeRate.valid && props.exchangeRate.showReserve) {
+    if (props.exchangeRate && props.exchangeRate.setReserve) {
       const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Behodler.address)
       const subscription = effect.Observable.subscribe(balance => {
-        setReserve(balance)
+        if (props.exchangeRate && props.exchangeRate.setReserve)
+          props.exchangeRate.setReserve(balance)
       })
       return () => { subscription.unsubscribe(); effect.cleanup() }
     }
@@ -316,7 +316,7 @@ export default function ExtendedTextField(props: props) {
                 </Grid>
 
               </Grid>
-              {nameOfToken === 'scarcity' || !props.exchangeRate.showReserve ? "" :
+              {nameOfToken === 'scarcity' || !props.exchangeRate.setReserve ? "" :
                 <Grid item>
                   <Grid
                     container
@@ -331,7 +331,7 @@ export default function ExtendedTextField(props: props) {
                     </Grid>
                     <Grid item>
                       <Typography variant="caption" className={classes.subfields}>
-                        {reserve}
+                        {props.exchangeRate.reserve}
                       </Typography>
                     </Grid>
                   </Grid>

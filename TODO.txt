@@ -92,3 +92,5 @@ FOAM
 GEN (DaoStack)
 KNC (Kyber Network Crystal)
 MKR
+
+For next time: fix wbtc numeric issues in pyrotoken

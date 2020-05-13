@@ -26,6 +26,7 @@ import networkVersionJSON from '../networkVersionControllers.json'
 import { BellowsEffects } from './observables/Bellows'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
+import BigNumber from 'bignumber.js';
 
 const potReserveAddresses =
 {
@@ -234,21 +235,28 @@ class ethereumAPI {
 		return this.web3.utils.fromAscii(input)
 	}
 
-	public toWei(eth: string) {
+	public toWei(eth: string, override?: number) {
+		const decimalPlaces = override || 18
 		if (eth == 'unset')
 			return 'unset'
 
 		if (eth.indexOf('.') !== -1) {
-			if (eth.length - eth.indexOf('.') > 18)
-				eth = eth.substring(0, eth.indexOf('.') + 18)
+			if (eth.length - eth.indexOf('.') > decimalPlaces)
+				eth = eth.substring(0, eth.indexOf('.') + decimalPlaces)
 		}
-		return this.web3.utils.toWei(eth)
+		if (!override)
+			return this.web3.utils.toWei(eth)
+		const factor = new BigNumber(10).pow(override)
+		return new BigNumber(eth).times(factor).toString()
 	}
 
-	public fromWei(wei: string) {
+	public fromWei(wei: string, override?: number) {
 		if (wei == 'unset')
 			return 'unset'
-		return this.web3.utils.fromWei(wei)
+		if (!override)
+			return this.web3.utils.fromWei(wei)
+		const factor = new BigNumber(10).pow(override)
+		return new BigNumber(wei).dividedBy(factor).toString()
 	}
 
 	public unsubscribeAccount() {
@@ -270,13 +278,13 @@ class ethereumAPI {
 		return await ((new this.web3.eth.Contract(this.getPyroTokenABI(network) as any, tokenAddress)).methods as unknown) as PyroToken
 	}
 
-	public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean,decimalPlaces:number = 18): Token {
+	public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean, decimalPlaces: number = 18): Token {
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
 		if (useEth) {
 			return new EtherEffects(this.web3, token, currentAccount)
 		}
 
-		return new ERC20Effects(this.web3, token, currentAccount,decimalPlaces)
+		return new ERC20Effects(this.web3, token, currentAccount, decimalPlaces)
 	}
 
 	public hexToNumber(value: any): number {

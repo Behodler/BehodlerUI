@@ -28,6 +28,13 @@ export default function TradeBox(props: props) {
         return item
     })
 
+    const bigNumberLessThanOrEqual = (lhs: string, rhs: string): boolean => {
+        const lhsBig = new BigNumber(lhs)
+        const rhsBig = new BigNumber(rhs)
+
+        return !lhsBig.isNaN() && !rhsBig.isNaN() && new BigNumber(lhs).isLessThanOrEqualTo(new BigNumber(rhs))
+    }
+
     const [inputValid, setInputValid] = useState<boolean>(true)
     const [outputValid, setOutputValid] = useState<boolean>(true)
     const [inputValue, setInputValue] = useState<string>("")
@@ -44,6 +51,7 @@ export default function TradeBox(props: props) {
     const [maxPrice, setMaxPrice] = useState<string>("0")
     const [fee, setFee] = useState<string>("0")
     const [reward, setReward] = useState<string>("0")
+    const [outputReserve, setOutputReserve] = useState<string>("")
 
     const correctPrice = (price: string) => {
         if (new BigNumber(price).isNaN())
@@ -77,7 +85,9 @@ export default function TradeBox(props: props) {
     const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
     const swapEnabled = swapPossible && inputEnabled
 
-    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue) : "0"
+    const wbtcOverride = nameOfSelectedAddress(inputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
+
+    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, wbtcOverride) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
     const highGasOptions = { from: walletContextProps.account }
@@ -138,17 +148,15 @@ export default function TradeBox(props: props) {
         swapCallBack()
     }, [swapClicked])
 
-
     useEffect(() => {
         if (inputReadyToSwap) {
             const nameOfInput = nameOfSelectedAddress(inputAddress).toLowerCase()
-
 
             walletContextProps.contracts.behodler.Kharon.toll(inputAddress, inputValWei).call(primaryOptions)
                 .then(feeResult => {
                     const decimalFee = API.hexToNumberString(feeResult)
                     if (!new BigNumber(decimalFee).isNaN())
-                        setFee(API.fromWei(decimalFee))
+                        setFee(API.fromWei(decimalFee, wbtcOverride))
                     if (nameOfInput === 'scarcity' || nameOfInput === 'weidai' || nameOfInput === 'dai')
                         setReward("")
                     else
@@ -158,8 +166,8 @@ export default function TradeBox(props: props) {
 
                                 const decimalReward = API.hexToNumberString(rewardResult)
                                 if (!new BigNumber(decimalReward).isNaN()) {
-                                    setReward(API.fromWei(decimalReward))
-                                    setFee(API.fromWei(new BigNumber(decimalFee).minus(decimalReward).toString()))
+                                    setReward(API.fromWei(decimalReward, wbtcOverride))
+                                    setFee(API.fromWei(new BigNumber(decimalFee).minus(decimalReward).toString(), wbtcOverride))
                                 }
                             })
                 })
@@ -178,7 +186,8 @@ export default function TradeBox(props: props) {
                                 setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
                                 setExchangeRate(ex.toString())
-                                setOutputValue(API.fromWei(tokensToPurchase.toString()))
+                                const wbtcOutputOverride = nameOfSelectedAddress(outputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
+                                setOutputValue(API.fromWei(tokensToPurchase.toString(), wbtcOutputOverride))
                             })
                             .catch(error => {
                             })
@@ -192,7 +201,7 @@ export default function TradeBox(props: props) {
                         setDryRunSCX(scxToPurchase)
                         const ex = new BigNumber(scxToPurchase).dividedBy(inputValWei)
                         setExchangeRate(ex.toString())
-                        setOutputValue(API.fromWei(scxToPurchase.toString()))
+                        setOutputValue(API.fromWei(scxToPurchase.toString(), wbtcOverride))
                     })
                     .catch(err => {
                     })
@@ -209,7 +218,16 @@ export default function TradeBox(props: props) {
                                 setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
                                 setExchangeRate(ex.toString())
-                                setOutputValue(API.fromWei(tokensToPurchase.toString()))
+                                const wbtcOutputOverride = nameOfSelectedAddress(outputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
+                                const tokensToPurchaseEth = API.fromWei(tokensToPurchase.toString(), wbtcOutputOverride)
+                                if (bigNumberLessThanOrEqual(tokensToPurchaseEth, outputReserve)) {
+                                    setOutputValue(tokensToPurchaseEth)
+                                    setOutputValid(true)
+                                }
+                                else {
+                                    setOutputValue('Insufficient Reserve')
+                                    setOutputValid(false)
+                                }
                             })
                             .catch(err => {
                                 setInputValid(false)
@@ -261,7 +279,7 @@ export default function TradeBox(props: props) {
                 setTokenAddress={setOutputAddress}
                 address={outputAddress}
                 value={outputValue}
-                exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, showReserve: true }}
+                exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, reserve: outputReserve, setReserve: setOutputReserve }}
                 clear={clearInput}
                 disabledInput
             />

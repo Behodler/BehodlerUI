@@ -6556,7 +6556,7 @@
             },     
             {
                 "contract": "Weth",
-                "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D",
+                "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
                 "abi": [
                     {
                         "anonymous": false,
