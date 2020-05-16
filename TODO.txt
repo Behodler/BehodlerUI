@@ -21,63 +21,18 @@ address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
 
 
 Behodler:
-FOR NEXT TIME: exchange rate calculations don't match actual scarcity produced
-
-Interfaces --DONE
-1. populate contracts interface with behodler contracts --DONE
-2. web3 instantiate behodler -- DONE
-3. Get Behodler Admin contract list populated using context of IContracts --DONE
-4. On behodler context, populate owner text box with existing owner.--DONE
-    4.1 Allow user to change text from default owner text
-5. Execute seed function on Behodler section. -- DONE
-6. Complete the rest --DONE
-
-Design TODO:
-1. Design a section for redeeming pyrotokens.
-
-Contract onboarding:
-A text file of approved contracts is shipped with UI. This causes the dropdown to be populated. A folder with images with names equal to the index of the text file is shipped. The image appears in 
-drop down. (pallette?)
-- baseTokens.js is complete.
-
-A similar file for pyroTokens with similar folder
-
-Behodler User Screen:
-1. Create uniswap looking textbox. Include a twirly that can be turned on with a state. --DONE, no need for twirly
-        On enable, should see twirly followed by enable vanishing -- DONE
-2. Wording: "You are selling 10 oxt which will cause the behodler token bonding curve to produce 10 scarcity (scx) <remember fees>. This will then be used to purchase 50 Loom."
-    You can set bounds on how much scarcity is produced or required to limit your losses from front running or late block inclusion: -- DONE
-    Min scx required to produce 10 oxt  <text box>
-    Max scx required to purchase 50 Loom <text box>
-3. Implement Swap button -- DONE
-4. Add a swap token toggle to switch out and in -- DONE
-5. Don't require enabling for scarcity --DONE
-6. Display a total fee section with a breakdown below. Each level should have a tooltip explainer:
-    6.1 Scarcity, explaining how this adds to the reserve
-    6.2 Pyrotoken, explaining how this is a reward for trading
-    6.3 Fee, explaining how this is an optional fee to support the system.
-    6.4 Different for WeiDai and Dai
-7. show total token in reserve -- DONE
-8. Make an exception for weth --DONE
-9. Deal with insufficient balance problem --DONE
-10. Add swap to minified app bar --DONE
-
-FOR NEXT TIME: BUG! Loading ptoken section
-Pyrotoken page
-1. Firstly change routing so that swap is /behodler, pyroTokens are /behodler/pyroTokens and chronos has its owner -- DONE
-2. On each page have a slidy selector thing at the top like uniswap with swap/pyrotokens/chronos (https://material-ui.com/components/tabs/) --DONE
-3. On Pyrotoken page, have the extended view boxes like swap but instead of input to output, have pyrotoken -> base token -- DONE
-4. Instead of swap button have redeem -- DONE
-5. Below the base token textbox have the redeem rate and the total redeem rate growth -- DONE
-6. See if enable still necessary and change wording if it is --DONE
-7. Show balance of PyroToken and balance of base Token --DONE
-8. Add more mocktokens to behodler to match images and reoorder deployment script to match images. In mainnet we'll just switch addresses
 
 SECURITY: see reentrancy attack: https://www.cryptonewtech.com/2020/04/26/storage-markets-and-the-rise-of-the-interplanetary-file-system-ipfs/
 
-Later:
-Add beta warning
-Implement Chronos powered price history
+
+
+
+
+Acceptance tests:
+1. Trading 2 tokens reduces input balance by input amount and increases output balance by output amount
+2. Trading in big Dai works.
+3. Trading out big Dai works
+
 
 TOKENS to consider:
 WBTC
@@ -92,5 +47,3 @@ FOAM
 GEN (DaoStack)
 KNC (Kyber Network Crystal)
 MKR
-
-For next time: fix wbtc numeric issues in pyrotoken

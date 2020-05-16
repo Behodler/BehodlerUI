@@ -23,6 +23,7 @@ import { WalletContext } from '../Contexts/WalletStatusContext'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
+const shortcut:boolean = false
 
 let styleObject = {
 	root: {
@@ -116,7 +117,7 @@ function LayoutFrameComponent(props: any) {
 						>
 							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={() => setRedirect('/behodler')} />
 							<Divider />
-							{walletContextProps.primary || true ?
+							{walletContextProps.primary || shortcut ?
 								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodler/admin')} /> : ""
 							}
 						</Drawer>
@@ -187,7 +188,7 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/FAQ">
 										<FAQ />
 									</Route>
-									{walletContextProps.primary || true ?
+									{walletContextProps.primary || shortcut ?
 										<Route path="/behodler/admin">
 											<Admin />
 										</Route>
@@ -196,7 +197,7 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/behodler">
 										{notConnected ? <Redirect to={"/"} /> : <Swap />}
 									</Route>
-									{walletContextProps.primary ?
+									{walletContextProps.primary || shortcut ?
 										<Route path="/dependencies">
 											<ContractDependencies />
 										</Route>

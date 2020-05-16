@@ -4663,7 +4663,7 @@
             },
             {
                 "contract": "Janus",
-                "address": "0x52B8C6Bf615965F98b0E4Ad46Cf0Da71DA637498",
+                "address":"0x3E8dcC07FDc6453234a5230d8Fc94aeaA34F4bDE",
                 "abi": [
                     {
                         "inputs": [],
@@ -6817,7 +6817,7 @@
             },
             {
                 "contract": "ERC20",
-                "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE",
+                "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
                 "abi": [
                     {
                         "anonymous": false,

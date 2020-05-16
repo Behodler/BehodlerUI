@@ -156,7 +156,7 @@ export default function ExtendedTextField(props: props) {
       exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
   }
   const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
-  const decimalPlaces = nameOfSelectedAddress(props.address).toLowerCase() === 'wbtc' ? 8 : 18
+  const decimalPlaces = nameOfSelectedAddress(props.address).toLowerCase().indexOf('wbtc') !== -1 ? 8 : 18
   const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, decimalPlaces)
 
   useEffect(() => {

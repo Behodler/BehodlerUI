@@ -9,10 +9,6 @@
             "address": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d"
         },
         {
-            "name": "Dai",
-            "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-        },
-        {
             "name": "Weth",
             "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         },

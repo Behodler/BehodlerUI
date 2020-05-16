@@ -89,7 +89,6 @@ export default function Swap(props: props) {
         >
             <Tab label="Swap" />
             <Tab label="Pyrotokens" />
-            <Tab label="Chronos" />
         </Tabs>
         <RenderScreen value={value} tokens={pyroTokenMapping} />
     </Container>
