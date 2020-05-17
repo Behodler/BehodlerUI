@@ -29,12 +29,6 @@ interface props {
     configuration: configuration
 }
 
-/*
- Wording: "You are selling 10 oxt which will cause the behodler token bonding curve to produce 10 scarcity (scx) <remember fees>. This will then be used to purchase 50 Loom."
-    You can set bounds on how much scarcity is produced or required to limit your losses from front running or late block inclusion:
-    Min scx required to produce 10 oxt  <text box>
-    Max scx required to purchase 50 Loom <text box>
-     */
 const useStyles = makeStyles((theme) => ({
     root: {
         padding: '2px 4px',
@@ -66,14 +60,17 @@ export default function AdvancedDetails(props: props) {
         dryRunTokens = props.DryRunTokens
     }
 
+    const minPrice = new BigNumber(dryRunSCX).dividedBy(new BigNumber(props.inputValue))
+    const maxPrice = new BigNumber(dryRunSCX).dividedBy(new BigNumber(props.outputValue))
+
     let message = `You are selling ${props.inputValue} `
     if (props.configuration === configuration.SCARCITYIN) {
-        message += `Scarcity (SCX) to the Behodler token bonding curve which will release ${props.outputValue} ${props.nameOfOutput}, yielding a price of ${new BigNumber(props.inputValue).dividedBy(new BigNumber(props.outputValue))} Scarcity (SCX) per ${props.nameOfOutput}. You can set a maximum price you're willing to pay in Scarcity for ${props.nameOfOutput}.`
+        message += `Scarcity (SCX) to the Behodler token bonding curve which will release ${props.outputValue} ${props.nameOfOutput}, yielding a price of ${maxPrice} Scarcity (SCX) per ${props.nameOfOutput}. You can set a maximum price you're willing to pay in Scarcity for ${props.nameOfOutput}.`
     }
     else if (props.configuration === configuration.SCARCITYOUT) {
-        message += `${props.nameOfInput} to the Behodler token bonding curve which will mint ${props.outputValue} Scarcity (SCX), yielding a price of ${new BigNumber(props.inputValue).dividedBy(new BigNumber(props.outputValue))} ${props.nameOfOutput} per Scarcity (SCX). You can set the minimum price in Scarcity you're willing to accept for ${props.nameOfInput}.`
+        message += `${props.nameOfInput} to the Behodler token bonding curve which will mint ${props.outputValue} Scarcity (SCX), yielding a price of ${minPrice} Scarcity (SCX) per ${props.nameOfOutput} . You can set the minimum price in Scarcity you're willing to accept for ${props.nameOfInput}.`
     } else {
-        message += `${props.nameOfInput} to the Behodler token bonding curve which will mint ${dryRunSCX} Scarcity (SCX), yielding a price of ${new BigNumber(dryRunSCX).dividedBy(new BigNumber(props.inputValue))} Scarcity per ${props.nameOfInput}. This will then be used to purchase ${dryRunTokens} ${props.nameOfOutput} from the bonding curve, burning the scarcity in the process, yielding a price of ${new BigNumber(props.outputValue).dividedBy(new BigNumber(dryRunSCX))} ${props.nameOfOutput} per scarcity. You can set the minimum price in Scarcity you're willing to accept for ${props.nameOfInput} as well as the maximum price in Scarcity you're willing to pay for ${props.nameOfOutput}`
+        message += `${props.nameOfInput} to the Behodler token bonding curve which will mint ${dryRunSCX} Scarcity (SCX), yielding a price of ${minPrice} Scarcity per ${props.nameOfInput}. This will then be used to purchase ${dryRunTokens} ${props.nameOfOutput} from the bonding curve, burning the scarcity in the process, yielding a price of ${maxPrice} Scarcity per ${props.nameOfOutput}. You can set the minimum price in Scarcity you're willing to accept for ${props.nameOfInput} as well as the maximum price in Scarcity you're willing to pay for ${props.nameOfOutput}`
     }
 
     return <Paper className={classes.root}>

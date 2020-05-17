@@ -8,5 +8,6 @@ import Seven from '../../../../images/behodler/7.png'
 import Eight from '../../../../images/behodler/8.png'
 import Nine from '../../../../images/behodler/9.png'
 import Ten from '../../../../images/behodler/10.png'
+import Dai from '../../../../images/dai.png'
 
-export const Images = [One, Two, Three, Four, Five, Six,Seven, Eight,Nine, Ten]
+export const Images = [One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Dai]

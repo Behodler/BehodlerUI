@@ -23,7 +23,7 @@ import { WalletContext } from '../Contexts/WalletStatusContext'
 
 const actionWidth: number = 250
 const infoWidth: number = 400
-const shortcut:boolean = false
+const shortcut:boolean = true
 
 let styleObject = {
 	root: {

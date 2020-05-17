@@ -59,7 +59,7 @@ export default function TradeBox(props: props) {
         return API.toWei(price)
     }
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter(t => t.address == address)[0].name
-    const clearInput = () => { setInputValue(""); setOutputValue(""); setShowAdvanced(false); setMinPrice("0"); setMaxPrice("0"); setSwapClicked(false) }
+    const clearInput = () => { setInputValue(""); setOutputValue(""); setShowAdvancedAndSetPrices(false); setMinPrice("0"); setMaxPrice("0"); setSwapClicked(false) }
     const scarcityAddress = tokenDropDownList.filter(t => t.name === 'Scarcity')[0].address.toLowerCase().trim()
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter(t => t.address !== inputAddress)[0].address)
@@ -76,6 +76,22 @@ export default function TradeBox(props: props) {
         setInputAddress(outputAddress)
         setOutputAddress(temp)
         clearInput()
+    }
+
+    const setDefaultMinMaxPrice = () => {
+        const outputValWei = API.toWei(outputValue)
+        const minPrice = new BigNumber(dryRunSCX).dividedBy(new BigNumber(inputValWei)).times(0.9).toString()
+        const maxPrice = new BigNumber(dryRunSCX).dividedBy(new BigNumber(outputValWei)).times(1.1).toString()
+        setMinPrice(minPrice)
+        setMaxPrice(maxPrice)
+        return [minPrice, maxPrice]
+    }
+
+    const setShowAdvancedAndSetPrices = (show: boolean) => {
+        if (showAdvanced !== show && swapEnabled) { //set default min and max prices
+            setDefaultMinMaxPrice()
+        }
+        setShowAdvanced(show)
     }
 
     const bigInputValue = new BigNumber(inputValue)
@@ -98,6 +114,10 @@ export default function TradeBox(props: props) {
 
     const swapCallBack = useCallback(async () => {
         if (swapClicked) {
+            let priceSet = [minPrice, maxPrice]
+            if (!showAdvanced)
+                priceSet = setDefaultMinMaxPrice()
+
             setSwapClicked(false)
             if (isEthPredicate(inputAddress)) {
                 const behodlerAddress = walletContextProps.contracts.behodler.Behodler.address
@@ -105,13 +125,13 @@ export default function TradeBox(props: props) {
                     .then(behodlerAllowance => {
                         if (new BigNumber(behodlerAllowance).isLessThan(new BigNumber(inputValWei))) {
                             walletContextProps.contracts.behodler.Weth.approve(behodlerAddress, API.UINTMAX).send(primaryOptions, () => {
-                                walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(minPrice), correctPrice(maxPrice)).send({ from: walletContextProps.account, value: inputValWei }, () => {
+                                walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(priceSet[0]), correctPrice(priceSet[1])).send({ from: walletContextProps.account, value: inputValWei }, () => {
                                     clearInput();
                                 });
                             })
                         }
                         else {
-                            walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(minPrice), correctPrice(maxPrice)).send({ from: walletContextProps.account, value: inputValWei }, () => {
+                            walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(priceSet[0]), correctPrice(priceSet[1])).send({ from: walletContextProps.account, value: inputValWei }, () => {
                                 clearInput();
                             });
                         }
@@ -125,18 +145,18 @@ export default function TradeBox(props: props) {
                         if (new BigNumber(jAllowance).isLessThan(new BigNumber(outputValWei))) {
 
                             walletContextProps.contracts.behodler.Weth.approve(janusAddress, API.UINTMAX).send(primaryOptions, () => {
-                                walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, () => {
+                                walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, correctPrice(priceSet[0]), correctPrice(priceSet[1])).send(primaryOptions, () => {
                                     clearInput();
                                 });
                             })
                         } else {
-                            walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, (err) => {
+                            walletContextProps.contracts.behodler.Janus.tokenToEth(inputAddress, inputValWei, correctPrice(priceSet[0]), correctPrice(priceSet[1])).send(primaryOptions, (err) => {
                                 clearInput();
                             });
                         }
                     })
             } else {
-                walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, correctPrice(minPrice), correctPrice(maxPrice)).send(primaryOptions, (err) => {
+                walletContextProps.contracts.behodler.Janus.tokenToToken(inputAddress, outputAddress, inputValWei, correctPrice(priceSet[0]), correctPrice(priceSet[1])).send(primaryOptions, (err) => {
                     clearInput();
                 });
             }
@@ -236,7 +256,7 @@ export default function TradeBox(props: props) {
             }
 
         }
-    }, [inputReadyToSwap, inputValue, maxPrice, minPrice])
+    }, [inputReadyToSwap, inputValue])
 
     const feeRewardBreakdown = swapEnabled ? {
         fee,
@@ -306,10 +326,10 @@ export default function TradeBox(props: props) {
                         />
                     </Grid>
                     <Grid item>
-                        <Button color="secondary" onClick={() => { setShowAdvanced(false); setMinPrice("0"); setMaxPrice("0") }}>Hide Advanced</Button>
+                        <Button color="secondary" onClick={() => { setShowAdvancedAndSetPrices(false); setMinPrice("0"); setMaxPrice("0") }}>Hide Advanced</Button>
                     </Grid>
                 </Grid> :
-                    <Button color="secondary" onClick={() => setShowAdvanced(true)}>Show Advanced</Button>}
+                    <Button color="secondary" onClick={() => setShowAdvancedAndSetPrices(true)}>Show Advanced</Button>}
             </Grid>
             : ""}
         {swapEnabled ?
