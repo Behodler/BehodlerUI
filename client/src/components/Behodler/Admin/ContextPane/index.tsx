@@ -27,7 +27,6 @@ function ContextPane(props: contextPaneProps) {
     const walletContextProps = useContext(WalletContext)
 
     const [currentOwner, setCurrentOwner] = useState<string>("")
-    console.log(props.selectedContract)
     useEffect(() => {
         if (props.selectedContract.toLowerCase() !== 'weth')
             walletContextProps.contracts.behodler[props.selectedContract].primary()

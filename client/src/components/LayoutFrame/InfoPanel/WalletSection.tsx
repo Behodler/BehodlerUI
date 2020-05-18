@@ -15,6 +15,7 @@ import {formatDecimalStrings} from '../../../util/jsHelpers'
 const textStyle = (theme: any) => ({
 	text: {
 		margin: "0 0 0 0",
+		fontSize: 13,
 	},
 	button: {
 		paddingTop: 0,
