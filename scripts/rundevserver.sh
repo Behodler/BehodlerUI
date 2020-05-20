@@ -9,5 +9,8 @@ truffle migrate
 cd '/home/justin/weidai ecosystem/behodler'
 truffle migrate
 cp BehodlerABIAddressMapping.json ../weidai/client/src/temp/
+cd ../Sisyphus
+truffle migrate
+cp sisyphusAddress.json ../weidai/client/src/temp/
 cd ../weidai
 node scripts/captureDevTokens.js

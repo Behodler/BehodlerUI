@@ -17,21 +17,16 @@ transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7b
 address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
 
 
+Sisyphus TODO:
+1. Complete contract interface
+2. Add to IContract
+3. Load from ethereumAPI
+4. Add tab to behodler page
+5. Design a decent layout. Can be simple like PRE. Have explanatory accordions or something.
+    -> show current monarch (YOU, if your contract), current buyout price, initial buyout price
+6. Include logo of sisyphus.
 
 
-
-Behodler:
-
-SECURITY: see reentrancy attack: https://www.cryptonewtech.com/2020/04/26/storage-markets-and-the-rise-of-the-interplanetary-file-system-ipfs/
-
-
-
-
-
-Acceptance tests:
-1. Trading 2 tokens reduces input balance by input amount and increases output balance by output amount
-2. Trading in big Dai works.
-3. Trading out big Dai works
 
 
 TOKENS to consider:
