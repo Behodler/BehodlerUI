@@ -148,7 +148,7 @@ export default function PyroTokens(props: props) {
                 address={pyroTokenAddress}
                 value={pyroTokenValue}
                 clear={clearInput}
-                enableCustomMessage="Enable PyroToken to be redeemed"
+                enableCustomMessage="Enable PyroToken"
                 exchangeRate={{ baseAddress: baseTokenAddress, baseName: baseTokenName, ratio: redeemRate, valid: redeemEnabled }}
                 addressToEnableFor={walletContextProps.contracts.behodler.Bellows.address}
             />

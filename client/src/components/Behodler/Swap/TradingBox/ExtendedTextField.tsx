@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 800,
+    width: 650,
     backgroundColor: "rgb(32, 33, 36)"
   },
 
@@ -246,7 +246,7 @@ export default function ExtendedTextField(props: props) {
           >
             <Grid item>
               <Typography
-                variant="subtitle2"
+                variant="caption"
                 className={classes.searchHeader}
               >
                 {props.label}
@@ -254,7 +254,7 @@ export default function ExtendedTextField(props: props) {
             </Grid>
             <Grid>
               <Typography
-                variant="subtitle2"
+                variant="caption"
                 className={classes.balance}
               >
                 Balance: {currentBalance}
@@ -288,7 +288,7 @@ export default function ExtendedTextField(props: props) {
                 </Button>
                 {enabled || props.setEnabled === undefined ? <div></div> :
                   <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)}>
-                    {props.enableCustomMessage || "Enable Token for Trade"}
+                    {props.enableCustomMessage || "Enable Token"}
                   </Button>}
               </FormControl>
             </Grid>

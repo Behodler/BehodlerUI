@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useContext } from 'react'
 import { WalletContext } from '../../../../Contexts/WalletStatusContext'
 import { Paper, Typography, List, ListItem, Button } from '@material-ui/core'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
+import API from 'src/blockchain/ethereumAPI'
 
 interface kharonProps {
 
@@ -27,10 +28,132 @@ export default function Kharon(props: kharonProps) {
         <ListItem key="toll">
             <Toll execute={executeToll} />
         </ListItem>
+        <ListItem key="donations">
+            <Donations />
+        </ListItem>
         <ListItem key="WithDrawDonations">
             <WithDrawDonations execute={executeWithDrawDonations} />
         </ListItem>
     </List>
+}
+
+interface donationsProps {
+}
+
+function Donations(props: donationsProps) {
+    const walletContextProps = useContext(WalletContext)
+    const [oxt, setOXT] = useState<string>("")
+    const [pnk, setPNK] = useState<string>("")
+    const [weth, setWeth] = useState<string>("")
+    const [link, setLink] = useState<string>("")
+    const [loom, setLoom] = useState<string>("")
+    const [wbtc, setWBTC] = useState<string>("")
+    const [mkr, setMKR] = useState<string>("")
+    const [bat, setBAT] = useState<string>("")
+
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0x4575f41308ec1483f3d399aa9a2826d74da13deb', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setOXT(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setPNK(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setWeth(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0x514910771af9ca656af840dff83e8264ecf986ca', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setLink(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0xa4e8c3ec456107ea67d3075bf9e3df3a75823db0', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setLoom(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', walletContextProps.account, false, 8)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setWBTC(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setMKR(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+
+    useEffect(() => {
+        const currentTokenEffects = API.generateNewEffects('0x0d8775f648430679a709e98d2b0cb6250d2887ef', walletContextProps.account, false, 18)
+        const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Kharon.address)
+        const subscription = effect.Observable.subscribe(balance => {
+            setBAT(balance)
+        })
+
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+    return <Paper>
+        <Typography variant="h5">Balances</Typography>
+        <List>
+            <ListItem>
+                <ListItem key="oxt">OXT: {oxt}</ListItem>
+                <ListItem key="pnk">PNK: {pnk}</ListItem>
+                <ListItem key="weth">Weth: {weth}</ListItem>
+                <ListItem key="link">LINK: {link}</ListItem>
+                <ListItem key="loom">LOOM: {loom}</ListItem>
+                <ListItem key="wbtc">WBTC: {wbtc}</ListItem>
+                <ListItem key="mkr">MKR: {mkr}</ListItem>
+                <ListItem key="bat">BAT: {bat}</ListItem>
+            </ListItem>
+        </List>
+    </Paper>
 }
 
 

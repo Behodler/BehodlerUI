@@ -124,9 +124,11 @@ export default function TradeBox(props: props) {
                 walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, behodlerAddress).call(primaryOptions)
                     .then(behodlerAllowance => {
                         if (new BigNumber(behodlerAllowance).isLessThan(new BigNumber(inputValWei))) {
+
                             walletContextProps.contracts.behodler.Weth.approve(behodlerAddress, API.UINTMAX).send(primaryOptions, () => {
+                                clearInput();
                                 walletContextProps.contracts.behodler.Janus.ethToToken(outputAddress, correctPrice(priceSet[0]), correctPrice(priceSet[1])).send({ from: walletContextProps.account, value: inputValWei }, () => {
-                                    clearInput();
+
                                 });
                             })
                         }
