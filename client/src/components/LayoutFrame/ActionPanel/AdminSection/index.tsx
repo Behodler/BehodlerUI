@@ -18,7 +18,7 @@ function AdminSectionComponent(props: AdminSectionProps) {
 			<ListItemText primary="Set Dependencies" />
 		</ListItem>
 		<ListItem button key="beadmin" onClick = {props.behodlerAdmin}>
-			<ListItemIcon><AccountBox color="primary" /></ListItemIcon>
+			<ListItemIcon><AccountBox color="secondary" /></ListItemIcon>
 			<ListItemText primary="Behodler Admin" />
 		</ListItem>
 		<Divider />

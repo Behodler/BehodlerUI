@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox from './TradingBox/index'
 import PyroTokens, { basePyroPair, filterPredicate } from './PyroTokens/index'
+import Sisyphus from './Sisyphus/index'
 import { Container, Chip, Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -89,6 +90,7 @@ export default function Swap(props: props) {
         >
             <Tab label="Swap" />
             <Tab label="Pyrotokens" />
+            <Tab label="Sisyphus" />
         </Tabs>
         <RenderScreen value={value} tokens={pyroTokenMapping} />
     </Container>
@@ -102,6 +104,8 @@ function RenderScreen(props: { value: number, tokens: basePyroPair[] }) {
             if (props.tokens.length > 0)
                 return <PyroTokens tokens={props.tokens} />
             return <div></div>
+        case 2:
+            return <Sisyphus />
         default:
             return <div>Chronos</div>
     }

@@ -26,6 +26,9 @@ import networkVersionJSON from '../networkVersionControllers.json'
 import { BellowsEffects } from './observables/Bellows'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
+import SisyphusContractMappings from '../temp/sisyphusAddress.json'
+import { Sisyphus as SisyphusContractInterface } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
+import SisyphusABI from './behodlerUI/Sisyphus.json'
 import BigNumber from 'bignumber.js';
 
 const potReserveAddresses =
@@ -218,6 +221,7 @@ class ethereumAPI {
 		Dai.address = daiAddress;
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
+		behodlerContracts.Sisyphus = await this.fetchSisyphus(networkName)
 
 		let contracts: IContracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve, activeVersion, behodler: behodlerContracts }
 		await this.configureVersionWarnings(contracts, currentAccount)
@@ -354,11 +358,11 @@ class ethereumAPI {
 
 	private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
 		let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
-		if (network == 'private')
-			network = 'development'
+		network = network == 'private' ? 'development' : network
 
 		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
-		const keys = Object.keys(behodlerContracts)
+		const keys = Object.keys(behodlerContracts).filter(key => key !== 'Sisyphus')
+
 		keys.forEach(async (key) => {
 			const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
 			const currentMapping = mappingsList.filter(mapping => mapping.contract == key || mapping.contract == alternateKey)[0]
@@ -367,6 +371,16 @@ class ethereumAPI {
 			behodlerContracts[key].address = deployment.address
 		})
 		return behodlerContracts
+	}
+
+	private async fetchSisyphus(network: string): Promise<SisyphusContractInterface> {
+		let sisyphus: SisyphusContractInterface
+		network = network == 'private' ? 'development' : network
+		let address = SisyphusContractMappings.filter(s => s.network === network)[0].address
+		const deployment = await this.deployBehodlerContract(SisyphusABI.abi, address)
+		sisyphus = deployment.methods
+		sisyphus.address = deployment.address
+		return sisyphus
 	}
 
 }

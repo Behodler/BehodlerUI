@@ -13,12 +13,13 @@ import { Kharon } from './contractInterfaces/behodler/Kharon'
 import { Prometheus } from './contractInterfaces/behodler/Prometheus'
 import { Scarcity } from './contractInterfaces/behodler/Scarcity'
 import { Weth } from './contractInterfaces/behodler/Weth'
-//hephaestu
+//hephaestus
 import { Bellows } from './contractInterfaces/behodler/hephaestus/Bellows'
 import { Lachesis } from './contractInterfaces/behodler/hephaestus/Lachesis'
 import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
 import { PyroTokenRegistry } from './contractInterfaces/behodler/hephaestus/PyroTokenRegistry'
-
+//sisyphus
+import { Sisyphus } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
 
 export interface BehodlerContracts {
 	Behodler: Behodler,
@@ -31,7 +32,8 @@ export interface BehodlerContracts {
 	Bellows: Bellows,
 	Lachesis: Lachesis,
 	PyroToken: PyroToken,
-	PyroTokenRegistry: PyroTokenRegistry
+	PyroTokenRegistry: PyroTokenRegistry,
+	Sisyphus: Sisyphus
 }
 
 export default interface IContracts {
@@ -52,6 +54,11 @@ const defaultBase = {
 const defaultSecondary = {
 	primary: () => { },
 	transferPrimary: (recipient: string) => { }
+}
+
+const defaultOwnable = {
+	owner: () => { },
+	transferOwnership: (newOwner: address) => { }
 }
 
 const defaultERC20 = {
@@ -244,6 +251,25 @@ const defaultPyroTokenRegistry: PyroTokenRegistry = {
 	pyroTokenMapping: (pToken: address) => { }
 }
 
+const defaultSisyphus: Sisyphus = {
+	...defaultBase,
+	...defaultOwnable,
+	enable: (e: boolean) => { },
+	setTime: (periodDurationType: uint, totalIncrements: uint) => { },
+	setRewardProportion: (proportion: uint) => { },
+	seed: (scx: address) => { },
+	struggle: (scarcityForwarded: uint) => { },
+	calculateCurrentBuyout: () => { },
+	enabled: () => { },
+	rewardProportion: () => { },
+	CurrentMonarch: () => { },
+	scarcity: () => { },
+	BuyoutAmount: () => { },
+	BuyoutTime: () => { },
+	periodDuration: () => { },
+	totalIncrements: () => { }
+}
+
 export const DefaultBehodlerContracts: BehodlerContracts = {
 	Behodler: defaultBehodler,
 	Chronos: defaultChronos,
@@ -255,7 +281,8 @@ export const DefaultBehodlerContracts: BehodlerContracts = {
 	Bellows: defaultBellows,
 	Lachesis: defaultLachesis,
 	PyroToken: defaultPyroToken,
-	PyroTokenRegistry: defaultPyroTokenRegistry
+	PyroTokenRegistry: defaultPyroTokenRegistry,
+	Sisyphus: defaultSisyphus
 }
 
 export const DefaultContracts: IContracts = {

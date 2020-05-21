@@ -1,6 +1,6 @@
 [
     {
-        "network": "main",
-        "address": "0x903f71ae91f481E1E8D51895d80f6F199aF11667"
+        "network": "development",
+        "address": "0x107dDcC577aF15B710C87BAf877A47efdB4b55Bb"
     }
 ]
