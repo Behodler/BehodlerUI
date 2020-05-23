@@ -11,7 +11,7 @@ interface sisyphusProps {
 
 export default function Sisyphus(props: sisyphusProps) {
     const walletContextProps = useContext(WalletContext)
-    const sisyphus = walletContextProps.contracts.behodler.Sisyphus
+    const sisyphus = walletContextProps.contracts.behodler.Sisyphus.Sisyphus
     const primaryOptions = { from: walletContextProps.account }
     const executeEnable = (enabled: boolean) => sisyphus.enable(enabled).send(primaryOptions)
     const executeSetTime = (periodDurationType: string, totalIncrements: string) => sisyphus.setTime(periodDurationType, totalIncrements).send(primaryOptions)
@@ -42,7 +42,7 @@ function Enable(props: enableProps) {
     const walletContextProps = useContext(WalletContext)
     const [enable, setEnable] = useState<boolean>(false)
     useEffect(() => {
-        walletContextProps.contracts.behodler.Sisyphus.enabled().call({ from: walletContextProps.account })
+        walletContextProps.contracts.behodler.Sisyphus.Sisyphus.enabled().call({ from: walletContextProps.account })
             .then(result => {
                 setEnable(result)
             })
@@ -79,9 +79,9 @@ function SetTime(props: setTimeProps) {
     const [totalIncrements, setTotalIncrements] = useState<string>("")
 
     useEffect(() => {
-        walletContextProps.contracts.behodler.Sisyphus.periodDuration().call({ from: walletContextProps.account }).then(d => {
+        walletContextProps.contracts.behodler.Sisyphus.Sisyphus.periodDuration().call({ from: walletContextProps.account }).then(d => {
             setDuration(d)
-            walletContextProps.contracts.behodler.Sisyphus.totalIncrements().call({ from: walletContextProps.account }).then(i => {
+            walletContextProps.contracts.behodler.Sisyphus.Sisyphus.totalIncrements().call({ from: walletContextProps.account }).then(i => {
                 setTotalIncrements(i)
             })
         })
@@ -113,7 +113,7 @@ function SetRewardProportion(props: setRewardProportionProps) {
     const [proportion, setProportion] = useState<string>("")
 
     useEffect(() => {
-        walletContextProps.contracts.behodler.Sisyphus.rewardProportion().call({ from: walletContextProps.account }).then(p => {
+        walletContextProps.contracts.behodler.Sisyphus.Sisyphus.rewardProportion().call({ from: walletContextProps.account }).then(p => {
             setProportion(p)
         })
     }, [])
@@ -140,7 +140,7 @@ function Seed(props: seedProps) {
     const [scx, setScx] = useState<string>("")
 
     useEffect(() => {
-        walletContextProps.contracts.behodler.Sisyphus.scarcity().call({ from: walletContextProps.account }).then(s => {
+        walletContextProps.contracts.behodler.Sisyphus.Sisyphus.scarcity().call({ from: walletContextProps.account }).then(s => {
             setScx(s)
         })
     }, [])

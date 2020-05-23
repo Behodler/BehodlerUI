@@ -18,15 +18,9 @@ address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
 
 
 Sisyphus TODO:
-1. Complete contract interface --DONE
-2. Add to IContract --DONE
-3. Load from ethereumAPI --DONE
-4. Add admin page for Sisyphus --DONE
-4. Add tab to behodler page -- DONE
-5. Design a decent layout. Can be simple like PRE. Have explanatory accordions or something.
-    -> show current monarch (YOU, if your contract), current buyout price, initial buyout price
-6. Include logo of sisyphus.
-
+1. Get buyout amounts working
+2. Disable struggle button if nan entered into value text box
+3. Show current scx balance
 
 
 

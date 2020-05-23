@@ -28,8 +28,13 @@ import { BellowsEffects } from './observables/Bellows'
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import SisyphusContractMappings from '../temp/sisyphusAddress.json'
 import { Sisyphus as SisyphusContractInterface } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
+import { Faucet } from './contractInterfaces/behodler/Sisyphus/Faucet'
+
+import { SisyphusContracts } from './IContracts'
 import SisyphusABI from './behodlerUI/Sisyphus.json'
+import FaucetABI from './behodlerUI/Faucet.json'
 import BigNumber from 'bignumber.js';
+import { SisyphusEffects } from './observables/Sisyphus';
 
 const potReserveAddresses =
 {
@@ -78,6 +83,7 @@ class ethereumAPI {
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
 	public bellowsEffects: BellowsEffects
+	public sisyphusEffects: SisyphusEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
@@ -231,6 +237,7 @@ class ethereumAPI {
 		this.bankEffects = new BankEffects(this.web3, contracts.WeiDaiBank, currentAccount)
 		this.initialized = true
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
+		this.sisyphusEffects = new SisyphusEffects(this.web3, contracts.behodler.Sisyphus.Sisyphus, contracts.behodler.Scarcity, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}
@@ -373,14 +380,18 @@ class ethereumAPI {
 		return behodlerContracts
 	}
 
-	private async fetchSisyphus(network: string): Promise<SisyphusContractInterface> {
+	private async fetchSisyphus(network: string): Promise<SisyphusContracts> {
 		let sisyphus: SisyphusContractInterface
 		network = network == 'private' ? 'development' : network
 		let address = SisyphusContractMappings.filter(s => s.network === network)[0].address
 		const deployment = await this.deployBehodlerContract(SisyphusABI.abi, address)
 		sisyphus = deployment.methods
 		sisyphus.address = deployment.address
-		return sisyphus
+		let faucetAddress = await sisyphus.faucet().call()
+		const faucetDeployment = await this.deployBehodlerContract(FaucetABI.abi, faucetAddress)
+		let faucet: Faucet = faucetDeployment.methods
+		faucet.address = faucetAddress
+		return { Sisyphus: sisyphus, Faucet: faucet }
 	}
 
 }

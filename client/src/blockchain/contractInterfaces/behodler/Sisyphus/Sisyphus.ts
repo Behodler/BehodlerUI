@@ -13,6 +13,7 @@ export interface Sisyphus extends BaseContract, Ownable {
     BuyoutTime: () => any
     periodDuration: () => any
     totalIncrements: () => any
+    faucet:()=>any
     //functions
     enable: (e: boolean) => any
     setTime: (periodDurationType: uint, totalIncrements: uint) => any

@@ -20,6 +20,12 @@ import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
 import { PyroTokenRegistry } from './contractInterfaces/behodler/hephaestus/PyroTokenRegistry'
 //sisyphus
 import { Sisyphus } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
+import {Faucet} from './contractInterfaces/behodler/Sisyphus/Faucet'
+
+export interface SisyphusContracts {
+	Sisyphus: Sisyphus
+	Faucet:Faucet
+}
 
 export interface BehodlerContracts {
 	Behodler: Behodler,
@@ -33,7 +39,7 @@ export interface BehodlerContracts {
 	Lachesis: Lachesis,
 	PyroToken: PyroToken,
 	PyroTokenRegistry: PyroTokenRegistry,
-	Sisyphus: Sisyphus
+	Sisyphus:SisyphusContracts
 }
 
 export default interface IContracts {
@@ -267,7 +273,22 @@ const defaultSisyphus: Sisyphus = {
 	BuyoutAmount: () => { },
 	BuyoutTime: () => { },
 	periodDuration: () => { },
-	totalIncrements: () => { }
+	totalIncrements: () => { },
+	faucet: () => { }
+}
+
+const defaultFaucet:Faucet = {
+	...defaultOwnable,
+	...defaultBase,
+	seed:(scx:address)=>{},
+    calibrate:(dripInterval:uint,drips:uint) =>{},
+    drip:()=>{},
+    takeDonation:(value:uint)=>{}
+}
+
+const defaultSisyphusContracts:SisyphusContracts = {
+	Sisyphus:defaultSisyphus,
+	Faucet: defaultFaucet
 }
 
 export const DefaultBehodlerContracts: BehodlerContracts = {
@@ -282,7 +303,7 @@ export const DefaultBehodlerContracts: BehodlerContracts = {
 	Lachesis: defaultLachesis,
 	PyroToken: defaultPyroToken,
 	PyroTokenRegistry: defaultPyroTokenRegistry,
-	Sisyphus: defaultSisyphus
+	Sisyphus: defaultSisyphusContracts
 }
 
 export const DefaultContracts: IContracts = {

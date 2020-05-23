@@ -1,0 +1,10 @@
+import { address, uint } from "../../SolidityTypes"
+import { Ownable } from '../../Ownable'
+import { BaseContract } from '../../BaseContract'
+
+export interface Faucet extends Ownable, BaseContract {
+    seed:(scx:address)=>any
+    calibrate:(dripInterval:uint,drips:uint) =>any
+    drip:()=>any
+    takeDonation:(value:uint)=>any
+}

@@ -49,7 +49,7 @@ let styleObject = {
 		width: "auto",
 		margin: "0 auto",
 		flexGrow: 1,
-		height: "140vh"
+		minHeight: "150vh"
 	},
 	heading: {
 		fontSize: 40,
