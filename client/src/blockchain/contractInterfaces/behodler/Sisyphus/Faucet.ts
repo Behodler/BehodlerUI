@@ -7,4 +7,9 @@ export interface Faucet extends Ownable, BaseContract {
     calibrate:(dripInterval:uint,drips:uint) =>any
     drip:()=>any
     takeDonation:(value:uint)=>any
+    lastRecipient: ()=>any,
+    dripsRemaining:()=>any
+    dripSize:()=>any
+    lastDrip:()=>any
+    dripInterval: ()=>any
 }

@@ -14,7 +14,6 @@ export class SisyphusEffects extends EffectBase {
         super(web3, account)
         this.sisyphusInstance = sisyphusInstance
         this.scarcityInstance = scarcityInstance
-        console.log('sisyphys address ' + sisyphusInstance.address)
     }
 
     CurrentMonarch(caller: string): Effect {

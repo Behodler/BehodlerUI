@@ -4,11 +4,13 @@ import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import { Typography, Grid, Button, Divider } from '@material-ui/core'
 import logo from '../../../../images/behodler/sisyphus/logo.png'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
+import Stat from '../Stat'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import API from 'src/blockchain/ethereumAPI'
 import BigNumber from 'bignumber.js'
+
 interface props {
 
 }
@@ -251,27 +253,6 @@ export default function Sisyphus(props: props) {
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
-        </Grid>
-    </Grid>
-}
-
-function Stat(props: { label: string, value: string }) {
-    return <Grid
-        container
-        direction="row"
-        justify="space-around"
-        alignItems="center"
-        spacing={3}
-    >
-        <Grid item>
-            <Typography variant="h6">
-                {props.label}
-            </Typography>
-        </Grid>
-        <Grid>
-            <Typography variant="h6">
-                {props.value}
-            </Typography>
         </Grid>
     </Grid>
 }

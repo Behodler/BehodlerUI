@@ -20,6 +20,7 @@ export const EffectFactory = (web3: Web3, account: string): EffectFactoryType =>
 				}
 			}
 			let blockNumber = await web3.eth.getBlockNumber()
+			
 			await queryBlockChain({ number: blockNumber })
 
 			subscription.on('data', queryBlockChain)

@@ -35,6 +35,7 @@ import SisyphusABI from './behodlerUI/Sisyphus.json'
 import FaucetABI from './behodlerUI/Faucet.json'
 import BigNumber from 'bignumber.js';
 import { SisyphusEffects } from './observables/Sisyphus';
+import { ScarcityFaucetEffects } from './observables/ScarcityFaucet'
 
 const potReserveAddresses =
 {
@@ -85,6 +86,7 @@ class ethereumAPI {
 	public bellowsEffects: BellowsEffects
 	public sisyphusEffects: SisyphusEffects
 	public scarcityEffects: ERC20Effects
+	public scarcityFaucetEffects: ScarcityFaucetEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
@@ -240,6 +242,7 @@ class ethereumAPI {
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
 		this.sisyphusEffects = new SisyphusEffects(this.web3, contracts.behodler.Sisyphus.Sisyphus, contracts.behodler.Scarcity, currentAccount)
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
+		this.scarcityFaucetEffects = new ScarcityFaucetEffects(this.web3, behodlerContracts.Sisyphus.Faucet, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}
