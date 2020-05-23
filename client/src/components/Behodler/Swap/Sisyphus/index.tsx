@@ -21,6 +21,28 @@ export default function Sisyphus(props: props) {
     const [originalBuyoutPrice, setOriginalBuyoutPrice] = useState<string>("")
     const [rollBack, setRollBack] = useState<string>("")
     const [sponsorPayment, setSponsorPayment] = useState<string>("")
+    const [userScarcityBalance, setUserScarcityBalance] = useState<string>("")
+    const [sisyphusEnabled, setSisyphusEnabled] = useState<boolean>(false)
+    const [actionDisabled, setActionDisabled] = useState<boolean>(false)
+
+    useEffect(() => {
+        const effect = API.scarcityEffects.balanceOfEffect(walletContextProps.account)
+        const subscription = effect.Observable.subscribe(bal => {
+            setUserScarcityBalance(bal)
+        })
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
+    useEffect(() => {
+        const effect = API.scarcityEffects.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address)
+        const subscription = effect.Observable.subscribe(allowance => {
+            const allowanceBig = new BigNumber(allowance)
+            const balanceBig = new BigNumber(userScarcityBalance)
+            setSisyphusEnabled(!balanceBig.isNaN() && !allowanceBig.isNaN() && allowanceBig.isGreaterThanOrEqualTo(balanceBig))
+        })
+        return () => { subscription.unsubscribe(); effect.cleanup() }
+    })
+
 
     useEffect(() => {
         const effect = API.sisyphusEffects.CurrentMonarch(walletContextProps.account)
@@ -42,6 +64,10 @@ export default function Sisyphus(props: props) {
         const effect = API.sisyphusEffects.BuyoutAmount(walletContextProps.account)
         const subscription = effect.Observable.subscribe(price => {
             setOriginalBuyoutPrice(price)
+            const proportion = new BigNumber(currentBuyoutPrice).div(originalBuyoutPrice).times(100)
+            if (!proportion.isNaN()) {
+                setRollBack(proportion.toString() + '%')
+            }
         })
         return () => { subscription.unsubscribe(); effect.cleanup() }
     })
@@ -55,12 +81,15 @@ export default function Sisyphus(props: props) {
         return () => { subscription.unsubscribe(); effect.cleanup() }
     })
 
-    const proportion = new BigNumber(currentBuyoutPrice).div(originalBuyoutPrice).times(100)
-    if (!proportion.isNaN()) {
-        setRollBack(proportion.toString() + '%')
-    }
+
 
     const formatScarcityAmount = (v: string) => v + ' scx'
+    let textWei = "0"
+    useEffect(() => {
+        const btBig = new BigNumber(buyoutText)
+        setActionDisabled(btBig.isNaN())
+        textWei = btBig.isNaN() ? "0" : API.toWei(buyoutText)
+    }, [buyoutText])
 
     return <Grid
         container
@@ -88,7 +117,18 @@ export default function Sisyphus(props: props) {
             <Stat label="Sponsor payment" value={formatScarcityAmount(sponsorPayment)} />
         </Grid>
         <Grid item>
-            <ActionBox text={buyoutText} setText={setBuyoutText} placeHolder="Scarcity (SCX) Value" action={async () => walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(API.toWei(currentBuyoutPrice)).send({ from: walletContextProps.account })} buttonText="take up burden" />
+            <ActionBox text={buyoutText}
+                setText={setBuyoutText}
+                placeHolder="Scarcity (SCX) Value"
+                action={async () => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(textWei).send({ from: walletContextProps.account })}
+                actionDisabled={actionDisabled}
+                buttonText="take up burden"
+                enableText="Enable Sisyphus"
+                enabled={sisyphusEnabled}
+                enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })} />
+        </Grid>
+        <Grid>
+            <Stat label="Your balance" value={formatScarcityAmount(userScarcityBalance)} />
         </Grid>
         <Grid item>
             <Divider />
@@ -236,7 +276,7 @@ function Stat(props: { label: string, value: string }) {
     </Grid>
 }
 
-function ActionBox(props: { text: string, placeHolder: string, setText: (v: string) => void, action: () => void, buttonText: string }) {
+function ActionBox(props: { text: string, placeHolder: string, setText: (v: string) => void, action: () => void, actionDisabled: boolean, buttonText: string, enabled: boolean, enableText: string, enableAction: () => void }) {
     return <Grid
         container
         direction="row"
@@ -248,7 +288,12 @@ function ActionBox(props: { text: string, placeHolder: string, setText: (v: stri
             <ValueTextBox text={props.text} placeholder={props.placeHolder} changeText={props.setText}></ValueTextBox>
         </Grid>
         <Grid>
-            <Button onClick={() => props.action()} color="secondary" variant="contained" >{props.buttonText}</Button>
+            {props.enabled ?
+                <Button onClick={() => props.action()} disabled={props.actionDisabled} color="primary" variant="contained" >{props.buttonText}</Button>
+                :
+                <Button onClick={() => props.enableAction()} color="secondary" variant="outlined">{props.enableText}</Button>
+            }
+
         </Grid>
     </Grid>
 }

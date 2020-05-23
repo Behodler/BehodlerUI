@@ -14,44 +14,45 @@ export class SisyphusEffects extends EffectBase {
         super(web3, account)
         this.sisyphusInstance = sisyphusInstance
         this.scarcityInstance = scarcityInstance
+        console.log('sisyphys address ' + sisyphusInstance.address)
     }
 
     CurrentMonarch(caller: string): Effect {
         return this.createEffect(async ({ account }) => {
-            return await this.sisyphusInstance.CurrentMonarch().call({ from: caller })
+            return await this.sisyphusInstance.currentMonarch().call({ from: caller })
         })
     }
 
-    BuyoutAmount(caller:string):Effect{
+    BuyoutAmount(caller: string): Effect {
         return this.createEffect(async ({ account, blockNumber }) => {
             const params: FetchNumberFields = {
                 web3: this.web3,
                 defaultValue: "unset",
-                action: async (accounts) => await this.sisyphusInstance.BuyoutAmount().call({ from: accounts[0] }),
+                action: async (accounts) => await this.sisyphusInstance.buyoutAmount().call({ from: caller }),
                 accounts: [caller]
             }
             return await FetchEthereumNumber(params)
         })
     }
 
-    CurrentBuyout(caller:string):Effect{
+    CurrentBuyout(caller: string): Effect {
         return this.createEffect(async ({ account, blockNumber }) => {
             const params: FetchNumberFields = {
                 web3: this.web3,
                 defaultValue: "unset",
-                action: async (accounts) => await this.sisyphusInstance.calculateCurrentBuyout().call({ from: accounts[0] }),
+                action: async (accounts) => await this.sisyphusInstance.calculateCurrentBuyout().call({ from: caller }),
                 accounts: [caller]
             }
             return await FetchEthereumNumber(params)
         })
     }
-    
-    SponsorPayment(caller:string):Effect{
+
+    SponsorPayment(caller: string): Effect {
         return this.createEffect(async ({ account, blockNumber }) => {
             const params: FetchNumberFields = {
                 web3: this.web3,
                 defaultValue: "unset",
-                action: async (accounts) => await this.scarcityInstance.balanceOf(this.sisyphusInstance.address).call({ from: accounts[0] }),
+                action: async (accounts) => await this.scarcityInstance.balanceOf(this.sisyphusInstance.address).call({ from: caller }),
                 accounts: [caller]
             }
             return await FetchEthereumNumber(params)

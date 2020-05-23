@@ -84,6 +84,7 @@ class ethereumAPI {
 	public bankEffects: BankEffects
 	public bellowsEffects: BellowsEffects
 	public sisyphusEffects: SisyphusEffects
+	public scarcityEffects: ERC20Effects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
@@ -238,6 +239,7 @@ class ethereumAPI {
 		this.initialized = true
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
 		this.sisyphusEffects = new SisyphusEffects(this.web3, contracts.behodler.Sisyphus.Sisyphus, contracts.behodler.Scarcity, currentAccount)
+		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}

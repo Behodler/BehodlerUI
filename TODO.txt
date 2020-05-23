@@ -18,9 +18,10 @@ address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
 
 
 Sisyphus TODO:
-1. Get buyout amounts working
-2. Disable struggle button if nan entered into value text box
-3. Show current scx balance
+1. Change take up struggle button to enable. Use ERC20 approve. --DONE
+2. Get buyout amounts working --DONE
+3. Disable struggle button if nan entered into value text box--DONE
+4 . Show current scx balance --DONE
 
 
 

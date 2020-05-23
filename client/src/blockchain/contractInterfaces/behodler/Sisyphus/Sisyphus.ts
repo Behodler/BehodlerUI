@@ -7,18 +7,18 @@ export interface Sisyphus extends BaseContract, Ownable {
     //props
     enabled: () => any
     rewardProportion: () => any
-    CurrentMonarch: () => any
+    currentMonarch: () => any
     scarcity: () => any
-    BuyoutAmount: () => any
-    BuyoutTime: () => any
+    buyoutAmount: () => any
+    buyoutTime: () => any
     periodDuration: () => any
     totalIncrements: () => any
-    faucet:()=>any
+    faucet: () => any
     //functions
     enable: (e: boolean) => any
     setTime: (periodDurationType: uint, totalIncrements: uint) => any
     setRewardProportion: (proportion: uint) => any
-    seed: (scx: address) => any
+    seed: (scx: address, faucet: address) => any
     struggle: (scarcityForwarded: uint) => any
     calculateCurrentBuyout: () => any
 }

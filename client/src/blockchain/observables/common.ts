@@ -52,8 +52,9 @@ export interface FetchNumberFields {
 
 export const FetchNumber = async (params: FetchNumberFields) => {
 	try {
-		if (params.accounts.filter(a => a === "0x0").length > 0)
+		if (params.accounts.filter(a => a === "0x0").length > 0) {
 			return params.defaultValue
+		}
 		const resultHex = await params.action(params.accounts)
 		if (!resultHex)
 			return params.defaultValue
@@ -65,6 +66,7 @@ export const FetchNumber = async (params: FetchNumberFields) => {
 }
 
 export const FetchEthereumNumber = async (params: FetchNumberFields) => {
+
 	const value = await FetchNumber(params)
 	if (value === params.defaultValue)
 		return params.defaultValue

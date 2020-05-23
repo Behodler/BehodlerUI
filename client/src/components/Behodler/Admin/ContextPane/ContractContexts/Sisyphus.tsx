@@ -16,7 +16,7 @@ export default function Sisyphus(props: sisyphusProps) {
     const executeEnable = (enabled: boolean) => sisyphus.enable(enabled).send(primaryOptions)
     const executeSetTime = (periodDurationType: string, totalIncrements: string) => sisyphus.setTime(periodDurationType, totalIncrements).send(primaryOptions)
     const executeSetProportion = (proportion: string) => sisyphus.setRewardProportion(proportion).send(primaryOptions)
-    const executeSeed = (scx: string) => sisyphus.seed(scx).send(primaryOptions)
+    const executeSeed = (scx: string, faucet: string) => sisyphus.seed(scx, faucet).send(primaryOptions)
 
     return <List>
         <ListItem key="Set Enabled">
@@ -132,16 +132,23 @@ function SetRewardProportion(props: setRewardProportionProps) {
 }
 
 interface seedProps {
-    execute: (scx: string) => Promise<void>
+    execute: (scx: string, faucet: string) => Promise<void>
 }
 
 function Seed(props: seedProps) {
     const walletContextProps = useContext(WalletContext)
     const [scx, setScx] = useState<string>("")
+    const [faucet, setFaucet] = useState<string>("")
 
     useEffect(() => {
         walletContextProps.contracts.behodler.Sisyphus.Sisyphus.scarcity().call({ from: walletContextProps.account }).then(s => {
             setScx(s)
+        })
+    }, [])
+
+    useEffect(() => {
+        walletContextProps.contracts.behodler.Sisyphus.Sisyphus.faucet().call({ from: walletContextProps.account }).then(s => {
+            setFaucet(s)
         })
     }, [])
 
@@ -151,8 +158,11 @@ function Seed(props: seedProps) {
             <ListItem key="scx">
                 <ValueTextBox placeholder="scx" changeText={setScx} text={scx} />
             </ListItem>
+            <ListItem key="faucet">
+                <ValueTextBox placeholder="faucet" changeText={setFaucet} text={faucet} />
+            </ListItem>
             <ListItem key="button">
-                <Button variant="contained" color="secondary" onClick={async () => await props.execute(scx)}>Execute</Button>
+                <Button variant="contained" color="secondary" onClick={async () => await props.execute(scx, faucet)}>Execute</Button>
             </ListItem>
         </List>
     </Paper>
