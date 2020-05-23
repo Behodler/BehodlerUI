@@ -9,13 +9,7 @@ import BigNumber from 'bignumber.js'
 interface props {
 
 }
-/*
-    Drip size
-    next drip in X blocks
-    lastRecipient 
-    drips remaining
-    drip button
-*/
+
 export default function ScarcityFaucet(props: props) {
     const walletContextProps = useContext(WalletContext)
     const [dripSize, setDripSize] = useState<string>("")
@@ -84,7 +78,7 @@ export default function ScarcityFaucet(props: props) {
     >
 
         <Grid item>
-            <img width="300px" src={faucet} />
+            <img width="250px" src={faucet} />
         </Grid>
         <Grid item>
             <Stat label="Drip Size" value={scxFormatter(dripSize)} />
