@@ -66,7 +66,11 @@ export default function Sisyphus(props: props) {
         const effect = API.sisyphusEffects.BuyoutAmount(walletContextProps.account)
         const subscription = effect.Observable.subscribe(price => {
             setOriginalBuyoutPrice(price)
-            const proportion = new BigNumber(currentBuyoutPrice).div(originalBuyoutPrice).times(100)
+            const bigCurrent = new BigNumber(currentBuyoutPrice)
+            const bigOriginal = new BigNumber(originalBuyoutPrice)
+            const difference = bigOriginal.minus(bigCurrent)
+
+            const proportion = difference.div(originalBuyoutPrice).times(100)
             if (!proportion.isNaN()) {
                 setRollBack(proportion.toString() + '%')
             }
@@ -165,7 +169,7 @@ export default function Sisyphus(props: props) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography variant="h6">
-                        In cryptocurrency tradition, a faucet is a site which hands out free cryptocurrency to encourage adoption. The Scarcity faucet drips its entire balance at most every 15 blocks and has 144000 drips in it. If someone claims once every 15 blocks and each block is about 15 seconds, the entire Faucet will drain in about a year. Every time the faucet is topped up from Sisyphus, the clock is reset and the average drip size recalculated to last 144000 drips.
+                        In cryptocurrency tradition, a faucet is a site which hands out free cryptocurrency to encourage adoption. The Scarcity faucet drips at regular intervals to encourage Scarcity adoption. Whenever a Sisyphus is deposed, a portion of the buyout payment goes into the Scarcity Faucet so that the drips increase in value.
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -215,7 +219,7 @@ export default function Sisyphus(props: props) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography variant="h6">
-                        Unlike King of the Hill, the buyout price in Sysiphus slowly declines until reaching zero. It starts off at 4 times the amount you paid so if someone deposes you before it falls too far, you will still profit.
+                        Unlike King of the Hill, the buyout price in Sysiphus slowly declines until reaching zero. It starts off at 4 times the amount you paid so that if someone deposes you before it falls too far, you will still profit.
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>

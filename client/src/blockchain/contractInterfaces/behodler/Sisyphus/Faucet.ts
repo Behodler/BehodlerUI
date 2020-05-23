@@ -12,4 +12,6 @@ export interface Faucet extends Ownable, BaseContract {
     dripSize:()=>any
     lastDrip:()=>any
     dripInterval: ()=>any
+    scarcity: ()=>any
+    drips:()=>any
 }

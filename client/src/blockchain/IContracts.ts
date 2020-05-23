@@ -288,7 +288,9 @@ const defaultFaucet: Faucet = {
 	dripsRemaining: () => { },
 	dripSize: () => { },
 	lastDrip: () => { },
-	dripInterval: () => { }
+	dripInterval: () => { },
+	scarcity: () => { },
+	drips: () => { }
 }
 
 const defaultSisyphusContracts: SisyphusContracts = {
