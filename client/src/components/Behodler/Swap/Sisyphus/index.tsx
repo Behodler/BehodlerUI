@@ -40,7 +40,7 @@ export default function Sisyphus(props: props) {
         const subscription = effect.Observable.subscribe(allowance => {
             const allowanceBig = new BigNumber(allowance)
             const balanceBig = new BigNumber(userScarcityBalance)
-            setSisyphusEnabled(!balanceBig.isNaN() && !allowanceBig.isNaN() && allowanceBig.isGreaterThanOrEqualTo(balanceBig))
+            setSisyphusEnabled(!balanceBig.isNaN() && !allowanceBig.isNaN() && allowanceBig.isGreaterThanOrEqualTo(balanceBig) && allowanceBig.isGreaterThan(0))
         })
         return () => { subscription.unsubscribe(); effect.cleanup() }
     })
@@ -93,7 +93,12 @@ export default function Sisyphus(props: props) {
     let textWei = "0"
     useEffect(() => {
         const btBig = new BigNumber(buyoutText)
-        setActionDisabled(btBig.isNaN())
+        let balanceTooLow: boolean = false
+        if (!btBig.isNaN()) {
+            const bigBalance = new BigNumber(userScarcityBalance)
+            balanceTooLow = bigBalance.isLessThan(btBig)
+        }
+        setActionDisabled(btBig.isNaN() || balanceTooLow)
         textWei = btBig.isNaN() ? "0" : API.toWei(buyoutText)
     }, [buyoutText])
 
