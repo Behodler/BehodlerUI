@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
-import { Typography, Grid, Button, Divider } from '@material-ui/core'
+import { Typography, Grid, Button, Divider, Container } from '@material-ui/core'
 import logo from '../../../../images/behodler/sisyphus/logo.png'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
 import Stat from '../Stat'
@@ -119,30 +119,36 @@ export default function Sisyphus(props: props) {
             <Stat label="Current Buyout Price" value={formatScarcityAmount(currentBuyoutPrice)} />
         </Grid>
         <Grid item>
-            <Stat label="Original Buyout Price" value={formatScarcityAmount(originalBuyoutPrice)} />
+            <Stat label="Original Buyout Price" value={formatScarcityAmount(originalBuyoutPrice)} small />
         </Grid>
         <Grid item>
-            <Stat label="Roll back" value={rollBack} />
+            <Stat label="Roll back" value={rollBack} small />
         </Grid>
         <Grid item>
-            <Stat label="Sponsor payment" value={formatScarcityAmount(sponsorPayment)} />
+            <Stat label="Sponsor payment" value={formatScarcityAmount(sponsorPayment)} small />
+        </Grid>
+        <Grid>
+            <Stat label="Your balance" value={formatScarcityAmount(userScarcityBalance)} small />
         </Grid>
         <Grid item>
             <ActionBox text={buyoutText}
                 setText={setBuyoutText}
                 placeHolder="Scarcity (SCX) Value"
-                action={async () => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(textWei).send({ from: walletContextProps.account })}
+                action={async () => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(textWei).send({ from: walletContextProps.account }, () => { setBuyoutText("") })}
                 actionDisabled={actionDisabled}
                 buttonText="take up burden"
                 enableText="Enable Sisyphus"
                 enabled={sisyphusEnabled}
                 enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })} />
         </Grid>
-        <Grid>
-            <Stat label="Your balance" value={formatScarcityAmount(userScarcityBalance)} />
-        </Grid>
+
         <Grid item>
             <Divider />
+        </Grid>
+        <Grid>
+            <Container>
+                <Typography variant="h5">FAQ</Typography>
+            </Container>
         </Grid>
         <Grid item>
             <ExpansionPanel>
@@ -155,6 +161,16 @@ export default function Sisyphus(props: props) {
                         in Scarcity (SCX), the ERC20 liquidity token that powers Behodler. When you become Sisyphus, the new buyout price is 4 times what you initially paid to become Sisyphus.
 
                         Terminology: if you pay the buyout price, you are the deposing Sysiphus; if you were a Sysiphus and have just received a buyout payment, you are the deposed Sysiphus; if you attempt to depose but pay too low a price, you are a pretender
+                    </Typography>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel>
+                <ExpansionPanelSummary>
+                    How do I play Sisyphus?
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Typography variant="h6">
+                        You need Scarcity (SCX) to play Sisyphus. Click on the Swap tab and set the Input token to a one you'd like to pay with. Set the Output text box to Scarcity. Clicking swap will fire off a transaction that will generate new Scarcity for you. Click on the Sisyphus tab and enter at least as much SCX as the current buyout value.
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -174,23 +190,15 @@ export default function Sisyphus(props: props) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography variant="h6">
-                        In cryptocurrency tradition, a faucet is a site which hands out free cryptocurrency to encourage adoption. The Scarcity faucet drips at regular intervals to encourage Scarcity adoption. Whenever a Sisyphus is deposed, a portion of the buyout payment goes into the Scarcity Faucet so that the drips increase in value.
+                        In cryptocurrency tradition, a faucet is a site which hands out free cryptocurrency to encourage adoption.
+                        The Scarcity faucet is a contact with a Scarcity balance that drips at regular intervals to encourage Scarcity adoption. The faucet has a finite amount of drips of equal size. For instance, suppose the Faucet has 100 drips and a SCX balance of 1000. Then each drip will be 10 SCX.
+                        Whenever a Sisyphus is deposed, a portion of the buyout payment goes into the Scarcity Faucet and the average drip is recalculated to be higher and the number of drips left is reset. As long as people play Sisyphus, the faucet will never run out AND the average drip size will grow.
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
             <ExpansionPanel>
                 <ExpansionPanelSummary>
-                    How do I play Sisyphus?
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <Typography variant="h6">
-                        You need Scarcity (SCX) to play Sisyphus. Click on the Swap tab and set the Input text box to a token you'd like to pay with. Set the Output text box to Scarcity.
-                    </Typography>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <ExpansionPanel>
-                <ExpansionPanelSummary>
-                    I can buy Scarcity using a list of tokens. Which is the best one to use?
+                    So if can buy Scarcity using a list of tokens, which is the best one to use?
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography variant="h6">
@@ -210,11 +218,21 @@ export default function Sisyphus(props: props) {
             </ExpansionPanel>
             <ExpansionPanel>
                 <ExpansionPanelSummary>
+                    What's the difference between the original buyout price and the current buyout price?
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Typography variant="h6">
+                        The original buyout price is the price the current Sisyphus would have received had someone deposed them right away. The current buyout price is the actual price you need to pay to depose the current Sisyphus. At first these values are equal but over time, the current price falls to zero, mirroring the stone of Sisyphus which rolls back down the hill.
+              </Typography>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel>
+                <ExpansionPanelSummary>
                     What is the sponsor payment?
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography variant="h6">
-                        If the Sisyphus contract has a positive Scarcity balance, it will be given to the next deposer. This is an incentive to play Sysiphus by reducing the risk of taking on the burden. Eg. If the buyout price is 100 SCX and the sponsor payment is 100 SCX then you face no risk in deposing the current Sysiphus (other than the gas you pay).
+                        If the Sisyphus contract has a positive Scarcity balance, it will be given to the next deposer. This is an incentive to play Sysiphus by reducing the risk of taking on the burden. Eg. If the buyout price is 100 SCX and the sponsor payment is 100 SCX then you face no risk in deposing the current Sysiphus (other than the gas you pay). If the sponsor payment is higher than the current buyout price then you actually profit by deposing the current Sisyphus even if no one deposes you!
               </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -225,6 +243,17 @@ export default function Sisyphus(props: props) {
                 <ExpansionPanelDetails>
                     <Typography variant="h6">
                         Unlike King of the Hill, the buyout price in Sysiphus slowly declines until reaching zero. It starts off at 4 times the amount you paid so that if someone deposes you before it falls too far, you will still profit.
+                    </Typography>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel>
+                <ExpansionPanelSummary>
+                    Am I guaranteed a profit or loss if I play Sisyphus?
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Typography variant="h6">
+                        When you become Sisyphus, the new buyout price is set to 4 times what you paid. So if someone deposes you while it is high, you profit. If the price falls low enough, the buyout price won't compensate you for what you spent and you'll make a loss. If you do choose to play, it might be worth while inviting others you know to try depose you.
+                        If you can't stand the risk and prefer certainty over highs and lows, the faucet is for you.
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
