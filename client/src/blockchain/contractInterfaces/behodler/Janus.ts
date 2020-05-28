@@ -9,4 +9,7 @@ export interface Janus extends BaseContract, Secondary {
     ethToToken: (output: address, minPrice: uint, maxPrice: uint) => any
     //user must authorize weth for Janus
     tokenToEth: (input: address, value: uint, minPrice: uint, maxPrice: uint) => any
+    addLiquidityTokens: (token1:address,token2:address,v1:string,v2:string) => any
+     //user must authorize weth for Janus
+    addLiquidityTokenAndEth: (token:address,v1:string) => any   
 }

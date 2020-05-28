@@ -186,7 +186,9 @@ const defaultJanus: Janus = {
 	seed: (scx: address, weth: address, behodler: address) => { },
 	tokenToToken: (input: address, output: uint, value: uint, minPrice: uint, maxPrice: uint) => { },
 	ethToToken: (output: address, minPrice: uint, maxPrice: uint) => { },
-	tokenToEth: (input: address, value: uint, minPrice: uint, maxPrice: uint) => { }
+	tokenToEth: (input: address, value: uint, minPrice: uint, maxPrice: uint) => { },
+	addLiquidityTokens: (token1: address, token2: address, v1: string, v2: string) => { },
+	addLiquidityTokenAndEth: (token: address, v1: string) => { }
 }
 
 const defaultKharon: Kharon = {

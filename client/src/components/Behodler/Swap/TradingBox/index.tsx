@@ -9,6 +9,9 @@ import SwapVertIcon from '@material-ui/icons/SwapVert';
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import AdvancedDetails, { configuration } from './AdvancedDetails'
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 interface props {
 }
@@ -34,14 +37,25 @@ export default function TradeBox(props: props) {
 
         return !lhsBig.isNaN() && !rhsBig.isNaN() && new BigNumber(lhs).isLessThanOrEqualTo(new BigNumber(rhs))
     }
+    const scarcityAddress = tokenDropDownList.filter(t => t.name === 'Scarcity')[0].address.toLowerCase().trim()
 
     const [inputValid, setInputValid] = useState<boolean>(true)
     const [outputValid, setOutputValid] = useState<boolean>(true)
     const [inputValue, setInputValue] = useState<string>("")
     const [outputValue, setOutputValue] = useState<string>("")
     const [inputEnabled, setInputEnabled] = useState<boolean>(false)
+    const [secondTokenEnabled, setSecondTokenEnabled] = useState<boolean>(false)
+    const [liquidityMode, setLiquidityMode] = useState<boolean>(false)
+    tokenDropDownList = tokenDropDownList.filter(t => !liquidityMode || t.name.toLowerCase().trim() !== 'scarcity')
+
     const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[1].address)
+    if(tokenDropDownList.filter(t=>t.address===outputAddress).length===0){
+        setOutputAddress(tokenDropDownList[1])
+    }
+    if(tokenDropDownList.filter(t=>t.address===inputAddress).length===0){
+        setInputAddress(tokenDropDownList[0])
+    }
     const [exchangeRate, setExchangeRate] = useState<string>("")
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
     const [dryRunSCX, setDryRunSCX] = useState<string>("")
@@ -52,6 +66,8 @@ export default function TradeBox(props: props) {
     const [fee, setFee] = useState<string>("0")
     const [reward, setReward] = useState<string>("0")
     const [outputReserve, setOutputReserve] = useState<string>("")
+    const [liquidityAdded, setLiquidityAdded] = useState<string>("")
+    const [addLiquidityClicked, setAddLiquitidyClicked] = useState<boolean>(false)
 
     const correctPrice = (price: string) => {
         if (new BigNumber(price).isNaN())
@@ -60,7 +76,7 @@ export default function TradeBox(props: props) {
     }
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter(t => t.address == address)[0].name
     const clearInput = () => { setInputValue(""); setOutputValue(""); setShowAdvancedAndSetPrices(false); setMinPrice("0"); setMaxPrice("0"); setSwapClicked(false) }
-    const scarcityAddress = tokenDropDownList.filter(t => t.name === 'Scarcity')[0].address.toLowerCase().trim()
+
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter(t => t.address !== inputAddress)[0].address)
     }
@@ -97,21 +113,45 @@ export default function TradeBox(props: props) {
     const bigInputValue = new BigNumber(inputValue)
     const bigOutputValue = new BigNumber(outputValue)
 
-    const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
-    const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
+    const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN() && !liquidityMode
+    const inputReadyToSwap = inputValid && !bigInputValue.isNaN() && !liquidityMode
     const swapEnabled = swapPossible && inputEnabled
 
     const wbtcOverride = nameOfSelectedAddress(inputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
 
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, wbtcOverride) : "0"
 
+    const boxesPositive = inputValid && outputValid && bigInputValue.isPositive() && bigOutputValue.isPositive()
+
+    const liquiditySwitchMessage = liquidityMode ? 'Switch to TOKEN SWAP mode' : 'Switch to ADD LIQUIDITY mode'
     const primaryOptions = { from: walletContextProps.account }
     const highGasOptions = { from: walletContextProps.account }
 
-    const isEthPredicate = (textBoxAddress: string): boolean => {
-        return tokenDropDownList.filter(item => item.address.trim().toLowerCase() === textBoxAddress.trim().toLowerCase())[0].name === 'Eth'
-    }
+    const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean => tokenDropDownList.filter(item => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
+    const isEthPredicate = isTokenPredicateFactory('Eth')
+    const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
 
+    const addLiquidityPossible = boxesPositive && inputEnabled && (secondTokenEnabled || isEthPredicate(outputAddress))
+    const toggleLiquidityMode = (l:boolean)=>{
+        if(l){
+            if(isScarcityPredicate(outputAddress)){
+                setOutputAddress(tokenDropDownList.filter(t=>t.address!==inputAddress && t.address!==scarcityAddress)[0].address)
+            }
+            else if(isScarcityPredicate(inputAddress)){
+                setInputAddress(tokenDropDownList.filter(t=>t.address!==outputAddress && t.address!==scarcityAddress)[0].address)
+            }
+        }
+        setLiquidityMode(l)
+    }
+    let swapText = 'SWAP'
+    if (!liquidityMode) {
+        if (isScarcityPredicate(outputAddress)) {
+            swapText = 'ADD LIQUIDITY'
+        }
+        else if (isScarcityPredicate(inputAddress)) {
+            swapText = 'WITHDRAW LIQUIDITY'
+        }
+    }
     const swapCallBack = useCallback(async () => {
         if (swapClicked) {
             let priceSet = [minPrice, maxPrice]
@@ -169,6 +209,62 @@ export default function TradeBox(props: props) {
     useEffect(() => {
         swapCallBack()
     }, [swapClicked])
+
+    const addLiquidityCallBack = useCallback(async () => {
+        setAddLiquitidyClicked(false)
+        if (addLiquidityClicked) {
+            const outputValWei = API.toWei(outputValue)
+            if (isEthPredicate(inputAddress)) {
+                const behodlerAddress = walletContextProps.contracts.behodler.Behodler.address
+                walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, behodlerAddress).call(primaryOptions)
+                    .then(behodlerAllowance => {
+
+                        if (new BigNumber(behodlerAllowance).isLessThan(new BigNumber(inputValWei))) {
+
+                            walletContextProps.contracts.behodler.Weth.approve(behodlerAddress, API.UINTMAX).send(primaryOptions, () => {
+                                clearInput();
+                                walletContextProps.contracts.behodler.Janus.addLiquidityTokenAndEth(outputAddress, outputValWei).send({ from: walletContextProps.account, value: inputValWei }, () => {
+
+                                });
+                            })
+                        }
+                        else {
+                            walletContextProps.contracts.behodler.Janus.addLiquidityTokenAndEth(outputAddress, outputValWei).send({ from: walletContextProps.account, value: inputValWei }, () => {
+                                clearInput();
+                            });
+                        }
+                    })
+            }
+            else if (isEthPredicate(outputAddress)) {
+                const janusAddress = walletContextProps.contracts.behodler.Janus.address
+                walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, janusAddress).call(primaryOptions)
+                    .then(jAllowance => {
+                        const outputValWei = API.toWei(outputValue)
+                        if (new BigNumber(jAllowance).isLessThan(new BigNumber(outputValWei))) {
+
+                            walletContextProps.contracts.behodler.Weth.approve(janusAddress, API.UINTMAX).send(primaryOptions, () => {
+                                walletContextProps.contracts.behodler.Janus.addLiquidityTokenAndEth(inputAddress, inputValWei).send({ from: walletContextProps.account, value: outputValWei }, () => {
+                                    clearInput();
+                                });
+                            })
+                        } else {
+                            walletContextProps.contracts.behodler.Janus.addLiquidityTokenAndEth(inputAddress, inputValWei).send({ from: walletContextProps.account, value: outputValWei }, () => {
+                                clearInput();
+                            });
+                        }
+                    })
+            } else {
+
+                walletContextProps.contracts.behodler.Janus.addLiquidityTokens(inputAddress, outputAddress, inputValWei, outputValWei).send(primaryOptions, (err) => {
+                    clearInput();
+                });
+            }
+        }
+    }, [addLiquidityClicked])
+
+    useEffect(() => {
+        addLiquidityCallBack()
+    }, [addLiquidityClicked])
 
     useEffect(() => {
         if (inputReadyToSwap) {
@@ -260,12 +356,34 @@ export default function TradeBox(props: props) {
         }
     }, [inputReadyToSwap, inputValue])
 
+    useEffect(() => {
+        if (liquidityMode && boxesPositive) {
+            walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, "0")
+                .call(highGasOptions)
+                .then(inputLiquidity => {
+                    const outputValWei = API.toWei(outputValue)
+                    walletContextProps.contracts.behodler.Behodler.buyDryRun(outputAddress, outputValWei, "0")
+                        .call(highGasOptions)
+                        .then(outputLiquidity => {
+                            const bigIn = new BigNumber(inputLiquidity)
+                            const bigOut = new BigNumber(outputLiquidity)
+                            setLiquidityAdded(API.fromWei(bigIn.plus(bigOut).toString()))
+                        })
+                        .catch(() => setLiquidityAdded(""))
+                }).catch(() => setLiquidityAdded(""))
+        }
+        else
+            setLiquidityAdded("")
+
+    }, [liquidityMode, boxesPositive, inputValue, outputValue])
+
     const feeRewardBreakdown = swapEnabled ? {
         fee,
         reward: reward !== '' ? reward : undefined,
         donation: '0'
     } : undefined
-
+    const liquidityProvision = liquidityMode && boxesPositive ? `${liquidityAdded} SCX` : undefined
+    const textFieldLabels = liquidityMode ? ['Token 1', 'Token 2'] : ['Input', 'Output (estimated)']
     return <Grid
         container
         direction="column"
@@ -273,7 +391,7 @@ export default function TradeBox(props: props) {
         alignItems="center"
         spacing={3}>
         <Grid item>
-            <ExtendedTextField label="Input"
+            <ExtendedTextField label={textFieldLabels[0]}
                 dropDownFields={tokenDropDownList}
                 valid={inputValid}
                 setValid={setInputValid}
@@ -293,7 +411,7 @@ export default function TradeBox(props: props) {
             </IconButton>
         </Grid>
         <Grid item>
-            <ExtendedTextField label="Output (estimated)"
+            <ExtendedTextField label={textFieldLabels[1]}
                 dropDownFields={tokenDropDownList}
                 valid={outputValid}
                 setValid={setOutputValid}
@@ -301,10 +419,27 @@ export default function TradeBox(props: props) {
                 setTokenAddress={setOutputAddress}
                 address={outputAddress}
                 value={outputValue}
+                setEnabled={liquidityMode ? setSecondTokenEnabled : undefined}
                 exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, reserve: outputReserve, setReserve: setOutputReserve }}
                 clear={clearInput}
-                disabledInput
+                disabledInput={!liquidityMode}
+                liquidityMessage={liquidityProvision}
             />
+            <Grid item>
+                <FormGroup row>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={liquidityMode}
+                                onChange={(event) => { clearInput(); toggleLiquidityMode(event.target.checked) }}
+                                name="LiquiditySwitch"
+                                color="primary"
+                            />
+                        }
+                        label={liquiditySwitchMessage}
+                    />
+                </FormGroup>
+            </Grid>
         </Grid>{swapEnabled ?
             <Grid item>
                 {showAdvanced ? <Grid
@@ -336,8 +471,8 @@ export default function TradeBox(props: props) {
             : ""}
         {swapEnabled ?
             <Grid item>
-                <Button variant="contained" color="primary" onClick={() => setSwapClicked(true)}>SWAP</Button>
+                <Button variant="contained" color="primary" onClick={() => setSwapClicked(true)}>{swapText}</Button>
             </Grid>
-            : ""}
+            : (addLiquidityPossible ? <Button variant="contained" color="secondary" onClick={() => setAddLiquitidyClicked(true)}>Add Liquidity</Button> : "")}
     </Grid >
 }

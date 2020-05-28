@@ -62,6 +62,7 @@ interface props {
   enableCustomMessage?: string,
   addressToEnableFor?: string
   disabledDropDown?: boolean
+  liquidityMessage?: string
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -129,7 +130,6 @@ export default function ExtendedTextField(props: props) {
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
   const [enabled, setEnabled] = useState<boolean>(false)
-
   const setFormattedInput = (value: string) => {
     if (props.disabledInput)
       return
@@ -338,6 +338,24 @@ export default function ExtendedTextField(props: props) {
                 </Grid>}
             </div>
             : <div></div>}
+          {props.liquidityMessage ? <Grid item>   
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="flex-start"
+          >
+            <Grid item>
+              <Typography variant="caption" className={classes.subfields}>
+                Scarcity to mint
+                    </Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="caption" className={classes.subfields}>
+                {props.liquidityMessage}
+              </Typography>
+            </Grid>
+          </Grid></Grid> : ""}
 
           {props.feeReward ? <Grid item>
             <Typography variant="caption" className={classes.subfields}>
