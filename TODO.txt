@@ -1,28 +1,13 @@
-Interactions with metmask post 2020: -- DONE
-This article explains how to create an updatable context (no need to use redux) https://dev.to/oieduardorabelo/react-hooks-how-to-create-and-update-contextprovider-1f68
-
-1. implement front end transfer to new reserve
-2. Write a ReserveContract that just wraps chai and stores it.
-3. ^do this after behodler. With fast enough growth, it might be worthwhile to unplug from DSR altogether.
-
-1. On page load, top level calls ethereumAPI.detectMetaMaskEnabled() and gets 1 of 2 values["disabled","disconnected"]
-2. set the context value. 
-3. Subscribe to eth_accounts with a closure to setcontext as per https://gist.github.com/rekmarks/d318677c8fc89e5f7a2f526e00a0768a
-4. Button in header for connect/getmetamask. Always says connect wallet with popup of install/connect
-4. Use context to set visibility of infopanel and optionally hide some actions (pre,redeem etc)
-
-
+1. Register WeiDai with uniswap.
+2. Register Scarcity with uniswap.
+3. Create a github pages for the whole ecosystem. Also host articles for SEO
+4. Get on to defi prime -- DONE but they require activity
+5. Write an article on how to add liquidity -- DONE but waiting for publications to accepts
+6. FAQ on each section
+7. Colony application
 Useful:
 transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7baac55931827b3f
 address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA
-
-
-Sisyphus TODO:
-1. Change take up struggle button to enable. Use ERC20 approve. 182240387981.049892282017790432--DONE
-2. Get buyout amounts working --DONE
-3. Disable struggle button if nan entered into value text box or if balance < textbox--DONE
-4 . Show current scx balance --DONE
-
 
 
 TOKENS to consider:

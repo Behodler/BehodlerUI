@@ -4663,227 +4663,286 @@
             },
             {
                 "contract": "Janus",
-                "address":"0x3E8dcC07FDc6453234a5230d8Fc94aeaA34F4bDE",
+                "address":"0x6e3431E6D6233911ca6f94Efb47EF8906A781AF4",
                 "abi": [
                     {
-                        "inputs": [],
-                        "stateMutability": "nonpayable",
-                        "type": "constructor"
+                      "inputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "constructor"
                     },
                     {
-                        "anonymous": false,
-                        "inputs": [
-                            {
-                                "indexed": false,
-                                "internalType": "address",
-                                "name": "recipient",
-                                "type": "address"
-                            }
-                        ],
-                        "name": "PrimaryTransferred",
-                        "type": "event"
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": false,
+                          "internalType": "address",
+                          "name": "recipient",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "PrimaryTransferred",
+                      "type": "event"
                     },
                     {
-                        "inputs": [],
-                        "name": "behodler",
-                        "outputs": [
-                            {
-                                "internalType": "contract Behodler",
-                                "name": "",
-                                "type": "address"
-                            }
-                        ],
-                        "stateMutability": "view",
-                        "type": "function",
-                        "constant": true
+                      "inputs": [],
+                      "name": "behodler",
+                      "outputs": [
+                        {
+                          "internalType": "contract BehodlerLike",
+                          "name": "",
+                          "type": "address"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function",
+                      "constant": true
                     },
                     {
-                        "inputs": [],
-                        "name": "primary",
-                        "outputs": [
-                            {
-                                "internalType": "address",
-                                "name": "",
-                                "type": "address"
-                            }
-                        ],
-                        "stateMutability": "view",
-                        "type": "function",
-                        "constant": true
+                      "inputs": [],
+                      "name": "primary",
+                      "outputs": [
+                        {
+                          "internalType": "address",
+                          "name": "",
+                          "type": "address"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function",
+                      "constant": true
                     },
                     {
-                        "inputs": [],
-                        "name": "scarcityAddress",
-                        "outputs": [
-                            {
-                                "internalType": "address",
-                                "name": "",
-                                "type": "address"
-                            }
-                        ],
-                        "stateMutability": "view",
-                        "type": "function",
-                        "constant": true
+                      "inputs": [],
+                      "name": "scarcityAddress",
+                      "outputs": [
+                        {
+                          "internalType": "address",
+                          "name": "",
+                          "type": "address"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function",
+                      "constant": true
                     },
                     {
-                        "inputs": [
-                            {
-                                "internalType": "address",
-                                "name": "recipient",
-                                "type": "address"
-                            }
-                        ],
-                        "name": "transferPrimary",
-                        "outputs": [],
-                        "stateMutability": "nonpayable",
-                        "type": "function"
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "recipient",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "transferPrimary",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
                     },
                     {
-                        "inputs": [],
-                        "name": "weth",
-                        "outputs": [
-                            {
-                                "internalType": "contract WethLike",
-                                "name": "",
-                                "type": "address"
-                            }
-                        ],
-                        "stateMutability": "view",
-                        "type": "function",
-                        "constant": true
+                      "inputs": [],
+                      "name": "weth",
+                      "outputs": [
+                        {
+                          "internalType": "contract WethLike",
+                          "name": "",
+                          "type": "address"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function",
+                      "constant": true
                     },
                     {
-                        "stateMutability": "payable",
-                        "type": "receive",
-                        "payable": true
+                      "stateMutability": "payable",
+                      "type": "receive",
+                      "payable": true
                     },
                     {
-                        "inputs": [
-                            {
-                                "internalType": "address",
-                                "name": "scx",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "wet",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "beh",
-                                "type": "address"
-                            }
-                        ],
-                        "name": "seed",
-                        "outputs": [],
-                        "stateMutability": "nonpayable",
-                        "type": "function"
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "scx",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "wet",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "beh",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "seed",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
                     },
                     {
-                        "inputs": [
-                            {
-                                "internalType": "address",
-                                "name": "input",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "output",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "value",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "minPrice",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "maxPrice",
-                                "type": "uint256"
-                            }
-                        ],
-                        "name": "tokenToToken",
-                        "outputs": [
-                            {
-                                "internalType": "uint256",
-                                "name": "bought",
-                                "type": "uint256"
-                            }
-                        ],
-                        "stateMutability": "nonpayable",
-                        "type": "function"
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "token1",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "token2",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "v1",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "v2",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "addLiquidityTokens",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "bought",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
                     },
                     {
-                        "inputs": [
-                            {
-                                "internalType": "address",
-                                "name": "output",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "minPrice",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "maxPrice",
-                                "type": "uint256"
-                            }
-                        ],
-                        "name": "ethToToken",
-                        "outputs": [
-                            {
-                                "internalType": "uint256",
-                                "name": "bought",
-                                "type": "uint256"
-                            }
-                        ],
-                        "stateMutability": "payable",
-                        "type": "function",
-                        "payable": true
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "token",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "v1",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "addLiquidityTokenAndEth",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "bought",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "payable",
+                      "type": "function",
+                      "payable": true
                     },
                     {
-                        "inputs": [
-                            {
-                                "internalType": "address",
-                                "name": "input",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "value",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "minPrice",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "maxPrice",
-                                "type": "uint256"
-                            }
-                        ],
-                        "name": "tokenToEth",
-                        "outputs": [
-                            {
-                                "internalType": "uint256",
-                                "name": "bought",
-                                "type": "uint256"
-                            }
-                        ],
-                        "stateMutability": "nonpayable",
-                        "type": "function"
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "input",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "output",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "minPrice",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "maxPrice",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "tokenToToken",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "bought",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "output",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "minPrice",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "maxPrice",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "ethToToken",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "bought",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "payable",
+                      "type": "function",
+                      "payable": true
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "input",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "minPrice",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "maxPrice",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "tokenToEth",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "bought",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
                     }
-                ]
+                  ]
             },
             {
                 "contract": "Kharon",

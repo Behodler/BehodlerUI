@@ -83,6 +83,7 @@ function LayoutFrameComponent(props: any) {
 	const [showMetamaskInstallPopup, setShowMetamaskInstallPopup] = useState<boolean>(false)
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
 	const walletContextProps = useContext(WalletContext)
+
 	useEffect(() => {
 		if (renderRedirect !== '')
 			setRedirect('')
@@ -92,16 +93,6 @@ function LayoutFrameComponent(props: any) {
 	const notConnected: boolean = !walletContextProps.connected || !walletContextProps.enabled
 	const upgradeRequired: boolean = walletContextProps.connected && ((walletContextProps.oldBalances) && !walletContextProps.primary)
 
-	/*const tabular = {
-		'enabled': walletContextProps.enabled,
-		'oldBalances': walletContextProps.oldBalances,
-		'primary': walletContextProps.primary,
-		'connected': walletContextProps.connected,
-		'not connected': notConnected,
-		'isMetaMask': walletContextProps.isMetamask,
-		'initialized': walletContextProps.initialized
-	}
-	console.table(tabular)*/
 	return (
 		<div className={classes.root}>
 			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
@@ -194,7 +185,7 @@ function LayoutFrameComponent(props: any) {
 										: ""
 									}
 									<Route path="/behodler">
-										{notConnected ? <Redirect to={"/"} /> : <Swap />}
+										<Swap connected={!notConnected} />
 									</Route>
 									{walletContextProps.primary ?
 										<Route path="/dependencies">
