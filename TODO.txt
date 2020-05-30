@@ -2,9 +2,10 @@
 2. Register Scarcity with uniswap.
 3. Create a github pages for the whole ecosystem. Also host articles for SEO
 4. Get on to defi prime -- DONE but they require activity
-5. Write an article on how to add liquidity -- DONE but waiting for publications to accepts
-6. FAQ on each section
+5. Write an article on how to add liquidity -- DONE
+6. FAQ on each section --DONE
 7. Colony application
+8. Add reason label under text box on sisyphs like (too low or balance too low or something)
 Useful:
 transaction of pot reserve: 0x9366133eff7ea1bb80d3e6d5c684814f4926db095da82d6c7baac55931827b3f
 address 0x64FB919a501E8c9Eecd8c541273Efe04CBCE79DA

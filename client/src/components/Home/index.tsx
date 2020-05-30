@@ -83,17 +83,9 @@ const styles = {
 
 
 function Home(props: HomeProps) {
-
 	const [currentStep, setCurrentStep] = useState<number>(loadHomeActiveStep)
 	const incrementStep = (increment: number) => {
-		let newStep: number = 0;
-		if (currentStep < 0)
-			newStep = steps.length - 1
-		else if (currentStep == steps.length)
-			newStep = 0
-		else
-			newStep = currentStep + increment
-
+		let newStep: number = (currentStep + increment) % steps.length;
 		setCurrentStep(newStep)
 		setHomeActiveStep(newStep)
 	}

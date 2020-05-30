@@ -26,6 +26,7 @@ export default function Sisyphus(props: props) {
     const [userScarcityBalance, setUserScarcityBalance] = useState<string>("")
     const [sisyphusEnabled, setSisyphusEnabled] = useState<boolean>(false)
     const [actionDisabled, setActionDisabled] = useState<boolean>(false)
+    const [disableReason, setDisableReason] = useState<string>("")
 
     useEffect(() => {
         const effect = API.scarcityEffects.balanceOfEffect(walletContextProps.account)
@@ -98,7 +99,20 @@ export default function Sisyphus(props: props) {
             const bigBalance = new BigNumber(userScarcityBalance)
             balanceTooLow = bigBalance.isLessThan(btBig)
         }
-        setActionDisabled(btBig.isNaN() || balanceTooLow)
+        let disabled = true
+        if (btBig.isNaN()) {
+            setDisableReason("")
+        }
+        else if (balanceTooLow) {
+            setDisableReason("Scarcity balance too low.")
+        } else if (btBig.isLessThan(currentBuyoutPrice)) {
+            setDisableReason("Buyout value too low.")
+        }
+        else {
+            disabled = false
+            setDisableReason("")
+        }
+        setActionDisabled(disabled)
         textWei = btBig.isNaN() ? "0" : API.toWei(buyoutText)
     }, [buyoutText])
 
@@ -139,9 +153,13 @@ export default function Sisyphus(props: props) {
                 buttonText="take up burden"
                 enableText="Enable Sisyphus"
                 enabled={sisyphusEnabled}
-                enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })} />
+                enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })}
+                balance={userScarcityBalance}
+            />
         </Grid>
-
+        {actionDisabled ? <Grid item>
+            <Typography variant="subtitle2" color="secondary">{disableReason}</Typography>
+        </Grid> : ""}
         <Grid item>
             <Divider />
         </Grid>
@@ -295,7 +313,7 @@ export default function Sisyphus(props: props) {
     </Grid>
 }
 
-function ActionBox(props: { text: string, placeHolder: string, setText: (v: string) => void, action: () => void, actionDisabled: boolean, buttonText: string, enabled: boolean, enableText: string, enableAction: () => void }) {
+function ActionBox(props: { text: string, placeHolder: string, setText: (v: string) => void, action: () => void, actionDisabled: boolean, buttonText: string, enabled: boolean, enableText: string, enableAction: () => void, balance: string }) {
     return <Grid
         container
         direction="row"
@@ -304,7 +322,7 @@ function ActionBox(props: { text: string, placeHolder: string, setText: (v: stri
         spacing={3}
     >
         <Grid item>
-            <ValueTextBox text={props.text} placeholder={props.placeHolder} changeText={props.setText}></ValueTextBox>
+            <ValueTextBox text={props.text} placeholder={props.placeHolder} changeText={props.setText} entireAction={() => props.setText(props.balance)}></ValueTextBox>
         </Grid>
         <Grid>
             {props.enabled ?

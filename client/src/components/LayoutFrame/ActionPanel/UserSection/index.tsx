@@ -30,14 +30,15 @@ function UserSectionComponent(props: UserSectionProps) {
 				<ListItemText primary="Redeem for Dai" />
 			</ListItem>
 			<Divider />
-			<ListItem button key="swap" onClick={props.behodlerSwap}>
-				<ListItemIcon><Loop /></ListItemIcon>
-				<ListItemText primary="Swap Tokens" />
-			</ListItem>
-			<Divider />
+
 		</div>
 			: <div></div>
 		}
+		<ListItem button key="swap" onClick={props.behodlerSwap}>
+			<ListItemIcon><Loop /></ListItemIcon>
+			<ListItemText primary="Swap Tokens" />
+		</ListItem>
+		<Divider />
 		<ListItem button key="how" onClick={props.homePage}>
 			<ListItemIcon><Computer /></ListItemIcon>
 			<ListItemText primary="How it Works" />

@@ -1,0 +1,44 @@
+[
+	{
+		"heading": "What is Behodler?",
+		"subtitle": "Behodler is an Ethereum smart contract for swapping tokens and is powered by {token bonding curves}.",
+		"message": "Unlike decentralized exchanges which only charge fees, Behodler rewards traders with Pyrotokens, burnable ERC20 wrappers that grow in value with every trade.",
+        "message2": "Behodler does not use order matching but instead generates liquidity pools to facilitate token swapping. You can also deposit tokens to receive the liquidity token, Scarcity.",
+        "LinkURL":"https://medium.com/weidaithriftcoin/token-bonding-curves-the-movie-2ff612fc9263",
+        "LinkLocation":"subtitle"
+    },
+    {
+		"heading": "What are Pyrotokens?",
+		"subtitle": "Every token traded on Behodler has a corresponding Pyrotoken wrapper. For instance, LINK has PyroLINK, MKR has PyroMKR etc. On every trade, a small portion of the trade is set aside, wrapped as a Pyrotoken and given to the trader.",
+		"message": "Pyrotokens can be redeemed for the base token at a redeem rate. The redeem rate is calculated as the reserve of base tokens divided by the circulating supply of Pyrotokens. For instance, if there are 1000 PyroLOOM and 100 LOOM in reserve then the redeem rate is (100/1000=)0.1",
+		"message2": "Whenever pyrotokens are burnt, the denominator in the above equation falls which means the redeem rate rises for all hodlers. On every trade, a portion of the reward is first burnt. This ensures that regular trade pushes up the redeem rate over time. The redeem rate can rise but can never fall."
+    },
+    {
+		"heading": "Why have Pyrotokens?",
+		"subtitle": "The WeiDai ecosystem exists partly to demonstrate the power of burning. Burn incentives are offered as an alternative cryptoeconomic power to borrowing/lending.",
+		"message": "Gas prices are not always low and gas usage is particularly costly for small trades on any dapp. Because Pyrotoken redeem rates are programmed to grow with regular trade, they act as an eventual compensation for gas usage.",
+		"message2": "Pyrotokens redistribute fees from high frequency traders to HODLers so it's the perfect early adopter coin. Dai and WeiDai do not have Pyrotokens since WeiDai is already a burn wrapper for Dai. Instead when Dai is traded, a portion is wrapped as WeiDai and burnt. "
+    },
+    {
+		"heading": "How does Behodler work?",
+		"subtitle": "Behodler is a contract that maintains {token bonding curves} for each token traded. Every curve prints the output token Scarcity and maintains its own Scarcity price.",
+		"message": "The ratio of Scarcity prices for two different tokens implies their price. For instance, if the Scarcity price of LINK is 10 and the Scarcity price of WBTC is 200 then 1 WBTC is currently worth 20 LINK.",
+        "message2": "Every trade incurrs a small Scarcity fee burn which 'leaks' liquidity into Behodler. Because Scarcity is required to redeem liquity, gradual Scarcity burning turns Behodler into a permanent sink for tokens as they're traded!",
+        "LinkURL":"https://www.publish0x.com/behodler-token-swapper/token-bonding-curves-the-movie-xllyxdn",
+        "LinkLocation":"subtitle"
+    },
+    {
+		"heading": "What can I do with Scarcity?",
+		"subtitle": "Scarcity can redeem any token traded. It can also be used to win more Scarcity through Sisyphus.",
+		"message": "Because Scarcity is burnt on every trade, the amount of any token Scarcity can be redeemed for will grow over time. Scarcity is implicitly an index tracking token and has a healthy weighting of utility tokens and stablecoins.",
+		"message2": "If you'd like free Scarcity, the Faucet contract drips Scarcity periodically."
+    },
+    {
+		"heading": "How do I {add liquidity} to get Scarcity?",
+		"subtitle": "You can either set the output token to Scarcity OR you can enter ADD LIQUIDITY mode by toggling the switch below the output box.",
+		"message": "When you use ADD LIQUIDITY mode, the tokens are added in your desired proportions so that you can match their real world trading value.",
+        "message2": "If you want to withdraw liquidity, make sure you're in SWAP TOKEN mode and simply set the input token to Scarcity and the output token to whichever token you wish to withdraw.",
+        "LinkURL":"https://www.publish0x.com/behodler-token-swapper/how-to-add-liquidity-to-the-behodler-dex-xyvkomg",
+        "LinkLocation":"heading"
+    }
+]
