@@ -21,4 +21,6 @@ export interface Sisyphus extends BaseContract, Ownable {
     seed: (scx: address, faucet: address) => any
     struggle: (scarcityForwarded: uint) => any
     calculateCurrentBuyout: () => any
+    // sponsorToken: () => any
+    // setSponsorToken: (t: address) => any
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useContext, useState, useEffect } from 'react'
-import { Grid, Container, Typography, Button, Paper } from '@material-ui/core'
+import { Grid, Container, Typography, Button, Paper, makeStyles } from '@material-ui/core'
 // import { useState } from 'react'
 // import { useTheme, withStyles } from '@material-ui/core/styles';
 import Behodler from './ContractContexts/Behodler'
@@ -15,19 +15,23 @@ import Scarcity from './ContractContexts/Scarcity'
 import Weth from './ContractContexts/Weth'
 import Sisyphus from './ContractContexts/Sisyphus'
 import Faucet from './ContractContexts/Faucet'
-
-
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
+
+const useStyles = makeStyles({
+    root: {
+    }
+})
 
 interface contextPaneProps {
     selectedContract: string
 }
 
 function ContextPane(props: contextPaneProps) {
+
     if (props.selectedContract.length == 0)
         return <div></div>
-
+    const classes = useStyles()
     const walletContextProps = useContext(WalletContext)
 
     const [currentOwner, setCurrentOwner] = useState<string>("")
@@ -46,7 +50,7 @@ function ContextPane(props: contextPaneProps) {
     }
 
     return (
-        <Paper>
+        <Paper className={classes.root}>
             <Grid
                 container
                 direction="column"

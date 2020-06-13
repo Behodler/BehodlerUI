@@ -1,9 +1,18 @@
 
 import * as React from 'react'
-import { Typography, Grid } from '@material-ui/core'
+import { Typography, Grid, Link, makeStyles } from '@material-ui/core'
+import lightBlue from '@material-ui/core/colors/lightBlue'
+
+const useStyles = makeStyles({
+    link: {
+        color: lightBlue['A700']
+    }
+})
 
 export default function Stat(props: {
-    label: string, value: string, small?: boolean}) {
+    label: string, value: string, linkAction?: () => void, small?: boolean
+}) {
+    const classes = useStyles()
     return <Grid
         container
         direction="row"
@@ -17,9 +26,11 @@ export default function Stat(props: {
             </Typography>
         </Grid>
         <Grid>
-            <Typography variant={props.small ? "caption" : "h6"}>
+            {props.linkAction ? <Link component="button" onClick={props.linkAction} className={classes.link}>  <Typography variant={props.small ? "caption" : "h6"}>
                 {props.value}
-            </Typography>
+            </Typography></Link> : <Typography variant={props.small ? "caption" : "h6"}>
+                    {props.value}
+                </Typography>}
         </Grid>
     </Grid>
 }

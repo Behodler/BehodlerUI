@@ -284,9 +284,13 @@ class ethereumAPI {
 
 	}
 
-	public async enableToken(tokenAddress: string, owner: string, spender: string): Promise<void> {
+	public async enableToken(tokenAddress: string, owner: string, spender: string, callBack?: () => void): Promise<void> {
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
-		await token.approve(spender, this.UINTMAX).send({ from: owner })
+		await token.approve(spender, this.UINTMAX).send({ from: owner }, () => {
+			if (callBack) {
+				callBack()
+			}
+		})
 	}
 
 	public async getPyroToken(tokenAddress: string, network: string): Promise<PyroToken> {
@@ -303,6 +307,24 @@ class ethereumAPI {
 		return new ERC20Effects(this.web3, token, currentAccount, decimalPlaces)
 	}
 
+	public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<BigNumber> {
+		if (isEth) {
+			return new BigNumber(await this.web3.eth.getBalance(currentAccount))
+		}
+		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		const balance = (await token.balanceOf(currentAccount).call({ from: currentAccount })).toString()
+		return new BigNumber(balance)
+	}
+
+	public async getTokenAllowance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number, behodlerAddress: string): Promise<BigNumber> {
+		// if (isEth) {
+		// 	return new BigNumber(await this.web3.eth.getBalance(currentAccount))
+		// }
+		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		const allowance = await token.allowance(currentAccount, behodlerAddress).call({ from: currentAccount })
+
+		return new BigNumber(allowance)
+	}
 	public hexToNumber(value: any): number {
 		return parseFloat(this.hexToNumberString(value))
 	}

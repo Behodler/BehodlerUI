@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
-import { Typography, Grid, Button, Divider, Container } from '@material-ui/core'
+import { Typography, Grid, Button, Divider, Container, Link } from '@material-ui/core'
 import logo from '../../../../images/behodler/sisyphus/logo.png'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
 import Stat from '../Stat'
@@ -10,9 +10,8 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import API from 'src/blockchain/ethereumAPI'
 import BigNumber from 'bignumber.js'
-
+import BuyScarcityProxyDialog from "./BuyScarcityProxyDialog"
 interface props {
-
 }
 
 export default function Sisyphus(props: props) {
@@ -27,7 +26,8 @@ export default function Sisyphus(props: props) {
     const [sisyphusEnabled, setSisyphusEnabled] = useState<boolean>(false)
     const [actionDisabled, setActionDisabled] = useState<boolean>(false)
     const [disableReason, setDisableReason] = useState<string>("")
-
+    const [buyScarcityProxtDialogOpen, setBuyScarcityProxtDialogOpen] = useState<boolean>(false)
+    const [textWei, setTextWei] = useState<string>("")
     useEffect(() => {
         const effect = API.scarcityEffects.balanceOfEffect(walletContextProps.account)
         const subscription = effect.Observable.subscribe(bal => {
@@ -39,7 +39,7 @@ export default function Sisyphus(props: props) {
     useEffect(() => {
         const effect = API.scarcityEffects.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address)
         const subscription = effect.Observable.subscribe(allowance => {
-            const allowanceBig = new BigNumber(allowance)
+            const allowanceBig = new BigNumber(API.fromWei(allowance))
             const balanceBig = new BigNumber(userScarcityBalance)
             setSisyphusEnabled(!balanceBig.isNaN() && !allowanceBig.isNaN() && allowanceBig.isGreaterThanOrEqualTo(balanceBig) && allowanceBig.isGreaterThan(0))
         })
@@ -91,7 +91,6 @@ export default function Sisyphus(props: props) {
 
 
     const formatScarcityAmount = (v: string) => v + ' scx'
-    let textWei = "0"
     useEffect(() => {
         const btBig = new BigNumber(buyoutText)
         let balanceTooLow: boolean = false
@@ -113,7 +112,7 @@ export default function Sisyphus(props: props) {
             setDisableReason("")
         }
         setActionDisabled(disabled)
-        textWei = btBig.isNaN() ? "0" : API.toWei(buyoutText)
+        setTextWei(btBig.isNaN() ? "0" : API.toWei(buyoutText))
     }, [buyoutText])
 
     return <Grid
@@ -130,7 +129,7 @@ export default function Sisyphus(props: props) {
             <Stat label="Current Sisyphus" value={currentSisyphus} />
         </Grid>
         <Grid item>
-            <Stat label="Current Buyout Price" value={formatScarcityAmount(currentBuyoutPrice)} />
+            <Stat label="Current Buyout Price" value={formatScarcityAmount(currentBuyoutPrice)} linkAction={() => setBuyoutText(new BigNumber(currentBuyoutPrice).plus(1).toString())} />
         </Grid>
         <Grid item>
             <Stat label="Original Buyout Price" value={formatScarcityAmount(originalBuyoutPrice)} small />
@@ -148,18 +147,23 @@ export default function Sisyphus(props: props) {
             <ActionBox text={buyoutText}
                 setText={setBuyoutText}
                 placeHolder="Scarcity (SCX) Value"
-                action={async () => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(textWei).send({ from: walletContextProps.account }, () => { setBuyoutText("") })}
+                action={async (num: string) => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(num).send({ from: walletContextProps.account }, () => { setBuyoutText("") })}
                 actionDisabled={actionDisabled}
-                buttonText="take up burden"
+                buttonText="Depose reigning champion"
                 enableText="Enable Sisyphus"
                 enabled={sisyphusEnabled}
                 enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })}
                 balance={userScarcityBalance}
+                openDialog={setBuyScarcityProxtDialogOpen}
+                buyoutText={textWei}
             />
         </Grid>
         {actionDisabled ? <Grid item>
             <Typography variant="subtitle2" color="secondary">{disableReason}</Typography>
         </Grid> : ""}
+        <Grid item>
+            <BuyScarcityProxyDialog open={buyScarcityProxtDialogOpen} setDialogOpen={setBuyScarcityProxtDialogOpen} scarcityRequired={new BigNumber(currentBuyoutPrice)} />
+        </Grid>
         <Grid item>
             <Divider />
         </Grid>
@@ -313,7 +317,7 @@ export default function Sisyphus(props: props) {
     </Grid>
 }
 
-function ActionBox(props: { text: string, placeHolder: string, setText: (v: string) => void, action: () => void, actionDisabled: boolean, buttonText: string, enabled: boolean, enableText: string, enableAction: () => void, balance: string }) {
+function ActionBox(props: { text: string, placeHolder: string, setText: (v: string) => void, action: (num: string) => void, actionDisabled: boolean, buttonText: string, enabled: boolean, enableText: string, enableAction: () => void, balance: string, openDialog: (o: boolean) => void, buyoutText: string }) {
     return <Grid
         container
         direction="row"
@@ -323,14 +327,23 @@ function ActionBox(props: { text: string, placeHolder: string, setText: (v: stri
     >
         <Grid item>
             <ValueTextBox text={props.text} placeholder={props.placeHolder} changeText={props.setText} entireAction={() => props.setText(props.balance)}></ValueTextBox>
+
         </Grid>
         <Grid>
-            {props.enabled ?
-                <Button onClick={() => props.action()} disabled={props.actionDisabled} color="primary" variant="contained" >{props.buttonText}</Button>
-                :
-                <Button onClick={() => props.enableAction()} color="secondary" variant="outlined">{props.enableText}</Button>
-            }
-
+            <Grid container
+                direction="column"
+                alignItems="flex-end">
+                <Grid item>
+                    {props.enabled ?
+                        <Button onClick={() => props.action(props.buyoutText)} disabled={props.actionDisabled} color="primary" variant="contained" >{props.buttonText}</Button>
+                        :
+                        <Button onClick={() => props.enableAction()} color="secondary" variant="outlined">{props.enableText}</Button>
+                    }
+                </Grid>
+                <Grid item>
+                    <Link component="button" variant="caption" color="textPrimary" onClick={() => props.openDialog(true)}>Top up Scarcity balance</Link>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 }

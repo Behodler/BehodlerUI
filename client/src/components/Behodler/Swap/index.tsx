@@ -30,6 +30,7 @@ import six from '../../../images/behodler/landingPage/6.png'
 
 interface props {
     connected: boolean
+    route:string
 }
 
 const images = [
@@ -86,7 +87,6 @@ export default function Swap(props: props) {
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
-
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
         const pyroAddress = await walletContextProps.contracts.behodler.PyroTokenRegistry.baseTokenMapping(baseToken).call(primaryOptions)
         const token: PyroToken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
@@ -113,7 +113,24 @@ export default function Swap(props: props) {
     }, [props.connected])
 
     const classes = useStyles();
-    const [value, setValue] = useState(0);
+    let valueOfRoute = 0
+    switch (props.route) {
+        case 'swap':
+            valueOfRoute=0
+            break
+        case 'pyrotokens':
+            valueOfRoute=1
+            break
+        case 'sisyphus':
+            valueOfRoute=2
+            break
+        case 'faucet':
+            valueOfRoute=3
+            break
+        default:
+            valueOfRoute=0
+    }
+    const [value, setValue] = useState(valueOfRoute);
     const [showChip, setShowChip] = useState<boolean>(true)
 
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -126,7 +143,7 @@ export default function Swap(props: props) {
     const SectionBreak = () => <Divider className={classes.divider} />
 
     const logoVisible = props.connected
-    const infoPanelVisible = value < 2
+    const infoPanelVisible = value < 2 || !props.connected
 
     return <div> <Grid
         container
@@ -248,7 +265,7 @@ export default function Swap(props: props) {
     </div>
 }
 
-function RenderScreen(props: { value: number, tokens: basePyroPair[] }) {
+function RenderScreen(props: { value: number, tokens: basePyroPair[]}) {
     switch (props.value) {
         case 0:
             return <TradingBox />
@@ -257,7 +274,7 @@ function RenderScreen(props: { value: number, tokens: basePyroPair[] }) {
                 return <PyroTokens tokens={props.tokens} />
             return <div></div>
         case 2:
-            return <Sisyphus />
+            return <Sisyphus/>
         case 3:
             return <ScarcityFaucet />
         default:

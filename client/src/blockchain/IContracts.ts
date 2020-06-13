@@ -277,6 +277,8 @@ const defaultSisyphus: Sisyphus = {
 	periodDuration: () => { },
 	totalIncrements: () => { },
 	faucet: () => { }
+	// sponsorToken: () => { },
+	// setSponsorToken: (t: address) => { }
 }
 
 const defaultFaucet: Faucet = {
@@ -292,7 +294,9 @@ const defaultFaucet: Faucet = {
 	lastDrip: () => { },
 	dripInterval: () => { },
 	scarcity: () => { },
-	drips: () => { }
+	drips: () => { },
+	replaceWasher: () => { },
+	lastKnownBalance: () => { }
 }
 
 const defaultSisyphusContracts: SisyphusContracts = {

@@ -4,6 +4,7 @@ import AddIcon from '@material-ui/icons/Add'
 import Computer from '@material-ui/icons/Computer'
 import CompareArrows from '@material-ui/icons/CompareArrows'
 import Loop from '@material-ui/icons/Loop'
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import { Social } from '../../Social/index'
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
@@ -15,6 +16,7 @@ interface UserSectionProps {
 	goToBank: () => void
 	behodlerSwap: () => void
 	faq: () => void
+	sisyphus: () => void
 }
 
 function UserSectionComponent(props: UserSectionProps) {
@@ -37,6 +39,11 @@ function UserSectionComponent(props: UserSectionProps) {
 		<ListItem button key="swap" onClick={props.behodlerSwap}>
 			<ListItemIcon><Loop /></ListItemIcon>
 			<ListItemText primary="Swap Tokens" />
+		</ListItem>
+		<Divider />
+		<ListItem button key="sisyphus" onClick={props.sisyphus}>
+			<ListItemIcon><TrendingUpIcon /></ListItemIcon>
+			<ListItemText primary="Play Sisyphus" />
 		</ListItem>
 		<Divider />
 		<ListItem button key="how" onClick={props.homePage}>

@@ -105,7 +105,7 @@ function LayoutFrameComponent(props: any) {
 							className={classes.actionDrawer}
 							classes={{ paper: classes.actionDrawerPaper }}
 						>
-							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={() => setRedirect('/behodler')} />
+							<UserSection goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} faq={() => setRedirect('/FAQ')} behodlerSwap={() => setRedirect('/behodler/swap')} sisyphus={() => setRedirect('/behodler/sisyphus')} />
 							<Divider />
 							{walletContextProps.primary ?
 								<AdminSection contractDependencies={() => setRedirect('/dependencies')} behodlerAdmin={() => setRedirect('/behodler/admin')} /> : ""
@@ -118,7 +118,7 @@ function LayoutFrameComponent(props: any) {
 					<Box component="div" className={classes.content}>
 						{upgradeRequired ? <UpgradePrompt /> :
 							<div>
-								<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} goToSwap={() => setRedirect('/behodler')} />
+								<Mobile goToEngine={() => setRedirect('/engine')} homePage={() => setRedirect('/')} goToBank={() => setRedirect('/bank')} goToSwap={() => setRedirect('/behodler/swap')} />
 								<Grid
 									container
 									direction="row"
@@ -184,8 +184,17 @@ function LayoutFrameComponent(props: any) {
 										</Route>
 										: ""
 									}
-									<Route path="/behodler">
-										<Swap connected={!notConnected} />
+									<Route path="/behodler/sisyphus">
+										<Swap connected={!notConnected} route="sisyphus" />
+									</Route>
+									<Route path="/behodler/faucet">
+										<Swap connected={!notConnected} route="faucet" />
+									</Route>
+									<Route path="/behodler/pyrotokens">
+										<Swap connected={!notConnected} route="pyrotokens" />
+									</Route>
+									<Route path="/behodler/swap">
+										<Swap connected={!notConnected} route="swap" />
 									</Route>
 									{walletContextProps.primary ?
 										<Route path="/dependencies">

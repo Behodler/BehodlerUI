@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useContext } from 'react'
 import { WalletContext } from '../../../../Contexts/WalletStatusContext'
 import { Paper, Typography, List, ListItem, Button, Checkbox } from '@material-ui/core'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
+// import { address } from 'src/blockchain/contractInterfaces/SolidityTypes'
 
 interface sisyphusProps {
 
@@ -17,8 +18,12 @@ export default function Sisyphus(props: sisyphusProps) {
     const executeSetTime = (periodDurationType: string, totalIncrements: string) => sisyphus.setTime(periodDurationType, totalIncrements).send(primaryOptions)
     const executeSetProportion = (proportion: string) => sisyphus.setRewardProportion(proportion).send(primaryOptions)
     const executeSeed = (scx: string, faucet: string) => sisyphus.seed(scx, faucet).send(primaryOptions)
+    // const executeSetSponsorToken = (t: string, callback: () => void) => sisyphus.setSponsorToken(t).send(primaryOptions, callback)
 
     return <List>
+        <ListItem key="all props">
+            <ListProps />
+        </ListItem>
         <ListItem key="Set Enabled">
             <Enable execute={executeEnable} />
         </ListItem>
@@ -31,8 +36,59 @@ export default function Sisyphus(props: sisyphusProps) {
         <ListItem key="Seed">
             <Seed execute={executeSeed} />
         </ListItem>
+        {/* <ListItem key="SetSponsorToken">
+            <SetSponsorToken execute={executeSetSponsorToken} />
+        </ListItem>  */}
     </List>
 }
+
+interface ListPropsProps {
+}
+
+function ListProps(props: ListPropsProps) {
+    const walletContextProps = useContext(WalletContext)
+    const [rewardProportion, setRewardProportion] = useState<string>("")
+    const [currentMonarch, setCurrentMonarch] = useState<string>("")
+    const [scarcity, setScarcity] = useState<string>("")
+    const [buyoutAmount, setBuyoutAmount] = useState<string>("")
+    const [buyoutTime, setBuyoutTime] = useState<string>("")
+    const [periodDuration, setPeriodDuration] = useState<string>("")
+    const [totalIncrements, setTotalIncrements] = useState<string>("")
+    const [faucet, setFaucet] = useState<string>("")
+    const [calculateCurrentBuyout, setCalculateCurrentBuyout] = useState<string>("")
+
+    const sisyphus = walletContextProps.contracts.behodler.Sisyphus.Sisyphus
+    const propsCallBack = useCallback(async () => {
+        setRewardProportion((await sisyphus.rewardProportion().call()).toString())
+        setCurrentMonarch((await sisyphus.currentMonarch().call()).toString())
+        setScarcity((await sisyphus.scarcity().call()).toString())
+        setBuyoutAmount((await sisyphus.buyoutAmount().call()).toString())
+        setBuyoutTime((await sisyphus.buyoutTime().call()).toString())
+        setPeriodDuration((await sisyphus.periodDuration().call()).toString())
+        setTotalIncrements((await sisyphus.totalIncrements().call()).toString())
+        setFaucet((await sisyphus.faucet().call()).toString())
+        setCalculateCurrentBuyout((await sisyphus.calculateCurrentBuyout().call()).toString())
+    }, [])
+
+    useEffect(() => {
+        propsCallBack()
+    })
+
+    return <Paper>
+        <Typography variant="h5">Props</Typography><List>
+            <ListItem key="rew">rewardProportion: {rewardProportion}</ListItem>
+            <ListItem key="currentMonarch">currentMonarch: {currentMonarch}</ListItem>
+            <ListItem key="scarcity">scarcity: {scarcity}</ListItem>
+            <ListItem key="buyoutAmount">buyoutAmount: {buyoutAmount}</ListItem>
+            <ListItem key="buyoutTime">buyoutTime: {buyoutTime}</ListItem>
+            <ListItem key="periodDuration">periodDuration: {periodDuration}</ListItem>
+            <ListItem key="totalIncrements">totalIncrements: {totalIncrements}</ListItem>
+            <ListItem key="faucet">faucet: {faucet}</ListItem>
+            <ListItem key="calculateCurrentBuyout">calculateCurrentBuyout: {calculateCurrentBuyout}</ListItem>
+        </List>
+    </Paper>
+}
+
 
 interface enableProps {
     execute: (e: boolean) => Promise<void>
@@ -167,3 +223,40 @@ function Seed(props: seedProps) {
         </List>
     </Paper>
 }
+
+// interface setSponsorTokenProps {
+//     execute: (t: address, callback: () => any) => Promise<void>
+// }
+
+// function SetSponsorToken(props: setSponsorTokenProps) {
+//     const walletContextProps = useContext(WalletContext)
+//     const [sponsorToken, setSponsorToken] = useState<string>("")
+//     const [refreshSponsorClicked, setRefreshSponsorClicked] = useState<boolean>(true)
+//     const [newSponsorToken, setNewSponsorToken] = useState<string>("")
+//     const primaryOptions = { from: walletContextProps.account }
+
+//     const executeRefresh = React.useCallback(async () => {
+//         if (refreshSponsorClicked) {
+//             setSponsorToken(await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.sponsorToken().call(primaryOptions))
+//         }
+//     }, [refreshSponsorClicked])
+
+//     useEffect(() => {
+//         executeRefresh()
+//     }, [executeRefresh])
+
+
+//     return <Paper>
+//         <Typography variant="h5">Set Sponsor Token</Typography>
+//         <Typography variant="h6">Current Sponsor Token: {sponsorToken}</Typography>
+//         <List>
+//             <ListItem key="sponsorToken">
+//                 <ValueTextBox placeholder="new sponsor token" changeText={setNewSponsorToken} text={newSponsorToken} />
+//             </ListItem>
+//             <ListItem key="button">
+//                 <Button variant="contained" color="secondary" onClick={async () => await props.execute(newSponsorToken, () => setRefreshSponsorClicked(true))}>Execute</Button>
+//             </ListItem>
+//         </List>
+//     </Paper>
+
+// }
