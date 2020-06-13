@@ -126,11 +126,27 @@ export default function Sisyphus(props: props) {
             <img width="300px" src={logo} />
         </Grid>
         <Grid item>
-            <Stat label="Current Sisyphus" value={currentSisyphus} />
+            <Stat label="Buyout Price" value={formatScarcityAmount(currentBuyoutPrice)} linkAction={() => setBuyoutText(new BigNumber(currentBuyoutPrice).plus(1).toString())} />
         </Grid>
         <Grid item>
-            <Stat label="Current Buyout Price" value={formatScarcityAmount(currentBuyoutPrice)} linkAction={() => setBuyoutText(new BigNumber(currentBuyoutPrice).plus(1).toString())} />
+            <ActionBox text={buyoutText}
+                setText={setBuyoutText}
+                placeHolder="Scarcity (SCX) Value"
+                action={async (num: string) => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(num).send({ from: walletContextProps.account }, () => { setBuyoutText("") })}
+                actionDisabled={actionDisabled}
+                buttonText="Play!"
+                enableText="Enable Sisyphus"
+                enabled={sisyphusEnabled}
+                enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })}
+                balance={userScarcityBalance}
+                openDialog={setBuyScarcityProxtDialogOpen}
+                buyoutText={textWei}
+            />
         </Grid>
+        <Grid item>
+            <Stat label="Current Sisyphus" small value={currentSisyphus} />
+        </Grid>
+       
         <Grid item>
             <Stat label="Original Buyout Price" value={formatScarcityAmount(originalBuyoutPrice)} small />
         </Grid>
@@ -142,21 +158,6 @@ export default function Sisyphus(props: props) {
         </Grid>
         <Grid>
             <Stat label="Your balance" value={formatScarcityAmount(userScarcityBalance)} small />
-        </Grid>
-        <Grid item>
-            <ActionBox text={buyoutText}
-                setText={setBuyoutText}
-                placeHolder="Scarcity (SCX) Value"
-                action={async (num: string) => await walletContextProps.contracts.behodler.Sisyphus.Sisyphus.struggle(num).send({ from: walletContextProps.account }, () => { setBuyoutText("") })}
-                actionDisabled={actionDisabled}
-                buttonText="Depose reigning champion"
-                enableText="Enable Sisyphus"
-                enabled={sisyphusEnabled}
-                enableAction={async () => await walletContextProps.contracts.behodler.Scarcity.approve(walletContextProps.contracts.behodler.Sisyphus.Sisyphus.address, API.UINTMAX).send({ from: walletContextProps.account })}
-                balance={userScarcityBalance}
-                openDialog={setBuyScarcityProxtDialogOpen}
-                buyoutText={textWei}
-            />
         </Grid>
         {actionDisabled ? <Grid item>
             <Typography variant="subtitle2" color="secondary">{disableReason}</Typography>
