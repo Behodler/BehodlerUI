@@ -146,7 +146,6 @@ export default function Sisyphus(props: props) {
         <Grid item>
             <Stat label="Current Sisyphus" small value={currentSisyphus} />
         </Grid>
-       
         <Grid item>
             <Stat label="Original Buyout Price" value={formatScarcityAmount(originalBuyoutPrice)} small />
         </Grid>
