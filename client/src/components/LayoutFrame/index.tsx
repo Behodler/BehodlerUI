@@ -196,6 +196,9 @@ function LayoutFrameComponent(props: any) {
 									<Route path="/behodler/swap">
 										<Swap connected={!notConnected} route="swap" />
 									</Route>
+									<Route path="/behodler/scarcity">
+										<Swap connected={!notConnected} route="swap" />
+									</Route>
 									{walletContextProps.primary ?
 										<Route path="/dependencies">
 											<ContractDependencies />
