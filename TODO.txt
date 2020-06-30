@@ -24,3 +24,9 @@ FOAM
 GEN (DaoStack)
 KNC (Kyber Network Crystal)
 MKR
+
+
+NIMRODEL:
+1. Implement interfaces
+2. Design adequate front end
+3. Write appropriate observables

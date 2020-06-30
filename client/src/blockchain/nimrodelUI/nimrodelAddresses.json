@@ -1,0 +1,12 @@
+{
+    "development": {
+        "Rivulet": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+        "Celeborn": "0x5dBec49A4fa02Aed472bDc48f7DB7dDd83f356Bf",
+        "Miruvor": "0x170054DdAA8Fc7460Dc67C4970C85eBd035e8fFb"
+    },
+    "main": {
+        "Rivulet": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+        "Celeborn": "main",
+        "Miruvor": "naughty"
+    }
+}

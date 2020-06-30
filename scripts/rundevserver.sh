@@ -4,13 +4,26 @@ ganache-cli -l "0x6691b7" -q --account 0xcf4a9e84114acde4e307c37c27f91ea161516b8
 ganacheBID=$!
 echo $ganacheBID > ganacheID.txt
 sleep 2
+echo "**************MIGRATING WEIDAI***********"
 cd '/home/justin/weidai ecosystem/weidai'
 truffle migrate
+echo "**************MIGRATING BEHODLER***********"
+echo ""
 cd '/home/justin/weidai ecosystem/behodler'
 truffle migrate
 cp BehodlerABIAddressMapping.json ../weidai/client/src/temp/
+echo "**************MIGRATING SISYPHUS***********"
+echo ""
 cd ../Sisyphus
 truffle migrate
 cp sisyphusAddress.json ../weidai/client/src/temp/
-cd ../weidai
+echo "**************MIGRATING NIMRODEL***********"
+echo ""
+cd ../nimrodel
+truffle migrate
+cd ../
+node weidai/scripts/nimrodelTokenTransfer.js
+echo "**************CAPTURE DEV TRADING TOKENS***********"
+echo ""
+cd weidai
 node scripts/captureDevTokens.js
