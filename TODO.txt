@@ -28,6 +28,7 @@ MKR
 
 NIMRODEL:
 1. Implement interfaces --DONE
-2. Load Nimrodel contracts in ethereumAPI getting addresses from blockchain/behodlerUI
+2. Load Nimrodel contracts in ethereumAPI getting addresses from blockchain/behodlerUI -- DONE
 3. Design adequate front end --DONE. Check journal
-3. Write appropriate observables
+4. Write appropriate observables --BUSY
+5. Implement front end 
