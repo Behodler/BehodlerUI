@@ -37,6 +37,16 @@ import BigNumber from 'bignumber.js';
 import { SisyphusEffects } from './observables/Sisyphus';
 import { ScarcityFaucetEffects } from './observables/ScarcityFaucet'
 
+import CelebornJSON from './nimrodelUI/Celeborn.json'
+import MiruvorJSON from './nimrodelUI/Miruvor.json'
+import RivuletJSON from './nimrodelUI/Rivulet.json'
+import nimrodelAddresses from './nimrodelUI/nimrodelAddresses.json'
+
+import { NimrodelContracts } from './IContracts'
+import { Celeborn } from './contractInterfaces/behodler/Nimrodel/Celeborn'
+import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
+import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
+
 const potReserveAddresses =
 {
 	'private': '0x06f5D06d84b9aD11ef83C7C4491020Be4B274A4b',
@@ -231,6 +241,7 @@ class ethereumAPI {
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
 		behodlerContracts.Sisyphus = await this.fetchSisyphus(networkName)
+		behodlerContracts.Nimrodel = await this.fetchNimrodel(networkName)
 
 		let contracts: IContracts = { WeiDai, WeiDaiBank, PRE, Dai, VersionController, PotReserve, activeVersion, behodler: behodlerContracts }
 		await this.configureVersionWarnings(contracts, currentAccount)
@@ -395,8 +406,7 @@ class ethereumAPI {
 		network = network == 'private' ? 'development' : network
 
 		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
-		const keys = Object.keys(behodlerContracts).filter(key => key !== 'Sisyphus')
-
+		const keys = Object.keys(behodlerContracts).filter(key => key !== 'Sisyphus' && key !== 'Nimrodel')
 		keys.forEach(async (key) => {
 			const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
 			const currentMapping = mappingsList.filter(mapping => mapping.contract == key || mapping.contract == alternateKey)[0]
@@ -419,6 +429,28 @@ class ethereumAPI {
 		let faucet: Faucet = faucetDeployment.methods
 		faucet.address = faucetAddress
 		return { Sisyphus: sisyphus, Faucet: faucet }
+	}
+
+	private async fetchNimrodel(network: string): Promise<NimrodelContracts> {
+		network = network == 'private' ? 'development' : network
+		let rivuletAddress = nimrodelAddresses[network]['Rivulet']
+		let celebornAddress = nimrodelAddresses[network]['Celeborn']
+		let miruvorAddress = nimrodelAddresses[network]['Miruvor']
+
+		const rivuletDeployment = await this.deployBehodlerContract(RivuletJSON.abi, rivuletAddress)
+		const celebornDeployment = await this.deployBehodlerContract(CelebornJSON.abi, celebornAddress)
+		const miruvorDeployment = await this.deployBehodlerContract(MiruvorJSON.abi, miruvorAddress)
+
+		let rivulet: Rivulet = rivuletDeployment.methods
+		rivulet.address = rivuletDeployment.address
+
+		let celeborn: Celeborn = celebornDeployment.methods
+		celeborn.address = celebornDeployment.address
+
+		let miruvor: Miruvor = miruvorDeployment.methods
+		miruvor.address = miruvorDeployment.address
+
+		return { Celeborn: celeborn, Miruvor: miruvor, Rivulet: rivulet }
 	}
 
 }
