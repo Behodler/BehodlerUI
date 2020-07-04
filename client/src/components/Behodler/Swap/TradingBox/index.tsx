@@ -50,10 +50,10 @@ export default function TradeBox(props: props) {
 
     const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[1].address)
-    if(tokenDropDownList.filter(t=>t.address===outputAddress).length===0){
+    if (tokenDropDownList.filter(t => t.address === outputAddress).length === 0) {
         setOutputAddress(tokenDropDownList[1])
     }
-    if(tokenDropDownList.filter(t=>t.address===inputAddress).length===0){
+    if (tokenDropDownList.filter(t => t.address === inputAddress).length === 0) {
         setInputAddress(tokenDropDownList[0])
     }
     const [exchangeRate, setExchangeRate] = useState<string>("")
@@ -132,13 +132,13 @@ export default function TradeBox(props: props) {
     const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
 
     const addLiquidityPossible = boxesPositive && inputEnabled && (secondTokenEnabled || isEthPredicate(outputAddress))
-    const toggleLiquidityMode = (l:boolean)=>{
-        if(l){
-            if(isScarcityPredicate(outputAddress)){
-                setOutputAddress(tokenDropDownList.filter(t=>t.address!==inputAddress && t.address!==scarcityAddress)[0].address)
+    const toggleLiquidityMode = (l: boolean) => {
+        if (l) {
+            if (isScarcityPredicate(outputAddress)) {
+                setOutputAddress(tokenDropDownList.filter(t => t.address !== inputAddress && t.address !== scarcityAddress)[0].address)
             }
-            else if(isScarcityPredicate(inputAddress)){
-                setInputAddress(tokenDropDownList.filter(t=>t.address!==outputAddress && t.address!==scarcityAddress)[0].address)
+            else if (isScarcityPredicate(inputAddress)) {
+                setInputAddress(tokenDropDownList.filter(t => t.address !== outputAddress && t.address !== scarcityAddress)[0].address)
             }
         }
         setLiquidityMode(l)
@@ -419,11 +419,12 @@ export default function TradeBox(props: props) {
                 setTokenAddress={setOutputAddress}
                 address={outputAddress}
                 value={outputValue}
-                setEnabled={liquidityMode ? setSecondTokenEnabled : undefined}
+                setEnabled={liquidityMode ? setSecondTokenEnabled : (isEthPredicate(outputAddress) ? setSecondTokenEnabled : undefined)}
                 exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, reserve: outputReserve, setReserve: setOutputReserve }}
                 clear={clearInput}
                 disabledInput={!liquidityMode}
                 liquidityMessage={liquidityProvision}
+                addressToEnableFor={isEthPredicate(outputAddress) ? walletContextProps.contracts.behodler.Janus.address : undefined}
             />
             <Grid item>
                 <FormGroup row>

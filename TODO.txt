@@ -25,6 +25,14 @@ GEN (DaoStack)
 KNC (Kyber Network Crystal)
 MKR
 
+Weidai maintenance:
+Eth workflow must be different. --DONE
+Optimize kharon and see if it makes a difference. Then do same for prometheus.
+Make a scarcity page with a placeholder for cheap scarcity.
+Make miruvor popup that can be used anywhere and invoke it on swap and scarity page
+Show reserve balance of output token always
+Show your balance in selector popup
+fix routing so that clicking sisyphs for instance takes you there.
 
 NIMRODEL:
 1. Implement interfaces --DONE
