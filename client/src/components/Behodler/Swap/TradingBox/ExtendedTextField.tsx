@@ -316,46 +316,46 @@ export default function ExtendedTextField(props: props) {
                 </Grid>
 
               </Grid>
-              {nameOfToken === 'scarcity' || !props.exchangeRate.setReserve ? "" :
-                <Grid item>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="space-between"
-                    alignItems="flex-start"
-                  >
-                    <Grid item>
-                      <Typography variant="caption" className={classes.subfields}>
-                        Total in reserve
-                    </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="caption" className={classes.subfields}>
-                        {props.exchangeRate.reserve}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>}
             </div>
             : <div></div>}
-          {props.liquidityMessage ? <Grid item>   
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="flex-start"
-          >
+          {nameOfToken === 'scarcity' || !props.exchangeRate || !props.exchangeRate.setReserve || !props.disabledInput ? "" :
             <Grid item>
-              <Typography variant="caption" className={classes.subfields}>
-                Scarcity to mint
+              <Grid
+                container
+                direction="row"
+                justify="space-between"
+                alignItems="flex-start"
+              >
+                <Grid item>
+                  <Typography variant="caption" className={classes.subfields}>
+                    Total in reserve
                     </Typography>
-            </Grid>
-            <Grid item>
-              <Typography variant="caption" className={classes.subfields}>
-                {props.liquidityMessage}
-              </Typography>
-            </Grid>
-          </Grid></Grid> : ""}
+                </Grid>
+                <Grid item>
+                  <Typography variant="caption" className={classes.subfields}>
+                    {props.exchangeRate.reserve}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>}
+          {props.liquidityMessage ? <Grid item>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="flex-start"
+            >
+              <Grid item>
+                <Typography variant="caption" className={classes.subfields}>
+                  Scarcity to mint
+                    </Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="caption" className={classes.subfields}>
+                  {props.liquidityMessage}
+                </Typography>
+              </Grid>
+            </Grid></Grid> : ""}
 
           {props.feeReward ? <Grid item>
             <Typography variant="caption" className={classes.subfields}>
