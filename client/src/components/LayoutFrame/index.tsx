@@ -13,7 +13,7 @@ import PatienceRegulationEngine from '../PRE/index'
 import Bank from '../Bank/index'
 import Home from '../Home/index'
 import FAQ from '../FAQ/index'
-import Swap from '../Behodler/Swap/index'
+import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
 import ContractDependencies from '../ContractDependencies/index'
 import Admin from '../Behodler/Admin/index'
 import UpgradePrompt from './UpgradePrompt'
@@ -83,7 +83,7 @@ function LayoutFrameComponent(props: any) {
 	const [showMetamaskInstallPopup, setShowMetamaskInstallPopup] = useState<boolean>(false)
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
 	const walletContextProps = useContext(WalletContext)
-
+	const setBehodlerRoute = (route: permittedBehodlerRoutes) => setRedirect('/' + route)
 	useEffect(() => {
 		if (renderRedirect !== '')
 			setRedirect('')
@@ -92,7 +92,7 @@ function LayoutFrameComponent(props: any) {
 	const { classes } = props
 	const notConnected: boolean = !walletContextProps.connected || !walletContextProps.enabled
 	const upgradeRequired: boolean = walletContextProps.connected && ((walletContextProps.oldBalances) && !walletContextProps.primary)
-
+	
 	return (
 		<div className={classes.root}>
 			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
@@ -185,19 +185,19 @@ function LayoutFrameComponent(props: any) {
 										: ""
 									}
 									<Route path="/behodler/sisyphus">
-										<Swap connected={!notConnected} route="sisyphus" />
+										<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="sisyphus" />
 									</Route>
 									<Route path="/behodler/faucet">
-										<Swap connected={!notConnected} route="faucet" />
+										<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="faucet" />
 									</Route>
 									<Route path="/behodler/pyrotokens">
-										<Swap connected={!notConnected} route="pyrotokens" />
+										<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyrotokens" />
 									</Route>
 									<Route path="/behodler/swap">
-										<Swap connected={!notConnected} route="swap" />
+										<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 									</Route>
 									<Route path="/behodler/scarcity">
-										<Swap connected={!notConnected} route="swap" />
+										<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 									</Route>
 									{walletContextProps.primary ?
 										<Route path="/dependencies">

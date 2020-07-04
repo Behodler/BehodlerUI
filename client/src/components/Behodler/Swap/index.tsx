@@ -28,10 +28,14 @@ import four from '../../../images/behodler/landingPage/4.png'
 import five from '../../../images/behodler/landingPage/5.png'
 import six from '../../../images/behodler/landingPage/6.png'
 
+export type permittedRoutes = 'swap'|'pyrotokens'|'sisyphus'|'faucet'|'scarcity'
+
 interface props {
     connected: boolean
-    route:string
+    route: permittedRoutes
+    setRouteValue:(v:permittedRoutes)=>void
 }
+
 
 const images = [
     behodlerLogo, two, three, four, five, six
@@ -113,28 +117,10 @@ export default function Swap(props: props) {
     }, [props.connected])
 
     const classes = useStyles();
-    let valueOfRoute = 0
-    switch (props.route) {
-        case 'swap':
-            valueOfRoute=0
-            break
-        case 'pyrotokens':
-            valueOfRoute=1
-            break
-        case 'sisyphus':
-            valueOfRoute=2
-            break
-        case 'faucet':
-            valueOfRoute=3
-            break
-        default:
-            valueOfRoute=0
-    }
-    const [value, setValue] = useState(valueOfRoute);
     const [showChip, setShowChip] = useState<boolean>(true)
 
-    const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-        setValue(newValue);
+    const handleChange = (event: React.ChangeEvent<{}>, newValue: permittedRoutes) => {
+        props.setRouteValue(newValue);
     };
 
     const hideChip = () => setShowChip(false)
@@ -143,7 +129,7 @@ export default function Swap(props: props) {
     const SectionBreak = () => <Divider className={classes.divider} />
 
     const logoVisible = props.connected
-    const infoPanelVisible = value < 2 || !props.connected
+    const infoPanelVisible = props.route ==='swap' || props.route==='pyrotokens'  || !props.connected
 
     return <div> <Grid
         container
@@ -185,20 +171,20 @@ export default function Swap(props: props) {
             {props.connected ?
                 <div>
                     <Tabs
-                        value={value}
+                        value={props.route}
                         onChange={handleChange}
                         indicatorColor="primary"
                         centered
                         className={classes.tabs}
                     >
-                        <Tab label="Swap" />
-                        <Tab label="Pyrotokens" />
-                        <Tab label="Sisyphus" />
-                        <Tab label="Scarcity Faucet" />
+                        <Tab value='swap' label="Swap" />
+                        <Tab value='pyrotokens' label="Pyrotokens" />
+                        <Tab value='sisyphus' label="Sisyphus" />
+                        <Tab value='faucet' label="Scarcity Faucet" />
                     </Tabs>
 
 
-                    <RenderScreen value={value} tokens={pyroTokenMapping} />
+                    <RenderScreen value={props.route} tokens={pyroTokenMapping} />
                 </div>
                 : ""}
         </Grid>
@@ -265,17 +251,17 @@ export default function Swap(props: props) {
     </div>
 }
 
-function RenderScreen(props: { value: number, tokens: basePyroPair[]}) {
+function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] }) {
     switch (props.value) {
-        case 0:
+        case 'swap':
             return <TradingBox />
-        case 1:
+        case 'pyrotokens':
             if (props.tokens.length > 0)
                 return <PyroTokens tokens={props.tokens} />
             return <div></div>
-        case 2:
-            return <Sisyphus/>
-        case 3:
+        case 'sisyphus':
+            return <Sisyphus />
+        case 'faucet':
             return <ScarcityFaucet />
         default:
             return <div>Chronos</div>
