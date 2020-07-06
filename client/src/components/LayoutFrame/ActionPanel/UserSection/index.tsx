@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { List, ListItem, ListItemIcon, ListItemText, Divider } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add'
 import Computer from '@material-ui/icons/Computer'
 import CompareArrows from '@material-ui/icons/CompareArrows'
 import Loop from '@material-ui/icons/Loop'
@@ -8,6 +7,8 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import { Social } from '../../Social/index'
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
+import scarcity from "../../../../images/scarcity.png"
+import weidai from "../../../../images/logo.png"
 
 interface UserSectionProps {
 	classes?: any,
@@ -17,19 +18,27 @@ interface UserSectionProps {
 	behodlerSwap: () => void
 	faq: () => void
 	sisyphus: () => void
+	goToScarcity: () => void
+	scarcityReady: boolean
 }
 
 function UserSectionComponent(props: UserSectionProps) {
 	const walletContextProps = React.useContext(WalletContext)
 	return (<List>
+		{props.scarcityReady ? <div> <ListItem button key="scarcity" onClick={props.goToScarcity} >
+			<ListItemIcon><img src={scarcity} width={32} /></ListItemIcon>
+			<ListItemText primary="Mint Scarcity" secondary="NEW!" />
+		</ListItem>
+			<Divider /></div> : <div></div>}
+
 		{walletContextProps.initialized ? <div><ListItem button key="create" onClick={props.goToEngine}>
-			<ListItemIcon><AddIcon /></ListItemIcon>
-			<ListItemText primary="Create / Claim" />
+			<ListItemIcon><img src={weidai} width={32} /></ListItemIcon>
+			<ListItemText primary="Mint WeiDai" />
 		</ListItem>
 			<Divider />
 			<ListItem button key="bank" onClick={props.goToBank}>
 				<ListItemIcon><CompareArrows /></ListItemIcon>
-				<ListItemText primary="Redeem for Dai" />
+				<ListItemText primary="Unwrap WeiDai" secondary="Redeem for Dai" />
 			</ListItem>
 			<Divider />
 

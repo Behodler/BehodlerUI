@@ -10,7 +10,6 @@ import Timeline from '@material-ui/icons/Timeline'
 import Computer from '@material-ui/icons/Computer'
 import { Hidden } from '@material-ui/core';
 import CompareArrows from '@material-ui/icons/CompareArrows'
-
 const styles = {
 	root: {
 		flexGrow: 1,
@@ -31,6 +30,8 @@ interface MobileProps {
 	homePage: () => void,
 	goToBank: () => void
 	goToSwap: () => void
+	goToScarcity: ()=>void
+	scarcityReady:boolean
 }
 
 function Mobile(props: MobileProps) {
@@ -40,8 +41,11 @@ function Mobile(props: MobileProps) {
 			<div className={classes.root}>
 				<AppBar position="static">
 					<Toolbar>
+						{props.scarcityReady?<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToScarcity}>
+							<AddIcon />&nbsp; Mint Scarcity
+						</IconButton>:""}
 						<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToEngine}>
-							<AddIcon />&nbsp; Create / Claim
+							<AddIcon />&nbsp; Mint / Claim WeiDai
 							</IconButton>
 						<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={props.goToBank}>
 							<AssignmentReturned />&nbsp; Redeem

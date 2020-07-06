@@ -22,7 +22,7 @@ export default function TradeBox(props: props) {
 
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
     const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
-
+    const indexOfScarcityAddress = tokenList.findIndex(item => item.name.toLowerCase().indexOf('scarcity') !== -1)
     let tokenDropDownList = tokenList.map((t, i) => {
         let item = { ...t, image: Images[i] }
         if (i === indexOfWeth) {
@@ -49,7 +49,7 @@ export default function TradeBox(props: props) {
     tokenDropDownList = tokenDropDownList.filter(t => !liquidityMode || t.name.toLowerCase().trim() !== 'scarcity')
 
     const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
-    const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[1].address)
+    const [outputAddress, setOutputAddress] = useState<string>(liquidityMode ? tokenDropDownList[1].address : tokenDropDownList[indexOfScarcityAddress].address)
     if (tokenDropDownList.filter(t => t.address === outputAddress).length === 0) {
         setOutputAddress(tokenDropDownList[1])
     }

@@ -40,3 +40,8 @@ NIMRODEL:
 3. Design adequate front end --DONE. Check journal
 4. Write appropriate observables --BUSY
 5. Implement front end 
+
+
+FlashLoan padlock stuff:
+Use Aave https://docs.aave.com/developers/tutorials/performing-a-flash-loan
+ --> simple practical guide

@@ -28,7 +28,7 @@ import four from '../../../images/behodler/landingPage/4.png'
 import five from '../../../images/behodler/landingPage/5.png'
 import six from '../../../images/behodler/landingPage/6.png'
 
-export type permittedRoutes = 'swap'|'pyrotokens'|'sisyphus'|'faucet'|'scarcity'
+export type permittedRoutes = 'swap'|'pyrotokens'|'sisyphus'|'faucet'
 
 interface props {
     connected: boolean
