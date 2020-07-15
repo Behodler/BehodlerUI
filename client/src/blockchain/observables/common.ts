@@ -1,6 +1,5 @@
 
-import { Observable, Observer } from 'rxjs'
-import { distinctUntilChanged } from 'rxjs/operators'
+import { Observable, Observer, interval } from 'rxjs'
 import Web3 from "web3";
 export interface EffectFactoryType {
 	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect
@@ -8,25 +7,27 @@ export interface EffectFactoryType {
 
 export const EffectFactory = (web3: Web3, account: string): EffectFactoryType => (
 	(action: (params: { account: string, blockNumber: number }) => Promise<any>): Effect => {
-		const subscription = web3.eth.subscribe("newBlockHeaders")
+		const subscription = interval(15000)
 		const observable = Observable.create(async (observer: Observer<any>) => {
-			const queryBlockChain = async (data) => {
-				if (account === "0x0") {
-					observer.next("unset")
-				}
-				else {
-					const currentResult = await action({ account, blockNumber: data.number })
-					observer.next(currentResult)
+
+			const queryBlockChain = async () => {
+				return async (data) => {
+					if (account === "0x0") {
+						//observer.next("unset")
+					}
+					else {
+						const currentResult = await action({ account, blockNumber:  await web3.eth.getBlockNumber()})
+						observer.next(currentResult)
+					}
 				}
 			}
 			let blockNumber = await web3.eth.getBlockNumber()
-			
-			await queryBlockChain({ number: blockNumber })
+			const initial = await queryBlockChain()
+			await initial({ number: blockNumber })
 
-			subscription.on('data', queryBlockChain)
+			subscription.subscribe(initial)
 		})
-
-		return new Effect(observable.pipe(distinctUntilChanged()), subscription)
+		return new Effect(observable.pipe(), subscription)
 	}
 )
 
@@ -39,8 +40,9 @@ export class Effect {
 	}
 
 	cleanup() {
-		if (this.subscription !== null && this.subscription.id !== null)
-			this.subscription.unsubscribe()
+		if (this.subscription !== null && this.subscription.id !== null) {
+			//	this.subscription.unsubscribe()
+		}
 	}
 }
 

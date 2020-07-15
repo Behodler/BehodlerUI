@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { makeStyles } from '@material-ui/core'
+import { makeStyles, Card, CardContent, Container } from '@material-ui/core'
 import SwipeableViews from 'react-swipeable-views';
 import { useState } from 'react'
 
@@ -27,30 +27,49 @@ const useStyles = makeStyles({
 export default function InfoSlider(props: infoSliderPropsProps) {
     const classes = useStyles()
     const [index, setIndex] = useState<number>(0)
-    Slide({header:"hello"})
+    Slide({ header: "hello" })
     return <SwipeableViews enableMouseEvents
         index={index}
         onChangeIndex={(i) => setIndex(i % 3)}
     >
         <div className={classes.slide1}>
-            Hello
-    </div>
+            <Container>
+                <Card>
+                    <CardContent>
+                        Hello there, my name is mike
+               </CardContent>
+
+                </Card>
+            </Container>
+        </div>
         <div className={classes.slide2}>
-            there
-    </div>
+            <Card>
+                <CardContent>
+                    Hello there, my name is mike
+               </CardContent>
+            </Card>
+        </div>
         <div className={classes.slide3}>
-            person
-    </div>
+            <Card>
+                <CardContent>
+                    Hello there, my name is mike
+               </CardContent>
+            </Card>
+        </div>
         <div className={classes.slide1}>
-            Hello
-    </div>
+            <Card>
+                <CardContent>
+                    Hello there, my name is mike
+               </CardContent>
+            </Card>
+        </div>
     </SwipeableViews>
 }
 
-interface slideProps{
-header:string
+interface slideProps {
+    header: string
 }
 
-function Slide(props:slideProps) {
+function Slide(props: slideProps) {
 
 }

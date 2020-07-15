@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 export class ERC20Effects extends Token {
 	tokenInstance: ERC20
 	decimalFactor: BigNumber
-	constructor(web3: Web3, tokenInstance: ERC20, account: string, decimalPlaces:number = 18) {
+	constructor(web3: Web3, tokenInstance: ERC20, account: string, decimalPlaces: number = 18) {
 		super(web3, account)
 		this.tokenInstance = tokenInstance
 		this.decimalFactor = new BigNumber(10).pow(decimalPlaces)

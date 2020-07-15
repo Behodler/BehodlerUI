@@ -220,7 +220,6 @@ class ethereumAPI {
 		const options = { from: currentAccount };
 		const version = await VersionController.getUserActiveVersion(currentAccount).call(options)
 		var activeVersion = "" + this.hexToNumber(version)
-
 		const weiDaiAddress = await VersionController.getWeiDai(activeVersion).call(options)
 		const bankAddress = await VersionController.getWeiDaiBank(activeVersion).call(options)
 		const preAddress = await VersionController.getPRE(activeVersion).call(options)

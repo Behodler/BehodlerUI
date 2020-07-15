@@ -11,11 +11,6 @@ export enum MetamaskStatus {
 	connected
 }
 
-interface rpcResult {
-	id: number,
-	jsonrpc: string,
-	result: any
-}
 
 interface walletProps {
 	chainId: number
@@ -61,8 +56,8 @@ const networkNameMapper = (id: number): string => {
 }
 
 let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setVersionBalances: (contracts: IContracts, account: string) => Promise<void>, setInitialized: (boolean) => void) => {
-	return (response: rpcResult) => {
-		const chainIDNum = API.pureHexToNumber(response.result)
+	return (response: any) => {
+		const chainIDNum = API.pureHexToNumber(response)
 		setChainId(chainIDNum)
 		setNetworkName(networkNameMapper(chainIDNum))
 		setInitialized(false)
@@ -70,15 +65,15 @@ let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetw
 }
 
 let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void) => {
-	return (response: rpcResult): string => {
-		if (!response.result || response.result.length === 0) {
+	return (response: any): string => {
+		if (!response || response.length === 0) {
 			setConnected(false)
 			setAccount('0x0')
 			return '0x0'
 		} else {
 			setInitialized(true)
 			setConnected(true)
-			const account = response.result[0]
+			const account = response[0]
 			setAccount(account)
 			setInitialized(false)
 			return account
@@ -119,7 +114,6 @@ function WalletContextProvider(props: any) {
 	const [networkName, setNetworkName] = useState<string>("")
 	const chainVersionUpdate = chainVersionUpdater((input: []) => setVersionBalances(input), setOldBalances, setPrimary, setEnabled)
 
-
 	useEffect(() => {
 		if (chainId > 0 && account !== '0x0' && !initialized) {
 			setInitialized(true)
@@ -144,12 +138,12 @@ function WalletContextProvider(props: any) {
 
 			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => { })
 			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
-			window.ethereum.send('eth_accounts')
+			window.ethereum.request({ method: 'eth_accounts' })
 				.then(accountUpdateHandlerOnce)
 				.then((acc) => {
 					let chainIdUpdateHandlerOnce = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, chainVersionUpdate, () => { })
 					let chainIdUpdateHandler = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, chainVersionUpdate, setInitialized)
-					window.ethereum.send('eth_chainId')
+					window.ethereum.request({ method: 'eth_chainId' })
 						.then(chainIdUpdateHandlerOnce)
 						.then(() => {
 							window.ethereum.on('accountsChanged', accountUpdateHandler)
@@ -166,7 +160,7 @@ function WalletContextProvider(props: any) {
 				})
 			let connectionActionObject = {
 				action: () => {
-					window.ethereum.send('eth_requestAccounts')
+					window.ethereum.request({ method: 'eth_requestAccounts' })
 						.then(accountUpdateHandler)
 						.catch(err => {
 							setConnected(false)
