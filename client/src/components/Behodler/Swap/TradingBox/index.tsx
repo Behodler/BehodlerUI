@@ -63,6 +63,21 @@ export default function TradeBox(props: props) {
     const [showAdvanced, setShowAdvanced] = useState<boolean>(false)
     const [minPrice, setMinPrice] = useState<string>("0")
     const [maxPrice, setMaxPrice] = useState<string>("0")
+
+    const safeSetMinPrice = (p: string) => {
+        if (new BigNumber(p).isNaN())
+            setMinPrice("0")
+        else
+            setMinPrice(p)
+    }
+
+    const safeSetMaxPrice = (p: string) => {
+        if (new BigNumber(p).isNaN())
+            setMaxPrice("0")
+        else
+            setMaxPrice(p)
+    }
+
     const [fee, setFee] = useState<string>("0")
     const [reward, setReward] = useState<string>("0")
     const [outputReserve, setOutputReserve] = useState<string>("")
@@ -75,7 +90,7 @@ export default function TradeBox(props: props) {
         return API.toWei(price)
     }
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter(t => t.address == address)[0].name
-    const clearInput = () => { setInputValue(""); setOutputValue(""); setShowAdvancedAndSetPrices(false); setMinPrice("0"); setMaxPrice("0"); setSwapClicked(false) }
+    const clearInput = () => { setInputValue(""); setOutputValue(""); setShowAdvancedAndSetPrices(false); safeSetMinPrice("0"); safeSetMaxPrice("0"); setSwapClicked(false) }
 
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter(t => t.address !== inputAddress)[0].address)
@@ -98,8 +113,8 @@ export default function TradeBox(props: props) {
         const outputValWei = API.toWei(outputValue)
         const minPrice = new BigNumber(dryRunSCX).dividedBy(new BigNumber(inputValWei)).times(0.9).toString()
         const maxPrice = new BigNumber(dryRunSCX).dividedBy(new BigNumber(outputValWei)).times(1.1).toString()
-        setMinPrice(minPrice)
-        setMaxPrice(maxPrice)
+        safeSetMinPrice(minPrice)
+        safeSetMaxPrice(maxPrice)
         return [minPrice, maxPrice]
     }
 
@@ -450,8 +465,8 @@ export default function TradeBox(props: props) {
                     alignItems="center"
                 >
                     <Grid item>
-                        <AdvancedDetails setMaxPrice={setMaxPrice}
-                            setMinPrice={setMinPrice}
+                        <AdvancedDetails setMaxPrice={safeSetMaxPrice}
+                            setMinPrice={safeSetMinPrice}
                             nameOfInput={nameOfSelectedAddress(inputAddress)}
                             nameOfOutput={nameOfSelectedAddress(outputAddress)}
                             inputValue={inputValue}
@@ -464,7 +479,7 @@ export default function TradeBox(props: props) {
                         />
                     </Grid>
                     <Grid item>
-                        <Button color="secondary" onClick={() => { setShowAdvancedAndSetPrices(false); setMinPrice("0"); setMaxPrice("0") }}>Hide Advanced</Button>
+                        <Button color="secondary" onClick={() => { setShowAdvancedAndSetPrices(false); safeSetMinPrice("0"); safeSetMaxPrice("0") }}>Hide Advanced</Button>
                     </Grid>
                 </Grid> :
                     <Button color="secondary" onClick={() => setShowAdvancedAndSetPrices(true)}>Show Advanced</Button>}
