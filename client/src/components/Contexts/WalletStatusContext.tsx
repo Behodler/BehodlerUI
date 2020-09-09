@@ -88,7 +88,6 @@ function WalletContextProvider(props: any) {
 
 	const initializationCallBack = React.useCallback(async () => {
 		if (chainId > 0 && account.length>3 && !initialized) {
-			setInitialized(true)
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
 			const owner = (await c.behodler.Behodler.primary).toString()
