@@ -28,12 +28,12 @@ import four from '../../../images/behodler/landingPage/4.png'
 import five from '../../../images/behodler/landingPage/5.png'
 import six from '../../../images/behodler/landingPage/6.png'
 
-export type permittedRoutes = 'swap'|'pyrotokens'|'sisyphus'|'faucet'
+export type permittedRoutes = 'swap' | 'pyrotokens' | 'sisyphus' | 'faucet'
 
 interface props {
     connected: boolean
     route: permittedRoutes
-    setRouteValue:(v:permittedRoutes)=>void
+    setRouteValue: (v: permittedRoutes) => void
 }
 
 
@@ -129,7 +129,7 @@ export default function Swap(props: props) {
     const SectionBreak = () => <Divider className={classes.divider} />
 
     const logoVisible = props.connected
-    const infoPanelVisible = props.route ==='swap' || props.route==='pyrotokens'  || !props.connected
+    const infoPanelVisible = props.route === 'swap' || props.route === 'pyrotokens' || !props.connected
 
     return <div> <Grid
         container

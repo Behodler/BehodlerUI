@@ -5,25 +5,25 @@ ganacheBID=$!
 echo $ganacheBID > ganacheID.txt
 sleep 2
 echo "**************MIGRATING WEIDAI***********"
-cd '/home/justin/weidai ecosystem/weidai'
+cd '/home/justin/weidai ecosystem/behodlerUI'
 truffle migrate
 echo "**************MIGRATING BEHODLER***********"
 echo ""
 cd '/home/justin/weidai ecosystem/behodler'
 truffle migrate
-cp BehodlerABIAddressMapping.json ../weidai/client/src/temp/
+cp BehodlerABIAddressMapping.json ../behodlerUI/client/src/temp/
 echo "**************MIGRATING SISYPHUS***********"
 echo ""
 cd ../Sisyphus
 truffle migrate
-cp sisyphusAddress.json ../weidai/client/src/temp/
+cp sisyphusAddress.json ../behodlerUI/client/src/temp/
 echo "**************MIGRATING NIMRODEL***********"
 echo ""
 cd ../nimrodel
 truffle migrate
 cd ../
-node weidai/scripts/nimrodelTokenTransfer.js
+node behodlerUI/scripts/nimrodelTokenTransfer.js
 echo "**************CAPTURE DEV TRADING TOKENS***********"
 echo ""
-cd weidai
+cd behodlerUI
 node scripts/captureDevTokens.js
