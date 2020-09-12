@@ -4,7 +4,7 @@ import TradingBox from './TradingBox/index'
 import PyroTokens, { basePyroPair, filterPredicate } from './PyroTokens/index'
 import Sisyphus from './Sisyphus/index'
 import ScarcityFaucet from './ScarcityFaucet/index'
-import { Chip, Grid, Typography} from '@material-ui/core'
+import { Chip, Grid, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -22,13 +22,17 @@ interface props {
     connected: boolean
     route: permittedRoutes
     setRouteValue: (v: permittedRoutes) => void
+    setShowMetamaskInstallPopup: (v: boolean) => void
 }
 
 
 const useStyles = makeStyles({
     root: {
         flexGrow: 1,
-        marginTop: 50
+        marginTop: 50,
+        width: '100%',
+        marginBottom: 100,
+        minHeight: 800
     },
     tabs: {
         marginBottom: '20px'
@@ -44,6 +48,15 @@ const useStyles = makeStyles({
         padding: "20px",
         backgroundColor: blueGrey['600'],
     },
+    traderContainer: {
+        margin: "50px",
+        maxWidth: "1000px",
+        padding: "20px",
+        backgroundColor: 'white',
+        borderRadius: 20,
+        height: '100%',
+        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
+    },
     Grid: {
         minHeight: "700px",
         with: "100%",
@@ -53,13 +66,25 @@ const useStyles = makeStyles({
         marginBottom: "20px"
     },
     image: {
-        height: "300px"
+        height: "250px"
     },
     behodlerHeading: {
-
+        color: 'white',
+        textShadow: '0px 0px 3px navy',
+        fontWeight: 'bold'
     },
     link: {
         fontStyle: "italic"
+    },
+    connectButton: {
+        margin: "20px 0 0 0"
+    },
+    warningText: {
+        color: 'black',
+        fontStyle: 'italic',
+        maxWidth: 700,
+        textAlign: 'center',
+        textOverflow: 'wrap'
     }
 });
 
@@ -70,6 +95,7 @@ export default function Swap(props: props) {
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
+    
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
         const pyroAddress = await walletContextProps.contracts.behodler.PyroTokenRegistry.baseTokenMapping(baseToken).call(primaryOptions)
         const token: PyroToken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
@@ -116,14 +142,14 @@ export default function Swap(props: props) {
         localStorage.setItem('lastBehodlerHide', new Date().getTime().toString())
         setShowChip(false);
     }
-    const logoVisible = props.connected
+    const logoVisible = !props.connected
 
     return <div> <Grid
         container
         direction="column"
         justify="center"
         alignItems="center"
-        spacing={2}
+        spacing={6}
         className={classes.root}>
         {showChip && props.connected ? <Grid
             container
@@ -136,10 +162,23 @@ export default function Swap(props: props) {
                 <Chip className={classes.betaRisk} label="Behodler is currently in Beta. Use at your own risk." onDelete={hideChip} variant="outlined" />
             </Grid>
         </Grid> : ""}
+
         {logoVisible ? <Grid item>
-            <img src={behodlerLogo} width="300" />
-        </Grid> : ""
-        }
+            <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
+                walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
+            }}>Connect Your Wallet</Button>
+        </Grid> : ''}
+        {logoVisible ?
+            <Grid item>
+                <Typography className={classes.warningText} variant='subtitle2'>
+                    Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered DEX.
+                    Use at your own risk. The Behodler sees all prices. The Behodler HODLS all tokens.
+            </Typography>
+            </Grid>
+            : ''}
+        {logoVisible ? <Grid item>
+            <img src={behodlerLogo} width="500" />
+        </Grid> : ''}
         <Grid item>
             <Grid
                 container
@@ -156,22 +195,31 @@ export default function Swap(props: props) {
         </Grid>
         <Grid item>
             {props.connected ?
-                <div>
-                    <Tabs
-                        value={props.route}
-                        onChange={handleChange}
-                        indicatorColor="primary"
-                        centered
-                        className={classes.tabs}
-                    >
-                        <Tab value='swap' label="Swap" />
-                        <Tab value='pyrotokens' label="Pyrotokens" />
-                        <Tab value='sisyphus' label="Sisyphus" />
-                        <Tab value='faucet' label="Scarcity Faucet" />
-                    </Tabs>
+                <div className={classes.traderContainer}>
+
+                    <div>
+                        <Tabs
+                            value={props.route}
+                            onChange={handleChange}
+                            indicatorColor="primary"
+                            centered
+                            TabIndicatorProps={{
+                                style: {
+                                    display: "none",
+                                }
+                            }}
+                            className={classes.tabs}
+                        >
+                            <Tab value='swap' label="Swap" />
+                            <Tab value='pyrotokens' label="Pyrotokens" />
+                            <Tab value='sisyphus' label="Sisyphus" />
+                            <Tab value='faucet' label="Scarcity Faucet" />
+                        </Tabs>
 
 
-                    <RenderScreen value={props.route} tokens={pyroTokenMapping} />
+                        <RenderScreen value={props.route} tokens={pyroTokenMapping} />
+                    </div>
+
                 </div>
                 : ""}
         </Grid>

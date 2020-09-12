@@ -87,7 +87,7 @@ function WalletContextProvider(props: any) {
 	const [primary, setPrimary] = useState<boolean>(false)
 
 	const initializationCallBack = React.useCallback(async () => {
-		if (chainId > 0 && account.length>3 && !initialized) {
+		if (chainId > 0 && account.length > 3 && !initialized) {
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
 			const owner = (await c.behodler.Behodler.primary).toString()
@@ -136,7 +136,7 @@ function WalletContextProvider(props: any) {
 			let connectionActionObject = {
 				action: () => {
 					window.ethereum.request({ method: 'eth_requestAccounts' })
-						.then(accountUpdateHandler)
+						.then(() => location.reload())
 						.catch(err => {
 							setConnected(false)
 							if (err.code === 4001) {

@@ -1,44 +1,24 @@
 {
     "main": [
         {
-            "name": "OXT",
-            "address": "0x4575f41308ec1483f3d399aa9a2826d74da13deb"
+            "name": "Scarcity",
+            "address": "0xff1614C6B220b24D140e64684aAe39067A0f1CD0"
         },
         {
-            "name": "PNK",
-            "address": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d"
+            "name": "DegenVC",
+            "address": "0x26E43759551333e57F073bb0772F50329A957b30"
+        },
+        {
+            "name": "Raux",
+            "address": "0x68496eE825DAFE1cF66D4083f776B9eAAb31e447"
         },
         {
             "name": "Weth",
             "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         },
         {
-            "name": "Link",
-            "address": "0x514910771af9ca656af840dff83e8264ecf986ca"
-        },
-        {
             "name": "WeiDai",
             "address": "0xaFEf0965576070D1608F374cb14049EefaD218Ec"
-        },
-        {
-            "name": "Loom",
-            "address": "0xa4e8c3ec456107ea67d3075bf9e3df3a75823db0"
-        },
-        {
-            "name": "Scarcity",
-            "address": "0xff1614C6B220b24D140e64684aAe39067A0f1CD0"
-        },
-        {
-            "name": "WBTC",
-            "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-        },
-        {
-            "name": "Maker",
-            "address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
-        },
-        {
-            "name": "BAT",
-            "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef"
         },
         {
             "name": "Dai",

@@ -102,7 +102,6 @@ class ethereumAPI {
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
 		behodlerContracts.Sisyphus = await this.fetchSisyphus(networkName)
 		behodlerContracts.Nimrodel = await this.fetchNimrodel(networkName)
-
 		let contracts: IContracts = { behodler: behodlerContracts }
 		this.initialized = true
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
@@ -255,7 +254,6 @@ class ethereumAPI {
 	private async fetchSisyphus(network: string): Promise<SisyphusContracts> {
 		let sisyphus: SisyphusContractInterface
 		network = network == 'private' ? 'development' : network
-		console.log('network in sisyphus: ' + network)
 		let address = SisyphusContractMappings.filter(s => s.network === network)[0].address
 		const deployment = await this.deployBehodlerContract(SisyphusABI.abi, address)
 		sisyphus = deployment.methods

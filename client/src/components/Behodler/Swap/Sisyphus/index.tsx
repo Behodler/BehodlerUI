@@ -185,7 +185,7 @@ function ActionBox(props: { text: string, placeHolder: string, setText: (v: stri
                 alignItems="flex-end">
                 <Grid item>
                     {props.enabled ?
-                        <Button onClick={() => { alert(props.buyoutText); props.action(props.buyoutText) }} disabled={props.actionDisabled} color="primary" variant="contained" >{props.buttonText}</Button>
+                        <Button onClick={() =>  props.action(props.buyoutText)} disabled={props.actionDisabled} color="primary" variant="contained" >{props.buttonText}</Button>
                         :
                         <Button onClick={() => props.enableAction()} color="secondary" variant="outlined">{props.enableText}</Button>
                     }

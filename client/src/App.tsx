@@ -1,13 +1,13 @@
 import * as React from 'react';
 import './App.css';
-import { LayoutFrame } from './components/LayoutFrame/index'
-import { createMuiTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/styles';
+import LayoutFrame from './components/LayoutFrame/index'
+import { createMuiTheme, makeStyles } from '@material-ui/core';
+import { ThemeProvider, createStyles } from '@material-ui/styles';
 import { WalletContextProvider } from './components/Contexts/WalletStatusContext'
-import {BrowserRouter, withRouter } from 'react-router-dom'
+import { BrowserRouter, withRouter } from 'react-router-dom'
 const theme = createMuiTheme({
 	palette: {
-		type: 'dark'
+		type: 'light'
 	},
 	typography: {
 		//fontFamily: 'Syncopate',
@@ -15,20 +15,26 @@ const theme = createMuiTheme({
 	}
 })
 
-export class App extends React.Component<any, any> {
-	public render() {
-		const RoutedApp = withRouter(() => {
-			return (
-				<WalletContextProvider>
-					<ThemeProvider theme={theme}>
-						<div>
-							<LayoutFrame />
-						</div>
-					</ThemeProvider>
-				</WalletContextProvider>
-			);
-		})
-		return <BrowserRouter> <RoutedApp /></BrowserRouter>
-
+const backStyles = makeStyles(theme => createStyles({
+	root: {
+		backgroundColor: 'red'
 	}
+}))
+
+export default function App() {
+	const classes = backStyles()
+	const RoutedApp = withRouter(() => {
+		return (
+			<WalletContextProvider>
+				<ThemeProvider theme={theme}>
+					<div className={classes.root}>
+						<LayoutFrame />
+					</div>
+				</ThemeProvider>
+			</WalletContextProvider>
+		);
+	})
+	return <BrowserRouter> <RoutedApp /></BrowserRouter>
+
 }
+

@@ -1,8 +1,13 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { withStyles, Divider, Grid, Box, Paper, Button } from '@material-ui/core';
+import { Grid, Box, makeStyles, createStyles, Hidden, IconButton, Typography } from '@material-ui/core';
+import discord from '../../../src/images/behodler/footer/discord.png'
+import medium from '../../../src/images/behodler/footer/medium.png'
+import github from '../../../src/images/behodler/footer/Github.png'
+import faq from '../../../src/images/behodler/footer/FAQ.png'
+import uniswap from '../../../src/images/behodler/footer/uniswap.png'
 
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
 // import ScarcityLandingPage from '../Behodler/ScarcityLandingPage/index'
 import Admin from '../Behodler/Admin/index'
@@ -13,9 +18,12 @@ import { WalletContext } from '../Contexts/WalletStatusContext'
 const actionWidth: number = 250
 const infoWidth: number = 400
 
-let styleObject = {
+const useStyles = makeStyles(theme => createStyles({
 	root: {
-		display: "flex"
+		display: "flex",
+		flexFlow: 'column',
+		height: '100%',
+		background: "linear-gradient(to bottom left, #9DC8F2, white)",
 	},
 	actionDrawer: {
 		width: actionWidth,
@@ -57,15 +65,23 @@ let styleObject = {
 	listItem: {
 		display: "list-item"
 	},
-	connectButton: {
-		margin: "20px 0 0 0"
+	footerDiv: {
+		position: 'relative',
+		left: 0,
+		bottom: 0,
+		width: '100%',
+		color: 'black',
+		textAlign: 'center',
+		height: 100
+	},
+	footerGrid: {
+		width: '100%',
+		marginBottom: '-8px'
 	}
-}
+}))
 
-let styles = (theme: any) => styleObject
 
-function LayoutFrameComponent(props: any) {
-	let location = useLocation();
+export default function LayoutFrame(props: any) {
 	const [redirect, setRedirect] = useState<string>("")
 	const [showMetamaskInstallPopup, setShowMetamaskInstallPopup] = useState<boolean>(false)
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
@@ -73,85 +89,108 @@ function LayoutFrameComponent(props: any) {
 	const setBehodlerRoute = (route: permittedBehodlerRoutes) => {
 		setRedirect(route)
 	}
+	const footerIconWidth = 24
 	useEffect(() => {
 		if (renderRedirect !== '')
 			setRedirect('')
 	})
 
-	const { classes } = props
-	const notConnected: boolean = !walletContextProps.connected || walletContextProps.networkName === '' || !walletContextProps.initialized
-
+	const classes = useStyles()
+	const notConnected: boolean = !walletContextProps.connected || walletContextProps.networkName === '' || !walletContextProps.initialized//|| walletContextProps.account.length < 5
+	const openFooter = (url: string) => window.open(url, '_blank')
 	return (
 		<div className={classes.root}>
 			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
 			<div>
 				{renderRedirect}
 			</div>
-			<Paper className={classes.paper}>
-				<Box component="div" className={classes.content}>
-					<div>
-						{location.pathname === '/scarcity' ? "" :
-							<div>
-								{notConnected || !walletContextProps.isMetamask ? <div>
-									<Grid
-										container
-										direction="row"
-										justify="center"
-										alignItems="center">
-										<Grid item>
-											<Grid
-												container
-												direction="column"
-												justify="center"
-												alignItems="center"
-												spacing={0}>
-												{notConnected || !walletContextProps.isMetamask ?
-													<Grid item>
-														<Button className={classes.connectButton} color="primary" variant="contained" onClick={async () => {
-															walletContextProps.isMetamask ? walletContextProps.connectAction.action() : setShowMetamaskInstallPopup(true)
-														}}>Connect Your Wallet</Button>
-													</Grid>
-													: <div></div>}
-											</Grid>
-										</Grid>
-									</Grid>
-									<Divider variant="middle" className={classes.headingDivider} />
-								</div>
-									: <div></div>}
-							</div>}
-						<Switch>
-							<Route path="/" exact >
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
+			<Box component="div" className={classes.content}>
+				<div>
+					<Switch>
+						<Route path="/" exact >
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
+						</Route>
+						{walletContextProps.primary ?
+							<Route path="/behodler/admin">
+								<Admin />
 							</Route>
-							{walletContextProps.primary ?
-								<Route path="/behodler/admin">
-									<Admin />
-								</Route>
-								: ""
-							}
-							<Route path="/sisyphus">
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="sisyphus" />
-							</Route>
-							<Route path="/faucet">
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="faucet" />
-							</Route>
-							<Route path="/pyrotokens">
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyrotokens" />
-							</Route>
-							<Route path="/swap">
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
-							</Route>
-							<Route path="/scarcity">
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
-							</Route>
+							: ""
+						}
+						<Route path="/sisyphus">
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="sisyphus" />
+						</Route>
+						<Route path="/faucet">
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="faucet" />
+						</Route>
+						<Route path="/pyrotokens">
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyrotokens" />
+						</Route>
+						<Route path="/swap">
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
+						</Route>
+						<Route path="/scarcity">
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
+						</Route>
 
-						</Switch>
+					</Switch>
+				</div>
+
+			</Box>
+			<Hidden only={['sm', 'xs']}>
+				<footer>
+					<div className={classes.footerDiv}>
+						<Grid
+							container
+							direction="column"
+							justify="center"
+							alignItems="center"
+							spacing={2}
+							className={classes.footerGrid}
+						>
+							<Grid item>
+								<Grid
+									container
+									direction="row"
+									justify="center"
+									alignItems="center"
+									spacing={2}
+								>
+
+									<Grid item>
+										<IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')} >
+											<img src={github} width={footerIconWidth} />
+										</IconButton>
+									</Grid>
+									<Grid item>
+										<IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
+											<img src={medium} width={footerIconWidth} />
+										</IconButton>
+									</Grid>
+									<Grid item>
+										<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
+											<img src={faq} width={footerIconWidth} />
+										</IconButton>
+									</Grid>
+									<Grid item>
+										<IconButton title="discord" onClick={() => openFooter('https://discord.gg/u6hanS')} >
+											<img src={discord} width={footerIconWidth} />
+										</IconButton>
+									</Grid>
+									<Grid item>
+										<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0xff1614c6b220b24d140e64684aae39067a0f1cd0')} >
+											<img src={uniswap} width={footerIconWidth} />
+										</IconButton>
+									</Grid>
+								</Grid>
+							</Grid>
+							<Grid item>
+								<Typography variant="subtitle2">© 2020 by behodler.io</Typography>
+							</Grid>
+						</Grid>
 					</div>
-				</Box>
-			</Paper>
+				</footer>
+			</Hidden>
+
 		</div>
 	)
 }
-
-
-export const LayoutFrame = withStyles(styles)(LayoutFrameComponent)

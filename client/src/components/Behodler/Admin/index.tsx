@@ -12,7 +12,6 @@ interface adminProps {
 
 function Admin(props: adminProps) {
     const [selectedContract, setSelectedContract] = useState<string>("")
-
     return (
         <Grid
             container

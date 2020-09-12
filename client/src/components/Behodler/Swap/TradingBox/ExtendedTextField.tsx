@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useState, useContext, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Search from '@material-ui/icons/Search'
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
@@ -21,7 +20,6 @@ import {
 import { isNullOrWhiteSpace, formatNumberText, formatDecimalStrings } from '../../../../util/jsHelpers'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import API from '../../../../blockchain/ethereumAPI'
-
 
 interface DropDownField {
   name: string,
@@ -67,11 +65,13 @@ interface props {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: '2px 4px',
+    padding: '6px 8px',
     display: 'flex',
     alignItems: 'center',
     width: 650,
-    backgroundColor: "rgb(32, 33, 36)"
+    backgroundColor: "white",
+    border: '2px solid #DFDFDF',
+    borderRadius: 25
   },
 
   input: {
@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   searchHeader: {
     marginLeft: theme.spacing(1),
     flex: 1,
-    width: 400
+    width: 300
   },
   iconButton: {
     padding: 10,
@@ -116,8 +116,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
-
 export default function ExtendedTextField(props: props) {
   const classes = useStyles();
   const walletContextProps = useContext(WalletContext)
@@ -130,6 +128,7 @@ export default function ExtendedTextField(props: props) {
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
   const [enabled, setEnabled] = useState<boolean>(false)
+
   const setFormattedInput = (value: string) => {
     if (props.disabledInput)
       return
@@ -143,6 +142,7 @@ export default function ExtendedTextField(props: props) {
     const isValid = !isNaN(parsedValue) && parsedValue <= parseFloat(currentBalance)
     props.setValid(isValid)
   }
+
   let exchangeRateString = ''
   if (props.exchangeRate && props.exchangeRate.baseAddress !== '') {
     let ratio = formatDecimalStrings(props.exchangeRate.ratio, 4)
@@ -155,6 +155,7 @@ export default function ExtendedTextField(props: props) {
     else
       exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
   }
+
   const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
   const decimalPlaces = nameOfSelectedAddress(props.address).toLowerCase().indexOf('wbtc') !== -1 ? 8 : 18
   const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, decimalPlaces)
@@ -233,7 +234,7 @@ export default function ExtendedTextField(props: props) {
         }
       </Container>
     </Dialog>
-    <Paper className={classes.root} >
+    <div className={classes.root} >
       <Grid container
         direction="column"
         justify="flex-start"
@@ -246,10 +247,10 @@ export default function ExtendedTextField(props: props) {
           >
             <Grid item>
               <Typography
-                variant="caption"
+                variant="body1"
                 className={classes.searchHeader}
               >
-                {props.label}
+                {props.label.toUpperCase()}
               </Typography>
             </Grid>
             <Grid>
@@ -411,7 +412,7 @@ export default function ExtendedTextField(props: props) {
           </Grid> : ""}
         </Grid>
       </Grid>
-    </Paper>
+    </div>
   </div>
   );
 }
