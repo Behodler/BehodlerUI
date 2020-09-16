@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox from './TradingBox/index'
-import PyroTokens, { basePyroPair, filterPredicate } from './PyroTokens/index'
+import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import Sisyphus from './Sisyphus/index'
+import LiquidityMining from './LiquidityMining/index'
 import ScarcityFaucet from './ScarcityFaucet/index'
 import { Chip, Grid, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,10 +14,10 @@ import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../blockchain/ethereumAPI'
 import { PyroToken } from 'src/blockchain/contractInterfaces/behodler/hephaestus/PyroToken'
 import behodlerLogo from '../../../images/behodler/logo.png'
-
+import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 
-export type permittedRoutes = 'swap' | 'pyrotokens' | 'sisyphus' | 'faucet'
+export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin'
 
 interface props {
     connected: boolean
@@ -73,6 +74,12 @@ const useStyles = makeStyles({
         textShadow: '0px 0px 3px navy',
         fontWeight: 'bold'
     },
+    behodlerSubheading: {
+        color: 'navy',
+        textTransform: 'uppercase',
+        fontWeight: 'bold',
+        fontStyle: 'italic'
+    },
     link: {
         fontStyle: "italic"
     },
@@ -95,7 +102,7 @@ export default function Swap(props: props) {
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
-    
+
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
         const pyroAddress = await walletContextProps.contracts.behodler.PyroTokenRegistry.baseTokenMapping(baseToken).call(primaryOptions)
         const token: PyroToken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
@@ -162,7 +169,11 @@ export default function Swap(props: props) {
                 <Chip className={classes.betaRisk} label="Behodler is currently in Beta. Use at your own risk." onDelete={hideChip} variant="outlined" />
             </Grid>
         </Grid> : ""}
-
+        {logoVisible ?
+            <Grid item>
+                <img src={eyelogo} />
+            </Grid>
+            : ''}
         {logoVisible ? <Grid item>
             <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
                 walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
@@ -171,7 +182,7 @@ export default function Swap(props: props) {
         {logoVisible ?
             <Grid item>
                 <Typography className={classes.warningText} variant='subtitle2'>
-                    Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered DEX.
+                    Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered Liquidity Protocol.
                     Use at your own risk. The Behodler sees all prices. The Behodler HODLS all tokens.
             </Typography>
             </Grid>
@@ -180,18 +191,20 @@ export default function Swap(props: props) {
             <img src={behodlerLogo} width="500" />
         </Grid> : ''}
         <Grid item>
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-            >
-                <Grid item>
-                    <Typography variant="h4" className={classes.behodlerHeading}>
-                        Behodler Liquidity Protocol
+            {logoVisible ? '' :
+                <Grid
+                    container
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                >
+                    <Grid item>
+                        <Typography variant="h4" className={classes.behodlerHeading}>
+                            Behodler Liquidity Protocol
             </Typography>
+                    </Grid>
                 </Grid>
-            </Grid>
+            }
         </Grid>
         <Grid item>
             {props.connected ?
@@ -211,7 +224,7 @@ export default function Swap(props: props) {
                             className={classes.tabs}
                         >
                             <Tab value='swap' label="Swap" />
-                            <Tab value='pyrotokens' label="Pyrotokens" />
+                            <Tab value='liquidity' label="Liquidity Mining" />
                             <Tab value='sisyphus' label="Sisyphus" />
                             <Tab value='faucet' label="Scarcity Faucet" />
                         </Tabs>
@@ -234,10 +247,8 @@ function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] })
     switch (props.value) {
         case 'swap':
             return <TradingBox />
-        case 'pyrotokens':
-            if (props.tokens.length > 0)
-                return <PyroTokens tokens={props.tokens} />
-            return <div></div>
+        case 'liquidity':
+            return <LiquidityMining />
         case 'sisyphus':
             return <Sisyphus />
         case 'faucet':

@@ -176,11 +176,9 @@ export default function TradeBox(props: props) {
             setSwapClicked(false)
             if (isEthPredicate(inputAddress)) {
                 const behodlerAddress = walletContextProps.contracts.behodler.Behodler.address
-                console.log('about to allowance')
                 walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, behodlerAddress)
                     .call(primaryOptions)
                     .then(behodlerAllowance => {
-                        console.log('allowance: ' + behodlerAllowance)
                         if (new BigNumber(behodlerAllowance).isLessThan(new BigNumber(inputValWei))) {
 
                             walletContextProps.contracts.behodler.Weth.approve(behodlerAddress, API.UINTMAX).send(primaryOptions, () => {
@@ -199,11 +197,9 @@ export default function TradeBox(props: props) {
             }
             else if (isEthPredicate(outputAddress)) {
                 const janusAddress = walletContextProps.contracts.behodler.Janus.address
-                console.log('about to allowance in output')
                 walletContextProps.contracts.behodler.Weth.allowance(walletContextProps.account, janusAddress)
                     .call(primaryOptions)
                     .then(jAllowance => {
-                        console.log('allowance found for output ' + jAllowance)
                         const outputValWei = API.toWei(outputValue)
                         if (new BigNumber(jAllowance).isLessThan(new BigNumber(outputValWei))) {
 
@@ -290,12 +286,10 @@ export default function TradeBox(props: props) {
     useEffect(() => {
         if (inputReadyToSwap) {
             const nameOfInput = nameOfSelectedAddress(inputAddress).toLowerCase()
-            console.log('about to get fee')
             walletContextProps.contracts.behodler.Kharon
                 .toll(inputAddress, inputValWei)
                 .call(primaryOptions)
                 .then(feeResult => {
-                    console.log('fee ' + feeResult)
                     const decimalFee = API.hexToNumberString(feeResult)
                     if (!new BigNumber(decimalFee).isNaN())
                         setFee(API.fromWei(decimalFee, wbtcOverride))
@@ -350,17 +344,13 @@ export default function TradeBox(props: props) {
 
             }
             else {
-                console.log('about to do dry run')
                 walletContextProps.contracts.behodler.Behodler.buyDryRun(inputAddress, inputValWei, correctPrice(minPrice))
                     .call(highGasOptions)
                     .then(scxToPurchase => {
-                        console.log('now we have buy scx ' + scxToPurchase)
                         setDryRunSCX(scxToPurchase)
-                        console.log('output address: ' + outputAddress)
                         walletContextProps.contracts.behodler.Behodler.sellDryRun(outputAddress, scxToPurchase, correctPrice(maxPrice))
                             .call(highGasOptions)
                             .then(tokensToPurchase => {
-                                console.log('now we have sell tokens ' + tokensToPurchase)
                                 setDryRunTokens(tokensToPurchase)
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
                                 setExchangeRate(ex.toString())

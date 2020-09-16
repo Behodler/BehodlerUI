@@ -59,7 +59,7 @@ export class EtherEffects extends Token {
 		})
 	}
 
-
+	
 	totalSupplyEffect(): Effect {
 		return this.createEffect(async ({ account, blockNumber }) => {
 			const params: FetchNumberFields = {

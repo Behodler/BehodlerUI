@@ -5,7 +5,7 @@ ganacheBID=$!
 echo $ganacheBID > ganacheID.txt
 sleep 2
 echo "**************MIGRATING WEIDAI***********"
-cd '/home/justin/weidai ecosystem/behodlerUI'
+cd '/home/justin/weidai ecosystem/weidai'
 truffle migrate
 echo "**************MIGRATING BEHODLER***********"
 echo ""

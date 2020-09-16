@@ -31,7 +31,7 @@ const daiItem = { name: 'dai', address: weidaiTokens['dai'] }
 const weidaiItem = { name: 'weidai', address: weidaiTokens['weiDai'] }
 reorderedAddresses.splice(2, 0, daiItem)
 reorderedAddresses.splice(5, 0, weidaiItem)
-
+console.log(JSON.stringify(reorderedAddresses,null,4))
 baseTokenJSON.private = reorderedAddresses
 const baseTokenString = JSON.stringify(baseTokenJSON, null, 4)
 fs.writeFileSync(baseTokenLocation, baseTokenString)

@@ -45,6 +45,153 @@
                         "type": "event"
                     },
                     {
+                        "contract": "FeeSplitter",
+                        "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06",
+                        "abi": [
+                            {
+                                "inputs": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "degenWallet",
+                                        "type": "address"
+                                    }
+                                ],
+                                "stateMutability": "nonpayable",
+                                "type": "constructor"
+                            },
+                            {
+                                "anonymous": false,
+                                "inputs": [
+                                    {
+                                        "indexed": false,
+                                        "internalType": "address",
+                                        "name": "newDGVC",
+                                        "type": "address"
+                                    }
+                                ],
+                                "name": "dgvcChanged",
+                                "type": "event"
+                            },
+                            {
+                                "anonymous": false,
+                                "inputs": [
+                                    {
+                                        "indexed": false,
+                                        "internalType": "address",
+                                        "name": "newFounder",
+                                        "type": "address"
+                                    }
+                                ],
+                                "name": "founderChanged",
+                                "type": "event"
+                            },
+                            {
+                                "stateMutability": "payable",
+                                "type": "fallback",
+                                "payable": true
+                            },
+                            {
+                                "inputs": [],
+                                "name": "dgvc",
+                                "outputs": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "",
+                                        "type": "address"
+                                    }
+                                ],
+                                "stateMutability": "view",
+                                "type": "function",
+                                "constant": true
+                            },
+                            {
+                                "inputs": [],
+                                "name": "founder",
+                                "outputs": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "",
+                                        "type": "address"
+                                    }
+                                ],
+                                "stateMutability": "view",
+                                "type": "function",
+                                "constant": true
+                            },
+                            {
+                                "inputs": [],
+                                "name": "split",
+                                "outputs": [
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "",
+                                        "type": "uint256"
+                                    }
+                                ],
+                                "stateMutability": "view",
+                                "type": "function",
+                                "constant": true
+                            },
+                            {
+                                "stateMutability": "payable",
+                                "type": "receive",
+                                "payable": true
+                            },
+                            {
+                                "inputs": [
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "newSplit",
+                                        "type": "uint256"
+                                    }
+                                ],
+                                "name": "proposeNewSplit",
+                                "outputs": [],
+                                "stateMutability": "nonpayable",
+                                "type": "function"
+                            },
+                            {
+                                "inputs": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "f",
+                                        "type": "address"
+                                    }
+                                ],
+                                "name": "updateFounder",
+                                "outputs": [],
+                                "stateMutability": "nonpayable",
+                                "type": "function"
+                            },
+                            {
+                                "inputs": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "d",
+                                        "type": "address"
+                                    }
+                                ],
+                                "name": "updateDGVC",
+                                "outputs": [],
+                                "stateMutability": "nonpayable",
+                                "type": "function"
+                            },
+                            {
+                                "inputs": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "token",
+                                        "type": "address"
+                                    }
+                                ],
+                                "name": "withdraw",
+                                "outputs": [],
+                                "stateMutability": "nonpayable",
+                                "type": "function"
+                            }
+                        ]
+                    },
+                    {
                         "anonymous": false,
                         "inputs": [
                             {
@@ -4556,7 +4703,7 @@
             },
             {
                 "contract": "Chronos",
-                "address": "0x84Efd3487c9C932aE6B04CfF8f3D1F33Af8AE907",
+                "address": "0x6e7686dc704a500FcCA588c486e8A981BCa14Ed0",
                 "abi": [
                     {
                         "anonymous": false,
@@ -4946,7 +5093,7 @@
             },
             {
                 "contract": "Kharon",
-                "address": "0x87e89a2B5c668b5E269e90e678dBec3Ee1df5401",
+                "address": "0x206d43831Ef2596cF092731697162f8642d5E605",
                 "abi": [
                     {
                         "anonymous": false,

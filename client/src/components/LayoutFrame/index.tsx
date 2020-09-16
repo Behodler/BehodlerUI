@@ -122,8 +122,8 @@ export default function LayoutFrame(props: any) {
 						<Route path="/faucet">
 							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="faucet" />
 						</Route>
-						<Route path="/pyrotokens">
-							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyrotokens" />
+						<Route path="/liquidity">
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
 						</Route>
 						<Route path="/swap">
 							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
@@ -167,7 +167,7 @@ export default function LayoutFrame(props: any) {
 										</IconButton>
 									</Grid>
 									<Grid item>
-										<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
+										<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin/faq-behodler-and-scarcity-scx-98e9baf94ea')} >
 											<img src={faq} width={footerIconWidth} />
 										</IconButton>
 									</Grid>
@@ -179,6 +179,11 @@ export default function LayoutFrame(props: any) {
 									<Grid item>
 										<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0xff1614c6b220b24d140e64684aae39067a0f1cd0')} >
 											<img src={uniswap} width={footerIconWidth} />
+										</IconButton>
+									</Grid>
+									<Grid item>
+										<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
+											<img src={faq} width={footerIconWidth} />
 										</IconButton>
 									</Grid>
 								</Grid>

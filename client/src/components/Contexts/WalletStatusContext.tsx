@@ -90,7 +90,7 @@ function WalletContextProvider(props: any) {
 		if (chainId > 0 && account.length > 3 && !initialized) {
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
-			const owner = (await c.behodler.Behodler.primary).toString()
+			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
 			setPrimary(owner.toLowerCase() === account.toLowerCase())
 			setInitialized(true)
 		}

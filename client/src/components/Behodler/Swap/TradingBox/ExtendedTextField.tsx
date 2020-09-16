@@ -358,7 +358,7 @@ export default function ExtendedTextField(props: props) {
               </Grid>
             </Grid></Grid> : ""}
 
-          {props.feeReward ? <Grid item>
+          {/* {props.feeReward ? <Grid item>
             <Typography variant="caption" className={classes.subfields}>
               Fee and reward breakdown:
              </Typography>
@@ -409,7 +409,8 @@ export default function ExtendedTextField(props: props) {
                 </Grid> : ""}
               </Grid>
             </Grid> : ""}
-          </Grid> : ""}
+          </Grid> : ""} */}
+  
         </Grid>
       </Grid>
     </div>

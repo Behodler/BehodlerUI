@@ -44,7 +44,7 @@ export class ERC20Effects extends Token {
 		return this.createEffect(async ({ account, blockNumber }) => {
 			const params: FetchNumberFields = {
 				web3: this.web3,
-				action: async (accounts) => new BigNumber(await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] })).dividedBy(this.decimalFactor).toString(),
+				action: async (accounts) =>  new BigNumber(await this.tokenInstance.balanceOf(accounts[0]).call({ from: accounts[1] })).dividedBy(this.decimalFactor).toString(),
 				defaultValue: "unset",
 				accounts: [holder, account]
 			}
@@ -56,7 +56,7 @@ export class ERC20Effects extends Token {
 		return this.createEffect(async ({ account, blockNumber }) => {
 			const params: FetchNumberFields = {
 				web3: this.web3,
-				action: async (accounts) => await this.tokenInstance.allowance(accounts[0], accounts[1]).call({ from: accounts[2] }),
+				action: async (accounts) =>  await this.tokenInstance.allowance(accounts[0], accounts[1]).call({ from: accounts[2] }),
 				defaultValue: "unset",
 				accounts: [owner, spender, account]
 			}
