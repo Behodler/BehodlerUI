@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { Grid, Box, makeStyles, createStyles, Hidden, IconButton, Typography } from '@material-ui/core';
+import { Grid, Box, makeStyles, createStyles, IconButton, Typography } from '@material-ui/core';
 import discord from '../../../src/images/behodler/footer/discord.png'
 import medium from '../../../src/images/behodler/footer/medium.png'
 import github from '../../../src/images/behodler/footer/Github.png'
@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => createStyles({
 	footerDiv: {
 		position: 'relative',
 		left: 0,
-		bottom: 0,
+		bottom: 205,
 		width: '100%',
 		color: 'black',
 		textAlign: 'center',
@@ -134,67 +134,64 @@ export default function LayoutFrame(props: any) {
 
 					</Switch>
 				</div>
-
 			</Box>
-			<Hidden only={['sm', 'xs']}>
-				<footer>
-					<div className={classes.footerDiv}>
-						<Grid
-							container
-							direction="column"
-							justify="center"
-							alignItems="center"
-							spacing={2}
-							className={classes.footerGrid}
-						>
-							<Grid item>
-								<Grid
-									container
-									direction="row"
-									justify="center"
-									alignItems="center"
-									spacing={2}
-								>
+			<footer>
+				<div className={classes.footerDiv}>
+					<Grid
+						container
+						direction="column"
+						justify="center"
+						alignItems="center"
+						spacing={2}
+						className={classes.footerGrid}
+					>
+						<Grid item>
+							<Grid
+								container
+								direction="row"
+								justify="center"
+								alignItems="center"
+								spacing={2}
+							>
 
-									<Grid item>
-										<IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')} >
-											<img src={github} width={footerIconWidth} />
-										</IconButton>
-									</Grid>
-									<Grid item>
-										<IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
-											<img src={medium} width={footerIconWidth} />
-										</IconButton>
-									</Grid>
-									<Grid item>
-										<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin/faq-behodler-and-scarcity-scx-98e9baf94ea')} >
-											<img src={faq} width={footerIconWidth} />
-										</IconButton>
-									</Grid>
-									<Grid item>
-										<IconButton title="discord" onClick={() => openFooter('https://discord.gg/u6hanS')} >
-											<img src={discord} width={footerIconWidth} />
-										</IconButton>
-									</Grid>
-									<Grid item>
-										<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0xff1614c6b220b24d140e64684aae39067a0f1cd0')} >
-											<img src={uniswap} width={footerIconWidth} />
-										</IconButton>
-									</Grid>
-									<Grid item>
-										<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
-											<img src={faq} width={footerIconWidth} />
-										</IconButton>
-									</Grid>
+								<Grid item>
+									<IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')} >
+										<img src={github} width={footerIconWidth} />
+									</IconButton>
+								</Grid>
+								<Grid item>
+									<IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
+										<img src={medium} width={footerIconWidth} />
+									</IconButton>
+								</Grid>
+								<Grid item>
+									<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin/faq-behodler-and-scarcity-scx-98e9baf94ea')} >
+										<img src={faq} width={footerIconWidth} />
+									</IconButton>
+								</Grid>
+								<Grid item>
+									<IconButton title="discord" onClick={() => openFooter('https://discord.gg/u6hanS')} >
+										<img src={discord} width={footerIconWidth} />
+									</IconButton>
+								</Grid>
+								<Grid item>
+									<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0xff1614c6b220b24d140e64684aae39067a0f1cd0')} >
+										<img src={uniswap} width={footerIconWidth} />
+									</IconButton>
+								</Grid>
+								<Grid item>
+									<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
+										<img src={faq} width={footerIconWidth} />
+									</IconButton>
 								</Grid>
 							</Grid>
-							<Grid item>
-								<Typography variant="subtitle2">© 2020 by behodler.io</Typography>
-							</Grid>
 						</Grid>
-					</div>
-				</footer>
-			</Hidden>
+						<Grid item>
+							<Typography variant="subtitle2">© 2020 by behodler.io</Typography>
+						</Grid>
+					</Grid>
+				</div>
+			</footer>
 
 		</div>
 	)
