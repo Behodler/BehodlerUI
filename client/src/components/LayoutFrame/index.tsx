@@ -6,69 +6,40 @@ import medium from '../../../src/images/behodler/footer/medium.png'
 import github from '../../../src/images/behodler/footer/Github.png'
 import faq from '../../../src/images/behodler/footer/FAQ.png'
 import uniswap from '../../../src/images/behodler/footer/uniswap.png'
-
 import { Route, Switch, Redirect } from 'react-router-dom'
 import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
 // import ScarcityLandingPage from '../Behodler/ScarcityLandingPage/index'
 import Admin from '../Behodler/Admin/index'
+import liquidity from '../../../src/images/liquidBackground.png'
 
 import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
-
-const actionWidth: number = 250
-const infoWidth: number = 400
 
 const useStyles = makeStyles(theme => createStyles({
 	root: {
 		display: "flex",
 		flexFlow: 'column',
 		height: '100%',
+		backgroundImage: `url("${liquidity}")`,
+		backgroundRepeat: 'no-repeat',
+		backgroundSize: 'cover'
+	},
+	rootNotConnected: {
+		display: "flex",
+		flexFlow: 'column',
+		height: '100%',
 		background: "linear-gradient(to bottom left, #9DC8F2, white)",
-	},
-	actionDrawer: {
-		width: actionWidth,
-		flexShrink: 0,
-	},
-	infoDrawer: {
-		width: infoWidth,
-		flexShrink: 0,
-	},
-	actionDrawerPaper: {
-		width: actionWidth
-	},
-	infoDrawerPaper: {
-		width: infoWidth
+		backgroundRepeat:'repeat-y',
+		backgroundSize: 'cover'
 	},
 	content: {
 		flexGrow: 1
 	},
-	paper: {
-		width: "auto",
-		margin: "0 auto",
-		flexGrow: 1,
-		minHeight: "150vh"
-	},
-	heading: {
-		fontSize: 40,
-		margin: "10px 0 5px 0"
-	},
-	headingDivider: {
-		margin: '10px 0 50px 0'
-	},
-	subheading: {
-		fontSize: 16,
-		margin: "0px 0 5px 0"
-	},
-	infoDivider: {
-		margin: "25px 0 25px 0"
-	},
-	listItem: {
-		display: "list-item"
-	},
 	footerDiv: {
 		position: 'relative',
 		left: 0,
-		bottom: 205,
+		// bottom: 205,
+		bottom: 0,
 		width: '100%',
 		color: 'black',
 		textAlign: 'center',
@@ -99,7 +70,7 @@ export default function LayoutFrame(props: any) {
 	const notConnected: boolean = !walletContextProps.connected || walletContextProps.networkName === '' || !walletContextProps.initialized//|| walletContextProps.account.length < 5
 	const openFooter = (url: string) => window.open(url, '_blank')
 	return (
-		<div className={classes.root}>
+		<div className={notConnected ? classes.rootNotConnected : classes.root}>
 			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
 			<div>
 				{renderRedirect}

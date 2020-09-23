@@ -32,8 +32,6 @@ const useStyles = makeStyles({
         flexGrow: 1,
         marginTop: 50,
         width: '100%',
-        marginBottom: 100,
-        minHeight: 800
     },
     tabs: {
         marginBottom: '20px'
@@ -206,8 +204,9 @@ export default function Swap(props: props) {
                 </Grid>
             }
         </Grid>
-        <Grid item>
-            {props.connected ?
+        {props.connected ?
+            <Grid item>
+
                 <div className={classes.traderContainer}>
 
                     <div>
@@ -233,12 +232,9 @@ export default function Swap(props: props) {
                         <RenderScreen value={props.route} tokens={pyroTokenMapping} />
                     </div>
 
-                </div>
-                : ""}
-        </Grid>
-        <Grid item>
-
-        </Grid>
+                </div>=
+            </Grid>
+            : ""}
     </Grid>
     </div>
 }

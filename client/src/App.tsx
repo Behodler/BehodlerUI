@@ -5,6 +5,7 @@ import { createMuiTheme, makeStyles } from '@material-ui/core';
 import { ThemeProvider, createStyles } from '@material-ui/styles';
 import { WalletContextProvider } from './components/Contexts/WalletStatusContext'
 import { BrowserRouter, withRouter } from 'react-router-dom'
+
 const theme = createMuiTheme({
 	palette: {
 		type: 'light'
@@ -17,7 +18,11 @@ const theme = createMuiTheme({
 
 const backStyles = makeStyles(theme => createStyles({
 	root: {
-		backgroundColor: 'red'
+	height:'100%',
+	position:'absolute',
+	bottom:0,
+	width:'100%',
+	overflowY:'hidden'	
 	}
 }))
 
