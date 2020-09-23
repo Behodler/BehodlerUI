@@ -77,13 +77,15 @@ const useStyles = makeStyles((theme) => ({
   input: {
     marginLeft: theme.spacing(1),
     flex: 1,
-    width: Math.floor(15 * scale)
+    width: Math.floor(32 * scale),
+    fontSize: 13
   },
   inputError: {
     marginLeft: theme.spacing(1),
     flex: 1,
-    width: Math.floor(15 * scale),
-    color: theme.palette.secondary.main
+    width: Math.floor(32 * scale),
+    color: theme.palette.secondary.main,
+    fontSize: 13
   },
   balance: {
     marginRight: theme.spacing(1),
