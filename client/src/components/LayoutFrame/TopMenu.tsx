@@ -6,11 +6,27 @@ import IconButton from '@material-ui/core/IconButton';
 // import InputBase from '@material-ui/core/InputBase';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Hidden, Link, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Grid, Hidden, Link, Menu, MenuItem, Typography } from '@material-ui/core';
 import { permittedRoutes } from '../Behodler/Swap';
 import eyelogo from '../../images/behodler/landingPage/EyeLogo.png'
 import { useLocation } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 // import SearchIcon from '@material-ui/icons/Search';
+
+declare global {
+    interface String {
+        fromRAY(): string
+        fromWAD(): string
+        toWAD(): string
+        asPercentage(): string
+        truncBig(): string
+        dropDecimals(): string
+    }
+}
+String.prototype.truncBig = function (): string {
+    const big = new BigNumber(this.toString())
+    return big.isNaN() ? this.toString() : big.decimalPlaces(4).toString()
+}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 backgroundColor: fade(theme.palette.common.white, 0.25),
             },
             marginLeft: 0,
-            width: '100%',
+            width: '200px',
             [theme.breakpoints.up('sm')]: {
                 marginLeft: theme.spacing(1),
                 width: 'auto',
@@ -91,11 +107,21 @@ const useStyles = makeStyles((theme: Theme) =>
                 textDecoration: 'none',
             }
         },
+        ethBalance: {
+            fontSize: theme.typography.subtitle2.fontSize,
+            fontFamily: theme.typography.fontFamily,
+            color: theme.palette.type == 'dark' ? 'white' : 'black'
+        },
+        fixGrid: {
+            width: '100% !important',
+            marginRight: 20
+        }
     }),
 );
 
 interface props {
-    setRouteValue: (v: permittedRoutes) => void
+    setRouteValue: (v: permittedRoutes) => void,
+    ethBalance: string
 }
 
 export default function TopMenu(props: props) {
@@ -133,15 +159,31 @@ export default function TopMenu(props: props) {
                         <LeftLink text="EYE" nav={() => window.open(mediumLink, '_blank')} selected={false} />
                     </Hidden>
                     <div className={classes.search}>
-                        <IconButton
-                            edge="start"
-                            className={classes.menuButton}
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={menuClick}
+                        <Grid
+                            container
+                            direction="row"
+                            justify="space-evenly"
+                            alignItems="center"
+                            spacing={3}
+                            className={classes.fixGrid}
                         >
-                            <MenuIcon />
-                        </IconButton>
+                            <Hidden mdDown>
+                                <Grid item>
+                                    <div className={classes.ethBalance}>{props.ethBalance.truncBig()} ETH</div>
+                                </Grid>
+                            </Hidden>
+                            <Grid item>
+                                <IconButton
+                                    edge="start"
+                                    className={classes.menuButton}
+                                    color="inherit"
+                                    aria-label="open drawer"
+                                    onClick={menuClick}
+                                >
+                                    <MenuIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
                         <Menu
                             id="simple-menu"
                             anchorEl={anchorEl}

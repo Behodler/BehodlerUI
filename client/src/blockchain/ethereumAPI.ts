@@ -172,6 +172,11 @@ class ethereumAPI {
 		return new ERC20Effects(this.web3, token, currentAccount, decimalPlaces)
 	}
 
+	public async getEthBalance (account:string):Promise<string> {
+
+		return await this.web3.eth.getBalance(account)
+	}
+
 	public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<BigNumber> {
 		if (isEth) {
 			return new BigNumber(await this.web3.eth.getBalance(currentAccount))

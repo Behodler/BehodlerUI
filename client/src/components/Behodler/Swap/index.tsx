@@ -64,7 +64,7 @@ const useStyles = makeStyles(theme => createStyles({
         backgroundColor: 'rgba(255,255,255,0.93)',
         borderRadius: 20,
         height: '100%',
-        minHeight:390,
+        minHeight: 390,
         boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
     },
     Grid: {
@@ -114,10 +114,21 @@ const useStyles = makeStyles(theme => createStyles({
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
-
+    const [ethBalance, setEthBalance] = useState<string>('')
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
+
+    const ethCallback = useCallback(async () => {
+        if (walletContextProps.connected && walletContextProps.account.length > 5) {
+            setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
+        }
+    }, [walletContextProps.account, walletContextProps.connected])
+
+    useEffect(() => {
+        ethCallback()
+    })
+
 
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
         const pyroAddress = await walletContextProps.contracts.behodler.PyroTokenRegistry.baseTokenMapping(baseToken).call(primaryOptions)
@@ -164,7 +175,7 @@ export default function Swap(props: props) {
     }
     const logoVisible = !props.connected
     return <div>
-        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} />}
+        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} />}
         <Grid
             container
             direction="column"
