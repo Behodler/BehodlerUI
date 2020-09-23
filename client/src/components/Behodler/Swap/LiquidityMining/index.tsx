@@ -1,19 +1,28 @@
 import * as React from 'react'
 import mining from '../../../../images/behodler/liquidityMiningPlaceholder.png'
-import { Grid } from '@material-ui/core'
+import { Container, createStyles, Grid, makeStyles } from '@material-ui/core'
+
+const useStyles = makeStyles(theme => createStyles({
+    column: {
+        width: 500
+    }
+}))
 
 export default function LiquidityMining() {
+    const classes = useStyles()
     return (
-        <Grid
-            container
-            direction="column"
-            justify="center"
-            alignItems="center"
-        >
-            <Grid item>
-                <img src={mining} width={400} />
+        <Container>
+            <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+            >
+                <Grid item className={classes.column}>
+                    <Container> <img src={mining} width={400} /></Container>
+                </Grid>
             </Grid>
-        </Grid>
+        </Container>
     )
 
 }

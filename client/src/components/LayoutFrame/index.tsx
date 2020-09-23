@@ -6,10 +6,11 @@ import medium from '../../../src/images/behodler/footer/medium.png'
 import github from '../../../src/images/behodler/footer/Github.png'
 import faq from '../../../src/images/behodler/footer/FAQ.png'
 import uniswap from '../../../src/images/behodler/footer/uniswap.png'
+import telegram from '../../../src/images/behodler/footer/telegram.png'
+
 import { Route, Switch, Redirect } from 'react-router-dom'
 import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
 import Admin from '../Behodler/Admin/index'
-
 
 import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
@@ -114,7 +115,9 @@ export default function LayoutFrame(props: any) {
 							<Route path="/scarcity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>
-
+							<Route path="/governance">
+								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="governance" />
+							</Route>
 						</Switch>
 					</div>
 				</FilledGridCell>
@@ -154,7 +157,7 @@ export default function LayoutFrame(props: any) {
 											</IconButton>
 										</Grid>
 										<Grid item>
-											<IconButton title="discord" onClick={() => openFooter('https://discord.gg/u6hanS')} >
+											<IconButton title="discord" onClick={() => openFooter('https://discord.gg/f2pAVGa')} >
 												<img src={discord} width={footerIconWidth} />
 											</IconButton>
 										</Grid>
@@ -164,10 +167,16 @@ export default function LayoutFrame(props: any) {
 											</IconButton>
 										</Grid>
 										<Grid item>
+											<IconButton title="telegram" onClick={() => openFooter('https://t.me/degenvc')} >
+												<img src={telegram} width={footerIconWidth} />
+											</IconButton>
+										</Grid>
+										{walletContextProps.primary?<Grid item>
 											<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
 												<img src={faq} width={footerIconWidth} />
 											</IconButton>
-										</Grid>
+										</Grid>:''}
+										
 									</Grid>
 								</Grid>
 								<Grid item>

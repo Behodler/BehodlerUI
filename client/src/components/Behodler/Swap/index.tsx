@@ -5,10 +5,8 @@ import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import Sisyphus from './Sisyphus/index'
 import LiquidityMining from './LiquidityMining/index'
 import ScarcityFaucet from './ScarcityFaucet/index'
-import { Chip, Grid, Typography, Button } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Chip, Grid, Typography, Button, Link } from '@material-ui/core'
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../blockchain/ethereumAPI'
@@ -17,8 +15,10 @@ import behodlerLogo from '../../../images/behodler/logo.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import liquidity from '../../../images/liquidBackground.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
+import TopMenu from 'src/components/LayoutFrame/TopMenu'
+import Governance from '../Swap/Governance/index'
 
-export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin'
+export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance'
 
 interface props {
     connected: boolean
@@ -27,13 +27,12 @@ interface props {
     setShowMetamaskInstallPopup: (v: boolean) => void
 }
 
-
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => createStyles({
     SwapRoot: {
         flexGrow: 1,
         margin: 0,
-        marginTop:-100,
-        paddingTop:150,
+        marginTop: -100,
+        paddingTop: 150,
         backgroundImage: `url("${liquidity}")`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
@@ -65,6 +64,7 @@ const useStyles = makeStyles({
         backgroundColor: 'rgba(255,255,255,0.93)',
         borderRadius: 20,
         height: '100%',
+        minHeight:390,
         boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
     },
     Grid: {
@@ -100,9 +100,17 @@ const useStyles = makeStyles({
         maxWidth: 700,
         textAlign: 'center',
         textOverflow: 'wrap'
+    },
+    alphadrop: {
+        color: 'black',
+        fontFamily: theme.typography.fontFamily,
+        fontSize: theme.typography.h6.fontSize || '1.25rem'
+    },
+    alphadropLink: {
+        fontFamily: theme.typography.fontFamily,
+        fontSize: theme.typography.h6.fontSize || '1.25rem'
     }
-});
-
+}));
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
@@ -149,103 +157,101 @@ export default function Swap(props: props) {
             setShowChip(true)
     }, [showChip])
 
-    const handleChange = (event: React.ChangeEvent<{}>, newValue: permittedRoutes) => {
-        props.setRouteValue(newValue);
-    };
 
     const hideChip = () => {
         localStorage.setItem('lastBehodlerHide', new Date().getTime().toString())
         setShowChip(false);
     }
     const logoVisible = !props.connected
-
-    return <div> <Grid
-        container
-        direction="column"
-        justify="center"
-        alignItems="center"
-        spacing={6}
-        className={props.connected ? classes.SwapRoot : classes.SwapRootNotConnected}>
-        {showChip && props.connected ? <Grid
+    return <div>
+        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} />}
+        <Grid
             container
-            direction="row"
+            direction="column"
             justify="center"
             alignItems="center"
-        ><Grid item>
-            </Grid>
-            <Grid item>
-                <Chip className={classes.betaRisk} label="Behodler is currently in Beta. Use at your own risk." onDelete={hideChip} variant="outlined" />
-            </Grid>
-        </Grid> : ""}
-        {logoVisible ?
-            <Grid item>
-                <img src={eyelogo} />
-            </Grid>
-            : ''}
-        {logoVisible ? <Grid item>
-            <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
-                walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
-            }}>Connect Your Wallet</Button>
-        </Grid> : ''}
-        {logoVisible ?
-            <Grid item>
-                <Typography className={classes.warningText} variant='subtitle2'>
-                    Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered Liquidity Protocol.
-                    Use at your own risk. The Behodler sees all prices. The Behodler HODLS all tokens.
-            </Typography>
-            </Grid>
-            : ''}
-        {logoVisible ? <Grid item>
-            <img src={behodlerLogo} width="500" />
-        </Grid> : ''}
-        <Grid item>
-            {logoVisible ? '' :
-                <Grid
-                    container
-                    direction="row"
-                    justify="center"
-                    alignItems="center"
-                >
-                    <Grid item>
-                        <Typography variant="h4" className={classes.behodlerHeading}>
-                            Behodler Liquidity Protocol
-            </Typography>
-                    </Grid>
+            spacing={6}
+            className={props.connected ? classes.SwapRoot : classes.SwapRootNotConnected}>
+            {showChip && props.connected ? <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+            ><Grid item>
                 </Grid>
-            }
-        </Grid>
-        {props.connected ?
+                <Grid item>
+                    <Chip className={classes.betaRisk} label="Behodler is currently in Beta. Use at your own risk." onDelete={hideChip} variant="outlined" />
+                </Grid>
+            </Grid> : ""}
+            {logoVisible ?
+                <Grid item>
+                    <img src={eyelogo} />
+                </Grid>
+                : ''}
+            {logoVisible ? <Grid item>
+                <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
+                    walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
+                }}>Connect Your Wallet</Button>
+            </Grid> : ''}
+            {logoVisible ?
+                <Grid item>
+                    <Typography className={classes.warningText} variant='subtitle2'>
+                        Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered Liquidity Protocol.
+                        Use at your own risk. The Behodler sees all prices. The Behodler HODLS all tokens.
+            </Typography>
+                </Grid>
+                : ''}
+            {logoVisible ? <Grid item>
+                <img src={behodlerLogo} width="500" />
+            </Grid> : ''}
             <Grid item>
-
-                <div className={classes.traderContainer}>
-
-                    <div>
-                        <Tabs
-                            value={props.route}
-                            onChange={handleChange}
-                            indicatorColor="primary"
-                            centered
-                            TabIndicatorProps={{
-                                style: {
-                                    display: "none",
-                                }
-                            }}
-                            className={classes.tabs}
-                        >
-                            <Tab value='swap' label="Swap" />
-                            <Tab value='liquidity' label="Liquidity Mining" />
-                            <Tab value='sisyphus' label="Sisyphus" />
-                            <Tab value='faucet' label="Scarcity Faucet" />
-                        </Tabs>
-
-
-                        <RenderScreen value={props.route} tokens={pyroTokenMapping} />
-                    </div>
-
-                </div>=
+                {logoVisible ? '' :
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                    >
+                        <Grid item>
+                            <Typography variant="h4" className={classes.behodlerHeading}>
+                                Behodler Liquidity Protocol
+            </Typography>
+                        </Grid>
+                    </Grid>
+                }
             </Grid>
-            : ""}
-    </Grid>
+            {props.connected ? <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+            >
+                <Grid item>
+                    <div className={classes.alphadrop}>
+                        Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4', '_blank')}>alphadrop!</Link>
+                    </div>
+                </Grid>
+            </Grid>
+                : ''}
+            {props.connected ?
+                <Grid item>
+
+                    <div className={classes.traderContainer}>
+                        <Grid
+                            container
+                            direction="column"
+                            justify="space-between"
+                            alignItems="center"
+                            spacing={3}
+                        >
+                            <Grid item>
+                                <RenderScreen value={props.route} tokens={pyroTokenMapping} />
+                            </Grid>
+                        </Grid>
+                    </div>
+                </Grid>
+                : ""}
+        </Grid>
     </div>
 }
 
@@ -259,6 +265,8 @@ function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] })
             return <Sisyphus />
         case 'faucet':
             return <ScarcityFaucet />
+        case 'governance':
+            return <Governance />
         default:
             return <div>Chronos</div>
     }

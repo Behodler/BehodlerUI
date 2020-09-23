@@ -62,13 +62,14 @@ interface props {
   disabledDropDown?: boolean
   liquidityMessage?: string
 }
+const scale = 8
 
 const useStyles = makeStyles((theme) => ({
   extendedTextFieldRoot: {
     padding: '6px 8px',
     display: 'flex',
     alignItems: 'center',
-    width: 650,
+    width: Math.floor(55 * scale),
     border: '2px solid #DFDFDF',
     borderRadius: 25
   },
@@ -76,22 +77,22 @@ const useStyles = makeStyles((theme) => ({
   input: {
     marginLeft: theme.spacing(1),
     flex: 1,
-    width: 400
+    width: Math.floor(15 * scale)
   },
   inputError: {
     marginLeft: theme.spacing(1),
     flex: 1,
-    width: 400,
+    width: Math.floor(15 * scale),
     color: theme.palette.secondary.main
   },
   balance: {
     marginRight: theme.spacing(1),
-    flex: 1
+    flex: 1,
   },
   searchHeader: {
     marginLeft: theme.spacing(1),
     flex: 1,
-    width: 300
+    width: Math.floor(15 * scale)
   },
   iconButton: {
     padding: 10,
@@ -409,7 +410,7 @@ export default function ExtendedTextField(props: props) {
               </Grid>
             </Grid> : ""}
           </Grid> : ""} */}
-  
+
         </Grid>
       </Grid>
     </div>

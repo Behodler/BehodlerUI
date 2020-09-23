@@ -401,7 +401,7 @@ export default function TradeBox(props: props) {
         donation: '0'
     } : undefined
     const liquidityProvision = liquidityMode && boxesPositive ? `${liquidityAdded} SCX` : undefined
-    const textFieldLabels = liquidityMode ? ['Token 1', 'Token 2'] : ['Input', 'Output (estimated)']
+    const textFieldLabels = liquidityMode ? ['Token 1', 'Token 2'] : ['From', 'To']
     return <Grid
         container
         direction="column"
@@ -484,8 +484,8 @@ export default function TradeBox(props: props) {
                     <Grid item>
                         <Button color="secondary" onClick={() => { setShowAdvancedAndSetPrices(false); safeSetMinPrice("0"); safeSetMaxPrice("0") }}>Hide Advanced</Button>
                     </Grid>
-                </Grid> :
-                    <Button color="secondary" onClick={() => setShowAdvancedAndSetPrices(true)}>Show Advanced</Button>}
+                </Grid> :''}
+                   
             </Grid>
             : ""}
         {swapEnabled ?

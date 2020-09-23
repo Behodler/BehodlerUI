@@ -9,3 +9,12 @@ body {
   min-height: 100% !important;
   width: 100%;
 }
+
+ul{
+  padding:0 !important;
+  margin:0 !important;
+}
+li{
+
+  margin:0 !important;
+}
