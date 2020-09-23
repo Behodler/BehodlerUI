@@ -174,8 +174,9 @@ export default function Swap(props: props) {
         setShowChip(false);
     }
     const logoVisible = !props.connected
+    const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
     return <div>
-        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} />}
+        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} />}
         <Grid
             container
             direction="column"

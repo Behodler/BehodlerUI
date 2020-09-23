@@ -9,6 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { Grid, Hidden, Link, Menu, MenuItem, Typography } from '@material-ui/core';
 import { permittedRoutes } from '../Behodler/Swap';
 import eyelogo from '../../images/behodler/landingPage/EyeLogo.png'
+import metamaskAccount from '../../images/behodler/metamaskaccount.png'
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 // import SearchIcon from '@material-ui/icons/Search';
@@ -112,6 +113,16 @@ const useStyles = makeStyles((theme: Theme) =>
             fontFamily: theme.typography.fontFamily,
             color: theme.palette.type == 'dark' ? 'white' : 'black'
         },
+        truncAccount: {
+            fontSize: theme.typography.subtitle2.fontSize,
+            fontFamily: theme.typography.fontFamily,
+            // color: theme.palette.type == 'dark' ? 'white' : 'black',
+            border: '1px solid #3379DB',
+            borderRadius: 10,
+            padding: '5px 10px 5px 10px',
+            backgroundColor: '#3379DB',
+            color: 'white'
+        },
         fixGrid: {
             width: '100% !important',
             marginRight: 20
@@ -122,6 +133,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface props {
     setRouteValue: (v: permittedRoutes) => void,
     ethBalance: string
+    truncAccount: string
 }
 
 export default function TopMenu(props: props) {
@@ -168,6 +180,21 @@ export default function TopMenu(props: props) {
                             className={classes.fixGrid}
                         >
                             <Hidden mdDown>
+                                <Grid item>
+                                    <div className={classes.truncAccount}>
+                                        <Grid
+                                            container
+                                            direction="row"
+                                            justify="space-evenly"
+                                            alignItems="center"
+                                            spacing={1}
+                                            className={classes.fixGrid}
+                                        >
+                                            <Grid item> {props.truncAccount}</Grid>
+                                            <Grid item> <img src={metamaskAccount} width={15} /></Grid>
+                                        </Grid>
+                                    </div>
+                                </Grid>
                                 <Grid item>
                                     <div className={classes.ethBalance}>{props.ethBalance.truncBig()} ETH</div>
                                 </Grid>
