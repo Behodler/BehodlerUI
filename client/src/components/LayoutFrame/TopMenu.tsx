@@ -6,7 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 // import InputBase from '@material-ui/core/InputBase';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Link, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Hidden, Link, Menu, MenuItem, Typography } from '@material-ui/core';
 import { permittedRoutes } from '../Behodler/Swap';
 import eyelogo from '../../images/behodler/landingPage/EyeLogo.png'
 import { useLocation } from 'react-router-dom';
@@ -76,14 +76,14 @@ const useStyles = makeStyles((theme: Theme) =>
             }
         },
         textLink: {
-            marginLeft: 70,
+            marginLeft: 50,
             color: '#404040',
             '&:hover': {
                 textDecoration: 'none',
             }
         },
         textLinkSelected: {
-            marginLeft: 70,
+            marginLeft: 50,
             color: 'black',
             textDecoration: 'underline',
             fontWeight: 800,
@@ -103,7 +103,7 @@ export default function TopMenu(props: props) {
     const location = useLocation().pathname.substring(1)
     const LeftLink = (props: { text: string, nav: () => void, selected: boolean }) => (
         <Link className={props.selected ? classes.textLinkSelected : classes.textLink} onClick={props.nav} component="button">
-            <Typography variant="h5">{props.text}</Typography>
+            <Typography variant="h6">{props.text}</Typography>
         </Link>
     )
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -118,6 +118,7 @@ export default function TopMenu(props: props) {
         props.setRouteValue(route)
         closeMenu()
     };
+    const mediumLink = 'https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4'
     return (
         <div className={classes.menuRoot}>
             <AppBar position="static" className={classes.appBar}>
@@ -125,10 +126,12 @@ export default function TopMenu(props: props) {
                     <div>
                         <img src={eyelogo} width={150} />
                     </div>
-                    <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
-                    <LeftLink text="Liquidity mining" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
-                    <LeftLink text="Vote" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
-                    <LeftLink text="EYE" nav={() => window.open('https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4', '_blank')} selected={false} />
+                    <Hidden mdDown>
+                        <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
+                        <LeftLink text="Liquidity mining" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
+                        <LeftLink text="Vote" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
+                        <LeftLink text="EYE" nav={() => window.open(mediumLink, '_blank')} selected={false} />
+                    </Hidden>
                     <div className={classes.search}>
                         <IconButton
                             edge="start"
@@ -147,6 +150,12 @@ export default function TopMenu(props: props) {
                             onClose={closeMenu}
                             className={classes.menu}
                         >
+                            <Hidden mdUp>
+                                <MenuItem className={classes.menuList} onClick={() => route('swap')}>Swap</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Mining</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('governance')}>Vote</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => window.open(mediumLink, '_blank')}>EYE</MenuItem>
+                            </Hidden>
                             <MenuItem className={classes.menuList} onClick={() => route('sisyphus')}>Sisyphus</MenuItem>
                             <MenuItem className={classes.menuList} onClick={() => route('faucet')}>Scarcity Faucet</MenuItem>
                         </Menu>
