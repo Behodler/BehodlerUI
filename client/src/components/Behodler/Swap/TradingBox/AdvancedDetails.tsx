@@ -30,7 +30,7 @@ interface props {
 }
 
 const useStyles = makeStyles((theme) => ({
-    root: {
+    advancedDetailsRoot: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -73,7 +73,7 @@ export default function AdvancedDetails(props: props) {
         message += `${props.nameOfInput} to the Behodler token bonding curve which will mint ${dryRunSCX} Scarcity (SCX), yielding a price of ${minPrice} Scarcity per ${props.nameOfInput}. This will then be used to purchase ${dryRunTokens} ${props.nameOfOutput} from the bonding curve, burning the scarcity in the process, yielding a price of ${maxPrice} Scarcity per ${props.nameOfOutput}. You can set the minimum price in Scarcity you're willing to accept for ${props.nameOfInput} as well as the maximum price in Scarcity you're willing to pay for ${props.nameOfOutput}`
     }
 
-    return <Paper className={classes.root}>
+    return <Paper className={classes.advancedDetailsRoot}>
         <Grid
             container
             direction="column"

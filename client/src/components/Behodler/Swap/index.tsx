@@ -15,6 +15,7 @@ import API from '../../../blockchain/ethereumAPI'
 import { PyroToken } from 'src/blockchain/contractInterfaces/behodler/hephaestus/PyroToken'
 import behodlerLogo from '../../../images/behodler/logo.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
+import liquidity from '../../../images/liquidBackground.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin'
@@ -28,10 +29,20 @@ interface props {
 
 
 const useStyles = makeStyles({
-    root: {
+    SwapRoot: {
         flexGrow: 1,
-        marginTop: 50,
-        width: '100%',
+        margin: 0,
+        marginTop:-100,
+        paddingTop:150,
+        backgroundImage: `url("${liquidity}")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        width: '100% !important'
+    },
+    SwapRootNotConnected: {
+        flexGrow: 1,
+        margin: 0,
+        width: '100% !important'
     },
     tabs: {
         marginBottom: '20px'
@@ -51,7 +62,7 @@ const useStyles = makeStyles({
         margin: "50px",
         maxWidth: "1000px",
         padding: "20px",
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255,255,255,0.93)',
         borderRadius: 20,
         height: '100%',
         boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
@@ -68,8 +79,7 @@ const useStyles = makeStyles({
         height: "250px"
     },
     behodlerHeading: {
-        color: 'white',
-        textShadow: '0px 0px 3px navy',
+        color: 'black',
         fontWeight: 'bold'
     },
     behodlerSubheading: {
@@ -155,7 +165,7 @@ export default function Swap(props: props) {
         justify="center"
         alignItems="center"
         spacing={6}
-        className={classes.root}>
+        className={props.connected ? classes.SwapRoot : classes.SwapRootNotConnected}>
         {showChip && props.connected ? <Grid
             container
             direction="row"

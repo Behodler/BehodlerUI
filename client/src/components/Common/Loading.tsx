@@ -2,7 +2,7 @@ import * as React from 'react'
 import loading from '../../images/ethereumloading.gif';
 import { withStyles, Grid } from '@material-ui/core';
 const styleObject = {
-	root: {
+	loadingRoot: {
 		display: "flex"
 	},
 	content: {

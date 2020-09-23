@@ -6,7 +6,7 @@ import InfoSlider from "./InfoSlider"
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
-    root: {
+    ScarcityLandingPageRoot: {
         marginTop: "25px"
     }
 })
@@ -23,7 +23,7 @@ export default function ScarcityLandingPage(props: scarcityLandingPageProps) {
         justify="center"
         alignItems="stretch"
         spacing={4}
-        className={classes.root}
+        className={classes.ScarcityLandingPageRoot}
     >
         <Grid item>
             <Header />

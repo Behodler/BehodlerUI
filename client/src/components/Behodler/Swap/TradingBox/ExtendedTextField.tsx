@@ -64,12 +64,11 @@ interface props {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  extendedTextFieldRoot: {
     padding: '6px 8px',
     display: 'flex',
     alignItems: 'center',
     width: 650,
-    backgroundColor: "white",
     border: '2px solid #DFDFDF',
     borderRadius: 25
   },
@@ -234,7 +233,7 @@ export default function ExtendedTextField(props: props) {
         }
       </Container>
     </Dialog>
-    <div className={classes.root} >
+    <div className={classes.extendedTextFieldRoot} >
       <Grid container
         direction="column"
         justify="flex-start"

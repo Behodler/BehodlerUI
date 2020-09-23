@@ -17,12 +17,11 @@ const theme = createMuiTheme({
 })
 
 const backStyles = makeStyles(theme => createStyles({
-	root: {
+	appRoot: {
 	height:'100%',
 	position:'absolute',
 	bottom:0,
 	width:'100%',
-	overflowY:'hidden'	
 	}
 }))
 
@@ -32,7 +31,7 @@ export default function App() {
 		return (
 			<WalletContextProvider>
 				<ThemeProvider theme={theme}>
-					<div className={classes.root}>
+					<div className={classes.appRoot}>
 						<LayoutFrame />
 					</div>
 				</ThemeProvider>

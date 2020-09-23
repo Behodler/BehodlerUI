@@ -19,7 +19,7 @@ import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
 
 const useStyles = makeStyles({
-    root: {
+    contextPaneRoot: {
     }
 })
 
@@ -50,7 +50,7 @@ function ContextPane(props: contextPaneProps) {
     }
 
     return (
-        <Paper className={classes.root}>
+        <Paper className={classes.contextPaneRoot}>
             <Grid
                 container
                 direction="column"
