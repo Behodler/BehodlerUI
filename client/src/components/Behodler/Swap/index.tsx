@@ -200,6 +200,22 @@ export default function Swap(props: props) {
                     <img src={eyelogo} />
                 </Grid>
                 : ''}
+            {logoVisible ?
+                <Grid item>
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                    >
+                        <Grid item>
+                            <div className={classes.alphadrop}>
+                                Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4', '_blank')}>alphadrop!</Link>
+                            </div>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                : ''}
             {logoVisible ? <Grid item>
                 <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
                     walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)

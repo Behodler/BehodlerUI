@@ -323,7 +323,7 @@ export default function TradeBox(props: props) {
                                 const ex = new BigNumber(tokensToPurchase).dividedBy(inputValWei)
                                 setExchangeRate(ex.toString())
                                 const wbtcOutputOverride = nameOfSelectedAddress(outputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
-                                setOutputValue(API.fromWei(tokensToPurchase.toString(), wbtcOutputOverride))
+                                setOutputValue(API.fromWei(tokensToPurchase.toString(), wbtcOutputOverride).truncBig())
                             })
                             .catch(error => {
                             })
@@ -337,7 +337,7 @@ export default function TradeBox(props: props) {
                         setDryRunSCX(scxToPurchase)
                         const ex = new BigNumber(scxToPurchase).dividedBy(inputValWei)
                         setExchangeRate(ex.toString())
-                        setOutputValue(API.fromWei(scxToPurchase.toString(), wbtcOverride))
+                        setOutputValue(API.fromWei(scxToPurchase.toString(), wbtcOverride).truncBig())
                     })
                     .catch(err => {
                     })
@@ -357,7 +357,7 @@ export default function TradeBox(props: props) {
                                 const wbtcOutputOverride = nameOfSelectedAddress(outputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
                                 const tokensToPurchaseEth = API.fromWei(tokensToPurchase.toString(), wbtcOutputOverride)
                                 if (bigNumberLessThanOrEqual(tokensToPurchaseEth, outputReserve)) {
-                                    setOutputValue(tokensToPurchaseEth)
+                                    setOutputValue(tokensToPurchaseEth.truncBig())
                                     setOutputValid(true)
                                 }
                                 else {

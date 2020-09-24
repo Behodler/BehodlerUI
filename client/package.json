@@ -24,8 +24,9 @@
 	},
 	"scripts": {
 		"start": "react-scripts-ts start",
-		"build": "react-scripts-ts build && aws s3 sync ../build/ s3://behodler.io",
+		"s3:sync":"aws s3 sync ../build/ s3://behodler.io",
 		"build:no-deploy": "react-scripts-ts build",
+		"build": "npm run build:no-deploy && npm run s3:sync",
 		"test": "react-scripts-ts test --env=jsdom",
 		"eject": "react-scripts-ts eject"
 	},
