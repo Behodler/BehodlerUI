@@ -25,7 +25,8 @@ const useStyles = makeStyles(theme => createStyles({
 	layoutFramerRotNotConnected: {
 		display: "flex",
 		flexFlow: 'column',
-		height: '100%',
+		height: '100vh',
+		width:'100vh',
 		background: "linear-gradient(to bottom left, #9DC8F2, white)",
 		backgroundRepeat: 'repeat-y',
 		backgroundSize: 'cover'
@@ -171,12 +172,12 @@ export default function LayoutFrame(props: any) {
 												<img src={telegram} width={footerIconWidth} />
 											</IconButton>
 										</Grid>
-										{walletContextProps.primary?<Grid item>
+										{walletContextProps.primary ? <Grid item>
 											<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
 												<img src={faq} width={footerIconWidth} />
 											</IconButton>
-										</Grid>:''}
-										
+										</Grid> : ''}
+
 									</Grid>
 								</Grid>
 								<Grid item>

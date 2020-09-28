@@ -5,7 +5,7 @@ import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import Sisyphus from './Sisyphus/index'
 import LiquidityMining from './LiquidityMining/index'
 import ScarcityFaucet from './ScarcityFaucet/index'
-import { Chip, Grid, Typography, Button, Link } from '@material-ui/core'
+import { Chip, Grid, Typography, Button, Link, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
@@ -53,13 +53,11 @@ const useStyles = makeStyles(theme => createStyles({
 
     }, Paper: {
         margin: "50px",
-        maxWidth: "1000px",
         padding: "20px",
         backgroundColor: blueGrey['600'],
     },
     traderContainer: {
         margin: "50px",
-        maxWidth: "1000px",
         padding: "20px",
         backgroundColor: 'rgba(255,255,255,0.93)',
         borderRadius: 20,
@@ -97,7 +95,7 @@ const useStyles = makeStyles(theme => createStyles({
     warningText: {
         color: 'black',
         fontStyle: 'italic',
-        maxWidth: 700,
+        width:'30vh',
         textAlign: 'center',
         textOverflow: 'wrap'
     },
@@ -109,6 +107,13 @@ const useStyles = makeStyles(theme => createStyles({
     alphadropLink: {
         fontFamily: theme.typography.fontFamily,
         fontSize: theme.typography.h6.fontSize || '1.25rem'
+    }, behodlerLogo: {
+        width: '30%',
+
+    },
+    logoContainer: {
+        textAlign: "center",
+        display: "block"
     }
 }));
 
@@ -229,8 +234,10 @@ export default function Swap(props: props) {
             </Typography>
                 </Grid>
                 : ''}
-            {logoVisible ? <Grid item>
-                <img src={behodlerLogo} width="500" />
+            {logoVisible ? <Grid item >
+                <Container className={classes.logoContainer} >
+                    <img src={behodlerLogo} className={classes.behodlerLogo} />
+                </Container>
             </Grid> : ''}
             <Grid item>
                 {logoVisible ? '' :

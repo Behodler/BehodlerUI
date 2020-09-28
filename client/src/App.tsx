@@ -19,7 +19,7 @@ const theme = createMuiTheme({
 const backStyles = makeStyles(theme => createStyles({
 	appRoot: {
 	height:'100%',
-	position:'absolute',
+
 	bottom:0,
 	width:'100%',
 	}
