@@ -20,13 +20,13 @@ const useStyles = makeStyles(theme => createStyles({
 		display: "flex",
 		flexFlow: 'column',
 		height: '100%',
-
+		width:'100%',
 	},
 	layoutFramerRotNotConnected: {
 		display: "flex",
 		flexFlow: 'column',
-		height: '100vh',
-		width:'100vh',
+		height: '100%',
+		width:'100%',
 		background: "linear-gradient(to bottom left, #9DC8F2, white)",
 		backgroundRepeat: 'repeat-y',
 		backgroundSize: 'cover'

@@ -95,7 +95,7 @@ const useStyles = makeStyles(theme => createStyles({
     warningText: {
         color: 'black',
         fontStyle: 'italic',
-        width:'30vh',
+        width: '30vh',
         textAlign: 'center',
         textOverflow: 'wrap'
     },
@@ -114,6 +114,9 @@ const useStyles = makeStyles(theme => createStyles({
     logoContainer: {
         textAlign: "center",
         display: "block"
+    },
+    nopadding: {
+        padding: 0
     }
 }));
 
@@ -180,6 +183,8 @@ export default function Swap(props: props) {
     }
     const logoVisible = !props.connected
     const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
+
+    const DepaddedGridItem = (props: { children: any }) => <Grid className={classes.nopadding} item>{props.children}</Grid>
     return <div>
         {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} />}
         <Grid
@@ -194,19 +199,20 @@ export default function Swap(props: props) {
                 direction="row"
                 justify="center"
                 alignItems="center"
-            ><Grid item>
-                </Grid>
-                <Grid item>
+            >
+                <DepaddedGridItem>
+                </DepaddedGridItem>
+                <DepaddedGridItem>
                     <Chip className={classes.betaRisk} label="Behodler is currently in Beta. Use at your own risk." onDelete={hideChip} variant="outlined" />
-                </Grid>
+                </DepaddedGridItem>
             </Grid> : ""}
             {logoVisible ?
-                <Grid item>
+                <DepaddedGridItem>
                     <img src={eyelogo} />
-                </Grid>
+                </DepaddedGridItem>
                 : ''}
             {logoVisible ?
-                <Grid item>
+                <DepaddedGridItem>
                     <Grid
                         container
                         direction="row"
@@ -219,27 +225,27 @@ export default function Swap(props: props) {
                             </div>
                         </Grid>
                     </Grid>
-                </Grid>
+                </DepaddedGridItem>
                 : ''}
-            {logoVisible ? <Grid item>
+            {logoVisible ? <DepaddedGridItem>
                 <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
                     walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
                 }}>Connect Your Wallet</Button>
-            </Grid> : ''}
+            </DepaddedGridItem> : ''}
             {logoVisible ?
-                <Grid item>
+                <DepaddedGridItem>
                     <Typography className={classes.warningText} variant='subtitle2'>
                         Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered Liquidity Protocol.
                         Use at your own risk. The Behodler sees all prices. The Behodler HODLS all tokens.
             </Typography>
-                </Grid>
+                </DepaddedGridItem>
                 : ''}
-            {logoVisible ? <Grid item >
+            {logoVisible ? <DepaddedGridItem>
                 <Container className={classes.logoContainer} >
                     <img src={behodlerLogo} className={classes.behodlerLogo} />
                 </Container>
-            </Grid> : ''}
-            <Grid item>
+            </DepaddedGridItem> : ''}
+            <DepaddedGridItem>
                 {logoVisible ? '' :
                     <Grid
                         container
@@ -254,7 +260,7 @@ export default function Swap(props: props) {
                         </Grid>
                     </Grid>
                 }
-            </Grid>
+            </DepaddedGridItem>
             {props.connected ? <Grid
                 container
                 direction="row"
@@ -269,7 +275,7 @@ export default function Swap(props: props) {
             </Grid>
                 : ''}
             {props.connected ?
-                <Grid item>
+                <DepaddedGridItem>
 
                     <div className={classes.traderContainer}>
                         <Grid
@@ -284,7 +290,7 @@ export default function Swap(props: props) {
                             </Grid>
                         </Grid>
                     </div>
-                </Grid>
+                </DepaddedGridItem>
                 : ""}
         </Grid>
     </div>
