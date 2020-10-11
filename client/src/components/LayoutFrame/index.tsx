@@ -163,7 +163,7 @@ export default function LayoutFrame(props: any) {
 											</IconButton>
 										</Grid>
 										<Grid item>
-											<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0x26E43759551333e57F073bb0772F50329A957b30')} >
+											<IconButton title="uniswap" onClick={() => openFooter('https://info.uniswap.org/pair/0x6004946fc90956ccb12bd6619e437fdf99c05155')} >
 												<img src={uniswap} width={footerIconWidth} />
 											</IconButton>
 										</Grid>

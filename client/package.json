@@ -14,6 +14,7 @@
 		"openzeppelin-solidity": "^2.1.1",
 		"react": "^16.12.0",
 		"react-dom": "^16.8.6",
+		"react-redux": "^6.0.1",
 		"react-router-dom": "^5.2.0",
 		"react-scripts-ts": "^3.1.0",
 		"react-swipeable-views": "^0.13.9",
@@ -24,7 +25,7 @@
 	},
 	"scripts": {
 		"start": "react-scripts-ts start",
-		"s3:sync":"aws s3 sync ../build/ s3://behodler.io",
+		"s3:sync": "aws s3 sync ../build/ s3://behodler.io",
 		"build:no-deploy": "react-scripts-ts build",
 		"build": "npm run build:no-deploy && npm run s3:sync",
 		"test": "react-scripts-ts test --env=jsdom",
