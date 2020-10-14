@@ -221,7 +221,7 @@ export default function Swap(props: props) {
                     >
                         <Grid item>
                             <div className={classes.alphadrop}>
-                                Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4', '_blank')}>alphadrop!</Link>
+                                Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://behodler.info ', '_blank')}>Liquidity Mining Event</Link>
                             </div>
                         </Grid>
                     </Grid>
@@ -269,7 +269,7 @@ export default function Swap(props: props) {
             >
                 <Grid item>
                     <div className={classes.alphadrop}>
-                        Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4', '_blank')}>alphadrop!</Link>
+                    Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://behodler.info ', '_blank')}>Liquidity Mining Event</Link>
                     </div>
                 </Grid>
             </Grid>
