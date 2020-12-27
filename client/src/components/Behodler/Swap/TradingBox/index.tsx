@@ -20,7 +20,7 @@ export default function TradeBox(props: props) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 })
     const walletContextProps = useContext(WalletContext)
 
-    const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
+    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(t => t.name !== 'WBTC')
     const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
     const indexOfScarcityAddress = tokenList.findIndex(item => item.name.toLowerCase().indexOf('scarcity') !== -1)
     let tokenDropDownList = tokenList.map((t, i) => {
@@ -484,8 +484,8 @@ export default function TradeBox(props: props) {
                     <Grid item>
                         <Button color="secondary" onClick={() => { setShowAdvancedAndSetPrices(false); safeSetMinPrice("0"); safeSetMaxPrice("0") }}>Hide Advanced</Button>
                     </Grid>
-                </Grid> :''}
-                   
+                </Grid> : ''}
+
             </Grid>
             : ""}
         {swapEnabled ?

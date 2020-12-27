@@ -17,6 +17,8 @@ import { BellowsEffects } from './observables/Bellows'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import SisyphusContractMappings from '../temp/sisyphusAddress.json'
+import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
+
 import { Sisyphus as SisyphusContractInterface } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
 import { Faucet } from './contractInterfaces/behodler/Sisyphus/Faucet'
 
@@ -36,6 +38,9 @@ import { NimrodelContracts } from './IContracts'
 import { Celeborn } from './contractInterfaces/behodler/Nimrodel/Celeborn'
 import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
 import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
+
+import { Behodler2Contracts } from './IContracts'
+import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 
 interface AccountObservable {
 	account: string
@@ -94,14 +99,13 @@ class ethereumAPI {
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
 
-
-
 	public async initialize(chainId, currentAccount: string): Promise<IContracts> {
 		const networkName = this.networkMapping[chainId]
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
 		behodlerContracts.Sisyphus = await this.fetchSisyphus(networkName)
 		behodlerContracts.Nimrodel = await this.fetchNimrodel(networkName)
+		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
 		let contracts: IContracts = { behodler: behodlerContracts }
 		this.initialized = true
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
@@ -172,7 +176,7 @@ class ethereumAPI {
 		return new ERC20Effects(this.web3, token, currentAccount, decimalPlaces)
 	}
 
-	public async getEthBalance (account:string):Promise<string> {
+	public async getEthBalance(account: string): Promise<string> {
 
 		return await this.web3.eth.getBalance(account)
 	}
@@ -245,7 +249,7 @@ class ethereumAPI {
 		network = network == 'private' ? 'development' : network
 
 		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
-		const keys = Object.keys(behodlerContracts).filter(key => key !== 'Sisyphus' && key !== 'Nimrodel')
+		const keys = Object.keys(behodlerContracts).filter(key => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
 		keys.forEach(async (key) => {
 			const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
 			const currentMapping = mappingsList.filter(mapping => mapping.contract == key || mapping.contract == alternateKey)[0]
@@ -254,6 +258,20 @@ class ethereumAPI {
 			behodlerContracts[key].address = deployment.address
 		})
 		return behodlerContracts
+	}
+
+	private async fetchBehodler2(network: string): Promise<Behodler2Contracts> {
+		let behodler2: Behodler2
+		network = network == 'private' ? 'development' : network
+		const networkKeys = Object.keys(Behodler2ContractMappings.networks)
+		console.log(Behodler2ContractMappings.networks[networkKeys[0]])
+		let address = Behodler2ContractMappings.networks[networkKeys[0]].address
+		
+		const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, address)
+		behodler2 = deployment.methods
+		behodler2.address = address
+		return { Behodler2: behodler2 }
+
 	}
 
 	private async fetchSisyphus(network: string): Promise<SisyphusContracts> {

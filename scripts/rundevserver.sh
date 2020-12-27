@@ -12,6 +12,12 @@ echo ""
 cd '/home/justin/weidai ecosystem/behodler'
 truffle migrate
 cp BehodlerABIAddressMapping.json ../behodlerUI/client/src/temp/
+echo "**************MIGRATING BEHODLER 2**********"
+cp BehodlerABIAddressMapping.json ../behodler2/Behodler1mappings.json
+cd ../behodler2
+cp '/home/justin/weidai ecosystem/weidai/client/src/tokenLocation.json' weidai.json
+truffle migrate
+cp ./build/contracts/Behodler.json ../behodlerUI/client/src/blockchain/behodler2UI/
 echo "**************MIGRATING SISYPHUS***********"
 echo ""
 cd ../Sisyphus

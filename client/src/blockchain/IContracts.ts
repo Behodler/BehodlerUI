@@ -19,6 +19,8 @@ import { Celeborn } from './contractInterfaces/behodler/Nimrodel/Celeborn'
 import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
 import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
 
+//Behodler2
+import {Behodler2} from './contractInterfaces/behodler2/Behodler2'
 
 export interface NimrodelContracts {
 	Celeborn:Celeborn
@@ -31,8 +33,13 @@ export interface SisyphusContracts {
 	Faucet: Faucet
 }
 
+export interface Behodler2Contracts{
+	Behodler2:Behodler2
+}
+
 export interface BehodlerContracts {
 	Behodler: Behodler,
+	Behodler2:Behodler2Contracts,
 	Chronos: Chronos,
 	Janus: Janus,
 	Kharon: Kharon,
@@ -87,6 +94,28 @@ const defaultBehodler: Behodler = {
 	tokenScarcityObligations: (token: string) => { },
 	buyDryRun: (tokenAddress: address, value: uint, minPrice: uint) => { },
 	sellDryRun: (tokenAddress: address, scarcityValue: uint, maxPrice: uint) => { }
+}
+
+const defaultBehodler2Contract: Behodler2 = {
+	...defaultBase,
+	...defaultOwnable,
+	...defaultERC20,
+	 //SCARCITY PROPS
+	 migrator: () => {},
+	 configureScarcity:(transferFee:uint, burnFee:uint) => {},
+	 getConfiguration: () => {},
+	 setMigrator: (m:address)=>{},
+	 burn: (value: uint)=> {},
+ 
+	 //BEHODLER PROPS
+	 setSafetParameters: (swapPrecisionFactor: uint, maxLiquidityExit:uint)=>{},
+	 tokenBurnable:(token:address)=>{},
+	 validTokens:(token:address)=>{},
+	 swap: (inputToken:address,outputToken:address, inputAmount:uint, outputAmount:uint) => {},
+	 addLiquidity: (inputToken:address, amount:uint)=>{},
+	 withdrawLiquidity:(outputToken:address, tokensToRelease:uint) => {},
+	 grantFlashLoan:(amount: uint, flashLoanContract:address) => {}
+
 }
 
 const defaultChronos: Chronos = {
@@ -292,8 +321,13 @@ const defaultNimrodel:NimrodelContracts = {
 	Rivulet:defaultRivulet
 }
 
+const defaultBehodler2: Behodler2Contracts = {
+	Behodler2:defaultBehodler2Contract
+}
+
 export const DefaultBehodlerContracts: BehodlerContracts = {
 	Behodler: defaultBehodler,
+	Behodler2:defaultBehodler2,
 	Chronos: defaultChronos,
 	Janus: defaultJanus,
 	Kharon: defaultKharon,
