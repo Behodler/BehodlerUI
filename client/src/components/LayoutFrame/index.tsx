@@ -113,6 +113,10 @@ export default function LayoutFrame(props: any) {
 							<Route path="/swap">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>
+							<Route path="/swap2">
+								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
+							</Route>
+							
 							<Route path="/scarcity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>

@@ -264,7 +264,6 @@ class ethereumAPI {
 		let behodler2: Behodler2
 		network = network == 'private' ? 'development' : network
 		const networkKeys = Object.keys(Behodler2ContractMappings.networks)
-		console.log(Behodler2ContractMappings.networks[networkKeys[0]])
 		let address = Behodler2ContractMappings.networks[networkKeys[0]].address
 		
 		const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, address)

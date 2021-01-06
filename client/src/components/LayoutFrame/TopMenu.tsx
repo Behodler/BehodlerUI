@@ -167,6 +167,7 @@ export default function TopMenu(props: props) {
                     </div>
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
+                        <LeftLink text="Swap 2" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
                         <LeftLink text="Liquidity mining" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="Vote" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(mediumLink, '_blank')} selected={false} />

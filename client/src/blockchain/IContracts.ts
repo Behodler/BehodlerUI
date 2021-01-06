@@ -1,4 +1,4 @@
-import { address, uint,Bytes,Bytes32 } from './contractInterfaces/SolidityTypes'
+import { address, uint, Bytes, Bytes32, int } from './contractInterfaces/SolidityTypes'
 import { Behodler } from './contractInterfaces/behodler/Behodler'
 import { Chronos } from './contractInterfaces/behodler/Chronos'
 import { Janus } from './contractInterfaces/behodler/Janus'
@@ -20,12 +20,12 @@ import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
 import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
 
 //Behodler2
-import {Behodler2} from './contractInterfaces/behodler2/Behodler2'
+import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 
 export interface NimrodelContracts {
-	Celeborn:Celeborn
-	Miruvor:Miruvor
-	Rivulet:Rivulet	
+	Celeborn: Celeborn
+	Miruvor: Miruvor
+	Rivulet: Rivulet
 }
 
 export interface SisyphusContracts {
@@ -33,13 +33,13 @@ export interface SisyphusContracts {
 	Faucet: Faucet
 }
 
-export interface Behodler2Contracts{
-	Behodler2:Behodler2
+export interface Behodler2Contracts {
+	Behodler2: Behodler2
 }
 
 export interface BehodlerContracts {
 	Behodler: Behodler,
-	Behodler2:Behodler2Contracts,
+	Behodler2: Behodler2Contracts,
 	Chronos: Chronos,
 	Janus: Janus,
 	Kharon: Kharon,
@@ -51,7 +51,7 @@ export interface BehodlerContracts {
 	PyroToken: PyroToken,
 	PyroTokenRegistry: PyroTokenRegistry,
 	Sisyphus: SisyphusContracts
-	Nimrodel:NimrodelContracts
+	Nimrodel: NimrodelContracts
 }
 
 export default interface IContracts {
@@ -100,22 +100,24 @@ const defaultBehodler2Contract: Behodler2 = {
 	...defaultBase,
 	...defaultOwnable,
 	...defaultERC20,
-	 //SCARCITY PROPS
-	 migrator: () => {},
-	 configureScarcity:(transferFee:uint, burnFee:uint) => {},
-	 getConfiguration: () => {},
-	 setMigrator: (m:address)=>{},
-	 burn: (value: uint)=> {},
- 
-	 //BEHODLER PROPS
-	 setSafetParameters: (swapPrecisionFactor: uint, maxLiquidityExit:uint)=>{},
-	 tokenBurnable:(token:address)=>{},
-	 validTokens:(token:address)=>{},
-	 swap: (inputToken:address,outputToken:address, inputAmount:uint, outputAmount:uint) => {},
-	 addLiquidity: (inputToken:address, amount:uint)=>{},
-	 withdrawLiquidity:(outputToken:address, tokensToRelease:uint) => {},
-	 grantFlashLoan:(amount: uint, flashLoanContract:address) => {}
+	//SCARCITY PROPS
+	migrator: () => { },
+	configureScarcity: (transferFee: uint, burnFee: uint) => { },
+	getConfiguration: () => { },
+	setMigrator: (m: address) => { },
+	burn: (value: uint) => { },
 
+	//BEHODLER PROPS
+	setSafetParameters: (swapPrecisionFactor: uint, maxLiquidityExit: uint) => { },
+	tokenBurnable: (token: address) => { },
+	validTokens: (token: address) => { },
+	swap: (inputToken: address, outputToken: address, inputAmount: uint, outputAmount: uint) => { },
+	addLiquidity: (inputToken: address, amount: uint) => { },
+	withdrawLiquidity: (outputToken: address, tokensToRelease: uint) => { },
+	grantFlashLoan: (amount: uint, flashLoanContract: address) => { },
+	MIN_LIQUIDITY: () => { },
+	withdrawLiquidityFindSCX: (outputToken: address, tokensToRelease: uint, scx: int, passes: uint) => { },
+	getMaxLiquidityExit: () => { }
 }
 
 const defaultChronos: Chronos = {
@@ -248,86 +250,86 @@ const defaultSisyphusContracts: SisyphusContracts = {
 	Faucet: defaultFaucet
 }
 
-const defaultCeleborn:Celeborn = {
+const defaultCeleborn: Celeborn = {
 	...defaultOwnable,
 	...defaultBase,
-	maxGold: () => {},
-    maxSilver: () => {},
-    maxBronze: () => {},
-    goldThreshold: () => {},
-    silverThreshold: () => {},
-    bronzeThreshold: () => {},
-    safetyDurationMultiplier: () => {},
+	maxGold: () => { },
+	maxSilver: () => { },
+	maxBronze: () => { },
+	goldThreshold: () => { },
+	silverThreshold: () => { },
+	bronzeThreshold: () => { },
+	safetyDurationMultiplier: () => { },
 
-    //functions
-    sponsor: (slot:uint, value:uint, company:Bytes32, logo:Bytes32,siteURL:Bytes32,message:Bytes) => {},
-    seed: (rivulet:address, dai:address)=> {},
-    setMaxSponsorships: (gold:uint,silver:uint,bronze:uint, multiplier:uint)=>{},
-    getSponsorshipData:(slot:uint,field:uint)=>{},
+	//functions
+	sponsor: (slot: uint, value: uint, company: Bytes32, logo: Bytes32, siteURL: Bytes32, message: Bytes) => { },
+	seed: (rivulet: address, dai: address) => { },
+	setMaxSponsorships: (gold: uint, silver: uint, bronze: uint, multiplier: uint) => { },
+	getSponsorshipData: (slot: uint, field: uint) => { },
 }
 
-const defaultRivulet:Rivulet = {
+const defaultRivulet: Rivulet = {
 	...defaultOwnable,
 	...defaultBase,
-	celeborn: () =>{},
-    staked: (user: address) =>"",
-    tickets: (user: address) =>"",
-    totalTickets: () =>"",
-    scxMultiple: (staker: address) =>"",
-    damHeightAtJoin: (staker: address) =>"",
-    ponds: (staker: address) =>"",
-    damHeight: () =>{},
-    maxTickets: () =>{},
-    initialDai: () =>{},
-    timeScale: () =>{},
-    burnMultiple: () =>{},
-    ticketSize: () =>{},
-    lastDrip: () =>{},
+	celeborn: () => { },
+	staked: (user: address) => "",
+	tickets: (user: address) => "",
+	totalTickets: () => "",
+	scxMultiple: (staker: address) => "",
+	damHeightAtJoin: (staker: address) => "",
+	ponds: (staker: address) => "",
+	damHeight: () => { },
+	maxTickets: () => { },
+	initialDai: () => { },
+	timeScale: () => { },
+	burnMultiple: () => { },
+	ticketSize: () => { },
+	lastDrip: () => { },
 
-    //functions
-    seed: (dai: address, scx: address, celeborn: address, time: uint, burnMultiple: uint, maxTickets: uint) =>{},
-    setTicketParameters: (ticketSize: uint, maxTickets: uint) =>{},
-    setBurnMultiple: (b: uint) =>{},
-    celebrant: (value: uint) =>{},
-    dripIfStale: () =>{},
-    drip: () =>{},
-    drainPond: () =>{},
-    stake: (stakeValue: uint, burnValue: uint) =>{},
-    unstake: (scx: uint) =>{},
-    aggregateFlow: () =>{},
+	//functions
+	seed: (dai: address, scx: address, celeborn: address, time: uint, burnMultiple: uint, maxTickets: uint) => { },
+	setTicketParameters: (ticketSize: uint, maxTickets: uint) => { },
+	setBurnMultiple: (b: uint) => { },
+	celebrant: (value: uint) => { },
+	dripIfStale: () => { },
+	drip: () => { },
+	drainPond: () => { },
+	stake: (stakeValue: uint, burnValue: uint) => { },
+	unstake: (scx: uint) => { },
+	aggregateFlow: () => { },
 }
 
-const defaultMiruvor:Miruvor = {
+const defaultMiruvor: Miruvor = {
 	...defaultBase,
 	...defaultOwnable,
-	discount: () =>{},
-    SCXperToken: (token: address) =>"",
+	discount: () => { },
+	SCXperToken: (token: address) => "",
 
-    //functions
-    setMarkup: (markup: uint) =>{},
-    seed: (scx: address, behodler: address, lachesis: address, janus: address, weth: address, registry: address, dai: address, weidai: address) =>{},
-    canDrink: (token: address) =>{},
-    refresh: (token: address) =>{},
-    drink: (token: address, value: uint) =>{},
-    drinkEth: () =>{},
-    stopperEth: () =>{},
-    stopper: (token: address) =>{},
-    calculateSCXperToken: (token: address, scx: address) =>{},
+	//functions
+	setMarkup: (markup: uint) => { },
+	seed: (scx: address, behodler: address, lachesis: address, janus: address, weth: address, registry: address, dai: address, weidai: address) => { },
+	canDrink: (token: address) => { },
+	refresh: (token: address) => { },
+	drink: (token: address, value: uint) => { },
+	drinkEth: () => { },
+	stopperEth: () => { },
+	stopper: (token: address) => { },
+	calculateSCXperToken: (token: address, scx: address) => { },
 }
 
-const defaultNimrodel:NimrodelContracts = {
-	Celeborn:defaultCeleborn,
-	Miruvor:defaultMiruvor,
-	Rivulet:defaultRivulet
+const defaultNimrodel: NimrodelContracts = {
+	Celeborn: defaultCeleborn,
+	Miruvor: defaultMiruvor,
+	Rivulet: defaultRivulet
 }
 
 const defaultBehodler2: Behodler2Contracts = {
-	Behodler2:defaultBehodler2Contract
+	Behodler2: defaultBehodler2Contract
 }
 
 export const DefaultBehodlerContracts: BehodlerContracts = {
 	Behodler: defaultBehodler,
-	Behodler2:defaultBehodler2,
+	Behodler2: defaultBehodler2,
 	Chronos: defaultChronos,
 	Janus: defaultJanus,
 	Kharon: defaultKharon,
@@ -339,7 +341,7 @@ export const DefaultBehodlerContracts: BehodlerContracts = {
 	PyroToken: defaultPyroToken,
 	PyroTokenRegistry: defaultPyroTokenRegistry,
 	Sisyphus: defaultSisyphusContracts,
-	Nimrodel:defaultNimrodel
+	Nimrodel: defaultNimrodel
 }
 
 export const DefaultContracts: IContracts = {

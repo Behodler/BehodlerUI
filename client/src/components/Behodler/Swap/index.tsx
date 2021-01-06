@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox from './TradingBox/index'
+import TradingBox2 from './TradingBox2/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import Sisyphus from './Sisyphus/index'
 import LiquidityMining from './LiquidityMining/index'
@@ -18,7 +19,7 @@ import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
 import Governance from '../Swap/Governance/index'
 
-export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance'
+export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2'
 
 interface props {
     connected: boolean
@@ -300,6 +301,8 @@ function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] })
     switch (props.value) {
         case 'swap':
             return <TradingBox />
+        case 'swap2':
+            return <TradingBox2 />
         case 'liquidity':
             return <LiquidityMining />
         case 'sisyphus':

@@ -1,0 +1,5 @@
+Swap 2
+1. No dissapearing menu
+2. Clicking on balance sets it
+3. hide swap 1
+4. Ether check
