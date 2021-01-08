@@ -76,9 +76,10 @@ export default function TradeBox2(props: props) {
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, wbtcOverride) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
+    const ethOptions = { from: walletContextProps.account, value: inputValWei }
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean => tokenDropDownList.filter(item => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
-    // const isEthPredicate = isTokenPredicateFactory('Eth')
+    const isEthPredicate = isTokenPredicateFactory('Eth')
     const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     let swapText = 'SWAP'
@@ -95,9 +96,9 @@ export default function TradeBox2(props: props) {
             if (inputAddress.toLowerCase() === scarcityAddress) {
                 behodler.withdrawLiquidity(outputAddress, outputValueWei).send(primaryOptions, clearInput)
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
-                behodler.addLiquidity(inputAddress, inputValWei).send(primaryOptions, clearInput)
+                behodler.addLiquidity(inputAddress, inputValWei).send(isEthPredicate(inputAddress) ? ethOptions : primaryOptions, clearInput)
             } else {
-                behodler.swap(inputAddress, outputAddress, inputValWei, outputValueWei).send(primaryOptions, clearInput)
+                behodler.swap(inputAddress, outputAddress, inputValWei, outputValueWei).send(isEthPredicate(inputAddress) ? ethOptions : primaryOptions, clearInput)
             }
         }
         setSwapClicked(false)
@@ -128,7 +129,7 @@ export default function TradeBox2(props: props) {
             //if input is scx, figure out tokensToRelease
             //if output is scx, nothing to figure out
             //if swap, set output Val
-            if (inputAddress.toLowerCase() === scarcityAddress) {//withdraw liquidity
+            if (isScarcityPredicate(inputAddress)) {//withdraw liquidity
                 //ΔSCX = log(Initial) - log(Final)
                 //log(FinalBalance) =  log(InitialBalance) - ΔSCX 
                 //let X = log(InitialBalance) - ΔSCX 
@@ -144,8 +145,9 @@ export default function TradeBox2(props: props) {
                 setOutputValue(API.fromWei(actualString))
                 setTerms(inputValWei, actualString)
 
-            } else if (outputAddress.toLowerCase() === scarcityAddress) { //add liquidity
-                const scx = await behodler.addLiquidity(inputAddress, inputValWei).call(primaryOptions)
+            } else if (isScarcityPredicate(outputAddress)) { //add liquidity
+
+                const scx = await behodler.addLiquidity(inputAddress, inputValWei).call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions)
                 const scxString = scx.toString()
                 setOutputValueWei(scxString)
                 setOutputValue(API.fromWei(scxString))
@@ -190,7 +192,7 @@ export default function TradeBox2(props: props) {
                 valid={inputValid}
                 setValid={setInputValid}
                 setValue={setInputValue}
-                setEnabled={setInputEnabled}
+                setEnabled={ setInputEnabled}
                 setTokenAddress={setInputAddress}
                 address={inputAddress}
                 value={inputValue}
@@ -213,6 +215,7 @@ export default function TradeBox2(props: props) {
                 setTokenAddress={setOutputAddress}
                 address={outputAddress}
                 value={outputValue}
+                disabledInput
                 exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, reserve: outputReserve, setReserve: setOutputReserve }}
                 clear={clearInput}
             />

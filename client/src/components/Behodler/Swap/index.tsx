@@ -236,8 +236,9 @@ export default function Swap(props: props) {
             {logoVisible ?
                 <DepaddedGridItem>
                     <Typography className={classes.warningText} variant='subtitle2'>
-                        Connecting your wallet will banish the Behodler monster and launch our beta token bonding curve powered Liquidity Protocol.
-                        Use at your own risk. The Behodler sees all prices. The Behodler HODLS all tokens.
+                    Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves. 
+                    Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken wrapper.
+                    Take out a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Vault.
             </Typography>
                 </DepaddedGridItem>
                 : ''}
@@ -270,7 +271,7 @@ export default function Swap(props: props) {
             >
                 <Grid item>
                     <div className={classes.alphadrop}>
-                    Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://behodler.info ', '_blank')}>Liquidity Mining Event</Link>
+                    Swap, Own and Queue for Liquidity
                     </div>
                 </Grid>
             </Grid>

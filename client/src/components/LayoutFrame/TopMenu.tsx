@@ -2,8 +2,6 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-// import Typography from '@material-ui/core/Typography';
-// import InputBase from '@material-ui/core/InputBase';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Grid, Hidden, Link, Menu, MenuItem, Typography } from '@material-ui/core';
@@ -12,7 +10,6 @@ import eyelogo from '../../images/behodler/landingPage/EyeLogo.png'
 import metamaskAccount from '../../images/behodler/metamaskaccount.png'
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-// import SearchIcon from '@material-ui/icons/Search';
 
 declare global {
     interface String {
@@ -168,7 +165,7 @@ export default function TopMenu(props: props) {
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
                         <LeftLink text="Swap 2" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
-                        <LeftLink text="Liquidity mining" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
+                        <LeftLink text="Liquidity Queueing" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="Vote" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(mediumLink, '_blank')} selected={false} />
                     </Hidden>
@@ -201,35 +198,37 @@ export default function TopMenu(props: props) {
                                     <div className={classes.ethBalance}>{props.ethBalance.truncBig()} ETH</div>
                                 </Grid>
                             </Hidden>
-                            <Grid item>
-                                <IconButton
-                                    edge="start"
-                                    className={classes.menuButton}
-                                    color="inherit"
-                                    aria-label="open drawer"
-                                    onClick={menuClick}
-                                >
-                                    <MenuIcon />
-                                </IconButton>
-                            </Grid>
+                            <Hidden lgUp>
+                                <Grid item>
+                                    <IconButton
+                                        edge="start"
+                                        className={classes.menuButton}
+                                        color="inherit"
+                                        aria-label="open drawer"
+                                        onClick={menuClick}
+                                    >
+                                        <MenuIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Hidden>
                         </Grid>
-                        <Menu
-                            id="simple-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={closeMenu}
-                            className={classes.menu}
-                        >
-                            <Hidden mdUp>
+                        <Hidden lgUp>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={closeMenu}
+                                className={classes.menu}
+                            >
+
                                 <MenuItem className={classes.menuList} onClick={() => route('swap')}>Swap</MenuItem>
-                                <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Mining</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap2</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Queueing</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => route('governance')}>Vote</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(mediumLink, '_blank')}>EYE</MenuItem>
-                            </Hidden>
-                            <MenuItem className={classes.menuList} onClick={() => route('sisyphus')}>Sisyphus</MenuItem>
-                            <MenuItem className={classes.menuList} onClick={() => route('faucet')}>Scarcity Faucet</MenuItem>
-                        </Menu>
+                            </Menu>
+                        </Hidden>
                     </div>
                 </Toolbar>
             </AppBar>

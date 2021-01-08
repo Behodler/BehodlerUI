@@ -78,7 +78,12 @@ const useStyles = makeStyles((theme) => ({
     width: Math.floor(23 * scale),
     color: theme.palette.secondary.main,
   },
-  balance: {
+  balanceEnabled: {
+    marginRight: theme.spacing(1),
+    flex: 1,
+    cursor: 'pointer'
+  },
+  balanceDisabled: {
     marginRight: theme.spacing(1),
     flex: 1,
   },
@@ -116,11 +121,12 @@ export default function ExtendedTextField(props: props) {
   const indexOfAddress = indexOfAddressFunc(props.address)
   const selectedImage = props.dropDownFields[indexOfAddress].image
   const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())[0].name
+  const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
-  const [enabled, setEnabled] = useState<boolean>(false)
+  const [enabled, setEnabled] = useState<boolean>(useEth)
 
   const setFormattedInput = (value: string) => {
     if (props.disabledInput)
@@ -149,7 +155,7 @@ export default function ExtendedTextField(props: props) {
       exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
   }
 
-  const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
+
   const decimalPlaces = nameOfSelectedAddress(props.address).toLowerCase().indexOf('wbtc') !== -1 ? 8 : 18
   const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, decimalPlaces)
 
@@ -159,7 +165,7 @@ export default function ExtendedTextField(props: props) {
       const scaledAllowance = API.fromWei(allowance)
       const allowanceFloat = parseFloat(scaledAllowance)
       const balanceFloat = parseFloat(currentBalance)
-      const en = (props.scarcityAddress !== undefined && props.address.trim().toLowerCase() === props.scarcityAddress.trim().toLowerCase()) || !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
+      const en = (props.scarcityAddress !== undefined && props.address.trim().toLowerCase() === props.scarcityAddress.trim().toLowerCase()) || useEth || !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
       setEnabled(en)
       if (props.setEnabled) {
         props.setEnabled(en)
@@ -249,9 +255,10 @@ export default function ExtendedTextField(props: props) {
             <Grid>
               <Typography
                 variant="caption"
-                className={classes.balance}
+                className={props.disabledInput ? classes.balanceDisabled : classes.balanceEnabled}
+                onClick={() => setFormattedInput(currentBalance)}
               >
-                Balance: {currentBalance}
+                Balance: {formatDecimalStrings(currentBalance, 4)}
               </Typography>
             </Grid>
           </Grid>
