@@ -20,13 +20,17 @@ const useStyles = makeStyles(theme => createStyles({
 		display: "flex",
 		flexFlow: 'column',
 		height: '100%',
-		width:'100%',
+		width: '100%',
+		backgroundImage: 'radial-gradient(circle, #e1e8f2, #d9e6f3, #d0e4f4, #c6e3f3, #bbe2f2)',
+		backgroundRepeat: 'repeat-y',
+		backgroundSize: 'cover',
+		overflowY: 'hidden',
 	},
 	layoutFramerRotNotConnected: {
 		display: "flex",
 		flexFlow: 'column',
 		height: '100%',
-		width:'100%',
+		width: '100%',
 		background: "linear-gradient(to bottom left, #9DC8F2, white)",
 		backgroundRepeat: 'repeat-y',
 		backgroundSize: 'cover'
@@ -34,7 +38,8 @@ const useStyles = makeStyles(theme => createStyles({
 	content: {
 		flexGrow: 1,
 		width: '100%',
-		margin: 0
+		margin: 0,
+		height: '100%',
 	},
 	footerDiv: {
 		position: 'relative',
@@ -44,11 +49,14 @@ const useStyles = makeStyles(theme => createStyles({
 		width: '100%',
 		color: 'black',
 		textAlign: 'center',
-		height: 100
+		height: 100,
+		
+		backgroundColor: 'transparent'
 	},
 	footerGrid: {
 		width: '100%',
-		marginBottom: '-8px'
+		//marginBottom: '-8px',
+		backgroundColor: 'transparent'
 	},
 	filledGrid: {
 		width: '100%',
@@ -116,7 +124,7 @@ export default function LayoutFrame(props: any) {
 							<Route path="/swap2">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
-							
+
 							<Route path="/scarcity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>

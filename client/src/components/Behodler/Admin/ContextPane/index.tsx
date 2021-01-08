@@ -13,8 +13,6 @@ import Prometheus from './ContractContexts/Prometheus'
 import PyroTokenRegistry from './ContractContexts/PyroTokenRegistry'
 import Scarcity from './ContractContexts/Scarcity'
 import Weth from './ContractContexts/Weth'
-import Sisyphus from './ContractContexts/Sisyphus'
-import Faucet from './ContractContexts/Faucet'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { ValueTextBox } from 'src/components/Common/ValueTextBox'
 
@@ -102,8 +100,6 @@ function ChooseContext(props: { contractName: string }) {
         case "PyroTokenRegistry": return <PyroTokenRegistry />
         case "Scarcity": return <Scarcity />
         case "Weth": return <Weth />
-        case "Sisyphus": return <Sisyphus />
-        case "Faucet": return <Faucet />
     }
     return <div></div>
 }

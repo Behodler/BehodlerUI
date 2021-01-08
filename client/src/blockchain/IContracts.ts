@@ -11,9 +11,6 @@ import { Bellows } from './contractInterfaces/behodler/hephaestus/Bellows'
 import { Lachesis } from './contractInterfaces/behodler/hephaestus/Lachesis'
 import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
 import { PyroTokenRegistry } from './contractInterfaces/behodler/hephaestus/PyroTokenRegistry'
-//sisyphus
-import { Sisyphus } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
-import { Faucet } from './contractInterfaces/behodler/Sisyphus/Faucet'
 
 import { Celeborn } from './contractInterfaces/behodler/Nimrodel/Celeborn'
 import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
@@ -26,11 +23,6 @@ export interface NimrodelContracts {
 	Celeborn: Celeborn
 	Miruvor: Miruvor
 	Rivulet: Rivulet
-}
-
-export interface SisyphusContracts {
-	Sisyphus: Sisyphus
-	Faucet: Faucet
 }
 
 export interface Behodler2Contracts {
@@ -50,7 +42,6 @@ export interface BehodlerContracts {
 	Lachesis: Lachesis,
 	PyroToken: PyroToken,
 	PyroTokenRegistry: PyroTokenRegistry,
-	Sisyphus: SisyphusContracts
 	Nimrodel: NimrodelContracts
 }
 
@@ -205,51 +196,6 @@ const defaultPyroTokenRegistry: PyroTokenRegistry = {
 	pyroTokenMapping: (pToken: address) => { }
 }
 
-const defaultSisyphus: Sisyphus = {
-	...defaultBase,
-	...defaultOwnable,
-	enable: (e: boolean) => { },
-	setTime: (periodDurationType: uint, totalIncrements: uint) => { },
-	setRewardProportion: (proportion: uint) => { },
-	seed: (scx: address) => { },
-	struggle: (scarcityForwarded: uint) => { },
-	calculateCurrentBuyout: () => { },
-	enabled: () => { },
-	rewardProportion: () => { },
-	currentMonarch: () => { },
-	scarcity: () => { },
-	buyoutAmount: () => { },
-	buyoutTime: () => { },
-	periodDuration: () => { },
-	totalIncrements: () => { },
-	faucet: () => { }
-	// sponsorToken: () => { },
-	// setSponsorToken: (t: address) => { }
-}
-
-const defaultFaucet: Faucet = {
-	...defaultOwnable,
-	...defaultBase,
-	seed: (scx: address) => { },
-	calibrate: (dripInterval: uint, drips: uint) => { },
-	drip: () => { },
-	takeDonation: (value: uint) => { },
-	lastRecipient: () => { },
-	dripsRemaining: () => { },
-	dripSize: () => { },
-	lastDrip: () => { },
-	dripInterval: () => { },
-	scarcity: () => { },
-	drips: () => { },
-	replaceWasher: () => { },
-	lastKnownBalance: () => { }
-}
-
-const defaultSisyphusContracts: SisyphusContracts = {
-	Sisyphus: defaultSisyphus,
-	Faucet: defaultFaucet
-}
-
 const defaultCeleborn: Celeborn = {
 	...defaultOwnable,
 	...defaultBase,
@@ -340,7 +286,6 @@ export const DefaultBehodlerContracts: BehodlerContracts = {
 	Lachesis: defaultLachesis,
 	PyroToken: defaultPyroToken,
 	PyroTokenRegistry: defaultPyroTokenRegistry,
-	Sisyphus: defaultSisyphusContracts,
 	Nimrodel: defaultNimrodel
 }
 

@@ -16,18 +16,9 @@ import ERC20JSON from '../contracts/ERC20.json'
 import { BellowsEffects } from './observables/Bellows'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
-import SisyphusContractMappings from '../temp/sisyphusAddress.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 
-import { Sisyphus as SisyphusContractInterface } from './contractInterfaces/behodler/Sisyphus/Sisyphus'
-import { Faucet } from './contractInterfaces/behodler/Sisyphus/Faucet'
-
-import { SisyphusContracts } from './IContracts'
-import SisyphusABI from './behodlerUI/Sisyphus.json'
-import FaucetABI from './behodlerUI/Faucet.json'
 import BigNumber from 'bignumber.js';
-import { SisyphusEffects } from './observables/Sisyphus';
-import { ScarcityFaucetEffects } from './observables/ScarcityFaucet'
 
 import CelebornJSON from './nimrodelUI/Celeborn.json'
 import MiruvorJSON from './nimrodelUI/Miruvor.json'
@@ -79,9 +70,7 @@ class ethereumAPI {
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
 	public bellowsEffects: BellowsEffects
-	public sisyphusEffects: SisyphusEffects
 	public scarcityEffects: ERC20Effects
-	public scarcityFaucetEffects: ScarcityFaucetEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
@@ -103,15 +92,12 @@ class ethereumAPI {
 		const networkName = this.networkMapping[chainId]
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
-		behodlerContracts.Sisyphus = await this.fetchSisyphus(networkName)
 		behodlerContracts.Nimrodel = await this.fetchNimrodel(networkName)
 		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
 		let contracts: IContracts = { behodler: behodlerContracts }
 		this.initialized = true
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
-		this.sisyphusEffects = new SisyphusEffects(this.web3, contracts.behodler.Sisyphus.Sisyphus, contracts.behodler.Scarcity, currentAccount)
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
-		this.scarcityFaucetEffects = new ScarcityFaucetEffects(this.web3, behodlerContracts.Sisyphus.Faucet, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}
@@ -271,20 +257,6 @@ class ethereumAPI {
 		behodler2.address = address
 		return { Behodler2: behodler2 }
 
-	}
-
-	private async fetchSisyphus(network: string): Promise<SisyphusContracts> {
-		let sisyphus: SisyphusContractInterface
-		network = network == 'private' ? 'development' : network
-		let address = SisyphusContractMappings.filter(s => s.network === network)[0].address
-		const deployment = await this.deployBehodlerContract(SisyphusABI.abi, address)
-		sisyphus = deployment.methods
-		sisyphus.address = deployment.address
-		let faucetAddress = await sisyphus.faucet().call()
-		const faucetDeployment = await this.deployBehodlerContract(FaucetABI.abi, faucetAddress)
-		let faucet: Faucet = faucetDeployment.methods
-		faucet.address = faucetAddress
-		return { Sisyphus: sisyphus, Faucet: faucet }
 	}
 
 	private async fetchNimrodel(network: string): Promise<NimrodelContracts> {

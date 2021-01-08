@@ -3,10 +3,8 @@ import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox from './TradingBox/index'
 import TradingBox2 from './TradingBox2/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import Sisyphus from './Sisyphus/index'
 import LiquidityMining from './LiquidityMining/index'
-import ScarcityFaucet from './ScarcityFaucet/index'
-import { Chip, Grid, Typography, Button, Link, Container } from '@material-ui/core'
+import { Chip, Grid, Typography, Button, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
@@ -14,7 +12,6 @@ import API from '../../../blockchain/ethereumAPI'
 import { PyroToken } from 'src/blockchain/contractInterfaces/behodler/hephaestus/PyroToken'
 import behodlerLogo from '../../../images/behodler/logo.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
-import liquidity from '../../../images/liquidBackground.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
 import Governance from '../Swap/Governance/index'
@@ -34,8 +31,8 @@ const useStyles = makeStyles(theme => createStyles({
         margin: 0,
         marginTop: -100,
         paddingTop: 150,
-        backgroundImage: `url("${liquidity}")`,
         backgroundRepeat: 'no-repeat',
+        backgroundColor: 'transparent',
         backgroundSize: 'cover',
         width: '100% !important'
     },
@@ -78,11 +75,11 @@ const useStyles = makeStyles(theme => createStyles({
         height: "250px"
     },
     behodlerHeading: {
-        color: 'black',
+        color: '#2589D7',
         fontWeight: 'bold'
     },
     behodlerSubheading: {
-        color: 'navy',
+        color: 'midnightblue',
         textTransform: 'uppercase',
         fontWeight: 'bold',
         fontStyle: 'italic'
@@ -101,7 +98,7 @@ const useStyles = makeStyles(theme => createStyles({
         textOverflow: 'wrap'
     },
     alphadrop: {
-        color: 'black',
+        color: '#2589D7',
         fontFamily: theme.typography.fontFamily,
         fontSize: theme.typography.h6.fontSize || '1.25rem'
     },
@@ -191,7 +188,7 @@ export default function Swap(props: props) {
         <Grid
             container
             direction="column"
-            justify="center"
+            justify="space-around"
             alignItems="center"
             spacing={6}
             className={props.connected ? classes.SwapRoot : classes.SwapRootNotConnected}>
@@ -212,22 +209,6 @@ export default function Swap(props: props) {
                     <img src={eyelogo} />
                 </DepaddedGridItem>
                 : ''}
-            {logoVisible ?
-                <DepaddedGridItem>
-                    <Grid
-                        container
-                        direction="row"
-                        justify="center"
-                        alignItems="center"
-                    >
-                        <Grid item>
-                            <div className={classes.alphadrop}>
-                                Full details of the $EYE <Link component="button" className={classes.alphadropLink} onClick={() => window.open('https://behodler.info ', '_blank')}>Liquidity Mining Event</Link>
-                            </div>
-                        </Grid>
-                    </Grid>
-                </DepaddedGridItem>
-                : ''}
             {logoVisible ? <DepaddedGridItem>
                 <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
                     walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
@@ -235,10 +216,10 @@ export default function Swap(props: props) {
             </DepaddedGridItem> : ''}
             {logoVisible ?
                 <DepaddedGridItem>
-                    <Typography className={classes.warningText} variant='subtitle2'>
-                    Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves. 
-                    Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken wrapper.
-                    Take out a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Vault.
+                    <Typography className={classes.warningText} variant='subtitle1'>
+                        Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
+                        Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken wrapper.
+                        Take out a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Vault.
             </Typography>
                 </DepaddedGridItem>
                 : ''}
@@ -271,7 +252,7 @@ export default function Swap(props: props) {
             >
                 <Grid item>
                     <div className={classes.alphadrop}>
-                    Swap, Own and Queue for Liquidity
+                        Swap, Own and Queue for Liquidity
                     </div>
                 </Grid>
             </Grid>
@@ -306,10 +287,6 @@ function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] })
             return <TradingBox2 />
         case 'liquidity':
             return <LiquidityMining />
-        case 'sisyphus':
-            return <Sisyphus />
-        case 'faucet':
-            return <ScarcityFaucet />
         case 'governance':
             return <Governance />
         default:

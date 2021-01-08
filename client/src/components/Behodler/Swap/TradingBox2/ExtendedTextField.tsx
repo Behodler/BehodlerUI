@@ -185,7 +185,7 @@ export default function ExtendedTextField(props: props) {
 
   useEffect(() => {
     if (props.exchangeRate && props.exchangeRate.setReserve) {
-      const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Behodler.address)
+      const effect = currentTokenEffects.balanceOfTokenEffect(walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
       const subscription = effect.Observable.subscribe(balance => {
         if (props.exchangeRate && props.exchangeRate.setReserve)
           props.exchangeRate.setReserve(balance)

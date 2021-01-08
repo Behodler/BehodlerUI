@@ -32,9 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
             flexGrow: 1,
         },
         appBar: {
-            color: 'black',
-            height: 100,
-            backgroundColor: 'white',
+            color: '#2589D7',
+         //   height: 100,
+            backgroundColor: 'transparent',
             boxShadow: 'none'
         },
         menuButton: {
@@ -92,14 +92,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         textLink: {
             marginLeft: 50,
-            color: '#404040',
+            color: '#2589D7',
             '&:hover': {
                 textDecoration: 'none',
             }
         },
         textLinkSelected: {
             marginLeft: 50,
-            color: 'black',
+            color: '#2589D7',
             textDecoration: 'underline',
             fontWeight: 800,
             '&:hover': {

@@ -11,7 +11,6 @@ interface contractListProps {
 function ContractList(props: contractListProps) {
     const walletContextProps = useContext(WalletContext)
     const contractList = Object.keys(walletContextProps.contracts.behodler).filter(c => c !== 'Sisyphus')
-    const sisyphusList = Object.keys(walletContextProps.contracts.behodler.Sisyphus)
     return (<List>
         {contractList.map(contract => {
 
@@ -21,14 +20,6 @@ function ContractList(props: contractListProps) {
                 <Typography variant="caption">{nonClickText}</Typography>
             </ListItem>
         })}
-        {sisyphusList.map(contract => {
-            const nonClickText = ` -> ${walletContextProps.contracts.behodler.Sisyphus[contract].address}`
-            return <ListItem key={contract}>
-                <Button onClick={() => props.selectContract(contract)}>{contract}</Button>
-                <Typography variant="caption">{nonClickText}</Typography>
-            </ListItem>
-        })
-        }
     </List>
     )
 }
