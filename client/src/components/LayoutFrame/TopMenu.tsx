@@ -4,9 +4,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Grid, Hidden, Link, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Grid, Hidden, Link, Menu, MenuItem } from '@material-ui/core';
 import { permittedRoutes } from '../Behodler/Swap';
-import eyelogo from '../../images/behodler/landingPage/EyeLogo.png'
 import metamaskAccount from '../../images/behodler/metamaskaccount.png'
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
@@ -32,8 +31,8 @@ const useStyles = makeStyles((theme: Theme) =>
             flexGrow: 1,
         },
         appBar: {
-            color: '#2589D7',
-         //   height: 100,
+            color: 'white',
+           height: 100,
             backgroundColor: 'transparent',
             boxShadow: 'none'
         },
@@ -91,15 +90,20 @@ const useStyles = makeStyles((theme: Theme) =>
             }
         },
         textLink: {
+            marginTop:20,
             marginLeft: 50,
-            color: '#2589D7',
+            fontWeight:'bold',
+            fontSize:20,
+            color: 'white',
             '&:hover': {
                 textDecoration: 'none',
             }
         },
         textLinkSelected: {
+            marginTop:20,
             marginLeft: 50,
-            color: '#2589D7',
+            fontSize:20,
+            color: 'white',
             textDecoration: 'underline',
             fontWeight: 800,
             '&:hover': {
@@ -139,7 +143,7 @@ export default function TopMenu(props: props) {
     const location = useLocation().pathname.substring(1)
     const LeftLink = (props: { text: string, nav: () => void, selected: boolean }) => (
         <Link className={props.selected ? classes.textLinkSelected : classes.textLink} onClick={props.nav} component="button">
-            <Typography variant="h6">{props.text}</Typography>
+            {props.text}
         </Link>
     )
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -159,9 +163,6 @@ export default function TopMenu(props: props) {
         <div className={classes.menuRoot}>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
-                    <div>
-                        <img src={eyelogo} width={150} />
-                    </div>
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
                         <LeftLink text="Swap 2" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />

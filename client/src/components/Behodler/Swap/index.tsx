@@ -75,7 +75,7 @@ const useStyles = makeStyles(theme => createStyles({
         height: "250px"
     },
     behodlerHeading: {
-        color: '#2589D7',
+        color: 'white',
         fontWeight: 'bold'
     },
     behodlerSubheading: {
@@ -98,9 +98,10 @@ const useStyles = makeStyles(theme => createStyles({
         textOverflow: 'wrap'
     },
     alphadrop: {
-        color: '#2589D7',
+        color: 'white',
         fontFamily: theme.typography.fontFamily,
-        fontSize: theme.typography.h6.fontSize || '1.25rem'
+        fontSize: theme.typography.h6.fontSize || '1.25rem',
+        fontWeight: 'bold'
     },
     alphadropLink: {
         fontFamily: theme.typography.fontFamily,
@@ -238,7 +239,7 @@ export default function Swap(props: props) {
                     >
                         <Grid item>
                             <Typography variant="h4" className={classes.behodlerHeading}>
-                                Behodler Liquidity Protocol
+                                Behodler Liquidity Engine
             </Typography>
                         </Grid>
                     </Grid>

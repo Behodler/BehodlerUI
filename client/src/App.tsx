@@ -11,7 +11,7 @@ const theme = createMuiTheme({
 		type: 'light'
 	},
 	typography: {
-		//fontFamily: 'Syncopate',
+		fontFamily: 'Inter',
 		//fontSize:11
 	}
 })

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { Grid, makeStyles, createStyles, IconButton, Typography } from '@material-ui/core';
+import { Grid, makeStyles, createStyles, IconButton } from '@material-ui/core';
 import discord from '../../../src/images/behodler/footer/discord.png'
 import medium from '../../../src/images/behodler/footer/medium.png'
 import github from '../../../src/images/behodler/footer/Github.png'
@@ -15,13 +15,16 @@ import Admin from '../Behodler/Admin/index'
 import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
 
+//ocean, forest,skybackground
+import backImage from '../../images/behodler/ocean.gif'
 const useStyles = makeStyles(theme => createStyles({
 	layoutFrameroot: {
 		display: "flex",
 		flexFlow: 'column',
 		height: '100%',
 		width: '100%',
-		backgroundImage: 'radial-gradient(circle, #e1e8f2, #d9e6f3, #d0e4f4, #c6e3f3, #bbe2f2)',
+		paddingBottom: 200,
+		backgroundImage: `url(${backImage})`,
 		backgroundRepeat: 'repeat-y',
 		backgroundSize: 'cover',
 		overflowY: 'hidden',
@@ -50,7 +53,7 @@ const useStyles = makeStyles(theme => createStyles({
 		color: 'black',
 		textAlign: 'center',
 		height: 100,
-		
+
 		backgroundColor: 'transparent'
 	},
 	footerGrid: {
@@ -61,6 +64,13 @@ const useStyles = makeStyles(theme => createStyles({
 	filledGrid: {
 		width: '100%',
 		padding: '0 !important'
+	},
+	whiteText: {
+		color: 'white'
+	},
+	footerPanel: {
+		backgroundColor: 'rgba(255,255,255,0.7)',
+		borderRadius: 10
 	}
 }))
 
@@ -81,7 +91,6 @@ export default function LayoutFrame(props: any) {
 	})
 
 	const classes = useStyles()
-
 	const FilledGridCell = (props: { children: any }) => <Grid className={classes.filledGrid} item> {props.children}</Grid>
 	const notConnected: boolean = !walletContextProps.connected || walletContextProps.networkName === '' || !walletContextProps.initialized//|| walletContextProps.account.length < 5
 	const openFooter = (url: string) => window.open(url, '_blank')
@@ -90,6 +99,7 @@ export default function LayoutFrame(props: any) {
 			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
 			<div>
 				{renderRedirect}
+
 			</div>
 			<Grid
 				container
@@ -146,54 +156,53 @@ export default function LayoutFrame(props: any) {
 								className={classes.footerGrid}
 							>
 								<Grid item>
-									<Grid
-										container
-										direction="row"
-										justify="center"
-										alignItems="center"
-										spacing={2}
-									>
+									<div className={classes.footerPanel}>
+										<Grid
+											container
+											direction="row"
+											justify="center"
+											alignItems="center"
+											spacing={2}
+										>
 
-										<Grid item>
-											<IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')} >
-												<img src={github} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
-										<Grid item>
-											<IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
-												<img src={medium} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
-										<Grid item>
-											<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin/faq-behodler-and-scarcity-scx-98e9baf94ea')} >
-												<img src={faq} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
-										<Grid item>
-											<IconButton title="discord" onClick={() => openFooter('https://discord.gg/f2pAVGa')} >
-												<img src={discord} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
-										<Grid item>
-											<IconButton title="uniswap" onClick={() => openFooter('https://info.uniswap.org/pair/0x6004946fc90956ccb12bd6619e437fdf99c05155')} >
-												<img src={uniswap} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
-										<Grid item>
-											<IconButton title="telegram" onClick={() => openFooter('https://t.me/degenvc')} >
-												<img src={telegram} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
-										{walletContextProps.primary ? <Grid item>
-											<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
-												<img src={faq} width={footerIconWidth} />
-											</IconButton>
-										</Grid> : ''}
+											<Grid item>
+												<IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')} >
+													<img src={github} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
+											<Grid item>
+												<IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
+													<img src={medium} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
+											<Grid item>
+												<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin/faq-behodler-and-scarcity-scx-98e9baf94ea')} >
+													<img src={faq} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
+											<Grid item>
+												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/f2pAVGa')} >
+													<img src={discord} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
+											<Grid item>
+												<IconButton title="uniswap" onClick={() => openFooter('https://info.uniswap.org/pair/0x6004946fc90956ccb12bd6619e437fdf99c05155')} >
+													<img src={uniswap} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
+											<Grid item>
+												<IconButton title="telegram" onClick={() => openFooter('https://t.me/degenvc')} >
+													<img src={telegram} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
+											{walletContextProps.primary ? <Grid item>
+												<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
+													<img src={faq} width={footerIconWidth} />
+												</IconButton>
+											</Grid> : ''}
 
-									</Grid>
-								</Grid>
-								<Grid item>
-									<Typography variant="subtitle2">© 2020 by behodler.io</Typography>
+										</Grid>
+									</div>
 								</Grid>
 							</Grid>
 						</div>
