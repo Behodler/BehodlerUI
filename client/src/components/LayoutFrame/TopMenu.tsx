@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         appBar: {
             color: 'white',
-           height: 100,
+            height: 100,
             backgroundColor: 'transparent',
             boxShadow: 'none'
         },
@@ -90,19 +90,19 @@ const useStyles = makeStyles((theme: Theme) =>
             }
         },
         textLink: {
-            marginTop:20,
+            marginTop: 20,
             marginLeft: 50,
-            fontWeight:'bold',
-            fontSize:20,
+            fontWeight: 'bold',
+            fontSize: 20,
             color: 'white',
             '&:hover': {
                 textDecoration: 'none',
             }
         },
         textLinkSelected: {
-            marginTop:20,
+            marginTop: 20,
             marginLeft: 50,
-            fontSize:20,
+            fontSize: 20,
             color: 'white',
             textDecoration: 'underline',
             fontWeight: 800,
@@ -167,8 +167,9 @@ export default function TopMenu(props: props) {
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
                         <LeftLink text="Swap 2" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
                         <LeftLink text="Liquidity Queueing" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
-                        <LeftLink text="Vote" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
+                        <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(mediumLink, '_blank')} selected={false} />
+                        <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />
                     </Hidden>
                     <div className={classes.search}>
                         <Grid

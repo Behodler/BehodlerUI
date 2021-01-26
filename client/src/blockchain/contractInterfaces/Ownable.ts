@@ -1,6 +1,6 @@
 import { address } from './SolidityTypes'
-
-export interface Ownable {
+import {BaseContract} from './BaseContract'
+export interface Ownable extends BaseContract {
 	owner: () => any
 	transferOwnership: (newOwner: address) =>any
 }

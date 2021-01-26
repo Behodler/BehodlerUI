@@ -970,7 +970,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 3020,
+        "sourceUnit": 3149,
         "src": "57:36:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -981,7 +981,7 @@
         "id": 3,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 2684,
+        "sourceUnit": 2807,
         "src": "94:24:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -992,7 +992,7 @@
         "id": 4,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 2725,
+        "sourceUnit": 2866,
         "src": "119:36:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1003,7 +1003,7 @@
         "id": 5,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 2704,
+        "sourceUnit": 2845,
         "src": "156:32:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1014,7 +1014,7 @@
         "id": 6,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 3216,
+        "sourceUnit": 3345,
         "src": "189:37:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1025,7 +1025,7 @@
         "id": 7,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 2920,
+        "sourceUnit": 3049,
         "src": "227:35:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1036,7 +1036,7 @@
         "id": 8,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 2741,
+        "sourceUnit": 2882,
         "src": "263:44:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1047,7 +1047,7 @@
         "id": 9,
         "nodeType": "ImportDirective",
         "scope": 1422,
-        "sourceUnit": 2735,
+        "sourceUnit": 2876,
         "src": "308:43:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1260,10 +1260,10 @@
                           "name": "IERC20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2919,
+                          "referencedDeclaration": 3048,
                           "src": "581:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IERC20_$2919_$",
+                            "typeIdentifier": "t_type$_t_contract$_IERC20_$3048_$",
                             "typeString": "type(contract IERC20)"
                           }
                         },
@@ -1278,7 +1278,7 @@
                         "src": "581:13:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$2919",
+                          "typeIdentifier": "t_contract$_IERC20_$3048",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -1289,7 +1289,7 @@
                       "lValueRequested": false,
                       "memberName": "balanceOf",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 2864,
+                      "referencedDeclaration": 2993,
                       "src": "581:23:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
@@ -1507,10 +1507,10 @@
                             "name": "IERC20",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2919,
+                            "referencedDeclaration": 3048,
                             "src": "762:6:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_contract$_IERC20_$2919_$",
+                              "typeIdentifier": "t_type$_t_contract$_IERC20_$3048_$",
                               "typeString": "type(contract IERC20)"
                             }
                           },
@@ -1525,7 +1525,7 @@
                           "src": "762:13:0",
                           "tryCall": false,
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_IERC20_$2919",
+                            "typeIdentifier": "t_contract$_IERC20_$3048",
                             "typeString": "contract IERC20"
                           }
                         },
@@ -1536,7 +1536,7 @@
                         "lValueRequested": false,
                         "memberName": "balanceOf",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 2864,
+                        "referencedDeclaration": 2993,
                         "src": "762:23:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
@@ -1822,10 +1822,10 @@
                           "name": "IERC20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2919,
+                          "referencedDeclaration": 3048,
                           "src": "935:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IERC20_$2919_$",
+                            "typeIdentifier": "t_type$_t_contract$_IERC20_$3048_$",
                             "typeString": "type(contract IERC20)"
                           }
                         },
@@ -1840,7 +1840,7 @@
                         "src": "935:13:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$2919",
+                          "typeIdentifier": "t_contract$_IERC20_$3048",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -1851,7 +1851,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 2902,
+                      "referencedDeclaration": 3031,
                       "src": "935:26:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -2056,10 +2056,10 @@
                           "name": "IERC20",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2919,
+                          "referencedDeclaration": 3048,
                           "src": "1121:6:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IERC20_$2919_$",
+                            "typeIdentifier": "t_type$_t_contract$_IERC20_$3048_$",
                             "typeString": "type(contract IERC20)"
                           }
                         },
@@ -2074,7 +2074,7 @@
                         "src": "1121:13:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$2919",
+                          "typeIdentifier": "t_contract$_IERC20_$3048",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -2085,7 +2085,7 @@
                       "lValueRequested": false,
                       "memberName": "transfer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 2873,
+                      "referencedDeclaration": 3002,
                       "src": "1121:22:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -5147,10 +5147,10 @@
               "id": 334,
               "name": "Scarcity",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2683,
+              "referencedDeclaration": 2806,
               "src": "5602:8:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Scarcity_$2683",
+                "typeIdentifier": "t_contract$_Scarcity_$2806",
                 "typeString": "contract Scarcity"
               }
             },
@@ -5160,18 +5160,18 @@
           }
         ],
         "contractDependencies": [
-          2683,
-          2919,
-          3019
+          2806,
+          3048,
+          3148
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 1421,
         "linearizedBaseContracts": [
           1421,
-          2683,
-          3019,
-          2919
+          2806,
+          3148,
+          3048
         ],
         "name": "Behodler",
         "nodeType": "ContractDefinition",
@@ -5182,10 +5182,10 @@
               "id": 336,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3215,
+              "referencedDeclaration": 3344,
               "src": "5623:8:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$3215",
+                "typeIdentifier": "t_contract$_SafeMath_$3344",
                 "typeString": "library SafeMath"
               }
             },
@@ -5958,17 +5958,17 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_FlashLoanArbiter_$2734",
+              "typeIdentifier": "t_contract$_FlashLoanArbiter_$2875",
               "typeString": "contract FlashLoanArbiter"
             },
             "typeName": {
               "id": 400,
               "name": "FlashLoanArbiter",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2734,
+              "referencedDeclaration": 2875,
               "src": "6550:16:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FlashLoanArbiter_$2734",
+                "typeIdentifier": "t_contract$_FlashLoanArbiter_$2875",
                 "typeString": "contract FlashLoanArbiter"
               }
             },
@@ -6551,7 +6551,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2968,
+                  "referencedDeclaration": 3097,
                   "src": "6961:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -6835,7 +6835,7 @@
                       "referencedDeclaration": 401,
                       "src": "7512:7:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_FlashLoanArbiter_$2734",
+                        "typeIdentifier": "t_contract$_FlashLoanArbiter_$2875",
                         "typeString": "contract FlashLoanArbiter"
                       }
                     },
@@ -6867,10 +6867,10 @@
                         "name": "FlashLoanArbiter",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2734,
+                        "referencedDeclaration": 2875,
                         "src": "7522:16:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_FlashLoanArbiter_$2734_$",
+                          "typeIdentifier": "t_type$_t_contract$_FlashLoanArbiter_$2875_$",
                           "typeString": "type(contract FlashLoanArbiter)"
                         }
                       },
@@ -6885,13 +6885,13 @@
                       "src": "7522:34:0",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_FlashLoanArbiter_$2734",
+                        "typeIdentifier": "t_contract$_FlashLoanArbiter_$2875",
                         "typeString": "contract FlashLoanArbiter"
                       }
                     },
                     "src": "7512:44:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_FlashLoanArbiter_$2734",
+                      "typeIdentifier": "t_contract$_FlashLoanArbiter_$2875",
                       "typeString": "contract FlashLoanArbiter"
                     }
                   },
@@ -7072,7 +7072,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2968,
+                  "referencedDeclaration": 3097,
                   "src": "7442:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -9391,7 +9391,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3065,
+                      "referencedDeclaration": 3194,
                       "src": "10691:15:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9577,7 +9577,7 @@
                                 "lValueRequested": false,
                                 "memberName": "mul",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 3128,
+                                "referencedDeclaration": 3257,
                                 "src": "10840:16:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9606,7 +9606,7 @@
                             "lValueRequested": false,
                             "memberName": "div",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3145,
+                            "referencedDeclaration": 3274,
                             "src": "10840:25:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9798,7 +9798,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3048,
+                      "referencedDeclaration": 3177,
                       "src": "11045:23:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9897,7 +9897,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3065,
+                      "referencedDeclaration": 3194,
                       "src": "11123:24:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10062,7 +10062,7 @@
                           "lValueRequested": false,
                           "memberName": "div",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3145,
+                          "referencedDeclaration": 3274,
                           "src": "11397:86:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10222,7 +10222,7 @@
                           "lValueRequested": false,
                           "memberName": "div",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3145,
+                          "referencedDeclaration": 3274,
                           "src": "11554:85:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -12246,7 +12246,7 @@
                                   "lValueRequested": false,
                                   "memberName": "sub",
                                   "nodeType": "MemberAccess",
-                                  "referencedDeclaration": 3065,
+                                  "referencedDeclaration": 3194,
                                   "src": "13474:31:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -12275,7 +12275,7 @@
                               "lValueRequested": false,
                               "memberName": "div",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 3145,
+                              "referencedDeclaration": 3274,
                               "src": "13474:87:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -12447,7 +12447,7 @@
                           "lValueRequested": false,
                           "memberName": "add",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3048,
+                          "referencedDeclaration": 3177,
                           "src": "13664:18:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -12995,7 +12995,7 @@
                       "name": "mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2476,
+                      "referencedDeclaration": 2599,
                       "src": "13969:4:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -13513,7 +13513,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3065,
+                      "referencedDeclaration": 3194,
                       "src": "14904:18:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -13724,7 +13724,7 @@
                                 "lValueRequested": false,
                                 "memberName": "mul",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 3128,
+                                "referencedDeclaration": 3257,
                                 "src": "15044:19:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -13753,7 +13753,7 @@
                             "lValueRequested": false,
                             "memberName": "div",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3145,
+                            "referencedDeclaration": 3274,
                             "src": "15044:28:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -14236,7 +14236,7 @@
                       "name": "balances",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2167,
+                      "referencedDeclaration": 2290,
                       "src": "15410:8:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
@@ -14647,7 +14647,7 @@
                       "name": "burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2443,
+                      "referencedDeclaration": 2566,
                       "src": "15711:4:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -15846,7 +15846,7 @@
                             "lValueRequested": false,
                             "memberName": "sub",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3065,
+                            "referencedDeclaration": 3194,
                             "src": "17177:18:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -17298,7 +17298,7 @@
                             "referencedDeclaration": 401,
                             "src": "18973:7:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_FlashLoanArbiter_$2734",
+                              "typeIdentifier": "t_contract$_FlashLoanArbiter_$2875",
                               "typeString": "contract FlashLoanArbiter"
                             }
                           },
@@ -17309,7 +17309,7 @@
                           "lValueRequested": false,
                           "memberName": "canBorrow",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2733,
+                          "referencedDeclaration": 2874,
                           "src": "18973:17:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$_t_bool_$",
@@ -17405,7 +17405,7 @@
                         "name": "balances",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2167,
+                        "referencedDeclaration": 2290,
                         "src": "19071:8:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
@@ -17466,7 +17466,7 @@
                             "name": "balances",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2167,
+                            "referencedDeclaration": 2290,
                             "src": "19101:8:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
@@ -17504,7 +17504,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 3048,
+                        "referencedDeclaration": 3177,
                         "src": "19101:31:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -17567,10 +17567,10 @@
                           "name": "FlashLoanReceiver",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2740,
+                          "referencedDeclaration": 2881,
                           "src": "19150:17:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_FlashLoanReceiver_$2740_$",
+                            "typeIdentifier": "t_type$_t_contract$_FlashLoanReceiver_$2881_$",
                             "typeString": "type(contract FlashLoanReceiver)"
                           }
                         },
@@ -17585,7 +17585,7 @@
                         "src": "19150:36:0",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_FlashLoanReceiver_$2740",
+                          "typeIdentifier": "t_contract$_FlashLoanReceiver_$2881",
                           "typeString": "contract FlashLoanReceiver"
                         }
                       },
@@ -17596,7 +17596,7 @@
                       "lValueRequested": false,
                       "memberName": "execute",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 2739,
+                      "referencedDeclaration": 2880,
                       "src": "19150:44:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
@@ -17635,7 +17635,7 @@
                         "name": "balances",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2167,
+                        "referencedDeclaration": 2290,
                         "src": "19206:8:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
@@ -17716,7 +17716,7 @@
                             "name": "balances",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2167,
+                            "referencedDeclaration": 2290,
                             "src": "19236:8:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
@@ -17754,7 +17754,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 3093,
+                        "referencedDeclaration": 3222,
                         "src": "19236:31:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$_t_string_memory_ptr_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -17955,7 +17955,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2968,
+                  "referencedDeclaration": 3097,
                   "src": "19550:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -18222,10 +18222,10 @@
                                         "name": "config",
                                         "nodeType": "Identifier",
                                         "overloadedDeclarations": [],
-                                        "referencedDeclaration": 2186,
+                                        "referencedDeclaration": 2309,
                                         "src": "19966:6:0",
                                         "typeDescriptions": {
-                                          "typeIdentifier": "t_struct$_BurnConfig_$2184_storage",
+                                          "typeIdentifier": "t_struct$_BurnConfig_$2307_storage",
                                           "typeString": "struct Scarcity.BurnConfig storage ref"
                                         }
                                       },
@@ -18236,7 +18236,7 @@
                                       "lValueRequested": false,
                                       "memberName": "burnFee",
                                       "nodeType": "MemberAccess",
-                                      "referencedDeclaration": 2181,
+                                      "referencedDeclaration": 2304,
                                       "src": "19966:14:0",
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_uint256",
@@ -18250,7 +18250,7 @@
                                     "lValueRequested": false,
                                     "memberName": "mul",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 3128,
+                                    "referencedDeclaration": 3257,
                                     "src": "19966:18:0",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -18279,7 +18279,7 @@
                                 "lValueRequested": false,
                                 "memberName": "div",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 3145,
+                                "referencedDeclaration": 3274,
                                 "src": "19966:30:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -18480,10 +18480,10 @@
                                         "name": "config",
                                         "nodeType": "Identifier",
                                         "overloadedDeclarations": [],
-                                        "referencedDeclaration": 2186,
+                                        "referencedDeclaration": 2309,
                                         "src": "19841:6:0",
                                         "typeDescriptions": {
-                                          "typeIdentifier": "t_struct$_BurnConfig_$2184_storage",
+                                          "typeIdentifier": "t_struct$_BurnConfig_$2307_storage",
                                           "typeString": "struct Scarcity.BurnConfig storage ref"
                                         }
                                       },
@@ -18494,7 +18494,7 @@
                                       "lValueRequested": false,
                                       "memberName": "burnFee",
                                       "nodeType": "MemberAccess",
-                                      "referencedDeclaration": 2181,
+                                      "referencedDeclaration": 2304,
                                       "src": "19841:14:0",
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_uint256",
@@ -18508,7 +18508,7 @@
                                     "lValueRequested": false,
                                     "memberName": "mul",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 3128,
+                                    "referencedDeclaration": 3257,
                                     "src": "19841:18:0",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -18537,7 +18537,7 @@
                                 "lValueRequested": false,
                                 "memberName": "div",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 3145,
+                                "referencedDeclaration": 3274,
                                 "src": "19841:30:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -18737,7 +18737,7 @@
                           "name": "burnFee",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2682,
+                          "referencedDeclaration": 2805,
                           "src": "19761:7:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$_t_uint256_$",
@@ -19186,7 +19186,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 3020,
+          "SourceUnit": 3149,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/openzeppelin/Ownable.sol",
           "file": "./openzeppelin/Ownable.sol",
           "scope": 1422,
@@ -19201,7 +19201,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2684,
+          "SourceUnit": 2807,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/Scarcity.sol",
           "file": "./Scarcity.sol",
           "scope": 1422,
@@ -19216,7 +19216,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2725,
+          "SourceUnit": 2866,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/facades/LachesisLike.sol",
           "file": "./facades/LachesisLike.sol",
           "scope": 1422,
@@ -19231,7 +19231,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2704,
+          "SourceUnit": 2845,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/facades/Burnable.sol",
           "file": "./facades/Burnable.sol",
           "scope": 1422,
@@ -19246,7 +19246,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 3216,
+          "SourceUnit": 3345,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/openzeppelin/SafeMath.sol",
           "file": "./openzeppelin/SafeMath.sol",
           "scope": 1422,
@@ -19261,7 +19261,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2920,
+          "SourceUnit": 3049,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/openzeppelin/IERC20.sol",
           "file": "./openzeppelin/IERC20.sol",
           "scope": 1422,
@@ -19276,7 +19276,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2741,
+          "SourceUnit": 2882,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/flashLoans/FlashLoanReceiver.sol",
           "file": "./flashLoans/FlashLoanReceiver.sol",
           "scope": 1422,
@@ -19291,7 +19291,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 2735,
+          "SourceUnit": 2876,
           "absolutePath": "/home/justin/weidai ecosystem/behodler2/contracts/flashLoans/FlashLoanArbiter.sol",
           "file": "./flashLoans/FlashLoanArbiter.sol",
           "scope": 1422,
@@ -19571,7 +19571,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "balanceOf",
-                              "referencedDeclaration": 2864,
+                              "referencedDeclaration": 2993,
                               "type": "function (address) view external returns (uint256)"
                             },
                             "children": [
@@ -19601,7 +19601,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2919,
+                                      "referencedDeclaration": 3048,
                                       "type": "type(contract IERC20)",
                                       "value": "IERC20"
                                     },
@@ -19871,7 +19871,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "balanceOf",
-                                  "referencedDeclaration": 2864,
+                                  "referencedDeclaration": 2993,
                                   "type": "function (address) view external returns (uint256)"
                                 },
                                 "children": [
@@ -19901,7 +19901,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 2919,
+                                          "referencedDeclaration": 3048,
                                           "type": "type(contract IERC20)",
                                           "value": "IERC20"
                                         },
@@ -20185,7 +20185,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "transferFrom",
-                              "referencedDeclaration": 2902,
+                              "referencedDeclaration": 3031,
                               "type": "function (address,address,uint256) external returns (bool)"
                             },
                             "children": [
@@ -20215,7 +20215,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2919,
+                                      "referencedDeclaration": 3048,
                                       "type": "type(contract IERC20)",
                                       "value": "IERC20"
                                     },
@@ -20503,7 +20503,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "transfer",
-                              "referencedDeclaration": 2873,
+                              "referencedDeclaration": 3002,
                               "type": "function (address,uint256) external returns (bool)"
                             },
                             "children": [
@@ -20533,7 +20533,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2919,
+                                      "referencedDeclaration": 3048,
                                       "type": "type(contract IERC20)",
                                       "value": "IERC20"
                                     },
@@ -23730,17 +23730,17 @@
         "attributes": {
           "abstract": false,
           "contractDependencies": [
-            2683,
-            2919,
-            3019
+            2806,
+            3048,
+            3148
           ],
           "contractKind": "contract",
           "fullyImplemented": true,
           "linearizedBaseContracts": [
             1421,
-            2683,
-            3019,
-            2919
+            2806,
+            3148,
+            3048
           ],
           "name": "Behodler",
           "scope": 1422
@@ -23752,7 +23752,7 @@
               {
                 "attributes": {
                   "name": "Scarcity",
-                  "referencedDeclaration": 2683,
+                  "referencedDeclaration": 2806,
                   "type": "contract Scarcity"
                 },
                 "id": 334,
@@ -23769,7 +23769,7 @@
               {
                 "attributes": {
                   "name": "SafeMath",
-                  "referencedDeclaration": 3215,
+                  "referencedDeclaration": 3344,
                   "type": "library SafeMath"
                 },
                 "id": 336,
@@ -24566,7 +24566,7 @@
               {
                 "attributes": {
                   "name": "FlashLoanArbiter",
-                  "referencedDeclaration": 2734,
+                  "referencedDeclaration": 2875,
                   "type": "contract FlashLoanArbiter"
                 },
                 "id": 400,
@@ -25148,7 +25148,7 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 2968,
+                      "referencedDeclaration": 3097,
                       "type": "modifier ()",
                       "value": "onlyOwner"
                     },
@@ -25613,7 +25613,7 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 2968,
+                      "referencedDeclaration": 3097,
                       "type": "modifier ()",
                       "value": "onlyOwner"
                     },
@@ -25775,7 +25775,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2734,
+                                  "referencedDeclaration": 2875,
                                   "type": "type(contract FlashLoanArbiter)",
                                   "value": "FlashLoanArbiter"
                                 },
@@ -28475,7 +28475,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "sub",
-                              "referencedDeclaration": 3065,
+                              "referencedDeclaration": 3194,
                               "type": "function (uint256,uint256) pure returns (uint256)"
                             },
                             "children": [
@@ -28752,7 +28752,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "div",
-                                      "referencedDeclaration": 3145,
+                                      "referencedDeclaration": 3274,
                                       "type": "function (uint256,uint256) pure returns (uint256)"
                                     },
                                     "children": [
@@ -28784,7 +28784,7 @@
                                               "isPure": false,
                                               "lValueRequested": false,
                                               "member_name": "mul",
-                                              "referencedDeclaration": 3128,
+                                              "referencedDeclaration": 3257,
                                               "type": "function (uint256,uint256) pure returns (uint256)"
                                             },
                                             "children": [
@@ -28969,7 +28969,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "add",
-                              "referencedDeclaration": 3048,
+                              "referencedDeclaration": 3177,
                               "type": "function (uint256,uint256) pure returns (uint256)"
                             },
                             "children": [
@@ -29075,7 +29075,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "sub",
-                              "referencedDeclaration": 3065,
+                              "referencedDeclaration": 3194,
                               "type": "function (uint256,uint256) pure returns (uint256)"
                             },
                             "children": [
@@ -29183,7 +29183,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "div",
-                                  "referencedDeclaration": 3145,
+                                  "referencedDeclaration": 3274,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -29352,7 +29352,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "div",
-                                  "referencedDeclaration": 3145,
+                                  "referencedDeclaration": 3274,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -31519,7 +31519,7 @@
                                           "isPure": false,
                                           "lValueRequested": false,
                                           "member_name": "div",
-                                          "referencedDeclaration": 3145,
+                                          "referencedDeclaration": 3274,
                                           "type": "function (uint256,uint256) pure returns (uint256)"
                                         },
                                         "children": [
@@ -31551,7 +31551,7 @@
                                                   "isPure": false,
                                                   "lValueRequested": false,
                                                   "member_name": "sub",
-                                                  "referencedDeclaration": 3065,
+                                                  "referencedDeclaration": 3194,
                                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                                 },
                                                 "children": [
@@ -31794,7 +31794,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "add",
-                                  "referencedDeclaration": 3048,
+                                  "referencedDeclaration": 3177,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -32338,7 +32338,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2476,
+                              "referencedDeclaration": 2599,
                               "type": "function (address,uint256)",
                               "value": "mint"
                             },
@@ -32908,7 +32908,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "sub",
-                              "referencedDeclaration": 3065,
+                              "referencedDeclaration": 3194,
                               "type": "function (uint256,uint256) pure returns (uint256)"
                             },
                             "children": [
@@ -33147,7 +33147,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "div",
-                                      "referencedDeclaration": 3145,
+                                      "referencedDeclaration": 3274,
                                       "type": "function (uint256,uint256) pure returns (uint256)"
                                     },
                                     "children": [
@@ -33179,7 +33179,7 @@
                                               "isPure": false,
                                               "lValueRequested": false,
                                               "member_name": "mul",
-                                              "referencedDeclaration": 3128,
+                                              "referencedDeclaration": 3257,
                                               "type": "function (uint256,uint256) pure returns (uint256)"
                                             },
                                             "children": [
@@ -33707,7 +33707,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2167,
+                              "referencedDeclaration": 2290,
                               "type": "mapping(address => uint256)",
                               "value": "balances"
                             },
@@ -34112,7 +34112,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2443,
+                              "referencedDeclaration": 2566,
                               "type": "function (address,uint256)",
                               "value": "burn"
                             },
@@ -35484,7 +35484,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "sub",
-                                      "referencedDeclaration": 3065,
+                                      "referencedDeclaration": 3194,
                                       "type": "function (uint256,uint256) pure returns (uint256)"
                                     },
                                     "children": [
@@ -36875,7 +36875,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "canBorrow",
-                                  "referencedDeclaration": 2733,
+                                  "referencedDeclaration": 2874,
                                   "type": "function (address) external returns (bool)"
                                 },
                                 "children": [
@@ -36981,7 +36981,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2167,
+                                  "referencedDeclaration": 2290,
                                   "type": "mapping(address => uint256)",
                                   "value": "balances"
                                 },
@@ -37035,7 +37035,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "add",
-                                  "referencedDeclaration": 3048,
+                                  "referencedDeclaration": 3177,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -37053,7 +37053,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 2167,
+                                          "referencedDeclaration": 2290,
                                           "type": "mapping(address => uint256)",
                                           "value": "balances"
                                         },
@@ -37142,7 +37142,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "execute",
-                              "referencedDeclaration": 2739,
+                              "referencedDeclaration": 2880,
                               "type": "function () external"
                             },
                             "children": [
@@ -37172,7 +37172,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2740,
+                                      "referencedDeclaration": 2881,
                                       "type": "type(contract FlashLoanReceiver)",
                                       "value": "FlashLoanReceiver"
                                     },
@@ -37239,7 +37239,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 2167,
+                                  "referencedDeclaration": 2290,
                                   "type": "mapping(address => uint256)",
                                   "value": "balances"
                                 },
@@ -37297,7 +37297,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "sub",
-                                  "referencedDeclaration": 3093,
+                                  "referencedDeclaration": 3222,
                                   "type": "function (uint256,uint256,string memory) pure returns (uint256)"
                                 },
                                 "children": [
@@ -37315,7 +37315,7 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 2167,
+                                          "referencedDeclaration": 2290,
                                           "type": "mapping(address => uint256)",
                                           "value": "balances"
                                         },
@@ -37491,7 +37491,7 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 2968,
+                      "referencedDeclaration": 3097,
                       "type": "modifier ()",
                       "value": "onlyOwner"
                     },
@@ -37798,7 +37798,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 2682,
+                                      "referencedDeclaration": 2805,
                                       "type": "function (address,uint256) returns (uint256)",
                                       "value": "burnFee"
                                     },
@@ -37965,7 +37965,7 @@
                                               "isPure": false,
                                               "lValueRequested": false,
                                               "member_name": "div",
-                                              "referencedDeclaration": 3145,
+                                              "referencedDeclaration": 3274,
                                               "type": "function (uint256,uint256) pure returns (uint256)"
                                             },
                                             "children": [
@@ -37997,7 +37997,7 @@
                                                       "isPure": false,
                                                       "lValueRequested": false,
                                                       "member_name": "mul",
-                                                      "referencedDeclaration": 3128,
+                                                      "referencedDeclaration": 3257,
                                                       "type": "function (uint256,uint256) pure returns (uint256)"
                                                     },
                                                     "children": [
@@ -38008,7 +38008,7 @@
                                                           "isPure": false,
                                                           "lValueRequested": false,
                                                           "member_name": "burnFee",
-                                                          "referencedDeclaration": 2181,
+                                                          "referencedDeclaration": 2304,
                                                           "type": "uint256"
                                                         },
                                                         "children": [
@@ -38017,7 +38017,7 @@
                                                               "overloadedDeclarations": [
                                                                 null
                                                               ],
-                                                              "referencedDeclaration": 2186,
+                                                              "referencedDeclaration": 2309,
                                                               "type": "struct Scarcity.BurnConfig storage ref",
                                                               "value": "config"
                                                             },
@@ -38256,7 +38256,7 @@
                                               "isPure": false,
                                               "lValueRequested": false,
                                               "member_name": "div",
-                                              "referencedDeclaration": 3145,
+                                              "referencedDeclaration": 3274,
                                               "type": "function (uint256,uint256) pure returns (uint256)"
                                             },
                                             "children": [
@@ -38288,7 +38288,7 @@
                                                       "isPure": false,
                                                       "lValueRequested": false,
                                                       "member_name": "mul",
-                                                      "referencedDeclaration": 3128,
+                                                      "referencedDeclaration": 3257,
                                                       "type": "function (uint256,uint256) pure returns (uint256)"
                                                     },
                                                     "children": [
@@ -38299,7 +38299,7 @@
                                                           "isPure": false,
                                                           "lValueRequested": false,
                                                           "member_name": "burnFee",
-                                                          "referencedDeclaration": 2181,
+                                                          "referencedDeclaration": 2304,
                                                           "type": "uint256"
                                                         },
                                                         "children": [
@@ -38308,7 +38308,7 @@
                                                               "overloadedDeclarations": [
                                                                 null
                                                               ],
-                                                              "referencedDeclaration": 2186,
+                                                              "referencedDeclaration": 2309,
                                                               "type": "struct Scarcity.BurnConfig storage ref",
                                                               "value": "config"
                                                             },
@@ -38804,7 +38804,7 @@
     "version": "0.7.1+commit.f4a555be.Emscripten.clang"
   },
   "networks": {
-    "1609955571820": {
+    "1611693819402": {
       "events": {
         "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
           "anonymous": false,
@@ -39014,12 +39014,12 @@
         }
       },
       "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
+        "AddressBalanceCheck": "0x19cb4411037a3A7782B0429CAc507F3BEb6536ec"
       },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x64de0f23ff071482994f4bb7eee1982180a522aae6204f13ad302301da920038"
+      "address": "0xe7B235703556e47105Bc01744287c5f8cc7cE83A",
+      "transactionHash": "0x68b59fa5f0420fba00c0f079e0ad66d838035739ff737d980b3c7ec3504484f5"
     },
-    "1609956497583": {
+    "1611693845967": {
       "events": {
         "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
           "anonymous": false,
@@ -39229,12 +39229,12 @@
         }
       },
       "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
+        "AddressBalanceCheck": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b"
       },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x08113701c56e77800eb3c4784e205f905218bfe7e4070dee25e857e016cc43f9"
+      "address": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+      "transactionHash": "0xf62a74a259d43a8909f3a185477d379fd1b1d2b0797066871fc8c379cc98f240"
     },
-    "1609961662296": {
+    "1611696668578": {
       "events": {
         "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
           "anonymous": false,
@@ -39444,12 +39444,12 @@
         }
       },
       "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
+        "AddressBalanceCheck": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b"
       },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
+      "address": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+      "transactionHash": "0xf62a74a259d43a8909f3a185477d379fd1b1d2b0797066871fc8c379cc98f240"
     },
-    "1609963503109": {
+    "1611696958553": {
       "events": {
         "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
           "anonymous": false,
@@ -39659,12 +39659,12 @@
         }
       },
       "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
+        "AddressBalanceCheck": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b"
       },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
+      "address": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+      "transactionHash": "0xf62a74a259d43a8909f3a185477d379fd1b1d2b0797066871fc8c379cc98f240"
     },
-    "1610138213994": {
+    "1611697106097": {
       "events": {
         "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
           "anonymous": false,
@@ -39874,3239 +39874,14 @@
         }
       },
       "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
+        "AddressBalanceCheck": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b"
       },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
-    },
-    "1610138755582": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
-    },
-    "1610141540295": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
-    },
-    "1610142429393": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
-    },
-    "1610151325689": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0x024832f2a3e0d180f44483d1ca1dd01a557ee4952edd2121468b86bd2010cbea"
-    },
-    "1611399798674": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611436598992": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611437043535": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611437412373": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611437532417": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611437698870": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611438095501": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611438244506": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611438512524": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611439034301": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
-    },
-    "1611439615982": {
-      "events": {
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        "0xb90306ad06b2a6ff86ddc9327db583062895ef6540e62dc50add009db5b356eb": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Burn",
-          "type": "event"
-        },
-        "0x36f3b2e1a21c19137dd82ec243b0708a1d26b3d1fa1dc49c44c4c366a5878138": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityAdded",
-          "type": "event"
-        },
-        "0xba0b893b2f314a229997e335266881b5ac6b290bd350d2c23cc57160b77882b8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "tokenValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "scx",
-              "type": "uint256"
-            }
-          ],
-          "name": "LiquidityWithdrawn",
-          "type": "event"
-        },
-        "0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipient",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Mint",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "inputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "outputToken",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "inputValue",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "outputValue",
-              "type": "uint256"
-            }
-          ],
-          "name": "Swap",
-          "type": "event"
-        },
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        }
-      },
-      "links": {
-        "AddressBalanceCheck": "0x7724D962822Cdc30FeF80cBBCaE5c3853B0f6985"
-      },
-      "address": "0x9991e172E2CcF32Cdc83640969F7606E5E131A3b",
-      "transactionHash": "0xe429fb183384692316c79575efc8de5bfe4480e4ed9e4b1ca570e97e2ce93498"
+      "address": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+      "transactionHash": "0xf62a74a259d43a8909f3a185477d379fd1b1d2b0797066871fc8c379cc98f240"
     }
   },
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-01-23T22:07:36.394Z",
+  "updatedAt": "2021-01-26T21:39:06.267Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

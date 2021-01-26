@@ -181,7 +181,7 @@ export default function ExtendedTextField(props: props) {
       setCurrentBalance(balance)
     })
     return () => { subscription.unsubscribe(); effect.cleanup() }
-  })
+  });
 
   useEffect(() => {
     if (props.exchangeRate && props.exchangeRate.setReserve) {
