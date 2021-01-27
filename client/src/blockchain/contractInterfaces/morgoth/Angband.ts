@@ -2,16 +2,16 @@ import { address, Bytes32, uint } from '../SolidityTypes'
 import { Empowered } from "./Powers"
 import { Thangorodrim } from "./Thangorodrim"
 
-export interface Angband extends Empowered, Thangorodrim {
+export default interface Angband extends Empowered, Thangorodrim {
     authorizedInvokers: (user: address) => any
-    ironCrown: () => void
-    finalizeSetup: () => void
-    authorizeInvoker: (invoker: address, authorized: boolean) => void
-    setPowersRegistry: (powers: address) => void
-    mapDomain: (location: address, domain: Bytes32) => void
-    relinquishDomain: (domain: Bytes32) => void
-    setBehodler: (behodler: address, lachesis: address) => void
-    executePower: (powerInvoker: address) => void
-    executeOrder66: () => void
-    withdrawSCX: (amount: uint) => void
+    ironCrown: () => any
+    finalizeSetup: () => any
+    authorizeInvoker: (invoker: address, authorized: boolean) => any
+    setPowersRegistry: (powers: address) => any
+    mapDomain: (location: address, domain: Bytes32) => any
+    relinquishDomain: (domain: Bytes32) => any
+    setBehodler: (behodler: address, lachesis: address) => any
+    executePower: (powerInvoker: address) => any
+    executeOrder66: () => any
+    withdrawSCX: (amount: uint) => any
 }

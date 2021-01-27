@@ -1,15 +1,7 @@
-import { address, uint } from '../SolidityTypes'
+import { BaseContract } from '../BaseContract';
+import { uint } from '../SolidityTypes'
 
-export interface Migrator {
-    stepCounter: () => any
-    bridge: () => any
-    initBridge: () => any
-    bail: () => any
-    step1: () => any
-    step2: (tokens: address[]) => any
-    step3: () => any
-    step4: (iterations: uint) => any
-    step5: () => any
-    step6: (iterations: uint) => any
-    step7: () => any
+export default interface ScarcityBridge extends BaseContract {
+    exchangeRate: () => any
+    swap: (scx1: uint) => any
 }

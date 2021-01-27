@@ -1,0 +1,22 @@
+{
+    "main": {
+        "AddTokenToBehodler": "",
+        "Angband": "",
+        "ConfigureScarcity": "",
+        "IronCrown": "",
+        "Migrator": "",
+        "PowersRegistry": "",
+        "ScarcityBridge": "",
+        "SetSilmaril": ""
+    },
+    "development": {
+        "AddTokenToBehodler": "0x2c34511d7BBf60Cdf19907C36DD48B84198c3c76",
+        "Angband": "0xabDC9aa736207f567D5bc51983Ae637e48d5139E",
+        "ConfigureScarcity": "0x7B43701FE60A93596f6b9104ed06590FF556d52a",
+        "IronCrown": "0xE094694521C39ae2C4a03e901217F8873f59286f",
+        "Migrator": "0x83B70D9a1Cb64633AD628bdac40DF19b82A2e0b3",
+        "PowersRegistry": "0xA7b77072D7b37229ef1820D1aEfb08535102412d",
+        "ScarcityBridge": "0xb17FBBF726A0Dbdd940772a5bbc7bb657763801e",
+        "SetSilmaril": "0x3714B9eF007EdaEd417FC4828A484F02248137B9"
+    }
+}

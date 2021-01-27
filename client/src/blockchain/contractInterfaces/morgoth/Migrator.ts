@@ -1,6 +1,7 @@
+import { BaseContract } from '../BaseContract';
 import { address, uint } from '../SolidityTypes'
 
-export interface Migrator {
+export default interface Migrator extends BaseContract {
     stepCounter: () => any
     bridge: () => any
     initBridge: () => any

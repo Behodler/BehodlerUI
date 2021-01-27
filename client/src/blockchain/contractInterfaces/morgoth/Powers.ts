@@ -1,7 +1,8 @@
 import { Bytes32, address } from '../SolidityTypes'
 import "../Ownable.ts"
 import { Ownable } from '../Ownable'
-export interface PowerInvoker {
+import {BaseContract} from '../BaseContract'
+export interface PowerInvoker extends BaseContract {
     power: () => any
     registry: () => any
     angband: () => any
@@ -39,8 +40,8 @@ export interface PowersRegistry extends Empowered {
     isUserMinion: (user: address, minion: Bytes32) => any
     create: (power: Bytes32, domain: Bytes32, transferrable: boolean, unique: boolean) => any
     destroy: (power: Bytes32) => any
-    pour: (power: Bytes32, minion_to: Bytes32) => void
-    spread: (power: Bytes32, minion_to: Bytes32) => void
-    castIntoVoid: (user: address, minion: Bytes32) => void
-    bondUserToMinion: (user: address, minion: Bytes32) => void
+    pour: (power: Bytes32, minion_to: Bytes32) => any
+    spread: (power: Bytes32, minion_to: Bytes32) => any
+    castIntoVoid: (user: address, minion: Bytes32) => any
+    bondUserToMinion: (user: address, minion: Bytes32) => any
 }

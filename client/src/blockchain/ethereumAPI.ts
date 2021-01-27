@@ -32,6 +32,27 @@ import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
 
 import { Behodler2Contracts } from './IContracts'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
+import { Morgoth } from './IContracts'
+import Angband from './contractInterfaces/morgoth/Angband'
+//,IronCrown,AddTokenToBehodler,Migrator,PowersRegistry:PowerRegistry,ScarcityBridge, Set
+import IronCrown from './contractInterfaces/morgoth/IronCrown'
+import { AddTokenToBehodler } from './contractInterfaces/morgoth/powerInvokers/AddTokenToBehodler'
+import Migrator from './contractInterfaces/morgoth/Migrator'
+import { PowersRegistry } from './contractInterfaces/morgoth/Powers'
+import ScarcityBridge from './contractInterfaces/morgoth/ScarcityBridge'
+import { SetSilmaril } from './contractInterfaces/morgoth/powerInvokers/SetSilmaril'
+import { ConfigureScarcity } from './contractInterfaces/morgoth/powerInvokers/ConfigureScarcity'
+
+import MorgothAddresses from './behodler2UI/Morgoth/Addresses.json'
+
+import AddTokenToBehodlerPower from './behodler2UI/Morgoth/AddTokenToBehodlerPower.json'
+import AngbandJSON from './behodler2UI/Morgoth/Angband.json'
+import ConfigureScarcityPowerJSON from './behodler2UI/Morgoth/ConfigureScarcityPower.json'
+import IronCrownJSON from './behodler2UI/Morgoth/IronCrown.json'
+import MigratorJSON from './behodler2UI/Morgoth/Migrator.json'
+import PowersRegistryJSON from './behodler2UI/Morgoth/PowersRegistry.json'
+import ScarcityBridgeJSON from './behodler2UI/Morgoth/ScarcityBridge.json'
+import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
 
 interface AccountObservable {
 	account: string
@@ -251,12 +272,51 @@ class ethereumAPI {
 		network = network == 'private' ? 'development' : network
 		const networkKeys = Object.keys(Behodler2ContractMappings.networks)
 		let address = Behodler2ContractMappings.networks[networkKeys[0]].address
-		
+
 		const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, address)
 		behodler2 = deployment.methods
 		behodler2.address = address
-		return { Behodler2: behodler2 }
 
+		const morgoth = await this.fetchMorgoth(network)
+		return { Behodler2: behodler2, Morgoth: morgoth }
+
+	}
+
+	private async fetchMorgoth(network: string): Promise<Morgoth> {
+		const addresses = MorgothAddresses[network]
+		const angbandDeployment = await this.deployBehodlerContract(AngbandJSON.abi, addresses.Angband)
+		const Angband: Angband = angbandDeployment.methods
+		Angband.address = angbandDeployment.address
+		
+		const configureScarcityDeployment =  await this.deployBehodlerContract(ConfigureScarcityPowerJSON.abi, addresses.ConfigureScarcity)
+		const ConfigureScarcity: ConfigureScarcity = configureScarcityDeployment.methods
+		ConfigureScarcity.address = configureScarcityDeployment.address
+
+		const ironCrownDeployment = await this.deployBehodlerContract(IronCrownJSON.abi, addresses.IronCrown)
+		const IronCrown: IronCrown = ironCrownDeployment.methods
+		IronCrown.address = ironCrownDeployment.address
+
+		let {methods, address} = await this.deployBehodlerContract(AddTokenToBehodlerPower.abi, addresses.AddTokenToBehodler)
+		const AddTokenToBehodler: AddTokenToBehodler = methods
+		AddTokenToBehodler.address = address
+
+		let migratorDeployment = await this.deployBehodlerContract(MigratorJSON.abi, addresses.Migrator)
+		const Migrator: Migrator = migratorDeployment.methods
+		Migrator.address = migratorDeployment.address
+		
+		let registryDeployement = await this.deployBehodlerContract(PowersRegistryJSON.abi, addresses.PowersRegistry)
+		const PowersRegistry: PowersRegistry = registryDeployement.methods
+		PowersRegistry.address = registryDeployement.address
+
+		let scarcityBridgeDeployment = await this.deployBehodlerContract(ScarcityBridgeJSON.abi, addresses.ScarcityBridge)
+		const ScarcityBridge: ScarcityBridge =scarcityBridgeDeployment.methods
+		ScarcityBridge.address = scarcityBridgeDeployment.address
+
+		let setSilamrilDeployment = await this.deployBehodlerContract(SetSilmarilJSON.abi, addresses.SetSilmaril)
+		const SetSilmaril: SetSilmaril = setSilamrilDeployment.methods
+		SetSilmaril.address = setSilamrilDeployment.address
+		const Invokers = { ConfigureScarcity, AddTokenToBehodler, SetSilmaril }
+		return { Angband, Invokers, IronCrown, Migrator, PowersRegistry, ScarcityBridge }
 	}
 
 	private async fetchNimrodel(network: string): Promise<NimrodelContracts> {
