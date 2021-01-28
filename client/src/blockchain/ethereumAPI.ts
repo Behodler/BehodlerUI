@@ -17,6 +17,8 @@ import { BellowsEffects } from './observables/Bellows'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
+import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
+import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
 
 import BigNumber from 'bignumber.js';
 
@@ -53,6 +55,8 @@ import MigratorJSON from './behodler2UI/Morgoth/Migrator.json'
 import PowersRegistryJSON from './behodler2UI/Morgoth/PowersRegistry.json'
 import ScarcityBridgeJSON from './behodler2UI/Morgoth/ScarcityBridge.json'
 import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
+import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
+import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
 
 interface AccountObservable {
 	account: string
@@ -270,16 +274,29 @@ class ethereumAPI {
 	private async fetchBehodler2(network: string): Promise<Behodler2Contracts> {
 		let behodler2: Behodler2
 		network = network == 'private' ? 'development' : network
-		const networkKeys = Object.keys(Behodler2ContractMappings.networks)
+		let networkKeys = Object.keys(Behodler2ContractMappings.networks)
 		let address = Behodler2ContractMappings.networks[networkKeys[0]].address
 
 		const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, address)
 		behodler2 = deployment.methods
 		behodler2.address = address
 
-		const morgoth = await this.fetchMorgoth(network)
-		return { Behodler2: behodler2, Morgoth: morgoth }
+		networkKeys = Object.keys(Lachesis2Json.networks)
+		address = Lachesis2Json.networks[networkKeys[0]].address
 
+		const lachesisDeployment = await this.deployBehodlerContract(Lachesis2Json.abi, address)
+		let lachesis: Lachesis2 = lachesisDeployment.methods
+		lachesis.address = address
+
+		networkKeys = Object.keys(LiquidityReceiverJson.networks)
+		address = LiquidityReceiverJson.networks[networkKeys[0]].address
+
+		const liquidityDeployment = await this.deployBehodlerContract(LiquidityReceiverJson.abi, address)
+		let liquidityReceiver: LiquidityReceiver = liquidityDeployment.methods
+		liquidityReceiver.address = address
+
+		const morgoth = await this.fetchMorgoth(network)
+		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver }
 	}
 
 	private async fetchMorgoth(network: string): Promise<Morgoth> {
@@ -287,8 +304,8 @@ class ethereumAPI {
 		const angbandDeployment = await this.deployBehodlerContract(AngbandJSON.abi, addresses.Angband)
 		const Angband: Angband = angbandDeployment.methods
 		Angband.address = angbandDeployment.address
-		
-		const configureScarcityDeployment =  await this.deployBehodlerContract(ConfigureScarcityPowerJSON.abi, addresses.ConfigureScarcity)
+
+		const configureScarcityDeployment = await this.deployBehodlerContract(ConfigureScarcityPowerJSON.abi, addresses.ConfigureScarcity)
 		const ConfigureScarcity: ConfigureScarcity = configureScarcityDeployment.methods
 		ConfigureScarcity.address = configureScarcityDeployment.address
 
@@ -296,20 +313,20 @@ class ethereumAPI {
 		const IronCrown: IronCrown = ironCrownDeployment.methods
 		IronCrown.address = ironCrownDeployment.address
 
-		let {methods, address} = await this.deployBehodlerContract(AddTokenToBehodlerPower.abi, addresses.AddTokenToBehodler)
+		let { methods, address } = await this.deployBehodlerContract(AddTokenToBehodlerPower.abi, addresses.AddTokenToBehodler)
 		const AddTokenToBehodler: AddTokenToBehodler = methods
 		AddTokenToBehodler.address = address
 
 		let migratorDeployment = await this.deployBehodlerContract(MigratorJSON.abi, addresses.Migrator)
 		const Migrator: Migrator = migratorDeployment.methods
 		Migrator.address = migratorDeployment.address
-		
+
 		let registryDeployement = await this.deployBehodlerContract(PowersRegistryJSON.abi, addresses.PowersRegistry)
 		const PowersRegistry: PowersRegistry = registryDeployement.methods
 		PowersRegistry.address = registryDeployement.address
 
 		let scarcityBridgeDeployment = await this.deployBehodlerContract(ScarcityBridgeJSON.abi, addresses.ScarcityBridge)
-		const ScarcityBridge: ScarcityBridge =scarcityBridgeDeployment.methods
+		const ScarcityBridge: ScarcityBridge = scarcityBridgeDeployment.methods
 		ScarcityBridge.address = scarcityBridgeDeployment.address
 
 		let setSilamrilDeployment = await this.deployBehodlerContract(SetSilmarilJSON.abi, addresses.SetSilmaril)

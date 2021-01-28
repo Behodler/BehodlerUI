@@ -18,6 +18,8 @@ import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
 
 //Behodler2
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
+import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
+import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
 
 //Morgoth
 import Angband from './contractInterfaces/morgoth/Angband'
@@ -28,6 +30,7 @@ import ScarcityBridge from './contractInterfaces/morgoth/ScarcityBridge'
 import { AddTokenToBehodler } from './contractInterfaces/morgoth/powerInvokers/AddTokenToBehodler'
 import { ConfigureScarcity } from './contractInterfaces/morgoth/powerInvokers/ConfigureScarcity'
 import { SetSilmaril } from './contractInterfaces/morgoth/powerInvokers/SetSilmaril'
+
 
 export interface PowerInvokers {
 	AddTokenToBehodler: AddTokenToBehodler
@@ -52,7 +55,9 @@ export interface NimrodelContracts {
 
 export interface Behodler2Contracts {
 	Behodler2: Behodler2,
-	Morgoth: Morgoth
+	Morgoth: Morgoth,
+	Lachesis: Lachesis2,
+	LiquidityReceiver: LiquidityReceiver
 }
 
 export interface BehodlerContracts {
@@ -112,6 +117,19 @@ const defaultBehodler: Behodler = {
 	tokenScarcityObligations: (token: string) => { },
 	buyDryRun: (tokenAddress: address, value: uint, minPrice: uint) => { },
 	sellDryRun: (tokenAddress: address, scarcityValue: uint, maxPrice: uint) => { }
+}
+
+const defaultLachesis2: Lachesis2 = {
+	...defaultOwnable,
+	cut: (token: address) => { },
+	measure: (token: address, valid: boolean, burnable: boolean) => { },
+	measureLP: (token1: address, token2: address) => { }
+}
+
+const defaultLiquidityReceiver: LiquidityReceiver = {
+	...defaultBase,
+	registerPyroToken: (baseToken: address) => { },
+	drain: (pyroToken: address) => { }
 }
 
 const defaultBehodler2Contract: Behodler2 = {
@@ -430,7 +448,9 @@ const defaultMorgoth: Morgoth = {
 
 const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
-	Morgoth: defaultMorgoth
+	Lachesis: defaultLachesis2,
+	Morgoth: defaultMorgoth,
+	LiquidityReceiver: defaultLiquidityReceiver
 }
 
 

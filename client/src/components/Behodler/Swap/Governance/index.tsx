@@ -1,6 +1,6 @@
-import { Grid, Typography } from '@material-ui/core'
+import { createStyles, FormControl, Grid, InputLabel, makeStyles, MenuItem, Select, Theme, Typography } from '@material-ui/core'
 import * as React from 'react'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import eye from '../../../../images/Eye.png'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 
@@ -46,8 +46,185 @@ export default function Governance() {
     )
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        formControl: {
+            margin: theme.spacing(1),
+            minWidth: 120,
+        },
+        selectEmpty: {
+            marginTop: theme.spacing(2),
+        },
+    }),
+);
+
+type acceptableAspects = "Behodler" | "Morgoth" | "Migration" | ""
 function DAOSection(props: any) {
-    return <h1>
-        TODO: DAO stuff
-    </h1>
+    const classes = useStyles()
+    const [aspect, setAspect] = useState<acceptableAspects>("")
+    const [behodlerContracts, setBehodlerContracts] = useState<string>("")
+    const [morgothContracts, setMorgothContracts] = useState<string>("")
+    const [migratorContracts, setMigratorContracts] = useState<string>("")
+    const [address, setAddress] = useState<string>()
+
+    const context = useContext(WalletContext)
+
+    useEffect(() => {
+        setBehodlerContracts("")
+        setMorgothContracts("")
+        setMigratorContracts("")
+    }, [aspect])
+
+    useEffect(() => {
+
+        if (behodlerContracts !== '') {
+            alert('behodler')
+            const contracts = context.contracts.behodler
+            switch (behodlerContracts) {
+                case 'Lachesis1':
+                    setAddress(contracts.Lachesis.address)
+                    break;
+                case 'Scarcity1':
+                    setAddress(contracts.Scarcity.address)
+                    break;
+                case 'Behodler1':
+                    setAddress(contracts.Behodler.address)
+                    break;
+                case 'Behodler2':
+                    setAddress(contracts.Behodler2.Behodler2.address)
+                    break;
+                case 'Lachesis2':
+                    setAddress(contracts.Behodler2.Lachesis.address)
+                    break;
+                case 'LiquidityReceiver':
+                    setAddress(contracts.Behodler2.LiquidityReceiver.address)
+                    break;
+            }
+        } else if (morgothContracts != '') {
+            const contracts = context.contracts.behodler.Behodler2.Morgoth
+            switch (morgothContracts) {
+                case "Angband":
+                    setAddress(contracts.Angband.address)
+                    break;
+                case "IronCrown":
+                    setAddress(contracts.IronCrown.address)
+                    break;
+                case "PowersRegistry":
+                    setAddress(contracts.PowersRegistry.address)
+                    break;
+                case "ScarcityBridge":
+                    setAddress(contracts.ScarcityBridge.address)
+                    break;
+                case "Migrator":
+                    setAddress(contracts.Migrator.address)
+                    break;
+            }
+        }
+        else if (migratorContracts !== '') {
+            const contracts = context.contracts.behodler.Behodler2.Morgoth
+            switch (migratorContracts) {
+                case "ScarcityBridge":
+                    setAddress(contracts.ScarcityBridge.address)
+                    break;
+                case "Migrator":
+                    setAddress(contracts.Migrator.address)
+                    break;
+            }
+        }
+    }, [behodlerContracts, morgothContracts, migratorContracts])
+    return <Grid
+        container
+        direction="column"
+        justify="space-around"
+        alignItems="center"
+    ><Grid item>
+            <Grid
+                container
+                direction="row"
+                justify="space-around"
+                alignItems="center"
+            >
+                <Grid item>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="aspectSelection">Section</InputLabel>
+                        <Select
+                            labelId="daspectSelection"
+                            value={aspect}
+                            onChange={event => setAspect(event.target.value as acceptableAspects)}
+                        >
+                            <MenuItem value={""}>SELECT</MenuItem>
+                            <MenuItem value={"Behodler"}>Behodler</MenuItem>
+                            <MenuItem value={"Morgoth"}>Morgoth</MenuItem>
+                            <MenuItem value={"Migration"}>Migration</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item>
+                    <ContractsLive aspect={aspect}
+                        behodler={behodlerContracts}
+                        setBehodler={setBehodlerContracts}
+                        morgoth={morgothContracts}
+                        setMorgoth={setMorgothContracts}
+                        migrator={migratorContracts}
+                        setMigrator={setMigratorContracts} />
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid item>
+            {address}
+        </Grid>
+    </Grid>
+}
+
+function ContractsLive(props: { aspect: acceptableAspects, behodler: string, setBehodler: (c: string) => void, morgoth: string, setMorgoth: (c: string) => void, migrator: string, setMigrator: (c: string) => void }) {
+    const classes = useStyles()
+
+    switch (props.aspect) {
+        case 'Behodler':
+            return <FormControl className={classes.formControl}>
+                <InputLabel id="aspectSelection">Section</InputLabel>
+                <Select
+                    labelId="daspectSelection"
+                    value={props.behodler}
+                    onChange={event => props.setBehodler(event.target.value as string)}
+                >
+                    <MenuItem value={""}>SELECT</MenuItem>
+                    <MenuItem value={"Lachesis1"}>Lachesis1</MenuItem>
+                    <MenuItem value={"Scarcity1"}>Scarcity1</MenuItem>
+                    <MenuItem value={"Behodler1"}>Behodler1</MenuItem>
+                    <MenuItem value={"Lachesis2"}>Lachesis2</MenuItem>
+                    <MenuItem value={"Behodler2"}>Behodler2</MenuItem>
+                    <MenuItem value={"LiquidityReceiver"}>LiquidityReceiver</MenuItem>
+                </Select>
+            </FormControl>
+        case 'Migration':
+            return <FormControl className={classes.formControl}>
+                <InputLabel id="aspectSelection">Section</InputLabel>
+                <Select
+                    labelId="daspectSelection"
+                    value={props.morgoth}
+                    onChange={event => props.setMorgoth(event.target.value as string)}
+                >
+                    <MenuItem value={""}>SELECT</MenuItem>
+                    <MenuItem value={"Migrator"}>Migrator</MenuItem>
+                    <MenuItem value={"ScarcityBridge"}>Scarcity Bridge</MenuItem>
+                </Select>
+            </FormControl>
+        case 'Morgoth':
+            return <FormControl className={classes.formControl}>
+                <InputLabel id="aspectSelection">Section</InputLabel>
+                <Select
+                    labelId="daspectSelection"
+                    value={props.morgoth}
+                    onChange={event => props.setMorgoth(event.target.value as string)}
+                >
+                    <MenuItem value={""}>SELECT</MenuItem>
+                    <MenuItem value={"Angband"}>Angband</MenuItem>
+                    <MenuItem value={"IronCrown"}>IronCrown</MenuItem>
+                    <MenuItem value={"PowersRegistry"}>PowersRegistry</MenuItem>
+
+                </Select>
+            </FormControl>
+    }
+    return <div></div>
 }
