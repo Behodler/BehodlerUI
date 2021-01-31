@@ -1,4 +1,4 @@
-import { Button, createStyles, FormControl, Grid, InputLabel, makeStyles, MenuItem, Select, Theme, Typography } from '@material-ui/core'
+import { Button, createStyles, FormControl, Grid, InputLabel, makeStyles, MenuItem, Select, TextField, Theme, Typography } from '@material-ui/core'
 import * as React from 'react'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import eye from '../../../../images/Eye.png'
@@ -8,7 +8,7 @@ export default function Governance() {
     const context = useContext(WalletContext)
 
     return (
-        context.primary ? <DAOSection /> :
+        context.isMelkor ? <DAOSection /> :
             <Grid
                 container
                 direction="column"
@@ -173,12 +173,33 @@ function DAOSection(props: any) {
             {address}
         </Grid>
         <Grid item>
-            <Step1Prep />
+            <StepSelection />
         </Grid>
     </Grid>
 }
 
-function Step1Prep(props: {}) {
+function StepSelection() {
+    const context = useContext(WalletContext)
+    const [currentStep, setCurrentStep] = useState<number>(1)
+    const [stepSignal,setStepSignal] = useState<number>(0)
+
+    useEffect(() => {
+        context.contracts.behodler.Behodler2.Morgoth.Migrator
+            .stepCounter()
+            .call()
+            .then(setCurrentStep)
+    },[stepSignal])
+    switch (currentStep) {
+        case 1:
+            return <Step1 setStepSignal={setStepSignal}/>
+        case 2:
+            return <Step2 />
+        default:
+            return <h4>Migration Complete</h4>
+    }
+}
+
+function Step1(props: {setStepSignal:(s:number)=>void}) {
     const [prepareClicked, setPrepareClicked] = useState<boolean>()
     const [step1Clicked, setStep1Clicked] = useState<boolean>()
     const context = useContext(WalletContext)
@@ -216,7 +237,7 @@ function Step1Prep(props: {}) {
 
     const step1Callback = useCallback(async () => {
         if (step1Clicked) {
-            context.contracts.behodler.Behodler2.Morgoth.Migrator.step1().send({ from: context.account })
+            context.contracts.behodler.Behodler2.Morgoth.Migrator.step1().send({ from: context.account },()=>props.setStepSignal(1))
             setStep1Clicked(false)
         }
     }, [step1Clicked])
@@ -230,6 +251,7 @@ function Step1Prep(props: {}) {
         direction="row"
         justify="center"
         alignItems="center"
+        spacing={2}
     > <Grid item>
             <Button onClick={() => setPrepareClicked(true)}>
                 WhiteList and Transfer to Migrator
@@ -241,6 +263,40 @@ function Step1Prep(props: {}) {
     </Button>
         </Grid>
     </Grid>
+}
+
+function Step2(props: {}) {
+    //text boxes for token addresses
+    const [addresses, setAddresses] = useState<string>('')
+    const [clicked, setClicked] = useState<boolean>(false)
+    const context = useContext(WalletContext)
+
+    useEffect(() => {
+        if (clicked) {
+            const array = addresses.split(',')
+                .map(a => a.trim())
+
+            context.contracts.behodler.Behodler2.Morgoth.Migrator.step2(array).send({ from: context.account })
+            setClicked(false)
+        }
+    }, [clicked])
+
+    return <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        spacing={2}
+    > <Grid item>
+            <TextField onChange={(event) => setAddresses(event.target.value)} />
+        </Grid>
+        <Grid item>
+            <Button onClick={() => setClicked(true)}>
+                Step 2
+    </Button>
+        </Grid>
+    </Grid>
+    //execute
 }
 
 function ContractsLive(props: { aspect: acceptableAspects, behodler: string, setBehodler: (c: string) => void, morgoth: string, setMorgoth: (c: string) => void, migrator: string, setMigrator: (c: string) => void }) {

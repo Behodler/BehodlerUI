@@ -21,6 +21,7 @@ interface walletProps {
 	initialized: boolean
 	networkName: string,
 	primary: boolean
+	isMelkor:boolean
 }
 
 let WalletContext = React.createContext<walletProps>({
@@ -32,7 +33,8 @@ let WalletContext = React.createContext<walletProps>({
 	contracts: DefaultContracts,
 	initialized: false,
 	networkName: 'private',
-	primary: false
+	primary: false,
+	isMelkor:false
 });
 
 const networkNameMapper = (id: number): string => {
@@ -85,12 +87,15 @@ function WalletContextProvider(props: any) {
 	const [initialized, setInitialized] = useState<boolean>(false)
 	const [networkName, setNetworkName] = useState<string>("")
 	const [primary, setPrimary] = useState<boolean>(false)
+	const [isMelkor,setMelkor] = useState<boolean>(false)
 
 	const initializationCallBack = React.useCallback(async () => {
 		if (chainId > 0 && account.length > 3 && !initialized) {
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
 			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
+			const melkor = await c.behodler.Behodler2.Morgoth.PowersRegistry.isUserMinion(account,API.web3.utils.fromAscii('Melkor')).call({from:account})
+			setMelkor(melkor)
 			setPrimary(owner.toLowerCase() === account.toLowerCase())
 			setInitialized(true)
 		}
@@ -160,7 +165,8 @@ function WalletContextProvider(props: any) {
 		connectAction,
 		initialized,
 		networkName,
-		primary
+		primary,
+		isMelkor
 	}
 	WalletContext = React.createContext<walletProps>(providerProps);
 	return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>

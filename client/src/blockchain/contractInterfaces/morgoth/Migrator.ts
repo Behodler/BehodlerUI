@@ -1,5 +1,5 @@
 import { BaseContract } from '../BaseContract';
-import { address, uint } from '../SolidityTypes'
+import { /*address,*/ uint } from '../SolidityTypes'
 
 export default interface Migrator extends BaseContract {
     stepCounter: () => any
@@ -7,7 +7,7 @@ export default interface Migrator extends BaseContract {
     initBridge: () => any
     bail: () => any
     step1: () => any
-    step2: (tokens: address[]) => any
+    step2: (tokens: any) => any
     step3: () => any
     step4: (iterations: uint) => any
     step5: () => any
