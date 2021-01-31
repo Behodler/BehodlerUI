@@ -46,7 +46,7 @@ import { SetSilmaril } from './contractInterfaces/morgoth/powerInvokers/SetSilma
 import { ConfigureScarcity } from './contractInterfaces/morgoth/powerInvokers/ConfigureScarcity'
 
 import MorgothAddresses from './behodler2UI/Morgoth/Addresses.json'
-
+import Behodler2Addresses from './behodler2UI/Addresses.json'
 import AddTokenToBehodlerPower from './behodler2UI/Morgoth/AddTokenToBehodlerPower.json'
 import AngbandJSON from './behodler2UI/Morgoth/Angband.json'
 import ConfigureScarcityPowerJSON from './behodler2UI/Morgoth/ConfigureScarcityPower.json'
@@ -272,28 +272,23 @@ class ethereumAPI {
 	}
 
 	private async fetchBehodler2(network: string): Promise<Behodler2Contracts> {
+
 		let behodler2: Behodler2
 		network = network == 'private' ? 'development' : network
-		let networkKeys = Object.keys(Behodler2ContractMappings.networks)
-		let address = Behodler2ContractMappings.networks[networkKeys[0]].address
+		const addresses = Behodler2Addresses[network]
 
-		const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, address)
+
+		const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, addresses.behodler)
 		behodler2 = deployment.methods
-		behodler2.address = address
+		behodler2.address = addresses.behodler
 
-		networkKeys = Object.keys(Lachesis2Json.networks)
-		address = Lachesis2Json.networks[networkKeys[0]].address
-
-		const lachesisDeployment = await this.deployBehodlerContract(Lachesis2Json.abi, address)
+		const lachesisDeployment = await this.deployBehodlerContract(Lachesis2Json.abi, addresses.lachesis)
 		let lachesis: Lachesis2 = lachesisDeployment.methods
-		lachesis.address = address
+		lachesis.address = addresses.liquidityReceiver
 
-		networkKeys = Object.keys(LiquidityReceiverJson.networks)
-		address = LiquidityReceiverJson.networks[networkKeys[0]].address
-
-		const liquidityDeployment = await this.deployBehodlerContract(LiquidityReceiverJson.abi, address)
+		const liquidityDeployment = await this.deployBehodlerContract(LiquidityReceiverJson.abi, addresses.liquidityReceiver)
 		let liquidityReceiver: LiquidityReceiver = liquidityDeployment.methods
-		liquidityReceiver.address = address
+		liquidityReceiver.address = addresses.liquidityReceiver
 
 		const morgoth = await this.fetchMorgoth(network)
 		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver }

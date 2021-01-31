@@ -18,6 +18,9 @@ cd ../behodler2
 cp '/home/justin/weidai ecosystem/weidai/client/src/tokenLocation.json' weidai.json
 truffle migrate
 cp ./build/contracts/Behodler.json ../behodlerUI/client/src/blockchain/behodler2UI/
+cp behodler2DevAddresses.json ../behodlerUI/temp/
+cd ../behodlerUI
+node ./scripts/behodler2DevCapture.js
 # echo "**************MIGRATING SISYPHUS***********"
 # echo ""
 # cd ../Sisyphus
@@ -31,7 +34,6 @@ cp ./build/contracts/Behodler.json ../behodlerUI/client/src/blockchain/behodler2
 # node behodlerUI/scripts/nimrodelTokenTransfer.js
 echo "**************CAPTURE DEV TRADING TOKENS***********"
 echo ""
-cd ../behodlerUI
 node scripts/captureDevTokens.js
 cd ../morgoth-dao
 truffle migrate

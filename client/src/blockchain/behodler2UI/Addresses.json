@@ -1,0 +1,8 @@
+{
+    "main": {},
+    "development": {
+        "behodler": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
+        "lachesis": "0xAB0aA9683A4Dc2959dd7cAADB5dB73b7183f3b34",
+        "liquidityReceiver": "0x17BfcE067872Fd4A1AE607A41Bd776f24133A69a"
+    }
+}

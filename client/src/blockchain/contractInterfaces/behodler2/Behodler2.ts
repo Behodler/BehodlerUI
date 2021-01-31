@@ -20,4 +20,6 @@ export interface Behodler2 extends ERC20, Ownable {
     MIN_LIQUIDITY: () => any
     withdrawLiquidityFindSCX: (outputToken: address, tokensToRelease: uint, scx: int, passes: uint) => any
     getMaxLiquidityExit: () => any
+    setWhiteListUser: (user: address, whiteList: boolean) => any
+    whiteListUsers:(user:address)=>any
 }

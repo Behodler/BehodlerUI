@@ -152,7 +152,9 @@ const defaultBehodler2Contract: Behodler2 = {
 	grantFlashLoan: (amount: uint, flashLoanContract: address) => { },
 	MIN_LIQUIDITY: () => { },
 	withdrawLiquidityFindSCX: (outputToken: address, tokensToRelease: uint, scx: int, passes: uint) => { },
-	getMaxLiquidityExit: () => { }
+	getMaxLiquidityExit: () => { },
+	setWhiteListUser: (user: address, whiteList: boolean) => { },
+	whiteListUsers: (user: address) => { }
 }
 
 const defaultChronos: Chronos = {

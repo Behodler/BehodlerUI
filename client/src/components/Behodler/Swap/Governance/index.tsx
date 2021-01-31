@@ -1,6 +1,6 @@
-import { createStyles, FormControl, Grid, InputLabel, makeStyles, MenuItem, Select, Theme, Typography } from '@material-ui/core'
+import { Button, createStyles, FormControl, Grid, InputLabel, makeStyles, MenuItem, Select, Theme, Typography } from '@material-ui/core'
 import * as React from 'react'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import eye from '../../../../images/Eye.png'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 
@@ -78,7 +78,6 @@ function DAOSection(props: any) {
     useEffect(() => {
 
         if (behodlerContracts !== '') {
-            alert('behodler')
             const contracts = context.contracts.behodler
             switch (behodlerContracts) {
                 case 'Lachesis1':
@@ -172,6 +171,74 @@ function DAOSection(props: any) {
         </Grid>
         <Grid item>
             {address}
+        </Grid>
+        <Grid item>
+            <Step1Prep />
+        </Grid>
+    </Grid>
+}
+
+function Step1Prep(props: {}) {
+    const [prepareClicked, setPrepareClicked] = useState<boolean>()
+    const [step1Clicked, setStep1Clicked] = useState<boolean>()
+    const context = useContext(WalletContext)
+
+    const clickCallback = useCallback(async () => {
+        if (prepareClicked) {
+            const behodler1Contracts = context.contracts.behodler
+            const behodler2Contracts = context.contracts.behodler.Behodler2
+            const migrator = behodler2Contracts.Morgoth.Migrator
+            if (behodler1Contracts.Lachesis.primary().call() !== migrator.address) {
+                behodler1Contracts.Lachesis.transferPrimary(migrator.address).send({ from: context.account })
+            }
+            if (behodler1Contracts.Scarcity.primary().call() !== migrator.address) {
+                behodler1Contracts.Scarcity.transferPrimary(migrator.address).send({ from: context.account })
+            }
+            if (behodler1Contracts.Behodler.primary().call() !== migrator.address) {
+                behodler1Contracts.Behodler.transferPrimary(migrator.address).send({ from: context.account })
+            }
+
+            behodler2Contracts.Behodler2.setWhiteListUser(migrator.address, true).send({ from: context.account })
+
+            if (behodler2Contracts.Behodler2.owner().call() !== migrator.address) {
+                behodler2Contracts.Behodler2.transferOwnership(migrator.address).send({ from: context.account })
+            }
+            if (behodler2Contracts.Lachesis.owner().call() !== migrator.address) {
+                behodler2Contracts.Lachesis.transferOwnership(migrator.address).send({ from: context.account });
+            }
+            setPrepareClicked(false)
+        }
+    }, [prepareClicked])
+
+    useEffect(() => {
+        clickCallback()
+    }, [prepareClicked])
+
+    const step1Callback = useCallback(async () => {
+        if (step1Clicked) {
+            context.contracts.behodler.Behodler2.Morgoth.Migrator.step1().send({ from: context.account })
+            setStep1Clicked(false)
+        }
+    }, [step1Clicked])
+
+    useEffect(() => {
+        step1Callback()
+    }, [step1Clicked])
+
+    return <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+    > <Grid item>
+            <Button onClick={() => setPrepareClicked(true)}>
+                WhiteList and Transfer to Migrator
+    </Button>
+        </Grid>
+        <Grid item>
+            <Button onClick={() => setStep1Clicked(true)}>
+                Step 1
+    </Button>
         </Grid>
     </Grid>
 }
