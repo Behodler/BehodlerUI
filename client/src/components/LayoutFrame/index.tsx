@@ -7,11 +7,12 @@ import github from '../../../src/images/behodler/footer/Github.png'
 import faq from '../../../src/images/behodler/footer/FAQ.png'
 import uniswap from '../../../src/images/behodler/footer/uniswap.png'
 import telegram from '../../../src/images/behodler/footer/telegram.png'
-
+import ScarcityConversion from './ScarcityConversion'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
 import Admin from '../Behodler/Admin/index'
 
+//client/src/blockchain/ethereumAPI.ts
 import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
 
@@ -96,11 +97,14 @@ export default function LayoutFrame(props: any) {
 	const openFooter = (url: string) => window.open(url, '_blank')
 	return (
 		<div className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
+			{/* */}
 			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
 			<div>
 				{renderRedirect}
 
 			</div>
+			{notConnected ? '' : <ScarcityConversion />}
+
 			<Grid
 				container
 				direction="column"
@@ -186,7 +190,7 @@ export default function LayoutFrame(props: any) {
 												</IconButton>
 											</Grid>
 											<Grid item>
-												<IconButton title="uniswap" onClick={() => openFooter('https://info.uniswap.org/pair/0x6004946fc90956ccb12bd6619e437fdf99c05155')} >
+												<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65&outputCurrency=ETH')} >
 													<img src={uniswap} width={footerIconWidth} />
 												</IconButton>
 											</Grid>

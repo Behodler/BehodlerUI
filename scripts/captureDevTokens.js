@@ -3,7 +3,7 @@ const fs = require('fs')
 const ABIJson = JSON.parse(fs.readFileSync(fileLocation))
 
 
-const tokens = ['MockToken1', 'MockToken2', 'MockWeth', 'MockToken3', 'MockToken4', 'Scarcity']
+const tokens = ['MockToken1', 'MockToken2', 'MockWeth', 'MockToken3', 'MockToken4', 'Scarcity','FeeOnTransferToken']
 const findPredicate = t => (value) => value == t.contract
 
 let addresses = ABIJson.filter(j => j.name == "development")[0]

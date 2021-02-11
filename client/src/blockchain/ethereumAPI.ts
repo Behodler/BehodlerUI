@@ -57,7 +57,7 @@ import ScarcityBridgeJSON from './behodler2UI/Morgoth/ScarcityBridge.json'
 import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
 import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
-
+import { MigrationEffects } from './observables/MigratorEffects'
 interface AccountObservable {
 	account: string
 	isPrimary: boolean,
@@ -96,6 +96,7 @@ class ethereumAPI {
 	public bankEffects: BankEffects
 	public bellowsEffects: BellowsEffects
 	public scarcityEffects: ERC20Effects
+	public migrationEffects: MigrationEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 
@@ -123,6 +124,7 @@ class ethereumAPI {
 		this.initialized = true
 		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
+		this.migrationEffects = new MigrationEffects(this.web3, behodlerContracts.Behodler2.Morgoth.Migrator, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}

@@ -436,7 +436,7 @@ const defaultPowersRegistry: PowersRegistry = {
 const defaultScarcityBridge: ScarcityBridge = {
 	...defaultBase,
 	exchangeRate: () => { },
-	swap: (scx1: uint) => { },
+	swap: () => { },
 }
 
 const defaultMorgoth: Morgoth = {

@@ -53,11 +53,11 @@
     "private": [
         {
             "name": "MockToken1",
-            "address": "0x189B51c422d3668F0695F776A3e7cdf0589cD79E"
+            "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca"
         },
         {
             "name": "MockToken2",
-            "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca"
+            "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D"
         },
         {
             "name": "dai",
@@ -65,11 +65,11 @@
         },
         {
             "name": "MockWeth",
-            "address": "0x914D088a8ad3229cD7B4d4FF85Ec580759985368"
+            "address": "0x47899884D24ac282606CB5600BF955e3Bccc9581"
         },
         {
             "name": "MockToken3",
-            "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D"
+            "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135"
         },
         {
             "name": "weidai",
@@ -77,11 +77,15 @@
         },
         {
             "name": "MockToken4",
-            "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135"
+            "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06"
         },
         {
             "name": "Scarcity",
-            "address": "0x84044FEC4769db6E37085b9Aa4C2908129b4865F"
+            "address": "0x1c0fFf2FEE9e686666d924305524c2A58709e77e"
+        },
+        {
+            "name": "FeeOnTransferToken",
+            "address": "0xC7A6abf7d8843453A6EDdf44CfD7Eb3A8A20d417"
         }
     ]
 }

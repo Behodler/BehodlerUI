@@ -1,8 +1,8 @@
 {
     "main": {},
     "development": {
-        "behodler": "0xeF3c818321eea41faC0D24A194d6dCAeB45C4cBD",
-        "lachesis": "0x17BfcE067872Fd4A1AE607A41Bd776f24133A69a",
-        "liquidityReceiver": "0x5dBec49A4fa02Aed472bDc48f7DB7dDd83f356Bf"
+        "behodler": "0x91C7817988d0af2F652e37438b636b9e6799895e",
+        "lachesis": "0xabDC9aa736207f567D5bc51983Ae637e48d5139E",
+        "liquidityReceiver": "0xa237d6aB67f1c6E58Ad2A2d954e0446e5F2f0b3b"
     }
 }

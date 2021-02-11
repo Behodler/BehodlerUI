@@ -4,7 +4,7 @@ import TradingBox from './TradingBox/index'
 import TradingBox2 from './TradingBox2/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import LiquidityMining from './LiquidityMining/index'
-import { Chip, Grid, Typography, Button, Container } from '@material-ui/core'
+import { Grid, Typography, Button, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
@@ -43,12 +43,6 @@ const useStyles = makeStyles(theme => createStyles({
     },
     tabs: {
         marginBottom: '20px'
-    },
-    betaRisk: {
-        backgroundColor: "rgba(63, 81, 181, 0.8)",
-        color: 'rgba(255,240,255,0.8)',
-        marginBottom: '20px'
-
     }, Paper: {
         margin: "50px",
         padding: "20px",
@@ -175,11 +169,6 @@ export default function Swap(props: props) {
             setShowChip(true)
     }, [showChip])
 
-
-    const hideChip = () => {
-        localStorage.setItem('lastBehodlerHide', new Date().getTime().toString())
-        setShowChip(false);
-    }
     const logoVisible = !props.connected
     const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
 
@@ -199,11 +188,6 @@ export default function Swap(props: props) {
                 justify="center"
                 alignItems="center"
             >
-                <DepaddedGridItem>
-                </DepaddedGridItem>
-                <DepaddedGridItem>
-                    <Chip className={classes.betaRisk} label="Behodler is currently in Beta. Use at your own risk." onDelete={hideChip} variant="outlined" />
-                </DepaddedGridItem>
             </Grid> : ""}
             {logoVisible ?
                 <DepaddedGridItem>
@@ -220,7 +204,8 @@ export default function Swap(props: props) {
                     <Typography className={classes.warningText} variant='subtitle1'>
                         Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
                         Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken wrapper.
-                        Take out a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Vault.
+                        Take out a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Vault (coming soon).
+                        While you wait in the queue, you earn potatoes, a reward token with strong deflationary pressures.
             </Typography>
                 </DepaddedGridItem>
                 : ''}
@@ -239,7 +224,7 @@ export default function Swap(props: props) {
                     >
                         <Grid item>
                             <Typography variant="h4" className={classes.behodlerHeading}>
-                                Behodler Liquidity Engine
+                                Behodler Liquidity Market
             </Typography>
                         </Grid>
                     </Grid>
