@@ -88,10 +88,8 @@ function WalletContextProvider(props: any) {
 	const [networkName, setNetworkName] = useState<string>("")
 	const [primary, setPrimary] = useState<boolean>(false)
 	const [isMelkor, setMelkor] = useState<boolean>(false)
-	const [horse, setHorse] = useState<number>(2)
 
 	const initializationCallBack = React.useCallback(async () => {
-		//alert('ok')
 		if (chainId > 0 && account.length > 3 && !initialized) {
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
@@ -105,13 +103,10 @@ function WalletContextProvider(props: any) {
 
 
 	useEffect(() => {
-		//alert('yes')
 		initializationCallBack()
 	}, [initialized, account, chainId])
 
 	useEffect(function () {
-		if (horse == 0) setHorse(1)
-		//alert('horse man')
 		if (!window.ethereum || !window.ethereum.isMetaMask) {
 			setIsMetamask(false)
 			setConnected(false)
@@ -160,9 +155,6 @@ function WalletContextProvider(props: any) {
 		}
 	})
 
-	//alert('horse man: ' + horse)
-	if (horse == 2)
-		setHorse(0)
 	const providerProps: walletProps = {
 		chainId,
 		isMetamask,

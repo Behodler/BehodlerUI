@@ -18,10 +18,13 @@ export default function TradeBox2(props: props) {
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(t => t.name !== 'WBTC')
     const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
     const indexOfScarcityAddress = tokenList.findIndex(item => item.name.toLowerCase().indexOf('scarcity') !== -1)
+    const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address
+
     let tokenDropDownList = tokenList.map((t, i) => {
         let item = { ...t, image: Images[i] }
         if (i === indexOfWeth) {
             item.name = "Eth"
+            item.address = behodler2Weth
         }
         if (i === indexOfScarcityAddress) {
             item.address = walletContextProps.contracts.behodler.Behodler2.Behodler2.address
@@ -192,7 +195,7 @@ export default function TradeBox2(props: props) {
                 valid={inputValid}
                 setValid={setInputValid}
                 setValue={setInputValue}
-                setEnabled={ setInputEnabled}
+                setEnabled={setInputEnabled}
                 setTokenAddress={setInputAddress}
                 address={inputAddress}
                 value={inputValue}

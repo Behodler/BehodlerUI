@@ -2,6 +2,7 @@ import Web3 from "web3";
 import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
+import { Weth } from './contractInterfaces/behodler/Weth'
 
 import { address } from './contractInterfaces/SolidityTypes'
 import { Observable } from 'rxjs'
@@ -58,6 +59,8 @@ import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
 import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
 import { MigrationEffects } from './observables/MigratorEffects'
+import Weth10JSON from './behodler2UI/WETH10.json'
+
 interface AccountObservable {
 	account: string
 	isPrimary: boolean,
@@ -284,6 +287,11 @@ class ethereumAPI {
 		behodler2 = deployment.methods
 		behodler2.address = addresses.behodler
 
+		const wethAddress = await behodler2.Weth().call()
+		const wethDeployment = await this.deployBehodlerContract(Weth10JSON.abi, wethAddress)
+		const Weth10: Weth = wethDeployment.methods
+		Weth10.address = wethAddress
+
 		const lachesisDeployment = await this.deployBehodlerContract(Lachesis2Json.abi, addresses.lachesis)
 		let lachesis: Lachesis2 = lachesisDeployment.methods
 		lachesis.address = addresses.liquidityReceiver
@@ -293,7 +301,7 @@ class ethereumAPI {
 		liquidityReceiver.address = addresses.liquidityReceiver
 
 		const morgoth = await this.fetchMorgoth(network)
-		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver }
+		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10 }
 	}
 
 	private async fetchMorgoth(network: string): Promise<Morgoth> {

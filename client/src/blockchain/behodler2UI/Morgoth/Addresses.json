@@ -10,13 +10,13 @@
         "SetSilmaril": ""
     },
     "development": {
-        "AddTokenToBehodler": "0x462D42011081BB8173FFe1E3464C63a2266A2E3b",
-        "Angband": "0x8fdb3B7E0c1E3301AE7AecE9bF62bD748Ec19C08",
-        "ConfigureScarcity": "0xFB3EA9cfe54F869F5AFABFf502b22160a04a10ab",
-        "IronCrown": "0x40CBD3bE3d7110E1F00BEbFb689e1160Ff52B805",
-        "Migrator": "0x730E2e37b171411A1906FB674bDBbb2d1e0cb160",
-        "PowersRegistry": "0x6689C477aD5E5522d767CD2a847baFD389f7ca80",
-        "ScarcityBridge": "0x8035d790134AF47f4F03F611F8bDd02a210EfA3b",
-        "SetSilmaril": "0x322561d3d1dfDF7d48a291e69FDEC41feb54FCCe"
+        "AddTokenToBehodler": "0xFB3EA9cfe54F869F5AFABFf502b22160a04a10ab",
+        "Angband": "0xd8A9aF8b800EA9eb3EB622f3BCE05c7C98083B15",
+        "ConfigureScarcity": "0x4f3dfa59F822B0201E0DedF2d60B0A559c88e8Ef",
+        "IronCrown": "0x132F8aE2C53dCf628B3239aD00043743CDdFE898",
+        "Migrator": "0x30DbD1fe1BDEA026B372715C13390891d5c1aE5F",
+        "PowersRegistry": "0x6b9e2b14E7bba6255276BEB7C9301475587Ed70A",
+        "ScarcityBridge": "0xb784022bc11CAd6bAead8f30b581eD0c1aAE3F2B",
+        "SetSilmaril": "0x462D42011081BB8173FFe1E3464C63a2266A2E3b"
     }
 }

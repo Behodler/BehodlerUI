@@ -58,6 +58,7 @@ export interface Behodler2Contracts {
 	Morgoth: Morgoth,
 	Lachesis: Lachesis2,
 	LiquidityReceiver: LiquidityReceiver
+	Weth10: Weth
 }
 
 export interface BehodlerContracts {
@@ -154,7 +155,8 @@ const defaultBehodler2Contract: Behodler2 = {
 	withdrawLiquidityFindSCX: (outputToken: address, tokensToRelease: uint, scx: int, passes: uint) => { },
 	getMaxLiquidityExit: () => { },
 	setWhiteListUser: (user: address, whiteList: boolean) => { },
-	whiteListUsers: (user: address) => { }
+	whiteListUsers: (user: address) => { },
+	Weth: () => { }
 }
 
 const defaultChronos: Chronos = {
@@ -452,7 +454,8 @@ const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
 	Lachesis: defaultLachesis2,
 	Morgoth: defaultMorgoth,
-	LiquidityReceiver: defaultLiquidityReceiver
+	LiquidityReceiver: defaultLiquidityReceiver,
+	Weth10: defaultWeth
 }
 
 
