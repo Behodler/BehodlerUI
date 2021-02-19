@@ -20,8 +20,8 @@ interface props {
 }
 
 interface tokenPair {
-    address:string
-    name:string
+    address: string
+    name: string
 }
 
 export const filterPredicate = ((item) => {
@@ -41,13 +41,14 @@ export default function PyroTokens(props: props) {
     const walletContextProps = useContext(WalletContext)
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
     const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
+
     const baseTokenDropDownList = tokenList
         .filter(filterPredicate)
         .filter(b => {
             const pair = props.tokens.filter(t => t.base.toLowerCase().trim() === b.address.toLowerCase().trim())[0]
             return pair.name !== null
         })
-        .map((t:tokenPair, i) => {
+        .map((t: tokenPair, i) => {
             let item = { ...t, image: BaseImages[i] }
             if (i === indexOfWeth) {
                 item.name = "Eth"
@@ -65,10 +66,10 @@ export default function PyroTokens(props: props) {
     const [baseTokenValid, setBaseTokenValid] = useState<boolean>(true)
     const [pyroTokenValue, setPyroTokenValue] = useState<string>("")
     const [baseTokenValue, setBaseTokenValue] = useState<string>("")
-    const [pyroTokenEnabled, setPyroTokenEnabled] = useState<boolean>(false)
+    const [pyroTokenEnabled, setPyroTokenEnabled] = useState<boolean>(true)
     const [baseTokenEnabled, setBaseTokenEnabled] = useState<boolean>(false)
     const [pyroTokenAddress, setPyroTokenAddress] = useState<string>(pyroTokenDropDownList[0].address || '')
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>(baseTokenDropDownList[1].address || '')
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>(baseTokenDropDownList[0].address || '')
     const [redeemClicked, setRedeemClicked] = useState<boolean>(false)
     const [redeemRate, setRedeemRate] = useState<string>("")
     const [baseToPyro, setBaseToPyro] = useState<boolean>(true)
@@ -76,6 +77,9 @@ export default function PyroTokens(props: props) {
     const [baseSelectionChange, setBaseSelectionChange] = useState<boolean>(baseToPyro)
     const [baseTokenName, setBaseTokenName] = useState<string>("")
     const [mintClicked, setMintClicked] = useState<boolean>(false)
+    const [baseRate, setBaseRate] = useState<string>('')
+    const [pyroRate, setPyroRate] = useState<string>('')
+
     const bigPyroTokenValue = new BigNumber(pyroTokenValue)
     const bigBaseTokenValue = new BigNumber(baseTokenValue)
 
@@ -127,6 +131,10 @@ export default function PyroTokens(props: props) {
         const redeemRateEffects = ptokenEffects.redeemRateEffect()
         const subscription = redeemRateEffects.Observable.subscribe(r => {
             setRedeemRate(r.toString())
+            const b = API.fromWei((((API.ONE * API.ONE) / BigInt(r)).toString()))
+            const p = API.fromWei(((((API.ONE * BigInt(98) / BigInt(100)) * BigInt(r)) / API.ONE).toString()))
+            setBaseRate(b)
+            setPyroRate(p)
         })
         return () => { subscription.unsubscribe(); redeemRateEffects.cleanup() }
     }, [selectionChange, baseSelectionChange, setRedeemClicked, setMintClicked])
@@ -177,23 +185,22 @@ export default function PyroTokens(props: props) {
     }, [pyroTokenReadyToRedeem, pyroTokenValue])
 
 
-    const mintcalculateCallback = useCallback(async () => {
+    const mintCalculateCallback = useCallback(async () => {
         if (mintPossible && baseToPyro && baseTokenEnabled) {
 
             const baseWei = API.toWei(baseTokenValue)
-
             const toMint = API.fromWei(((BigInt(baseWei) * API.ONE) / BigInt(redeemRate)).toString())
             setPyroTokenValue(toMint)
         }
     }, [mintPossible, baseToPyro, baseTokenValue])
 
     useEffect(() => {
-        mintcalculateCallback()
+        mintCalculateCallback()
     })
 
 
     const clearInput = () => { setPyroTokenValue(""); setBaseTokenValue(""); setRedeemClicked(false) }
-    const pyroExchangeRate = baseToPyro ? { baseAddress: baseTokenAddress, baseName: baseTokenName, ratio: redeemRate, valid: redeemEnabled } : undefined
+    const pyroExchangeRate = baseToPyro ? { baseAddress: baseTokenAddress, baseName: baseTokenName, ratio: pyroRate, valid: redeemEnabled } : undefined
 
     const pyroField = <ExtendedTextField label="PyroToken"
         dropDownFields={pyroTokenDropDownList}
@@ -205,16 +212,16 @@ export default function PyroTokens(props: props) {
         address={pyroTokenAddress}
         value={pyroTokenValue}
         clear={clearInput}
-        enableCustomMessage="Enable PyroToken"
+        enableCustomMessage="Approve PyroToken"
         exchangeRate={pyroExchangeRate}
 
         decimalPlaces={18}
         disabledInput={baseToPyro}
         disabledDropDown={baseToPyro}
     />
-    const baseExchangeRate = baseToPyro ? undefined : { baseAddress: baseTokenAddress, baseName: baseTokenName, ratio: redeemRate, valid: redeemEnabled }
+    const baseExchangeRate = baseToPyro ? undefined : { baseAddress: baseTokenAddress, baseName: baseTokenName, ratio: baseRate, valid: redeemEnabled }
     const baseField = baseTokenAddress === '' ? '' :
-        <ExtendedTextField label="BaseToken"
+        <ExtendedTextField label="Token"
             dropDownFields={baseTokenDropDownList}
             valid={baseTokenValid}
             setValid={setBaseTokenValid}
@@ -251,8 +258,8 @@ export default function PyroTokens(props: props) {
             {order[1]}
         </Grid>
         <Grid item>
-            {redeemEnabled && !baseToPyro ? <Button onClick={() => setRedeemClicked(true)}>Redeem</Button> : <div></div>}
-            {mintPossible && baseToPyro ? <Button onClick={() => setMintClicked(true)}>Mint</Button> : <div></div>}
+            {redeemEnabled && !baseToPyro ? <Button variant="contained" color="secondary"  onClick={() => setRedeemClicked(true)}>Redeem</Button> : <div></div>}
+            {mintPossible && baseToPyro ? <Button variant="contained" color="primary"  onClick={() => setMintClicked(true)}>Mint</Button> : <div></div>}
         </Grid>
     </Grid >
 }

@@ -136,6 +136,7 @@ interface props {
     setRouteValue: (v: permittedRoutes) => void,
     ethBalance: string
     truncAccount: string
+    admin: boolean
 }
 
 export default function TopMenu(props: props) {
@@ -165,10 +166,10 @@ export default function TopMenu(props: props) {
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <Hidden mdDown>
-                        <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
-                        <LeftLink text="Swap 2" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
+                        {props.admin ? <LeftLink text="SwapV1" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} /> : ""}
+                        <LeftLink text="Swap" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
                         <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />
-                        <LeftLink text="Liquidity Queueing" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
+                        <LeftLink text="Liquidity Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
                     </Hidden>

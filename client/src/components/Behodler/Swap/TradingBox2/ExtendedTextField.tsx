@@ -251,7 +251,7 @@ export default function ExtendedTextField(props: props) {
                 variant="body1"
                 className={classes.searchHeader}
               >
-                {props.label.toUpperCase()}
+                {props.label}
               </Typography>
             </Grid>
             <Grid>
@@ -291,7 +291,7 @@ export default function ExtendedTextField(props: props) {
                 </Button>
                 {enabled || props.setEnabled === undefined ? <div></div> :
                   <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)}>
-                    {props.enableCustomMessage || "Enable Token"}
+                    {props.enableCustomMessage || "Approve Token"}
                   </Button>}
               </FormControl>
             </Grid>

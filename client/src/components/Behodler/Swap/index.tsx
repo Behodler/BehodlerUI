@@ -176,7 +176,7 @@ export default function Swap(props: props) {
 
     const DepaddedGridItem = (props: { children: any }) => <Grid className={classes.nopadding} item>{props.children}</Grid>
     return <div>
-        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} />}
+        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} admin={walletContextProps.isMelkor} />}
         <Grid
             container
             direction="column"
