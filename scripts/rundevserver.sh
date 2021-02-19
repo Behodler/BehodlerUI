@@ -20,6 +20,7 @@ cp '/home/justin/weidai ecosystem/weidai/client/src/tokenLocation.json' weidai.j
 truffle migrate
 cp ./build/contracts/Behodler.json ../behodlerUI/client/src/blockchain/behodler2UI/
 cp behodler2DevAddresses.json ../behodlerUI/temp/
+cp weth10.txt ../behodlerUI/temp/
 cd ../behodlerUI
 node ./scripts/behodler2DevCapture.js
 # echo "**************MIGRATING SISYPHUS***********"

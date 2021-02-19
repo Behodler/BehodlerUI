@@ -43,6 +43,19 @@ export default function TradeBox2(props: props) {
 
     const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address)
+    const [inputDecimals, setInputDecimals] = useState<number>(18)
+    const [outputDecimals, setOutputDecimals] = useState<number>(18)
+
+    useEffect(() => {
+        API.getTokenDecimals(inputAddress)
+            .then(setInputDecimals)
+    }, [inputAddress])
+
+    useEffect(() => {
+        API.getTokenDecimals(outputAddress)
+            .then(setOutputDecimals)
+    }, [outputAddress])
+
     if (tokenDropDownList.filter(t => t.address === outputAddress).length === 0) {
         setOutputAddress(tokenDropDownList[1])
     }
@@ -74,9 +87,7 @@ export default function TradeBox2(props: props) {
     const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
     const swapEnabled = swapPossible && inputEnabled
 
-    const wbtcOverride = nameOfSelectedAddress(inputAddress).toLowerCase().trim() === 'wbtc' ? 8 : 18
-
-    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, wbtcOverride) : "0"
+    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, inputDecimals) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
     const ethOptions = { from: walletContextProps.account, value: inputValWei }
@@ -121,7 +132,7 @@ export default function TradeBox2(props: props) {
 
     const validateLiquidityExit = async (tokensToWithdraw: BigNumber) => {
         const maxLiquidityExit = new BigNumber((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString())
-        const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, 18)
+        const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals)
         const exitRatio = new BigNumber(tokensToWithdraw.times(100).div(O_i.toString()).toFixed(0).toString())
         if (exitRatio.isGreaterThan(maxLiquidityExit)) {
             setInputValid(false)
@@ -138,7 +149,7 @@ export default function TradeBox2(props: props) {
                 //let X = log(InitialBalance) - ΔSCX 
                 //FinalBalance = 2^X
 
-                const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, 18)
+                const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals)
                 const guess = O_i.div(2).toFixed(0);
                 const actual = new BigNumber((await behodler.withdrawLiquidityFindSCX(outputAddress, guess.toString(), inputValWei, "15").call(primaryOptions)).toString())
                 await validateLiquidityExit(actual)
@@ -158,12 +169,12 @@ export default function TradeBox2(props: props) {
             }
             else {
                 // I_f/I_i = O_i/O_f
-                const I_i = await API.getTokenBalance(inputAddress, behodler.address, false, 18)
+                const I_i = await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals)
                 const burnFee = (await behodler.getConfiguration().call(primaryOptions))[1]
                 const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
                 const I_f = I_i.plus(netAmount)
 
-                const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, 18)
+                const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals)
                 const O_f = O_i.times(I_i.div(I_f))
                 let outputWei = O_i.minus(O_f).toString()
                 const indexOfPoint = outputWei.indexOf('.')
@@ -202,6 +213,7 @@ export default function TradeBox2(props: props) {
                 scarcityAddress={scarcityAddress}
                 clear={clearInput}
                 addressToEnableFor={walletContextProps.contracts.behodler.Behodler2.Behodler2.address}
+                decimalPlaces={inputDecimals}
             />
         </Grid >
         <Grid item>
@@ -221,6 +233,7 @@ export default function TradeBox2(props: props) {
                 disabledInput
                 exchangeRate={{ baseAddress: inputAddress, baseName: nameOfSelectedAddress(inputAddress), ratio: exchangeRate, valid: swapEnabled, reserve: outputReserve, setReserve: setOutputReserve }}
                 clear={clearInput}
+                decimalPlaces={outputDecimals}
             />
         </Grid>
         {swapEnabled ?

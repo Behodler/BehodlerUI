@@ -158,7 +158,8 @@ export default function TopMenu(props: props) {
         props.setRouteValue(route)
         closeMenu()
     };
-    const mediumLink = 'https://medium.com/weidaithriftcoin/the-behodler-launch-in-partnership-with-degen-vc-bd865c1443a4'
+
+    const eyelink = 'https://www.dextools.io/app/uniswap/pair-explorer/0x54965801946d768b395864019903aef8b5b63bb3'
     return (
         <div className={classes.menuRoot}>
             <AppBar position="static" className={classes.appBar}>
@@ -166,10 +167,10 @@ export default function TopMenu(props: props) {
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} />
                         <LeftLink text="Swap 2" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
+                        <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />
                         <LeftLink text="Liquidity Queueing" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
-                        <LeftLink text="EYE" nav={() => window.open(mediumLink, '_blank')} selected={false} />
-                        <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />
+                        <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
                     </Hidden>
                     <div className={classes.search}>
                         <Grid
@@ -228,7 +229,7 @@ export default function TopMenu(props: props) {
                                 <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap2</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Queueing</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => route('governance')}>Vote</MenuItem>
-                                <MenuItem className={classes.menuList} onClick={() => window.open(mediumLink, '_blank')}>EYE</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
                             </Menu>
                         </Hidden>
                     </div>

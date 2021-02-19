@@ -21,6 +21,9 @@ export default function LiquidityMining() {
                 <Grid item className={classes.column}>
                     <Container> <img src={mining} width={400} /></Container>
                 </Grid>
+                <Grid item>
+                    <a href="https://medium.com/weidaithriftcoin/roadmap-2021-9ee191fa8231" target="_blank">Road map</a>
+                </Grid>
             </Grid>
         </Container>
     )

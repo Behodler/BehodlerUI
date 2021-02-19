@@ -1,4 +1,4 @@
-import { address, uint, Bytes, Bytes32, int, uint16, uint8 } from './contractInterfaces/SolidityTypes'
+import { address, uint, Bytes32, int, uint16, uint8 } from './contractInterfaces/SolidityTypes'
 import { Behodler } from './contractInterfaces/behodler/Behodler'
 import { Chronos } from './contractInterfaces/behodler/Chronos'
 import { Janus } from './contractInterfaces/behodler/Janus'
@@ -9,12 +9,6 @@ import { Weth } from './contractInterfaces/behodler/Weth'
 //hephaestus
 import { Bellows } from './contractInterfaces/behodler/hephaestus/Bellows'
 import { Lachesis } from './contractInterfaces/behodler/hephaestus/Lachesis'
-import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
-import { PyroTokenRegistry } from './contractInterfaces/behodler/hephaestus/PyroTokenRegistry'
-
-import { Celeborn } from './contractInterfaces/behodler/Nimrodel/Celeborn'
-import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
-import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
 
 //Behodler2
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
@@ -47,12 +41,6 @@ export interface Morgoth {
 	Invokers: PowerInvokers
 }
 
-export interface NimrodelContracts {
-	Celeborn: Celeborn
-	Miruvor: Miruvor
-	Rivulet: Rivulet
-}
-
 export interface Behodler2Contracts {
 	Behodler2: Behodler2,
 	Morgoth: Morgoth,
@@ -72,9 +60,6 @@ export interface BehodlerContracts {
 	Weth: Weth,
 	Bellows: Bellows,
 	Lachesis: Lachesis,
-	PyroToken: PyroToken,
-	PyroTokenRegistry: PyroTokenRegistry,
-	Nimrodel: NimrodelContracts
 }
 
 export default interface IContracts {
@@ -128,9 +113,10 @@ const defaultLachesis2: Lachesis2 = {
 }
 
 const defaultLiquidityReceiver: LiquidityReceiver = {
-	...defaultBase,
+	...defaultOwnable,	
 	registerPyroToken: (baseToken: address) => { },
-	drain: (pyroToken: address) => { }
+	drain: (pyroToken: address) => { },
+	baseTokenMapping: (pyrotoken: address) => { }
 }
 
 const defaultBehodler2Contract: Behodler2 = {
@@ -226,95 +212,6 @@ const defaultLachesis: Lachesis = {
 	measure: (token: address, valid: boolean) => { },
 	cut: (token: address) => { }
 }
-
-const defaultPyroToken: PyroToken = {
-	...defaultBase,
-	...defaultSecondary,
-	...defaultERC20,
-	engulf: (pyroRecipient: address, value: uint) => { },
-	burn: (value: uint) => { }
-}
-
-const defaultPyroTokenRegistry: PyroTokenRegistry = {
-	...defaultBase,
-	...defaultSecondary,
-	seed: (bellows: address, lachesis: address, kharon: address) => { },
-	addToken: (name: string, symbol: string, baseToken: address) => { },
-	baseTokenMapping: (base: address) => { },
-	pyroTokenMapping: (pToken: address) => { }
-}
-
-const defaultCeleborn: Celeborn = {
-	...defaultOwnable,
-	maxGold: () => { },
-	maxSilver: () => { },
-	maxBronze: () => { },
-	goldThreshold: () => { },
-	silverThreshold: () => { },
-	bronzeThreshold: () => { },
-	safetyDurationMultiplier: () => { },
-
-	//functions
-	sponsor: (slot: uint, value: uint, comp: Bytes32, logo: Bytes32, siteURL: Bytes32, message: Bytes) => { },
-	seed: (rivulet: address, dai: address) => { },
-	setMaxSponsorships: (gold: uint, silver: uint, bronze: uint, multiplier: uint) => { },
-	getSponsorshipData: (slot: uint, field: uint) => { },
-}
-
-const defaultRivulet: Rivulet = {
-	...defaultOwnable,
-	...defaultBase,
-	celeborn: () => { },
-	staked: (user: address) => "",
-	tickets: (user: address) => "",
-	totalTickets: () => "",
-	scxMultiple: (staker: address) => "",
-	damHeightAtJoin: (staker: address) => "",
-	ponds: (staker: address) => "",
-	damHeight: () => { },
-	maxTickets: () => { },
-	initialDai: () => { },
-	timeScale: () => { },
-	burnMultiple: () => { },
-	ticketSize: () => { },
-	lastDrip: () => { },
-
-	//functions
-	seed: (dai: address, scx: address, celeborn: address, time: uint, burnMultiple: uint, maxTickets: uint) => { },
-	setTicketParameters: (ticketSize: uint, maxTickets: uint) => { },
-	setBurnMultiple: (b: uint) => { },
-	celebrant: (value: uint) => { },
-	dripIfStale: () => { },
-	drip: () => { },
-	drainPond: () => { },
-	stake: (stakeValue: uint, burnValue: uint) => { },
-	unstake: (scx: uint) => { },
-	aggregateFlow: () => { },
-}
-
-const defaultMiruvor: Miruvor = {
-	...defaultOwnable,
-	discount: () => { },
-	SCXperToken: (token: address) => "",
-
-	//functions
-	setMarkup: (markup: uint) => { },
-	seed: (scx: address, behodler: address, lachesis: address, janus: address, weth: address, registry: address, dai: address, weidai: address) => { },
-	canDrink: (token: address) => { },
-	refresh: (token: address) => { },
-	drink: (token: address, value: uint) => { },
-	drinkEth: () => { },
-	stopperEth: () => { },
-	stopper: (token: address) => { },
-	calculateSCXperToken: (token: address, scx: address) => { },
-}
-
-const defaultNimrodel: NimrodelContracts = {
-	Celeborn: defaultCeleborn,
-	Miruvor: defaultMiruvor,
-	Rivulet: defaultRivulet
-}
-
 
 
 const defaultPowerInvoker = {
@@ -469,10 +366,7 @@ export const DefaultBehodlerContracts: BehodlerContracts = {
 	Scarcity: defaultScarcity,
 	Weth: defaultWeth,
 	Bellows: defaultBellows,
-	Lachesis: defaultLachesis,
-	PyroToken: defaultPyroToken,
-	PyroTokenRegistry: defaultPyroTokenRegistry,
-	Nimrodel: defaultNimrodel
+	Lachesis: defaultLachesis
 }
 
 export const DefaultContracts: IContracts = {

@@ -10,7 +10,6 @@ import Janus from './ContractContexts/Janus'
 import Kharon from './ContractContexts/Kharon'
 import Lachesis from './ContractContexts/Lachesis'
 import Prometheus from './ContractContexts/Prometheus'
-import PyroTokenRegistry from './ContractContexts/PyroTokenRegistry'
 import Scarcity from './ContractContexts/Scarcity'
 import Weth from './ContractContexts/Weth'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
@@ -97,7 +96,6 @@ function ChooseContext(props: { contractName: string }) {
         case "Kharon": return <Kharon />
         case "Lachesis": return <Lachesis />
         case "Prometheus": return <Prometheus />
-        case "PyroTokenRegistry": return <PyroTokenRegistry />
         case "Scarcity": return <Scarcity />
         case "Weth": return <Weth />
     }

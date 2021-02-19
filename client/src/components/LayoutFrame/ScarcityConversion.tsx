@@ -212,7 +212,7 @@ export default function ScarcityConversion(props: {}) {
                     <Container >
                         <Grid container direction="row" alignItems="center" justify="center" spacing={4}>
                             <Grid item className={classes.LinkColumn}>
-                                <a href="#">Learn more</a>
+                                <a href="https://medium.com/weidaithriftcoin/a-few-points-on-the-upcoming-scarcity-migration-d1a479fd0695" target="_blank">Learn more</a>
                             </Grid>
                         </Grid>
                     </Container>

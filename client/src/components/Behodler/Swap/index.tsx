@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox from './TradingBox/index'
 import TradingBox2 from './TradingBox2/index'
+import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import LiquidityMining from './LiquidityMining/index'
 import { Grid, Typography, Button, Container } from '@material-ui/core'
@@ -9,13 +10,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../blockchain/ethereumAPI'
-import { PyroToken } from 'src/blockchain/contractInterfaces/behodler/hephaestus/PyroToken'
 import behodlerLogo from '../../../images/behodler/logo.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
 import Governance from '../Swap/Governance/index'
-
+import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
 interface props {
@@ -119,7 +119,6 @@ export default function Swap(props: props) {
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
-
     const ethCallback = useCallback(async () => {
         if (walletContextProps.connected && walletContextProps.account.length > 5) {
             setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
@@ -132,9 +131,10 @@ export default function Swap(props: props) {
 
 
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
-        const pyroAddress = await walletContextProps.contracts.behodler.PyroTokenRegistry.baseTokenMapping(baseToken).call(primaryOptions)
-        const token: PyroToken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
+        const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
+        const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
         const name = await token.name().call(primaryOptions)
+
         return {
             name,
             base: baseToken,
@@ -153,6 +153,8 @@ export default function Swap(props: props) {
     useEffect(() => {
         if (props.connected) {
             pytoTokenPopulator()
+        }
+        else {
         }
     }, [props.connected])
 
@@ -204,8 +206,8 @@ export default function Swap(props: props) {
                     <Typography className={classes.warningText} variant='subtitle1'>
                         Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
                         Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken wrapper.
-                        Take out a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Vault (coming soon).
-                        While you wait in the queue, you earn potatoes, a reward token with strong deflationary pressures.
+                        Exploit price arbitrage with a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Queue (coming soon).
+                        While you wait in the queue, we pay you Eye on an hourly basis. The more spots in the queue you occupy, the more Eye you earn per hour.
             </Typography>
                 </DepaddedGridItem>
                 : ''}
@@ -275,6 +277,10 @@ function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] })
             return <LiquidityMining />
         case 'governance':
             return <Governance />
+        case 'pyro':
+            if (props.tokens.length > 1)
+                return <PyroTokens tokens={props.tokens} />
+            return <Typography variant="subtitle1">fetching pyrotoken mapping from the blockchain...</Typography>
         default:
             return <div>Chronos</div>
     }

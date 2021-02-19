@@ -54,6 +54,7 @@ interface props {
   addressToEnableFor?: string
   disabledDropDown?: boolean
   liquidityMessage?: string
+  decimalPlaces
 }
 const scale = 8
 
@@ -119,9 +120,13 @@ export default function ExtendedTextField(props: props) {
   const walletContextProps = useContext(WalletContext)
   const indexOfAddressFunc = (address: string) => props.dropDownFields.findIndex(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())
   const indexOfAddress = indexOfAddressFunc(props.address)
+
   const selectedImage = props.dropDownFields[indexOfAddress].image
-  const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())[0].name
-  const useEth = nameOfSelectedAddress(props.address).toLowerCase() === 'eth'
+
+  const nameOfSelectedAddress = props.dropDownFields[indexOfAddress].name || ''
+
+  //const nameOfSelectedAddress = (address: string) => props.dropDownFields.filter(t => t.address.toLowerCase().trim() == address.toLowerCase().trim())[0].name
+  const useEth = nameOfSelectedAddress.toLowerCase() === 'eth'
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
@@ -150,14 +155,11 @@ export default function ExtendedTextField(props: props) {
     }
 
     if (props.exchangeRate.setReserve)
-      exchangeRateString = `1 ${props.exchangeRate.baseName} = ${ratio} ${nameOfSelectedAddress(props.address)}`
+      exchangeRateString = `1 ${props.exchangeRate.baseName} = ${ratio} ${nameOfSelectedAddress}`
     else
-      exchangeRateString = `1 ${nameOfSelectedAddress(props.address)} = ${ratio}  ${props.exchangeRate.baseName}`
+      exchangeRateString = `1 ${nameOfSelectedAddress} = ${ratio}  ${props.exchangeRate.baseName}`
   }
-
-
-  const decimalPlaces = nameOfSelectedAddress(props.address).toLowerCase().indexOf('wbtc') !== -1 ? 8 : 18
-  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, decimalPlaces)
+  const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, props.decimalPlaces)
 
   useEffect(() => {
     const effect = currentTokenEffects.allowance(walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)
@@ -197,7 +199,7 @@ export default function ExtendedTextField(props: props) {
 
   const listTokens = isNullOrWhiteSpace(filteredText) ? props.dropDownFields : props.dropDownFields.filter(t => t.name.toLowerCase().indexOf(filteredText.toLowerCase()) !== -1)
 
-  const nameOfToken = nameOfSelectedAddress(props.address).toLowerCase()
+  const nameOfToken = nameOfSelectedAddress.toLowerCase()
 
   return (<div>
     <Dialog fullWidth={true} open={dialogOpen} onClose={() => setDialogOpen(false)}>
@@ -285,7 +287,7 @@ export default function ExtendedTextField(props: props) {
                   endIcon={props.disabledDropDown ? "" : <ExpandMoreRoundedIcon />}
                   onClick={() => props.disabledDropDown ? {} : setDialogOpen(true)}
                 >
-                  {nameOfSelectedAddress(props.address)}
+                  {nameOfSelectedAddress}
                 </Button>
                 {enabled || props.setEnabled === undefined ? <div></div> :
                   <Button color="secondary" variant="outlined" onClick={async () => await API.enableToken(props.address, walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)}>

@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
 import { ERC20 } from './contractInterfaces/ERC20'
-import { PyroToken } from './contractInterfaces/behodler/hephaestus/PyroToken'
+import { Pyrotoken } from './contractInterfaces/behodler2/Pyrotoken'
 import { Weth } from './contractInterfaces/behodler/Weth'
 
 import { address } from './contractInterfaces/SolidityTypes'
@@ -13,8 +13,8 @@ import { PatienceRegulationEffects } from './observables/PatienceRegulationEngin
 import { BankEffects } from './observables/WeiDaiBank'
 
 import ERC20JSON from '../contracts/ERC20.json'
-
-import { BellowsEffects } from './observables/Bellows'
+import IERC20JSON from './behodler2UI/IERC20.json'
+import { PyrotokenEffects } from './observables/PyrotokenEffects'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
@@ -22,16 +22,6 @@ import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
 
 import BigNumber from 'bignumber.js';
-
-import CelebornJSON from './nimrodelUI/Celeborn.json'
-import MiruvorJSON from './nimrodelUI/Miruvor.json'
-import RivuletJSON from './nimrodelUI/Rivulet.json'
-import nimrodelAddresses from './nimrodelUI/nimrodelAddresses.json'
-
-import { NimrodelContracts } from './IContracts'
-import { Celeborn } from './contractInterfaces/behodler/Nimrodel/Celeborn'
-import { Miruvor } from './contractInterfaces/behodler/Nimrodel/Miruvor'
-import { Rivulet } from './contractInterfaces/behodler/Nimrodel/Rivulet'
 
 import { Behodler2Contracts } from './IContracts'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
@@ -60,7 +50,7 @@ import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
 import { MigrationEffects } from './observables/MigratorEffects'
 import Weth10JSON from './behodler2UI/WETH10.json'
-
+import PyrotokenJSON from './behodler2UI/Pyrotoken.json'
 interface AccountObservable {
 	account: string
 	isPrimary: boolean,
@@ -97,12 +87,11 @@ class ethereumAPI {
 	public daiEffects: ERC20Effects
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
-	public bellowsEffects: BellowsEffects
 	public scarcityEffects: ERC20Effects
 	public migrationEffects: MigrationEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
-
+	public ONE = BigInt("1000000000000000000")
 	constructor() {
 		this.networkMapping = {
 			'1': "main",
@@ -121,11 +110,9 @@ class ethereumAPI {
 		const networkName = this.networkMapping[chainId]
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
-		behodlerContracts.Nimrodel = await this.fetchNimrodel(networkName)
 		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
 		let contracts: IContracts = { behodler: behodlerContracts }
 		this.initialized = true
-		this.bellowsEffects = new BellowsEffects(this.web3, contracts.behodler.Bellows, currentAccount)
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
 		this.migrationEffects = new MigrationEffects(this.web3, behodlerContracts.Behodler2.Morgoth.Migrator, currentAccount)
 		await this.setupSubscriptions()
@@ -156,8 +143,9 @@ class ethereumAPI {
 			return 'unset'
 		if (!override)
 			return this.web3.utils.fromWei(wei)
+		const bigWei = new BigNumber(wei)
 		const factor = new BigNumber(10).pow(override)
-		return new BigNumber(wei).dividedBy(factor).toString()
+		return bigWei.div(factor).toString()
 	}
 
 	public unsubscribeAccount() {
@@ -178,9 +166,9 @@ class ethereumAPI {
 		})
 	}
 
-	public async getPyroToken(tokenAddress: string, network: string): Promise<PyroToken> {
+	public async getPyroToken(tokenAddress: string, network: string): Promise<Pyrotoken> {
 		network = network === 'private' || network === 'development' ? 'development' : network
-		return await ((new this.web3.eth.Contract(this.getPyroTokenABI(network) as any, tokenAddress)).methods as unknown) as PyroToken
+		return await ((new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress)).methods as unknown) as Pyrotoken
 	}
 
 	public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean, decimalPlaces: number = 18): Token {
@@ -190,6 +178,11 @@ class ethereumAPI {
 		}
 
 		return new ERC20Effects(this.web3, token, currentAccount, decimalPlaces)
+	}
+
+	public async getPyroTokenEffects(pyroTokenAddress: string, network: string, account: string): Promise<PyrotokenEffects> {
+		const pyroTokenInstance = await this.getPyroToken(pyroTokenAddress, network)
+		return new PyrotokenEffects(this.web3, pyroTokenInstance, account)
 	}
 
 	public async getEthBalance(account: string): Promise<string> {
@@ -206,6 +199,16 @@ class ethereumAPI {
 		return new BigNumber(balance)
 	}
 
+	public async getTokenDecimals(tokenAddress: string): Promise<number> {
+		const token: ERC20 = ((new this.web3.eth.Contract(IERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		try {
+			return parseInt((await token.decimals().call()).toString())
+
+		} catch
+		{
+			return 18
+		}
+	}
 	public async getTokenAllowance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number, behodlerAddress: string): Promise<BigNumber> {
 		// if (isEth) {
 		// 	return new BigNumber(await this.web3.eth.getBalance(currentAccount))
@@ -253,11 +256,6 @@ class ethereumAPI {
 				contractInstance: {}
 			};
 		}
-	}
-
-	private getPyroTokenABI(network: string): any {
-		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
-		return mappingsList.filter(m => m.contract === 'PyroToken')[0].abi
 	}
 
 	private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
@@ -340,29 +338,6 @@ class ethereumAPI {
 		const Invokers = { ConfigureScarcity, AddTokenToBehodler, SetSilmaril }
 		return { Angband, Invokers, IronCrown, Migrator, PowersRegistry, ScarcityBridge }
 	}
-
-	private async fetchNimrodel(network: string): Promise<NimrodelContracts> {
-		network = network == 'private' ? 'development' : network
-		let rivuletAddress = nimrodelAddresses[network]['Rivulet']
-		let celebornAddress = nimrodelAddresses[network]['Celeborn']
-		let miruvorAddress = nimrodelAddresses[network]['Miruvor']
-
-		const rivuletDeployment = await this.deployBehodlerContract(RivuletJSON.abi, rivuletAddress)
-		const celebornDeployment = await this.deployBehodlerContract(CelebornJSON.abi, celebornAddress)
-		const miruvorDeployment = await this.deployBehodlerContract(MiruvorJSON.abi, miruvorAddress)
-
-		let rivulet: Rivulet = rivuletDeployment.methods
-		rivulet.address = rivuletDeployment.address
-
-		let celeborn: Celeborn = celebornDeployment.methods
-		celeborn.address = celebornDeployment.address
-
-		let miruvor: Miruvor = miruvorDeployment.methods
-		miruvor.address = miruvorDeployment.address
-
-		return { Celeborn: celeborn, Miruvor: miruvor, Rivulet: rivulet }
-	}
-
 }
 
 interface deployment {

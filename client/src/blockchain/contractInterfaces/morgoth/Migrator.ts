@@ -10,7 +10,7 @@ export default interface Migrator extends BaseContract {
     step2: (tokens: string[]) => any
     step3: () => any
     step4: (iterations: uint) => any
-    step5: () => any
+    step5: (iterations: uint) => any
     step6: (iterations: uint) => any
     step7: () => any
 }

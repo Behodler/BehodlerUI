@@ -4,7 +4,7 @@ import { Grid, makeStyles, createStyles, IconButton } from '@material-ui/core';
 import discord from '../../../src/images/behodler/footer/discord.png'
 import medium from '../../../src/images/behodler/footer/medium.png'
 import github from '../../../src/images/behodler/footer/Github.png'
-import faq from '../../../src/images/behodler/footer/FAQ.png'
+import twitter from '../../../src/images/behodler/footer/t.png'
 import uniswap from '../../../src/images/behodler/footer/uniswap.png'
 import telegram from '../../../src/images/behodler/footer/telegram.png'
 import ScarcityConversion from './ScarcityConversion'
@@ -138,7 +138,9 @@ export default function LayoutFrame(props: any) {
 							<Route path="/swap2">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
-
+							<Route path ='/pyro'>
+							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
+							</Route>
 							<Route path="/scarcity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>
@@ -180,12 +182,12 @@ export default function LayoutFrame(props: any) {
 												</IconButton>
 											</Grid>
 											<Grid item>
-												<IconButton title="FAQ" onClick={() => openFooter('https://medium.com/weidaithriftcoin/faq-behodler-and-scarcity-scx-98e9baf94ea')} >
-													<img src={faq} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
+											<IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')} >
+												<img src={twitter} width={footerIconWidth} />
+											</IconButton>
+										</Grid>
 											<Grid item>
-												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/f2pAVGa')} >
+												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/M5bwQZzE')} >
 													<img src={discord} width={footerIconWidth} />
 												</IconButton>
 											</Grid>
@@ -195,13 +197,13 @@ export default function LayoutFrame(props: any) {
 												</IconButton>
 											</Grid>
 											<Grid item>
-												<IconButton title="telegram" onClick={() => openFooter('https://t.me/degenvc')} >
+												<IconButton title="telegram" onClick={() => openFooter('https://t.me/BehodlerDex')} >
 													<img src={telegram} width={footerIconWidth} />
 												</IconButton>
 											</Grid>
 											{walletContextProps.primary ? <Grid item>
 												<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
-													<img src={faq} width={footerIconWidth} />
+													<img src={twitter} width={footerIconWidth} />
 												</IconButton>
 											</Grid> : ''}
 

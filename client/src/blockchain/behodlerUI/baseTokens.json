@@ -86,6 +86,10 @@
         {
             "name": "FeeOnTransferToken",
             "address": "0xC7A6abf7d8843453A6EDdf44CfD7Eb3A8A20d417"
+        },
+        {
+            "name": "WETH10",
+            "address": "0x57B370AA3F86F0F40125ed1574Ad2345D15146A4"
         }
     ]
 }
