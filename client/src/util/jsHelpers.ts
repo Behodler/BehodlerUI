@@ -25,7 +25,7 @@ export const formatNumberText = (text: string): string => {
 	return newText
 }
 
-export const formatDecimalStrings = (value: string, decimalPlaces: number = 2): string => {
+export const formatDecimalStrings = (value: string, decimalPlaces: number = 18): string => {
 	const big = new BigNumber(value)
 
 	if (big.isNaN())

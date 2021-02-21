@@ -48,7 +48,7 @@ import ScarcityBridgeJSON from './behodler2UI/Morgoth/ScarcityBridge.json'
 import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
 import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
-import { MigrationEffects } from './observables/MigratorEffects'
+import { BridgeEffects } from './observables/BridgeEffects'
 import Weth10JSON from './behodler2UI/WETH10.json'
 import PyrotokenJSON from './behodler2UI/Pyrotoken.json'
 interface AccountObservable {
@@ -88,7 +88,7 @@ class ethereumAPI {
 	public preEffects: PatienceRegulationEffects
 	public bankEffects: BankEffects
 	public scarcityEffects: ERC20Effects
-	public migrationEffects: MigrationEffects
+	public bridgeEffects: BridgeEffects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
 	public MAXETH: string = "115792089237316000000000000000000000000000000000000000000000"
 	public ONE = BigInt("1000000000000000000")
@@ -114,7 +114,7 @@ class ethereumAPI {
 		let contracts: IContracts = { behodler: behodlerContracts }
 		this.initialized = true
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
-		this.migrationEffects = new MigrationEffects(this.web3, behodlerContracts.Behodler2.Morgoth.Migrator, currentAccount)
+		this.bridgeEffects = new BridgeEffects(this.web3, behodlerContracts.Behodler2.Morgoth.ScarcityBridge, currentAccount)
 		await this.setupSubscriptions()
 		return contracts
 	}
@@ -139,6 +139,8 @@ class ethereumAPI {
 	}
 
 	public fromWei(wei: string, override?: number) {
+		try{
+			BigNumber.config({ DECIMAL_PLACES: 20 })
 		if (wei == 'unset')
 			return 'unset'
 		if (!override)
@@ -146,6 +148,10 @@ class ethereumAPI {
 		const bigWei = new BigNumber(wei)
 		const factor = new BigNumber(10).pow(override)
 		return bigWei.div(factor).toString()
+		}catch
+		{
+			return '0'
+		}
 	}
 
 	public unsubscribeAccount() {

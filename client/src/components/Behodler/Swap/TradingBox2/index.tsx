@@ -90,7 +90,7 @@ export default function TradeBox2(props: props) {
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, inputDecimals) : "0"
 
     const primaryOptions = { from: walletContextProps.account }
-    const ethOptions = { from: walletContextProps.account, value: inputValWei }
+    const ethOptions = { from: walletContextProps.account, value: inputValWei, gas:"200000" }
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean => tokenDropDownList.filter(item => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
     const isEthPredicate = isTokenPredicateFactory('Eth')

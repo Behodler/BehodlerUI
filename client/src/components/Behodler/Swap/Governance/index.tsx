@@ -6,11 +6,12 @@ import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import SetSilmaril from "./SetSilmaril"
 import Fundage from './Fundage'
 import StepSelection from './StepSelection'
+
 export default function Governance() {
     const context = useContext(WalletContext)
 
     return (
-        context.isMelkor ? <DAOSection /> :
+        context.isMelkor? <DAOSection /> :
             <Grid
                 container
                 direction="column"

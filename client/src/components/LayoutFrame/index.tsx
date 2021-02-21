@@ -115,7 +115,7 @@ export default function LayoutFrame(props: any) {
 					<div>
 						<Switch>
 							<Route path="/" exact >
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
+								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
 							{walletContextProps.primary ?
 								<Route path="/behodler/admin">
@@ -131,9 +131,6 @@ export default function LayoutFrame(props: any) {
 							</Route>
 							<Route path="/liquidity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
-							</Route>
-							<Route path="/swap">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>
 							<Route path="/swap2">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />

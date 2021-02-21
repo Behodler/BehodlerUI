@@ -5,6 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Grid, Hidden, Link, Menu, MenuItem } from '@material-ui/core';
+import MetamaskGasWarning from "./MetamaskGasWarning"
 import { permittedRoutes } from '../Behodler/Swap';
 import metamaskAccount from '../../images/behodler/metamaskaccount.png'
 import { useLocation } from 'react-router-dom';
@@ -128,6 +129,15 @@ const useStyles = makeStyles((theme: Theme) =>
         fixGrid: {
             width: '100% !important',
             marginRight: 20
+        },
+        metamaskWarning: {
+            background: "#D6E8D8",
+            fontWeight: "bold",
+            color: "darkgrey",
+            flexWrap: 'unset'
+        },
+        metagrid: {
+            paddingLeft: 10
         }
     }),
 );
@@ -163,10 +173,10 @@ export default function TopMenu(props: props) {
     const eyelink = 'https://www.dextools.io/app/uniswap/pair-explorer/0x54965801946d768b395864019903aef8b5b63bb3'
     return (
         <div className={classes.menuRoot}>
+
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <Hidden mdDown>
-                        {props.admin ? <LeftLink text="SwapV1" nav={() => props.setRouteValue('swap')} selected={location === 'swap'} /> : ""}
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
                         <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />
                         <LeftLink text="Liquidity Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
@@ -225,17 +235,18 @@ export default function TopMenu(props: props) {
                                 onClose={closeMenu}
                                 className={classes.menu}
                             >
-
-                                <MenuItem className={classes.menuList} onClick={() => route('swap')}>Swap</MenuItem>
-                                <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap2</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('pyro')}>Pyrotokens</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Queueing</MenuItem>
-                                <MenuItem className={classes.menuList} onClick={() => route('governance')}>Vote</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('governance')}>Governance</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
                             </Menu>
                         </Hidden>
                     </div>
                 </Toolbar>
+                <MetamaskGasWarning />
             </AppBar>
+
         </div>
     );
 }

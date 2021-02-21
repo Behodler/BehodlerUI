@@ -4,7 +4,7 @@ import { useEffect, useContext, useState, useCallback } from 'react'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import ExtendedTextField from "../TradingBox2/ExtendedTextField"
 import { Images as PyroImages } from './PyroImageLoader'
-import { Images as BaseImages } from '../TradingBox/ImageLoader'
+import { Images as BaseImages } from './ImageLoader'
 import tokenListJSON from "../../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../../blockchain/ethereumAPI'
 import BigNumber from 'bignumber.js'
@@ -30,6 +30,7 @@ export const filterPredicate = ((item) => {
         case 'scarcity':
         case 'weidai':
         case 'dai':
+        case 'weth':
             return false
         default: return true
     }
@@ -44,15 +45,16 @@ export default function PyroTokens(props: props) {
 
     const baseTokenDropDownList = tokenList
         .filter(filterPredicate)
-        .filter(b => {
+        .filter((b, i) => {
+            if (i === indexOfWeth) return;
             const pair = props.tokens.filter(t => t.base.toLowerCase().trim() === b.address.toLowerCase().trim())[0]
             return pair.name !== null
         })
         .map((t: tokenPair, i) => {
             let item = { ...t, image: BaseImages[i] }
-            if (i === indexOfWeth) {
-                item.name = "Eth"
-            }
+            // if (i === indexOfWeth) {
+            //     item.name = "Eth"
+            // }
             return item
         })
 
@@ -142,11 +144,17 @@ export default function PyroTokens(props: props) {
     useEffect(() => {
         redeemRateCallback()
     }, [selectionChange, baseSelectionChange])
-
+    const WETH10 = '0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F'
     const mintClickedCallback = useCallback(async () => {
         if (mintClicked) {
             const ptoken = await API.getPyroToken(pyroTokenAddress, walletContextProps.networkName)
-            ptoken.mint(API.toWei(baseTokenValue)).send({ from: walletContextProps.account }, clearInput)
+            if (baseTokenAddress.toLowerCase() === WETH10) {
+                walletContextProps.contracts.behodler.Behodler2.Weth10.deposit().send({ from: walletContextProps.account, value: baseTokenValue },
+                    // () => ptoken.mint(API.toWei(baseTokenValue)).send({ from: walletContextProps.account }, clearInput))
+                    () => alert('ddd'))
+            } else {
+                ptoken.mint(API.toWei(baseTokenValue)).send({ from: walletContextProps.account }, clearInput)
+            }
             setMintClicked(false)
         }
     }, [mintClicked])
@@ -258,8 +266,8 @@ export default function PyroTokens(props: props) {
             {order[1]}
         </Grid>
         <Grid item>
-            {redeemEnabled && !baseToPyro ? <Button variant="contained" color="secondary"  onClick={() => setRedeemClicked(true)}>Redeem</Button> : <div></div>}
-            {mintPossible && baseToPyro ? <Button variant="contained" color="primary"  onClick={() => setMintClicked(true)}>Mint</Button> : <div></div>}
+            {redeemEnabled && !baseToPyro ? <Button variant="contained" color="secondary" onClick={() => setRedeemClicked(true)}>Redeem</Button> : <div></div>}
+            {mintPossible && baseToPyro ? <Button variant="contained" color="primary" onClick={() => setMintClicked(true)}>Mint</Button> : <div></div>}
         </Grid>
     </Grid >
 }

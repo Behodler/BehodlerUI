@@ -1,22 +1,22 @@
 {
     "main": {
         "AddTokenToBehodler": "",
-        "Angband": "",
-        "ConfigureScarcity": "",
-        "IronCrown": "",
-        "Migrator": "",
-        "PowersRegistry": "",
-        "ScarcityBridge": "",
-        "SetSilmaril": ""
+        "Angband": "0xc2dbeCd9947B7a0f7a380810707E599eF0d2180E",
+        "ConfigureScarcity": "0xA489a5D55d5494368391D0D749C50A1c3571DcfD",
+        "IronCrown": "0xc8F50DC92927440E3AF21DD722275B7C1948C54A",
+        "Migrator": "0xb2A684314dC4DAC5d5703EFCf616bFC00fcdDe9e",
+        "PowersRegistry": "0x603CCCDC24cdFBD5F6019FC9f50BD8Fecf55F53f",
+        "ScarcityBridge": "0x43A01D4D5aF42637EA99F0787F4EFA48d44CB8ae",
+        "SetSilmaril": "0x439e02B4496567184018fB35FD417A6BAF35c8ac"
     },
     "development": {
-        "AddTokenToBehodler": "0xF0858a8aFA8655BDfC97837962C719D814f8d95E",
+        "AddTokenToBehodler": "0xe7b00D159B4f6893f42c2b7b2702830D20B82aD5",
         "Angband": "0xd8A9aF8b800EA9eb3EB622f3BCE05c7C98083B15",
-        "ConfigureScarcity": "0x730E2e37b171411A1906FB674bDBbb2d1e0cb160",
+        "ConfigureScarcity": "0xB74AB1B98509fB41CAE7B8f04eC8e69cf4aC78CB",
         "IronCrown": "0x132F8aE2C53dCf628B3239aD00043743CDdFE898",
-        "Migrator": "0x9e1693aCD8AAe8C0F235B5e134B37bC7CbbC354F",
+        "Migrator": "0x6189A0B3e68CFcCf74F211685019f48CCAe04295",
         "PowersRegistry": "0x6b9e2b14E7bba6255276BEB7C9301475587Ed70A",
-        "ScarcityBridge": "0xE55BCc34C0430969c51a8f2eE9b6D076C38D03F1",
-        "SetSilmaril": "0x4f3dfa59F822B0201E0DedF2d60B0A559c88e8Ef"
+        "ScarcityBridge": "0xC8406D245df374caBf3349A4602ae0A5bc500cbd",
+        "SetSilmaril": "0x4bE82A034fbbF4e3a60Ed01d11259D48aee779D7"
     }
 }

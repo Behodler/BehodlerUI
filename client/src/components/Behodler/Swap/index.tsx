@@ -87,9 +87,9 @@ const useStyles = makeStyles(theme => createStyles({
     warningText: {
         color: 'black',
         fontStyle: 'italic',
-        width: '30vh',
+        maxWidth: 500,
         textAlign: 'center',
-        textOverflow: 'wrap'
+ 
     },
     alphadrop: {
         color: 'white',
@@ -133,7 +133,7 @@ export default function Swap(props: props) {
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
         const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
         const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
-        const name = await token.name().call(primaryOptions)
+        const name = await token.symbol().call(primaryOptions)
 
         return {
             name,

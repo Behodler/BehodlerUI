@@ -10,7 +10,7 @@
         },
         {
             "name": "Weth",
-            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+            "address": "0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F"
         },
         {
             "name": "Link",
@@ -22,7 +22,7 @@
         },
         {
             "name": "Loom",
-            "address": "0xa4e8c3ec456107ea67d3075bf9e3df3a75823db0"
+            "address": "0x42476F744292107e34519F9c357927074Ea3F75D"
         },
         {
             "name": "Scarcity",

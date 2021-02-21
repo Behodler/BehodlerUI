@@ -139,7 +139,7 @@ export default function ScarcityConversion(props: {}) {
             setSCXBalance(balance)
         })
 
-        const bridgeEffect = API.migrationEffects.exchangeRate()
+        const bridgeEffect = API.bridgeEffects.exchangeRate()
         const bridgeSub = bridgeEffect.Observable.subscribe(ex => {
             setExchangeRate(API.pureHexToNumberString(ex))
         })
@@ -167,7 +167,8 @@ export default function ScarcityConversion(props: {}) {
         migrationClickCallback()
     }, [migrationClicked])
 
-    const ethNewSCX = API.fromWei(expectedNewScarcity)
+
+    const ethNewSCX =  parseFloat(expectedNewScarcity) / parseFloat("1000000000000000000")
     return <Dialog fullWidth={true} open={dialogVisibility === Visibility.Open} onClose={() => setDialogVisibility(Visibility.HideFor5Minutes)} className={classes.dialog}>
         <DialogContent className={classes.dialogContent}>
             <Grid
