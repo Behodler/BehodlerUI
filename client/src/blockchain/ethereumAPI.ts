@@ -139,16 +139,16 @@ class ethereumAPI {
 	}
 
 	public fromWei(wei: string, override?: number) {
-		try{
+		try {
 			BigNumber.config({ DECIMAL_PLACES: 20 })
-		if (wei == 'unset')
-			return 'unset'
-		if (!override)
-			return this.web3.utils.fromWei(wei)
-		const bigWei = new BigNumber(wei)
-		const factor = new BigNumber(10).pow(override)
-		return bigWei.div(factor).toString()
-		}catch
+			if (wei == 'unset')
+				return 'unset'
+			if (!override)
+				return this.web3.utils.fromWei(wei)
+			const bigWei = new BigNumber(wei)
+			const factor = new BigNumber(10).pow(override)
+			return bigWei.div(factor).toString()
+		} catch
 		{
 			return '0'
 		}
@@ -174,7 +174,8 @@ class ethereumAPI {
 
 	public async getPyroToken(tokenAddress: string, network: string): Promise<Pyrotoken> {
 		network = network === 'private' || network === 'development' ? 'development' : network
-		return await ((new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress)).methods as unknown) as Pyrotoken
+		const horse = await(((new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress)).methods as unknown) as Pyrotoken)
+		return horse
 	}
 
 	public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean, decimalPlaces: number = 18): Token {
@@ -188,6 +189,7 @@ class ethereumAPI {
 
 	public async getPyroTokenEffects(pyroTokenAddress: string, network: string, account: string): Promise<PyrotokenEffects> {
 		const pyroTokenInstance = await this.getPyroToken(pyroTokenAddress, network)
+
 		return new PyrotokenEffects(this.web3, pyroTokenInstance, account)
 	}
 
@@ -196,13 +198,19 @@ class ethereumAPI {
 		return await this.web3.eth.getBalance(account)
 	}
 
-	public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<BigNumber> {
+	public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<string> {
 		if (isEth) {
-			return new BigNumber(await this.web3.eth.getBalance(currentAccount))
+			return (await this.web3.eth.getBalance(currentAccount)).toString()
 		}
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
 		const balance = (await token.balanceOf(currentAccount).call({ from: currentAccount })).toString()
-		return new BigNumber(balance)
+		return balance
+	}
+
+	public async getTokenSymbol(tokenAddress: string): Promise<string> {
+
+		const token: ERC20 = await ((new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		return (await token.symbol().call())
 	}
 
 	public async getTokenDecimals(tokenAddress: string): Promise<number> {
@@ -215,6 +223,18 @@ class ethereumAPI {
 			return 18
 		}
 	}
+
+	public async getTokenTotalSupply(tokenAddress: string): Promise<string> {
+		const token: ERC20 = ((new this.web3.eth.Contract(IERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
+		try {
+			return (await token.totalSupply().call()).toString()
+
+		} catch
+		{
+			return "0"
+		}
+	}
+
 	public async getTokenAllowance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number, behodlerAddress: string): Promise<BigNumber> {
 		// if (isEth) {
 		// 	return new BigNumber(await this.web3.eth.getBalance(currentAccount))
