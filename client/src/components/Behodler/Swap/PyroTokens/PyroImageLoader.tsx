@@ -1,6 +1,5 @@
 import One from '../../../../images/behodler/Pyrotokens/1.png'
 import Two from '../../../../images/behodler/Pyrotokens/2.png'
-import Three from '../../../../images/behodler/Pyrotokens/3.png'
 import Four from '../../../../images/behodler/Pyrotokens/4.png'
 import Five from '../../../../images/behodler/Pyrotokens/5.png'
 // import Six from '../../../../images/behodler/Pyrotokens/6.png'
@@ -8,4 +7,4 @@ import Five from '../../../../images/behodler/Pyrotokens/5.png'
 import Eight from '../../../../images/behodler/Pyrotokens/8.png'
 
 
-export const Images = [One, Two, Three, Four, Five, Eight]
+export const Images = [One, Two, Four, Five, Eight]

@@ -30,6 +30,7 @@ export const filterPredicate = ((item) => {
         case 'scarcity':
         case 'weidai':
         case 'dai':
+        case 'weth':
             return false
         default: return true
     }
@@ -45,14 +46,14 @@ export default function PyroTokens(props: props) {
     const baseTokenDropDownList = tokenList
         .filter(filterPredicate)
         .filter((b, i) => {
+            if (i === indexOfWeth)
+                return false
+
             const pair = props.tokens.filter(t => t.base.toLowerCase().trim() === b.address.toLowerCase().trim())[0]
             return pair.name !== null
         })
         .map((t: tokenPair, i) => {
             let item = { ...t, image: BaseImages[i] }
-            if (i === indexOfWeth) {
-                item.name = "Eth"
-            }
             return item
         })
 
@@ -145,7 +146,7 @@ export default function PyroTokens(props: props) {
         changePyroToken()
     }, [baseSelectionChange])
 
-   
+
     const redeemRateCallback = useCallback(async () => {
         const pToken = await API.getPyroToken(pyroTokenAddress, walletContextProps.networkName)
         const baseBalance = BigInt(await API.getTokenBalance(baseTokenAddress, pyroTokenAddress, false, 18))
