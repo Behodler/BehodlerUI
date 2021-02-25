@@ -12,7 +12,7 @@ import Token from './observables/Token'
 import { PatienceRegulationEffects } from './observables/PatienceRegulationEngine'
 import { BankEffects } from './observables/WeiDaiBank'
 
-import ERC20JSON from '../contracts/ERC20.json'
+import ERC20JSON from './behodlerUI/ERC20.json'
 import IERC20JSON from './behodler2UI/IERC20.json'
 import { PyrotokenEffects } from './observables/PyrotokenEffects'
 
