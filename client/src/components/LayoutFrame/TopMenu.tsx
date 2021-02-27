@@ -178,7 +178,8 @@ export default function TopMenu(props: props) {
                 <Toolbar>
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
-                        <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />
+                        {props.admin?<LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />:<div></div>}
+                        
                         <LeftLink text="Liquidity Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
@@ -236,7 +237,8 @@ export default function TopMenu(props: props) {
                                 className={classes.menu}
                             >
                                 <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap</MenuItem>
-                                <MenuItem className={classes.menuList} onClick={() => route('pyro')}>Pyrotokens</MenuItem>
+                                {props.admin ? <MenuItem className={classes.menuList} onClick={() => route('pyro')}>Pyrotokens</MenuItem> : <div></div>}
+
                                 <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Queueing</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => route('governance')}>Governance</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
@@ -244,6 +246,7 @@ export default function TopMenu(props: props) {
                         </Hidden>
                     </div>
                 </Toolbar>
+
                 <MetamaskGasWarning />
             </AppBar>
 

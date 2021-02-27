@@ -30,7 +30,6 @@ export const filterPredicate = ((item) => {
         case 'scarcity':
         case 'weidai':
         case 'dai':
-        case 'weth':
             return false
         default: return true
     }
@@ -41,13 +40,13 @@ export default function PyroTokens(props: props) {
 
     const walletContextProps = useContext(WalletContext)
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName]
-    const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
+  //  const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
 
     const baseTokenDropDownList = tokenList
         .filter(filterPredicate)
         .filter((b, i) => {
-            if (i === indexOfWeth)
-                return false
+            // if (i === indexOfWeth)
+            //     return false
 
             const pair = props.tokens.filter(t => t.base.toLowerCase().trim() === b.address.toLowerCase().trim())[0]
             return pair.name !== null

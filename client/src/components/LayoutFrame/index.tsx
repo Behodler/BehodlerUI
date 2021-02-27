@@ -135,9 +135,10 @@ export default function LayoutFrame(props: any) {
 							<Route path="/swap2">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
-							<Route path ='/pyro'>
-							<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
-							</Route>
+							{walletContextProps.isMelkor? <Route path='/pyro'>
+								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
+							</Route> : <div></div>}
+
 							<Route path="/scarcity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
 							</Route>
@@ -179,10 +180,10 @@ export default function LayoutFrame(props: any) {
 												</IconButton>
 											</Grid>
 											<Grid item>
-											<IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')} >
-												<img src={twitter} width={footerIconWidth} />
-											</IconButton>
-										</Grid>
+												<IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')} >
+													<img src={twitter} width={footerIconWidth} />
+												</IconButton>
+											</Grid>
 											<Grid item>
 												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/M5bwQZzE')} >
 													<img src={discord} width={footerIconWidth} />
