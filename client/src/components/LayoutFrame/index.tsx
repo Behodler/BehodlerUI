@@ -123,12 +123,6 @@ export default function LayoutFrame(props: any) {
 								</Route>
 								: ""
 							}
-							<Route path="/sisyphus">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="sisyphus" />
-							</Route>
-							<Route path="/faucet">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="faucet" />
-							</Route>
 							<Route path="/liquidity">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
 							</Route>
@@ -138,10 +132,6 @@ export default function LayoutFrame(props: any) {
 							{walletContextProps.isMelkor? <Route path='/pyro'>
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
 							</Route> : <div></div>}
-
-							<Route path="/scarcity">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap" />
-							</Route>
 							<Route path="/governance">
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="governance" />
 							</Route>

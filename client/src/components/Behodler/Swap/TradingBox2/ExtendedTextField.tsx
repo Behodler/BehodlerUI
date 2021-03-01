@@ -131,7 +131,7 @@ export default function ExtendedTextField(props: props) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [filteredText, setFilteredText] = useState<string>("")
   const [currentBalance, setCurrentBalance] = useState<string>("0.0")
-  const [enabled, setEnabled] = useState<boolean>(useEth)
+  const [enabled, setEnabled] = useState<boolean>(false)
 
   const setFormattedInput = (value: string) => {
     if (props.disabledInput)
@@ -167,7 +167,7 @@ export default function ExtendedTextField(props: props) {
       const scaledAllowance = API.fromWei(allowance)
       const allowanceFloat = parseFloat(scaledAllowance)
       const balanceFloat = parseFloat(currentBalance)
-      const en = (props.scarcityAddress !== undefined && props.address.trim().toLowerCase() === props.scarcityAddress.trim().toLowerCase()) || useEth || !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
+      const en = (props.scarcityAddress !== undefined && props.address.trim().toLowerCase() === props.scarcityAddress.trim().toLowerCase()) || /*useEth ||*/ !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
       setEnabled(en)
       if (props.setEnabled) {
         props.setEnabled(en)

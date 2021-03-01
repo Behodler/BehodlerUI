@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
-import TradingBox from './TradingBox/index'
 import TradingBox2 from './TradingBox2/index'
 import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
@@ -269,8 +268,6 @@ export default function Swap(props: props) {
 
 function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] }) {
     switch (props.value) {
-        case 'swap':
-            return <TradingBox />
         case 'swap2':
             return <TradingBox2 />
         case 'liquidity':
