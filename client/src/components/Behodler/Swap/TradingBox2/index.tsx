@@ -40,29 +40,11 @@ export default function TradeBox2(props: props) {
     const [outputValueWei, setOutputValueWei] = useState<string>("")
 
     const [inputEnabled, setInputEnabled] = useState<boolean>(false)
-    const [inputReadyToSwap, setInputReadyToSwap] = useState<boolean>(false)
     const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address)
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
-    const delay = 1000
-    const configureInputReadyToSwap = () => {
-        const lastInput = localStorage.getItem('recordedInput')
-        if (lastInput) {
-            const duration = new Date().getTime() - parseInt(lastInput)
-            if (duration < delay) {
-                setTimeout(() => { setInputReadyToSwap(inputValid && !bigInputValue.isNaN()) }, delay)
-                setInputReadyToSwap(false)
-                return
-            }
-            setInputReadyToSwap(inputValid && !bigInputValue.isNaN())
-        }
-    }
-    const recordedInput = (input: string) => {
-        localStorage.setItem('recordedInput', new Date().getTime().toString())
-        setInputValue(input)
-        configureInputReadyToSwap()
-    }
+    
     useEffect(() => {
         API.getTokenDecimals(inputAddress)
             .then(setInputDecimals)
@@ -101,7 +83,7 @@ export default function TradeBox2(props: props) {
     const bigOutputValue = new BigNumber(outputValue)
 
     const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
-
+    const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
 
 
 
@@ -225,7 +207,7 @@ export default function TradeBox2(props: props) {
                 dropDownFields={tokenDropDownList}
                 valid={inputValid}
                 setValid={setInputValid}
-                setValue={recordedInput}
+                setValue={setInputValue}
                 setEnabled={setInputEnabled}
                 setTokenAddress={setInputAddress}
                 address={inputAddress}
