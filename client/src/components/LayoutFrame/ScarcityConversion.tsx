@@ -54,7 +54,6 @@ export default function ScarcityConversion(props: {}) {
     const classes = useStyle()
     const walletContextProps = useContext(WalletContext)
 
-
     const [dialogVisibility, setDialogVisibility] = useState<Visibility>(Visibility.Loading)
     const [scxBalance, setSCXBalance] = useState<string>('0')
     const [exchangeRate, setExchangeRate] = useState<string>('0')
