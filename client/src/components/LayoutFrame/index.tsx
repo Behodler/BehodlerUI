@@ -175,7 +175,7 @@ export default function LayoutFrame(props: any) {
 												</IconButton>
 											</Grid>
 											<Grid item>
-												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/M5bwQZzE')} >
+												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/FHhsqmryZK')} >
 													<img src={discord} width={footerIconWidth} />
 												</IconButton>
 											</Grid>

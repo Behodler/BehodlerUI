@@ -33,7 +33,7 @@ function SocialComponent(props:SocialProps){
 				<IconButton className={classes.Button} onClick={()=>window.open('https://medium.com/weidaithriftcoin')}>
 					<Icon><img src={medium} /></Icon>
 				</IconButton>
-				<IconButton  onClick={()=>window.open('https://discord.gg/s6bKYjj')}>
+				<IconButton  onClick={()=>window.open('https://discord.gg/FHhsqmryZK')}>
 					<Icon><img className={classes.discord} src={discord} /></Icon>
 				</IconButton>
 				<IconButton  onClick={()=>window.open('https://twitter.com/WeiDaiDapp')}>
