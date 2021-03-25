@@ -44,7 +44,7 @@ export default function TradeBox2(props: props) {
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address)
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
-    
+
     useEffect(() => {
         API.getTokenDecimals(inputAddress)
             .then(setInputDecimals)
@@ -194,7 +194,7 @@ export default function TradeBox2(props: props) {
             swapPreparationCallback();
         }
     }, [inputReadyToSwap, inputValue])
-
+    console.log('behodler: ' + walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
     const textFieldLabels = ['From', 'To']
     return <Grid
         container
