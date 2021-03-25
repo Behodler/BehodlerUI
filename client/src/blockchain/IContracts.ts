@@ -1,4 +1,4 @@
-import { address, uint, Bytes32, int, uint16, uint8 } from './contractInterfaces/SolidityTypes'
+import { address, uint, Bytes32, int, uint16, uint8, uint24 } from './contractInterfaces/SolidityTypes'
 import { Behodler } from './contractInterfaces/behodler/Behodler'
 import { Chronos } from './contractInterfaces/behodler/Chronos'
 import { Janus } from './contractInterfaces/behodler/Janus'
@@ -25,6 +25,20 @@ import { AddTokenToBehodler } from './contractInterfaces/morgoth/powerInvokers/A
 import { ConfigureScarcity } from './contractInterfaces/morgoth/powerInvokers/ConfigureScarcity'
 import { SetSilmaril } from './contractInterfaces/morgoth/powerInvokers/SetSilmaril'
 
+//Liquid Queue
+import { MintingModule } from './contractInterfaces/liquidQueue/MintingModule'
+import { LiquidQueue as LQ } from './contractInterfaces/liquidQueue/LiquidQueue'
+import { Reward } from './contractInterfaces/liquidQueue/Reward'
+import { SluiceGate } from './contractInterfaces/liquidQueue/SluiceGate'
+
+
+export interface LiquidQueue {
+	MintModule: MintingModule,
+	LiquidQueue: LQ,
+	Reward: Reward,
+	SluiceGate: SluiceGate
+}
+
 export interface PowerInvokers {
 	AddTokenToBehodler: AddTokenToBehodler
 	ConfigureScarcity: ConfigureScarcity
@@ -46,6 +60,7 @@ export interface Behodler2Contracts {
 	Lachesis: Lachesis2,
 	LiquidityReceiver: LiquidityReceiver
 	Weth10: Weth,
+	LiquidQueue:LiquidQueue
 }
 
 export interface BehodlerContracts {
@@ -92,6 +107,63 @@ const defaultERC20 = {
 	decimals: () => { },
 	symbol: () => { },
 	name: () => { }
+}
+
+const defaultLQ: LQ = {
+	...defaultOwnable,
+	join: (LP: address, recipient: address) => { },
+	//View
+	getQueueData: () => { },
+	getBatch: () => { },
+	//Ownable
+	pop: () => { },
+	transferOwnership: (newOwner: address) => { },
+	setReward: (reward: address) => { },
+	setMintingModule: (m: address) => { },
+	configure: (targetVelocity: uint24, size: uint8, eye: address, stagnationRewardTimeout: uint, eyeReward: uint, LPburnDisabled: boolean) => { },
+	pause: (paws: boolean) => { }
+}
+
+const defaultMintingModule: MintingModule = {
+	...defaultOwnable,
+	//State Change
+	purchaseLP: (inputToken: address, amount: uint) => { },
+	//Ownable
+	pop: () => { },
+	transferOwnership: (newOwner: address) => { },
+	seed: (factory: address, router: address, reward: address, tiltPercentage: uint8) => { },
+	mapTokens: (input: address, output: address, tilting: address) => { },
+	setSluiceGate: (gate: address) => { }
+}
+
+const defaultReward: Reward = {
+	...defaultOwnable,
+	//view
+	canReward: (token: address, amount: uint) => { },
+	//Ownable
+	withdraw: (token: address) => { },
+	transferOwnership: (newOwner: address) => { },
+	seed: (mintingModule: address, _liquidQueue: address, _ironCrown: address, eye: address, scx: address) => { },
+	toggle: (e: boolean) => { }
+}
+
+
+const defaultSluiceGate: SluiceGate = {
+	...defaultOwnable,
+	//State Change
+	betaApply: (lp: address) => { },
+	unstake: (lp: address) => { },
+	//Ownable
+	configureLPs: (lp: address, index: uint8, required: uint) => { },
+	transferOwnership: (newOwner: address) => { },
+	setSluiceGate: (gate: address) => { }
+}
+
+const defaultLiquidQueue: LiquidQueue = {
+	MintModule:defaultMintingModule,
+	LiquidQueue:defaultLQ,
+	Reward:defaultReward,
+	SluiceGate:defaultSluiceGate
 }
 
 const defaultBehodler: Behodler = {
@@ -351,7 +423,8 @@ const defaultBehodler2: Behodler2Contracts = {
 	Lachesis: defaultLachesis2,
 	Morgoth: defaultMorgoth,
 	LiquidityReceiver: defaultLiquidityReceiver,
-	Weth10: defaultWeth
+	Weth10: defaultWeth,
+	LiquidQueue: defaultLiquidQueue
 }
 
 
