@@ -17,17 +17,14 @@ import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
 
 //ocean, forest,skybackground
-import backImage from '../../images/behodler/ocean.gif'
+// import backImage from '../../images/behodler/ocean.gif'
 const useStyles = makeStyles(theme => createStyles({
 	layoutFrameroot: {
 		display: "flex",
 		flexFlow: 'column',
 		height: '100%',
 		width: '100%',
-		paddingBottom: 200,
-		backgroundImage: `url(${backImage})`,
-		backgroundRepeat: 'repeat-y',
-		backgroundSize: 'cover',
+		// paddingBottom: 200, // causes white space at the bottom in small windows
 		overflowY: 'hidden',
 	},
 	layoutFramerRotNotConnected: {
@@ -108,7 +105,7 @@ export default function LayoutFrame(props: any) {
 			<Grid
 				container
 				direction="column"
-				justify="space-evenly"
+				justify="flex-start" // fixes the placement of top bar with the new 100% root height
 				alignItems="center" className={classes.content}
 				spacing={1}>
 				<FilledGridCell>

@@ -21,6 +21,7 @@ li{
 }
 
 html, body, #root, #root>div {
+  height: 100%; /* this fixes background with disconnected wallet layout */
   /* height: 100vh; 
   width:100vh; */
 }
