@@ -22,7 +22,8 @@
 		"rxjs": "^6.5.1",
 		"truffle-core": "^5.0.14",
 		"typeface-roboto": "0.0.75",
-		"web3": "^1.0.0-beta.37"
+		"web3": "^1.0.0-beta.37",
+		"web3modal": "^1.9.3"
 	},
 	"scripts": {
 		"start": "react-scripts-ts start",
@@ -41,6 +42,6 @@
 		"@types/web3": "^1.0.18",
 		"redis": "^3.0.2",
 		"types-web3-provider-engine": "0.0.2",
-		"typescript": "^3.3.4000"
+		"typescript": "^3.7.4"
 	}
 }
