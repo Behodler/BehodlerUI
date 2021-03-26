@@ -1,5 +1,6 @@
 import * as React from "react"
 import Web3 from "web3";
+import Web3Modal from "web3modal";
 import { useState, useEffect } from "react"
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
@@ -106,54 +107,68 @@ function WalletContextProvider(props: any) {
 		initializationCallBack()
 	}, [initialized, account, chainId])
 
-	useEffect(function () {
+	useEffect(() => {
 		if (!window.ethereum || !window.ethereum.isMetaMask) {
 			setIsMetamask(false)
 			setConnected(false)
 		} else if (window.ethereum.isMetaMask && !loaded) {
 			setLoaded(true)
 			setIsMetamask(true)
-			API.web3 = new Web3(window.ethereum);
-
-			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => { })
-			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
-			window.ethereum.request({ method: 'eth_accounts' })
-				.then(accountUpdateHandlerOnce)
-				.then((acc) => {
-					let chainIdUpdateHandlerOnce = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, () => { })
-					let chainIdUpdateHandler = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, setInitialized)
-					window.ethereum.request({ method: 'eth_chainId' })
-						.then(chainIdUpdateHandlerOnce)
-						.then(() => {
-							window.ethereum.on('accountsChanged', accountUpdateHandler)
-							window.ethereum.on('chainChanged', chainIdUpdateHandler)
-						})
-						.catch(err => console.log('chainId error ' + err))
-				})
-				.catch(err => {
-					if (err.code === 4100) { // EIP 1193 unauthorized error
-						console.log('Please connect to MetaMask.')
-					} else {
-						console.error(err)
-					}
-				})
-			let connectionActionObject = {
-				action: () => {
-					window.ethereum.request({ method: 'eth_requestAccounts' })
-						.then(() => location.reload())
-						.catch(err => {
-							setConnected(false)
-							if (err.code === 4001) {
-								console.log('User rejected connection request. see EIP 1193 for more details.')
-							} else {
-								console.error('Unhandled wallet connection error: ' + err)
-							}
-						})
-				}
-			}
-			setConnectAction(connectionActionObject)
 		}
 	})
+
+	const testWeb3Modal = async () => {
+		const web3Modal = new Web3Modal({
+			network: networkName,
+			cacheProvider: false,
+			providerOptions: {},
+		});
+		const provider = await web3Modal.connect();
+
+		console.info('provider ', provider);
+
+		API.web3 = new Web3(provider);
+
+		const handleWalletError = (error) => {
+			if (error.code === 4001) {
+				console.log('User rejected connection request. see EIP 1193 for more details.')
+			} else {
+				console.error('Unhandled wallet connection error: ' + error)
+			}
+		}
+
+		try {
+			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {
+			})
+			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
+
+			const accounts = await API.web3.eth.getAccounts();
+			accountUpdateHandlerOnce(accounts)
+
+			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {
+			})
+			let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
+			const chainId = await window.ethereum.request({method: 'eth_chainId'})
+			chainIdUpdateHandlerOnce(chainId)
+
+			provider.on("accountsChanged", accountUpdateHandler);
+			provider.on("chainChanged", chainIdUpdateHandler);
+
+			provider.on("connect", (info: { chainId: number }) => {
+				console.log(info);
+			});
+
+			provider.on("disconnect", (error: { code: number; message: string }) => {
+				console.log(error);
+			});
+		} catch (error) {
+			handleWalletError(error);
+		}
+	}
+
+	useEffect(() => {
+		setConnectAction({ action: testWeb3Modal })
+	}, [loaded])
 
 	const providerProps: walletProps = {
 		chainId,
