@@ -1,9 +1,9 @@
-import * as React from "react";
-import Web3 from "web3";
-import { useState, useEffect } from "react";
-import API from "../../blockchain/ethereumAPI";
-import IContracts, { DefaultContracts } from "../../blockchain/IContracts";
-declare var window: any;
+import * as React from 'react'
+import Web3 from 'web3'
+import { useState, useEffect } from 'react'
+import API from '../../blockchain/ethereumAPI'
+import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
+declare var window: any
 
 export enum MetamaskStatus {
     disabled,
@@ -12,55 +12,55 @@ export enum MetamaskStatus {
 }
 
 interface walletProps {
-    chainId: number;
-    isMetamask: boolean;
-    connected: boolean;
-    account: string;
-    contracts: IContracts;
-    connectAction: any;
-    initialized: boolean;
-    networkName: string;
-    primary: boolean;
-    isMelkor: boolean;
-    error: boolean;
+    chainId: number
+    isMetamask: boolean
+    connected: boolean
+    account: string
+    contracts: IContracts
+    connectAction: any
+    initialized: boolean
+    networkName: string
+    primary: boolean
+    isMelkor: boolean
+    error: boolean
 }
 
 let WalletContext = React.createContext<walletProps>({
     chainId: 0,
     isMetamask: false,
     connected: false,
-    account: "0x0",
+    account: '0x0',
     connectAction: async () => {
-        console.log("connect action not set");
+        console.log('connect action not set')
     },
     contracts: DefaultContracts,
     initialized: false,
-    networkName: "private",
+    networkName: 'private',
     primary: false,
     isMelkor: false,
     error: false,
-});
+})
 
 const networkNameMapper = (id: number): string => {
     switch (id) {
         case 1:
-            return "main";
+            return 'main'
         case 2:
-            return "morden";
+            return 'morden'
         case 3:
-            return "ropsten";
+            return 'ropsten'
         case 4:
-            return "rinkeby";
+            return 'rinkeby'
         case 5:
-            return "goerli";
+            return 'goerli'
         case 42:
-            return "kovan";
+            return 'kovan'
         case 66:
-            return "private";
+            return 'private'
         default:
-            return "private";
+            return 'private'
     }
-};
+}
 
 let chainIdUpdater = (
     account: string,
@@ -70,47 +70,43 @@ let chainIdUpdater = (
     setInitialized: (boolean) => void
 ) => {
     return (response: any) => {
-        const chainIDNum = API.pureHexToNumber(response);
-        setChainId(chainIDNum);
-        setNetworkName(networkNameMapper(chainIDNum));
-        setInitialized(false);
-    };
-};
+        const chainIDNum = API.pureHexToNumber(response)
+        setChainId(chainIDNum)
+        setNetworkName(networkNameMapper(chainIDNum))
+        setInitialized(false)
+    }
+}
 
-let accountUpdater = (
-    setAccount: (account: string) => void,
-    setConnected: (c: boolean) => void,
-    setInitialized: (boolean) => void
-) => {
+let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void) => {
     return (response: any): string => {
         if (!response || response.length === 0) {
-            setConnected(false);
-            setAccount("0x0");
-            return "0x0";
+            setConnected(false)
+            setAccount('0x0')
+            return '0x0'
         } else {
-            setInitialized(true);
-            setConnected(true);
-            const account = response[0];
-            setAccount(account);
-            setInitialized(false);
-            return account;
+            setInitialized(true)
+            setConnected(true)
+            const account = response[0]
+            setAccount(account)
+            setInitialized(false)
+            return account
         }
-    };
-};
+    }
+}
 
 function WalletContextProvider(props: any) {
-    const [isMetamask, setIsMetamask] = useState<boolean>(false);
-    const [connected, setConnected] = useState<boolean>(false);
-    const [chainId, setChainId] = useState<number>(0);
-    const [account, setAccount] = useState<string>("0x0");
-    const [contracts, setContracts] = useState<IContracts>(DefaultContracts);
-    const [loaded, setLoaded] = useState<boolean>(false);
-    const [connectAction, setConnectAction] = useState<any>();
-    const [initialized, setInitialized] = useState<boolean>(false);
-    const [networkName, setNetworkName] = useState<string>("");
-    const [primary, setPrimary] = useState<boolean>(false);
-    const [isMelkor, setMelkor] = useState<boolean>(false);
-    const [error, setError] = useState<boolean>(false);
+    const [isMetamask, setIsMetamask] = useState<boolean>(false)
+    const [connected, setConnected] = useState<boolean>(false)
+    const [chainId, setChainId] = useState<number>(0)
+    const [account, setAccount] = useState<string>('0x0')
+    const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
+    const [loaded, setLoaded] = useState<boolean>(false)
+    const [connectAction, setConnectAction] = useState<any>()
+    const [initialized, setInitialized] = useState<boolean>(false)
+    const [networkName, setNetworkName] = useState<string>('')
+    const [primary, setPrimary] = useState<boolean>(false)
+    const [isMelkor, setMelkor] = useState<boolean>(false)
+    const [error, setError] = useState<boolean>(false)
 
     const initializationCallBack = React.useCallback(async () => {
         try {
@@ -123,78 +119,66 @@ function WalletContextProvider(props: any) {
             }
         } catch (err) {
             // if people have their metamask in a wrong network, there's no error message atm
-            setError(true);
+            setError(true)
         }
-    }, [initialized, account, chainId]);
+    }, [initialized, account, chainId])
 
     useEffect(() => {
-        initializationCallBack();
-    }, [initialized, account, chainId]);
+        initializationCallBack()
+    }, [initialized, account, chainId])
 
     useEffect(function () {
         if (!window.ethereum || !window.ethereum.isMetaMask) {
-            setIsMetamask(false);
-            setConnected(false);
+            setIsMetamask(false)
+            setConnected(false)
         } else if (window.ethereum.isMetaMask && !loaded) {
-            setLoaded(true);
-            setIsMetamask(true);
-            API.web3 = new Web3(window.ethereum);
+            setLoaded(true)
+            setIsMetamask(true)
+            API.web3 = new Web3(window.ethereum)
 
-            let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {});
-            let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized);
+            let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {})
+            let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
             window.ethereum
-                .request({ method: "eth_accounts" })
+                .request({ method: 'eth_accounts' })
                 .then(accountUpdateHandlerOnce)
                 .then((acc) => {
-                    let chainIdUpdateHandlerOnce = chainIdUpdater(
-                        acc,
-                        setChainId,
-                        setNetworkName,
-                        setContracts,
-                        () => {}
-                    );
-                    let chainIdUpdateHandler = chainIdUpdater(
-                        acc,
-                        setChainId,
-                        setNetworkName,
-                        setContracts,
-                        setInitialized
-                    );
+                    let chainIdUpdateHandlerOnce = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, () => {})
+                    let chainIdUpdateHandler = chainIdUpdater(acc, setChainId, setNetworkName, setContracts, setInitialized)
                     window.ethereum
-                        .request({ method: "eth_chainId" })
+                        .request({ method: 'eth_chainId' })
                         .then(chainIdUpdateHandlerOnce)
                         .then(() => {
-                            window.ethereum.on("accountsChanged", accountUpdateHandler);
-                            window.ethereum.on("chainChanged", chainIdUpdateHandler);
+                            window.ethereum.on('accountsChanged', accountUpdateHandler)
+                            window.ethereum.on('chainChanged', chainIdUpdateHandler)
                         })
-                        .catch((err) => console.log("chainId error " + err));
+                        .catch((err) => console.log('chainId error ' + err))
                 })
                 .catch((err) => {
                     if (err.code === 4100) {
                         // EIP 1193 unauthorized error
-                        console.log("Please connect to MetaMask.");
+                        console.log('Please connect to MetaMask.')
                     } else {
-                        console.error(err);
+                        console.error(err)
                     }
-                });
+                })
             let connectionActionObject = {
                 action: () => {
                     window.ethereum
-                        .request({ method: "eth_requestAccounts" })
+                        .request({ method: 'eth_requestAccounts' })
                         .then(() => window.location.reload())
                         .catch((err: any) => {
-                            setConnected(false);
+                            setConnected(false)
                             if (err.code === 4001) {
-                                console.log("User rejected connection request. see EIP 1193 for more details.");
+                                console.log('User rejected connection request. see EIP 1193 for more details.')
                             } else {
-                                console.error("Unhandled wallet connection error: " + err);
+                                console.error('Unhandled wallet connection error: ' + err)
                             }
-                        });
+                        })
                 },
-            };
-            setConnectAction(connectionActionObject);
+            }
+            setConnectAction(connectionActionObject)
         }
-    });
+    })
 
     const providerProps: walletProps = {
         chainId,
@@ -208,9 +192,9 @@ function WalletContextProvider(props: any) {
         primary,
         isMelkor,
         error,
-    };
-    WalletContext = React.createContext<walletProps>(providerProps);
-    return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>;
+    }
+    WalletContext = React.createContext<walletProps>(providerProps)
+    return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
 }
 
-export { WalletContext, WalletContextProvider };
+export { WalletContext, WalletContextProvider }

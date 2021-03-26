@@ -94,10 +94,8 @@ const useStyles = makeStyles((theme) => ({
         height: 28,
         margin: 4,
     },
-    buttonImage: {
-        display: 'block',
-        width: 24,
-        height: 24,
+    button: {
+        // margin: theme.spacing(1),
     },
     search: {
         width: '500px',
@@ -270,7 +268,8 @@ function ExtendedTextField(props: props) {
                     <Box>
                         <FormControl>
                             <Button
-                                startIcon={<img className={classes.buttonImage} src={selectedImage} />}
+                                className={classes.button}
+                                startIcon={<img src={selectedImage} width="24" />}
                                 endIcon={props.disabledDropDown ? '' : <ExpandMoreRoundedIcon />}
                                 onClick={() => (props.disabledDropDown ? {} : setDialogOpen(true))}
                             >
