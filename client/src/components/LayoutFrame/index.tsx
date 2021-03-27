@@ -13,7 +13,6 @@ import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Sw
 import Admin from '../Behodler/Admin/index'
 
 //client/src/blockchain/ethereumAPI.ts
-import MetamaskNotFound from './MetamaskNotFound'
 import { WalletContext } from '../Contexts/WalletStatusContext'
 
 //ocean, forest,skybackground
@@ -79,7 +78,6 @@ const useStyles = makeStyles(theme => createStyles({
 
 export default function LayoutFrame(props: any) {
 	const [redirect, setRedirect] = useState<string>("")
-	const [showMetamaskInstallPopup, setShowMetamaskInstallPopup] = useState<boolean>(false)
 	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
 	const walletContextProps = useContext(WalletContext)
 	const setBehodlerRoute = (route: permittedBehodlerRoutes) => {
@@ -98,10 +96,8 @@ export default function LayoutFrame(props: any) {
 	return (
 		<div className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
 			{/* */}
-			<MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
 			<div>
 				{renderRedirect}
-
 			</div>
 			{notConnected ? '' : <ScarcityConversion />}
 
@@ -115,7 +111,7 @@ export default function LayoutFrame(props: any) {
 					<div>
 						<Switch>
 							<Route path="/" exact >
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
+								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
 							{walletContextProps.primary ?
 								<Route path="/behodler/admin">
@@ -124,16 +120,16 @@ export default function LayoutFrame(props: any) {
 								: ""
 							}
 							<Route path="/liquidity">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
+								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
 							</Route>
 							<Route path="/swap2">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
+								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
 							{walletContextProps.isMelkor? <Route path='/pyro'>
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
+								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
 							</Route> : <div></div>}
 							<Route path="/governance">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="governance" />
+								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="governance" />
 							</Route>
 						</Switch>
 					</div>

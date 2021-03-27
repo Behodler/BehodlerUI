@@ -1,23 +1,14 @@
 import * as React from "react"
 import Web3 from "web3";
 import Web3Modal from "web3modal";
-// @ts-ignore
 import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min";
-// @ts-ignore
 import { useState, useEffect } from "react"
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 declare var window: any
 
-export enum MetamaskStatus {
-	disabled,
-	disconnected,
-	connected
-}
-
 interface walletProps {
 	chainId: number
-	isMetamask: boolean
 	connected: boolean
 	account: string
 	contracts: IContracts
@@ -30,7 +21,6 @@ interface walletProps {
 
 let WalletContext = React.createContext<walletProps>({
 	chainId: 0,
-	isMetamask: false,
 	connected: false,
 	account: "0x0",
 	connectAction: async () => { console.log('connect action not set') },
@@ -81,7 +71,6 @@ let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: b
 }
 
 function WalletContextProvider(props: any) {
-	const [isMetamask, setIsMetamask] = useState<boolean>(false)
 	const [connected, setConnected] = useState<boolean>(false)
 	const [chainId, setChainId] = useState<number>(0)
 	const [account, setAccount] = useState<string>('0x0')
@@ -111,12 +100,10 @@ function WalletContextProvider(props: any) {
 	}, [initialized, account, chainId])
 
 	useEffect(() => {
-		if (!window.ethereum || !window.ethereum.isMetaMask) {
-			setIsMetamask(false)
+		if (!window.ethereum) {
 			setConnected(false)
-		} else if (window.ethereum.isMetaMask && !loaded) {
+		} else if (!loaded) {
 			setLoaded(true)
-			setIsMetamask(true)
 		}
 	})
 
@@ -134,7 +121,6 @@ function WalletContextProvider(props: any) {
 			},
 		});
 		const provider = await web3Modal.connect();
-		console.info('provider', provider);
 
 		API.web3 = new Web3(provider);
 
@@ -181,7 +167,6 @@ function WalletContextProvider(props: any) {
 
 	const providerProps: walletProps = {
 		chainId,
-		isMetamask,
 		connected,
 		account,
 		contracts,

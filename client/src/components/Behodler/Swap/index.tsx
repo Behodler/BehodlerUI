@@ -21,7 +21,6 @@ interface props {
     connected: boolean
     route: permittedRoutes
     setRouteValue: (v: permittedRoutes) => void
-    setShowMetamaskInstallPopup: (v: boolean) => void
 }
 
 const useStyles = makeStyles(theme => createStyles({
@@ -88,7 +87,7 @@ const useStyles = makeStyles(theme => createStyles({
         fontStyle: 'italic',
         maxWidth: 500,
         textAlign: 'center',
- 
+
     },
     alphadrop: {
         color: 'white',
@@ -197,7 +196,7 @@ export default function Swap(props: props) {
                 : ''}
             {logoVisible ? <DepaddedGridItem>
                 <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
-                    walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
+                    walletContextProps.connectAction.action()
                 }}>Connect Your Wallet</Button>
             </DepaddedGridItem> : ''}
             {logoVisible ?
