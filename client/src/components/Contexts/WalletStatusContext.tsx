@@ -1,6 +1,9 @@
 import * as React from "react"
 import Web3 from "web3";
 import Web3Modal from "web3modal";
+// @ts-ignore
+import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min";
+// @ts-ignore
 import { useState, useEffect } from "react"
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
@@ -117,15 +120,21 @@ function WalletContextProvider(props: any) {
 		}
 	})
 
-	const testWeb3Modal = async () => {
+	const connectWallet = async () => {
 		const web3Modal = new Web3Modal({
 			network: networkName,
 			cacheProvider: false,
-			providerOptions: {},
+			providerOptions: {
+				walletconnect: {
+					package: WalletConnectProvider,
+					options: {
+						infuraId: "828126735b564a3ba5472dfde825a94a",
+					}
+				},
+			},
 		});
 		const provider = await web3Modal.connect();
-
-		console.info('provider ', provider);
+		console.info('provider', provider);
 
 		API.web3 = new Web3(provider);
 
@@ -167,7 +176,7 @@ function WalletContextProvider(props: any) {
 	}
 
 	useEffect(() => {
-		setConnectAction({ action: testWeb3Modal })
+		setConnectAction({ action: connectWallet })
 	}, [loaded])
 
 	const providerProps: walletProps = {
