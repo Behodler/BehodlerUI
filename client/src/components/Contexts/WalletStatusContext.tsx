@@ -146,16 +146,23 @@ function WalletContextProvider(props: any) {
 			const chainId = await window.ethereum.request({method: 'eth_chainId'})
 			chainIdUpdateHandlerOnce(chainId)
 
-			provider.on("accountsChanged", accountUpdateHandler);
-			provider.on("chainChanged", chainIdUpdateHandler);
+			if (provider && typeof provider.on === 'function') {
+				provider.on("accountsChanged", accountUpdateHandler);
+				provider.on("chainChanged", chainIdUpdateHandler);
 
-			provider.on("connect", (info: { chainId: number }) => {
-				console.log(info);
-			});
+				provider.on("connect", (info: { chainId: number }) => {
+					console.log('wallet provider connected', info);
+				});
 
-			provider.on("disconnect", (error: { code: number; message: string }) => {
-				console.log(error);
-			});
+				provider.on("disconnect", async (error: { code: number; message: string }) => {
+					console.log('wallet provider disconnected', error);
+
+					if (provider && typeof provider.disconnect === 'function') {
+						setConnected(false)
+					}
+				});
+			}
+
 		} catch (error) {
 			handleWalletError(error);
 		}
