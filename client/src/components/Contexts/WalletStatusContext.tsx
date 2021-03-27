@@ -108,6 +108,10 @@ function WalletContextProvider(props: any) {
 	})
 
 	const connectWallet = async () => {
+		if (!process.env.REACT_APP_INFURA_ID) {
+			console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnectProvider to work.');
+		}
+
 		const web3Modal = new Web3Modal({
 			network: networkName,
 			cacheProvider: false,
@@ -115,7 +119,7 @@ function WalletContextProvider(props: any) {
 				walletconnect: {
 					package: WalletConnectProvider,
 					options: {
-						infuraId: "828126735b564a3ba5472dfde825a94a",
+						infuraId: process.env.REACT_APP_INFURA_ID,
 					}
 				},
 			},
