@@ -161,9 +161,7 @@ function WalletContextProvider(props: any) {
 				provider.on("disconnect", async (error: { code: number; message: string }) => {
 					console.log('wallet provider disconnected', error);
 
-					if (provider && typeof provider.disconnect === 'function') {
-						setConnected(false)
-					}
+					setConnected(false)
 				});
 			}
 
