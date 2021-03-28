@@ -341,7 +341,7 @@ class ethereumAPI {
 		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10,LiquidQueue:liquidQueue}
 	}
 
-	private asyn fetchLiquidQueue(network:string):Promise<LiquidQueue>{
+	private async fetchLiquidQueue(network:string):Promise<LiquidQueue>{
 
 	}
 

@@ -180,7 +180,7 @@ export default function TopMenu(props: props) {
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
                         {props.admin?<LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />:<div></div>}
                         
-                        <LeftLink text="Liquidity Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
+                        <LeftLink text="Liquid Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
                     </Hidden>
@@ -239,7 +239,7 @@ export default function TopMenu(props: props) {
                                 <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap</MenuItem>
                                 {props.admin ? <MenuItem className={classes.menuList} onClick={() => route('pyro')}>Pyrotokens</MenuItem> : <div></div>}
 
-                                <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Queueing</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquid Queue</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => route('governance')}>Governance</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
                             </Menu>
