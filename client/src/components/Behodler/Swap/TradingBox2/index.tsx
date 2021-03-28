@@ -1,38 +1,38 @@
-import * as React from "react";
-import { useEffect, useCallback, useState, useContext } from "react";
-import ExtendedTextField from "./ExtendedTextField";
-import { Button, IconButton, Box, makeStyles, Theme } from "@material-ui/core";
-import tokenListJSON from "../../../../blockchain/behodlerUI/baseTokens.json";
-import { WalletContext } from "../../../Contexts/WalletStatusContext";
-import { Images } from "./ImageLoader";
-import SwapVertIcon from "@material-ui/icons/SwapVert";
-import BigNumber from "bignumber.js";
-import API from "../../../../blockchain/ethereumAPI";
+import * as React from 'react'
+import { useEffect, useCallback, useState, useContext } from 'react'
+import ExtendedTextField from './ExtendedTextField'
+import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
+import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
+import { WalletContext } from '../../../Contexts/WalletStatusContext'
+import { Images } from './ImageLoader'
+import SwapVertIcon from '@material-ui/icons/SwapVert'
+import BigNumber from 'bignumber.js'
+import API from '../../../../blockchain/ethereumAPI'
 
 interface props {}
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        boxSizing: "border-box",
-        margin: "50px auto",
-        maxWidth: "480px",
-        padding: "40px 20px",
-        backgroundColor: "rgba(255,255,255,0.93)",
+        boxSizing: 'border-box',
+        margin: '50px auto',
+        maxWidth: '480px',
+        padding: '40px 20px',
+        backgroundColor: 'rgba(255,255,255,0.93)',
         borderRadius: 20,
-        width: "90%",
-        boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+        width: '90%',
+        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
     },
     iconWrapper: {
-        display: "flex",
-        justifyContent: "center",
-        margin: "24px 0",
+        display: 'flex',
+        justifyContent: 'center',
+        margin: '24px 0',
     },
     buttonWrapper: {
-        display: "flex",
-        justifyContent: "center",
+        display: 'flex',
+        justifyContent: 'center',
         marginTop: 36,
     },
-}));
+}))
 
 export default function TradeBox2(props: props) {
     const classes = useStyles();
@@ -46,97 +46,93 @@ export default function TradeBox2(props: props) {
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
     let tokenDropDownList = tokenList.map((t, i) => {
-        let item = { ...t, image: Images[i] };
+        let item = { ...t, image: Images[i] }
         if (i === indexOfWeth) {
-            item.name = "Eth";
-            item.address = behodler2Weth;
+            item.name = 'Eth'
+            item.address = behodler2Weth
         }
         if (i === indexOfScarcityAddress) {
-            item.address = walletContextProps.contracts.behodler.Behodler2.Behodler2.address;
+            item.address = walletContextProps.contracts.behodler.Behodler2.Behodler2.address
         }
-        return item;
-    });
+        return item
+    })
     const scarcityAddress = tokenDropDownList
-        .filter((t) => t.name === "Scarcity")[0]
+        .filter((t) => t.name === 'Scarcity')[0]
         .address.toLowerCase()
-        .trim();
+        .trim()
 
-    const [inputValid, setInputValid] = useState<boolean>(true);
-    const [outputValid, setOutputValid] = useState<boolean>(true);
-    const [inputValue, setInputValue] = useState<string>("");
-    const [outputValue, setOutputValue] = useState<string>("");
-    const [outputValueWei, setOutputValueWei] = useState<string>("");
+    const [inputValid, setInputValid] = useState<boolean>(true)
+    const [outputValid, setOutputValid] = useState<boolean>(true)
+    const [inputValue, setInputValue] = useState<string>('')
+    const [outputValue, setOutputValue] = useState<string>('')
+    const [outputValueWei, setOutputValueWei] = useState<string>('')
 
-    const [inputEnabled, setInputEnabled] = useState<boolean>(false);
-    const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address);
-    const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address);
-    const [inputDecimals, setInputDecimals] = useState<number>(18);
-    const [outputDecimals, setOutputDecimals] = useState<number>(18);
-
-    useEffect(() => {
-        API.getTokenDecimals(inputAddress).then(setInputDecimals);
-    }, [inputAddress]);
+    const [inputEnabled, setInputEnabled] = useState<boolean>(false)
+    const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
+    const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address)
+    const [inputDecimals, setInputDecimals] = useState<number>(18)
+    const [outputDecimals, setOutputDecimals] = useState<number>(18)
 
     useEffect(() => {
-        API.getTokenDecimals(outputAddress).then(setOutputDecimals);
-    }, [outputAddress]);
+        API.getTokenDecimals(inputAddress).then(setInputDecimals)
+    }, [inputAddress])
+
+    useEffect(() => {
+        API.getTokenDecimals(outputAddress).then(setOutputDecimals)
+    }, [outputAddress])
 
     if (tokenDropDownList.filter((t) => t.address === outputAddress).length === 0) {
-        setOutputAddress(tokenDropDownList[1]);
+        setOutputAddress(tokenDropDownList[1])
     }
     if (tokenDropDownList.filter((t) => t.address === inputAddress).length === 0) {
-        setInputAddress(tokenDropDownList[0]);
+        setInputAddress(tokenDropDownList[0])
     }
-    const [exchangeRate, setExchangeRate] = useState<string>("");
-    const [swapClicked, setSwapClicked] = useState<boolean>(false);
+    const [exchangeRate, setExchangeRate] = useState<string>('')
+    const [swapClicked, setSwapClicked] = useState<boolean>(false)
 
-    const [outputReserve, setOutputReserve] = useState<string>("");
-    const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address == address)[0].name;
+    const [outputReserve, setOutputReserve] = useState<string>('')
+    const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address === address)[0].name
     const clearInput = () => {
-        setInputValue("");
-        setOutputValue("");
-        setSwapClicked(false);
-    };
+        setInputValue('')
+        setOutputValue('')
+        setSwapClicked(false)
+    }
 
     if (inputAddress === outputAddress) {
-        setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address);
+        setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
     }
 
     const swapInputAddresses = () => {
-        const temp = inputAddress;
-        setInputAddress(outputAddress);
-        setOutputAddress(temp);
-        clearInput();
-    };
+        const temp = inputAddress
+        setInputAddress(outputAddress)
+        setOutputAddress(temp)
+        clearInput()
+    }
 
-    const bigInputValue = new BigNumber(inputValue);
-    const bigOutputValue = new BigNumber(outputValue);
+    const bigInputValue = new BigNumber(inputValue)
+    const bigOutputValue = new BigNumber(outputValue)
 
-    const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN();
-    const inputReadyToSwap = inputValid && !bigInputValue.isNaN();
+    const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
+    const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
 
-    const swapEnabled = swapPossible && inputEnabled;
+    const swapEnabled = swapPossible && inputEnabled
 
-    const inputValWei =
-        inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0")
-            ? API.toWei(inputValue, inputDecimals)
-            : "0";
+    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo('0') ? API.toWei(inputValue, inputDecimals) : '0'
 
     let primaryOptions = { from: walletContextProps.account, gas: undefined };
     let ethOptions = { from: walletContextProps.account, value: inputValWei, gas: undefined };
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean =>
-        tokenDropDownList.filter((item) => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0]
-            .name === tokenName;
-    const isEthPredicate = isTokenPredicateFactory("Eth");
-    const isScarcityPredicate = isTokenPredicateFactory("Scarcity");
-    const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2;
-    let swapText = "SWAP";
+        tokenDropDownList.filter((item) => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
+    const isEthPredicate = isTokenPredicateFactory('Eth')
+    const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
+    const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+    let swapText = 'SWAP'
 
     if (isScarcityPredicate(outputAddress)) {
-        swapText = "ADD LIQUIDITY";
+        swapText = 'ADD LIQUIDITY'
     } else if (isScarcityPredicate(inputAddress)) {
-        swapText = "WITHDRAW LIQUIDITY";
+        swapText = 'WITHDRAW LIQUIDITY'
     }
 
     const swap2Callback = useCallback(async () => {
@@ -169,20 +165,20 @@ export default function TradeBox2(props: props) {
                     });
             }
         }
-        setSwapClicked(false);
-    }, [swapClicked]);
+        setSwapClicked(false)
+    }, [swapClicked])
 
     useEffect(() => {
         if (swapClicked) {
-            swap2Callback();
+            swap2Callback()
         }
-    }, [swapClicked]);
+    }, [swapClicked])
 
     const setTerms = (i: string, o: string) => {
-        const iBig = new BigNumber(i);
-        const oBig = new BigNumber(o);
-        setExchangeRate(oBig.dividedBy(iBig).toString());
-    };
+        const iBig = new BigNumber(i)
+        const oBig = new BigNumber(o)
+        setExchangeRate(oBig.dividedBy(iBig).toString())
+    }
 
     const validateLiquidityExit = async (tokensToWithdraw: any) => {
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
@@ -192,7 +188,7 @@ export default function TradeBox2(props: props) {
         if (exitRatio > maxLiquidityExit) {
             setInputValid(false);
         }
-    };
+    }
     const swapPreparationCallback = useCallback(async () => {
         if (inputReadyToSwap) {
             //if input is scx, figure out tokensToRelease
@@ -218,10 +214,10 @@ export default function TradeBox2(props: props) {
                 );
                 await validateLiquidityExit(actual);
 
-                const actualString = actual.toString();
-                setOutputValueWei(actualString);
-                setOutputValue(API.fromWei(actualString));
-                setTerms(inputValWei, actualString);
+                const actualString = actual.toString()
+                setOutputValueWei(actualString)
+                setOutputValue(API.fromWei(actualString))
+                setTerms(inputValWei, actualString)
             } else if (isScarcityPredicate(outputAddress)) {
                 //add liquidity
 
@@ -258,15 +254,15 @@ export default function TradeBox2(props: props) {
                 setTerms(inputValWei, outputWei);
             }
         }
-    }, [inputReadyToSwap, inputValue]);
+    }, [inputReadyToSwap, inputValue])
 
     useEffect(() => {
         if (inputReadyToSwap) {
-            swapPreparationCallback();
+            swapPreparationCallback()
         }
-    }, [inputReadyToSwap, inputValue]);
-    console.log("behodler: " + walletContextProps.contracts.behodler.Behodler2.Behodler2.address);
-    const textFieldLabels = ["From", "To"];
+    }, [inputReadyToSwap, inputValue])
+    console.log('behodler: ' + walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
+    const textFieldLabels = ['From', 'To']
     return (
         <Box className={classes.root}>
             <ExtendedTextField
@@ -311,15 +307,10 @@ export default function TradeBox2(props: props) {
                 decimalPlaces={outputDecimals}
             />
             <Box className={classes.buttonWrapper}>
-                <Button
-                    disabled={!swapEnabled}
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={() => setSwapClicked(true)}>
+                <Button disabled={!swapEnabled} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
                     {swapText}
                 </Button>
             </Box>
         </Box>
-    );
+    )
 }

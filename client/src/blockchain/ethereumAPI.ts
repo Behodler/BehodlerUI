@@ -1,4 +1,4 @@
-import Web3 from "web3";
+import Web3 from 'web3'
 import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { Pyrotoken } from './contractInterfaces/behodler2/Pyrotoken'
@@ -20,15 +20,28 @@ import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
 
-import BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js'
 
 import { Behodler2Contracts } from './IContracts'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 
 import Behodler2Addresses from './behodler2UI/Addresses.json'
+<<<<<<< HEAD
 
 import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
+=======
+import AddTokenToBehodlerPower from './behodler2UI/Morgoth/AddTokenToBehodlerPower.json'
+import AngbandJSON from './behodler2UI/Morgoth/Angband.json'
+import ConfigureScarcityPowerJSON from './behodler2UI/Morgoth/ConfigureScarcityPower.json'
+import IronCrownJSON from './behodler2UI/Morgoth/IronCrown.json'
+import MigratorJSON from './behodler2UI/Morgoth/Migrator.json'
+import PowersRegistryJSON from './behodler2UI/Morgoth/PowersRegistry.json'
+import ScarcityBridgeJSON from './behodler2UI/Morgoth/ScarcityBridge.json'
+import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
+import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
+import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
+>>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
 import { BridgeEffects } from './observables/BridgeEffects'
 import { SluiceGateEffects } from './observables/SluiceGateEffects'
 import { LiquidQueueEffects } from './observables/LiquidQueueEffects'
@@ -41,24 +54,24 @@ import UniswapV2Factory from "./contractInterfaces/liquidQueue/UniswapV2Factory"
 import { UniswapV2Effects } from "./observables/UniswapEffects";
 
 interface AccountObservable {
-	account: string
-	isPrimary: boolean,
-	enabled: boolean,
-	versionBalances: userWeiDaiBalances[]
-	oldBalances: boolean
+    account: string
+    isPrimary: boolean
+    enabled: boolean
+    versionBalances: userWeiDaiBalances[]
+    oldBalances: boolean
 }
 
 export interface userWeiDaiBalances {
-	version: string
-	incubating: string
-	actual: string
-	enabled: boolean
+    version: string
+    incubating: string
+    actual: string
+    enabled: boolean
 }
 
 interface newContracts {
-	weiDai: string
-	weiDaiBank: string
-	PRE: string
+    weiDai: string
+    weiDaiBank: string
+    PRE: string
 }
 
 interface LQInputAddressList {
@@ -400,9 +413,9 @@ class ethereumAPI {
 }
 
 interface deployment {
-	methods: any,
-	address: string,
-	contractInstance: any,
+    methods: any
+    address: string
+    contractInstance: any
 }
 
 const API: ethereumAPI = new ethereumAPI()

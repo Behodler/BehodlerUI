@@ -181,8 +181,8 @@ function WalletContextProvider(props: any) {
                 action: () => {
                     window.ethereum
                         .request({ method: "eth_requestAccounts" })
-                        .then(() => location.reload())
-                        .catch((err) => {
+                        .then(() => window.location.reload())
+                        .catch((err: any) => {
                             setConnected(false);
                             if (err.code === 4001) {
                                 console.log("User rejected connection request. see EIP 1193 for more details.");
