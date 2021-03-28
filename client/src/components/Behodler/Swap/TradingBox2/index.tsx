@@ -194,7 +194,6 @@ export default function TradeBox2(props: props) {
             swapPreparationCallback();
         }
     }, [inputReadyToSwap, inputValue])
-    console.log('behodler: ' + walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
     const textFieldLabels = ['From', 'To']
     return <Grid
         container
