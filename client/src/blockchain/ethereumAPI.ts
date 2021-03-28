@@ -51,6 +51,17 @@ import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityRecei
 import { BridgeEffects } from './observables/BridgeEffects'
 import Weth10JSON from './behodler2UI/WETH10.json'
 import PyrotokenJSON from './behodler2UI/Pyrotoken.json'
+import LiquidQueueJSON from "./liquidQueue/LiquidQueue.json"
+import MintingModuleJSON from "./liquidQueue/MintingModule.json"
+import RewardJSON from "./liquidQueue/Reward.json"
+import SluiceGateLikeJSON from "./liquidQueue/SluiceGateLike.json"
+
+import {LiquidQueue as LQ} from './contractInterfaces/liquidQueue/LiquidQueue'
+import {MintingModule} from './contractInterfaces/liquidQueue/MintingModule'
+import {Reward} from './contractInterfaces/liquidQueue/Reward'
+import {SluiceGate} from './contractInterfaces/liquidQueue/SluiceGate'
+import {LiquidQueue} from './IContracts'
+
 interface AccountObservable {
 	account: string
 	isPrimary: boolean,
@@ -325,7 +336,13 @@ class ethereumAPI {
 		liquidityReceiver.address = addresses.liquidityReceiver
 
 		const morgoth = await this.fetchMorgoth(network)
-		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10 }
+
+		const liquidQueue = await this.fetchLiquidQueue(network)
+		return { Behodler2: behodler2, Morgoth: morgoth, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10,LiquidQueue:liquidQueue}
+	}
+
+	private asyn fetchLiquidQueue(network:string):Promise<LiquidQueue>{
+
 	}
 
 	private async fetchMorgoth(network: string): Promise<Morgoth> {
