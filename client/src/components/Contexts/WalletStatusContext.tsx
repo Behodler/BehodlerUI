@@ -45,6 +45,7 @@ const networkNameMapper = (id: number): string => {
 }
 
 let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
+	console.info('chainIdUpdater');
 	return (response: any) => {
 		const chainIDNum = API.pureHexToNumber(response)
 		setChainId(chainIDNum)
@@ -54,6 +55,7 @@ let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetw
 }
 
 let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void) => {
+	console.info('accountUpdater');
 	return (response: any): string => {
 		if (!response || response.length === 0) {
 			setConnected(false)
@@ -75,7 +77,6 @@ function WalletContextProvider(props: any) {
 	const [chainId, setChainId] = useState<number>(0)
 	const [account, setAccount] = useState<string>('0x0')
 	const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
-	const [loaded, setLoaded] = useState<boolean>(false)
 	const [connectAction, setConnectAction] = useState<any>()
 	const [initialized, setInitialized] = useState<boolean>(false)
 	const [networkName, setNetworkName] = useState<string>("")
@@ -94,26 +95,13 @@ function WalletContextProvider(props: any) {
 		}
 	}, [initialized, account, chainId])
 
-
-	useEffect(() => {
-		initializationCallBack()
-	}, [initialized, account, chainId])
-
-	useEffect(() => {
-		if (!window.ethereum) {
-			setConnected(false)
-		} else if (!loaded) {
-			setLoaded(true)
-		}
-	})
-
 	const connectWallet = async () => {
 		if (!process.env.REACT_APP_INFURA_ID) {
 			console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnectProvider to work.');
 		}
 
 		const web3Modal = new Web3Modal({
-			network: networkName,
+			// network: networkName,
 			cacheProvider: false,
 			providerOptions: {
 				walletconnect: {
@@ -130,22 +118,20 @@ function WalletContextProvider(props: any) {
 
 		const handleWalletError = (error) => {
 			if (error.code === 4001) {
-				console.log('User rejected connection request. see EIP 1193 for more details.')
+				console.info('User rejected connection request. see EIP 1193 for more details.')
 			} else {
 				console.error('Unhandled wallet connection error: ' + error)
 			}
 		}
 
 		try {
-			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {
-			})
+			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {})
 			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
 
 			const accounts = await API.web3.eth.getAccounts();
 			accountUpdateHandlerOnce(accounts)
 
-			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {
-			})
+			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {})
 			let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
 			const chainId = await window.ethereum.request({method: 'eth_chainId'})
 			chainIdUpdateHandlerOnce(chainId)
@@ -164,15 +150,20 @@ function WalletContextProvider(props: any) {
 					setConnected(false)
 				});
 			}
-
 		} catch (error) {
 			handleWalletError(error);
 		}
 	}
 
 	useEffect(() => {
+		console.info('setting wallet connection action', );
 		setConnectAction({ action: connectWallet })
-	}, [loaded])
+	}, [])
+
+	useEffect(() => {
+		console.info('initializationCallBack called');
+		initializationCallBack()
+	}, [initialized, account, chainId])
 
 	const providerProps: walletProps = {
 		chainId,
