@@ -88,7 +88,6 @@ const useStyles = makeStyles(theme => createStyles({
         fontStyle: 'italic',
         maxWidth: 500,
         textAlign: 'center',
- 
     },
     alphadrop: {
         color: 'white',
@@ -267,12 +266,14 @@ export default function Swap(props: props) {
 }
 
 function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] }) {
+
     switch (props.value) {
         case 'swap2':
             return <TradingBox2 />
         case 'liquidity':
             return <LiquidityMining />
         case 'governance':
+
             return <Governance />
         case 'pyro':
             if (props.tokens.length > 1)

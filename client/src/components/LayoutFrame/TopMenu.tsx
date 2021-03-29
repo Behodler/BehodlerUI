@@ -5,7 +5,6 @@ import IconButton from '@material-ui/core/IconButton';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Grid, Hidden, Link, Menu, MenuItem } from '@material-ui/core';
-import MetamaskGasWarning from "./MetamaskGasWarning"
 import { permittedRoutes } from '../Behodler/Swap';
 import metamaskAccount from '../../images/behodler/metamaskaccount.png'
 import { useLocation } from 'react-router-dom';
@@ -181,7 +180,6 @@ export default function TopMenu(props: props) {
                         {props.admin?<LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />:<div></div>}
                         
                         <LeftLink text="Liquid Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
-                        <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
                     </Hidden>
                     <div className={classes.search}>
@@ -247,7 +245,6 @@ export default function TopMenu(props: props) {
                     </div>
                 </Toolbar>
 
-                <MetamaskGasWarning />
             </AppBar>
 
         </div>

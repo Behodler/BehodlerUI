@@ -33,7 +33,7 @@ import { SluiceGate } from './contractInterfaces/liquidQueue/SluiceGate'
 
 
 export interface LiquidQueue {
-	MintModule: MintingModule,
+	MintingModule: MintingModule,
 	LiquidQueue: LQ,
 	Reward: Reward,
 	SluiceGate: SluiceGate
@@ -160,7 +160,7 @@ const defaultSluiceGate: SluiceGate = {
 }
 
 const defaultLiquidQueue: LiquidQueue = {
-	MintModule:defaultMintingModule,
+	MintingModule:defaultMintingModule,
 	LiquidQueue:defaultLQ,
 	Reward:defaultReward,
 	SluiceGate:defaultSluiceGate

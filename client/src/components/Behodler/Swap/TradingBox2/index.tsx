@@ -15,7 +15,7 @@ interface props {
 export default function TradeBox2(props: props) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 })
     const walletContextProps = useContext(WalletContext)
-    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(t => t.name !== 'WBTC')
+    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(t => t.name !== 'WBTC' && t.name!== 'BAT')
     const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
     const indexOfScarcityAddress = tokenList.findIndex(item => item.name.toLowerCase().indexOf('scarcity') !== -1)
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address
@@ -194,7 +194,6 @@ export default function TradeBox2(props: props) {
             swapPreparationCallback();
         }
     }, [inputReadyToSwap, inputValue])
-    console.log('behodler: ' + walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
     const textFieldLabels = ['From', 'To']
     return <Grid
         container

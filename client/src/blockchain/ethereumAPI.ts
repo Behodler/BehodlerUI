@@ -54,7 +54,7 @@ import PyrotokenJSON from './behodler2UI/Pyrotoken.json'
 import LiquidQueueJSON from "./liquidQueue/LiquidQueue.json"
 import MintingModuleJSON from "./liquidQueue/MintingModule.json"
 import RewardJSON from "./liquidQueue/Reward.json"
-import SluiceGateLikeJSON from "./liquidQueue/SluiceGateLike.json"
+import SluiceGateJSON from "./liquidQueue/SluiceGate.json"
 
 import {LiquidQueue as LQ} from './contractInterfaces/liquidQueue/LiquidQueue'
 import {MintingModule} from './contractInterfaces/liquidQueue/MintingModule'
@@ -62,6 +62,7 @@ import {Reward} from './contractInterfaces/liquidQueue/Reward'
 import {SluiceGate} from './contractInterfaces/liquidQueue/SluiceGate'
 import {LiquidQueue} from './IContracts'
 
+import LiquidQueueAddresses from './liquidQueue/Addresses.json'
 interface AccountObservable {
 	account: string
 	isPrimary: boolean,
@@ -342,7 +343,30 @@ class ethereumAPI {
 	}
 
 	private async fetchLiquidQueue(network:string):Promise<LiquidQueue>{
+		network = network == 'private' ? 'development' : network
+		const addresses = LiquidQueueAddresses[network]
 
+		const lqDeployment = await this.deployBehodlerContract(LiquidQueueJSON.abi, addresses.LiquidQueue)
+		let lq:LQ = lqDeployment.methods
+		lq.address = lqDeployment.address
+
+		const mintingModuleDeployment = await this.deployBehodlerContract(MintingModuleJSON.abi, addresses.MintinModule)
+		let mm:MintingModule = mintingModuleDeployment.methods
+		mm.address = mintingModuleDeployment.address
+
+		const rewardDeployment = await this.deployBehodlerContract(RewardJSON.abi, addresses.Reward)
+		let reward:Reward = rewardDeployment.methods
+		reward.address = rewardDeployment.address
+
+		const sluiceGateDeployment = await this.deployBehodlerContract(SluiceGateJSON.abi, addresses.SluiceGate)
+		let sluiceGate:SluiceGate = sluiceGateDeployment.methods
+		sluiceGate.address = sluiceGateDeployment.address
+		return {
+			LiquidQueue:lq,
+			MintingModule:mm,
+			Reward:reward,
+			SluiceGate:sluiceGate
+		}
 	}
 
 	private async fetchMorgoth(network: string): Promise<Morgoth> {

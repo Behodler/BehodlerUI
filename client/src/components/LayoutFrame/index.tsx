@@ -123,13 +123,14 @@ export default function LayoutFrame(props: any) {
 								</Route>
 								: ""
 							}
-							<Route path="/liquidity">
+							<Route path="/liquidity" exact>
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
 							</Route>
-							<Route path="/swap2">
+							<Route path="/swap2" exact>
+
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
-							{walletContextProps.isMelkor? <Route path='/pyro'>
+							{walletContextProps.isMelkor ? <Route path='/pyro'>
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
 							</Route> : <div></div>}
 							<Route path="/governance">
