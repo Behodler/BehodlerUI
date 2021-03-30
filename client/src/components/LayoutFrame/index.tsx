@@ -119,10 +119,10 @@ export default function LayoutFrame(props: any) {
 								</Route>
 								: ""
 							}
-							<Route path="/liquidity">
+							<Route path="/liquidity" exact>
 								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
 							</Route>
-							<Route path="/swap2">
+							<Route path="/swap2" exact>
 								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
 							</Route>
 							{walletContextProps.isMelkor? <Route path='/pyro'>
