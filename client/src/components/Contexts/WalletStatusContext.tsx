@@ -1,11 +1,10 @@
 import * as React from "react"
-import Web3 from "web3";
-import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min";
+import Web3 from "web3"
+import Web3Modal from "web3modal"
+import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min"
 import { useState, useEffect } from "react"
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
-declare var window: any
 
 interface walletProps {
 	chainId: number
@@ -29,7 +28,7 @@ let WalletContext = React.createContext<walletProps>({
 	networkName: 'private',
 	primary: false,
 	isMelkor: false
-});
+})
 
 const networkNameMapper = (id: number): string => {
 	switch (id) {
@@ -45,7 +44,7 @@ const networkNameMapper = (id: number): string => {
 }
 
 let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
-	console.info('chainIdUpdater');
+	console.info('chainIdUpdater')
 	return (response: any) => {
 		const chainIDNum = API.pureHexToNumber(response)
 		setChainId(chainIDNum)
@@ -55,7 +54,7 @@ let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetw
 }
 
 let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void) => {
-	console.info('accountUpdater');
+	console.info('accountUpdater')
 	return (response: any): string => {
 		if (!response || response.length === 0) {
 			setConnected(false)
@@ -97,71 +96,75 @@ function WalletContextProvider(props: any) {
 
 	const connectWallet = async () => {
 		if (!process.env.REACT_APP_INFURA_ID) {
-			console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnectProvider to work.');
+			console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnectProvider to work.')
 		}
 
-		const web3Modal = new Web3Modal({
-			// network: networkName,
-			cacheProvider: false,
-			providerOptions: {
-				walletconnect: {
-					package: WalletConnectProvider,
-					options: {
-						infuraId: process.env.REACT_APP_INFURA_ID,
-					}
+		let provider
+
+		try {
+			const web3Modal = new Web3Modal({
+				// network: networkName,
+				cacheProvider: false,
+				providerOptions: {
+					walletconnect: {
+						package: WalletConnectProvider,
+						options: {
+							infuraId: process.env.REACT_APP_INFURA_ID,
+						}
+					},
 				},
-			},
-		});
-		const provider = await web3Modal.connect();
+			})
+			provider = await web3Modal.connect()
 
-		API.web3 = new Web3(provider);
+			API.web3 = new Web3(provider)
+		} catch (error) {
+			console.info('Unable to establish wallet connection', error)
+		}
 
-		const handleWalletError = (error) => {
+		if (!provider) { return }
+
+		try {
+			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {})
+			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
+
+			const accounts = await API.web3.eth.getAccounts()
+			accountUpdateHandlerOnce(accounts)
+
+			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {})
+			let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
+
+			chainIdUpdateHandlerOnce(provider.chainId)
+
+			if (provider && typeof provider.on === 'function') {
+				provider.on("accountsChanged", accountUpdateHandler)
+				provider.on("chainChanged", chainIdUpdateHandler)
+
+				provider.on("connect", (info: { chainId: number }) => {
+					console.log('wallet provider connected', info)
+				})
+
+				provider.on("disconnect", async (error: { code: number; message: string }) => {
+					console.log('wallet provider disconnected', error)
+
+					setConnected(false)
+				})
+			}
+		} catch (error) {
 			if (error.code === 4001) {
 				console.info('User rejected connection request. see EIP 1193 for more details.')
 			} else {
 				console.error('Unhandled wallet connection error: ' + error)
 			}
 		}
-
-		try {
-			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {})
-			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized)
-
-			const accounts = await API.web3.eth.getAccounts();
-			accountUpdateHandlerOnce(accounts)
-
-			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {})
-			let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
-			const chainId = await window.ethereum.request({method: 'eth_chainId'})
-			chainIdUpdateHandlerOnce(chainId)
-
-			if (provider && typeof provider.on === 'function') {
-				provider.on("accountsChanged", accountUpdateHandler);
-				provider.on("chainChanged", chainIdUpdateHandler);
-
-				provider.on("connect", (info: { chainId: number }) => {
-					console.log('wallet provider connected', info);
-				});
-
-				provider.on("disconnect", async (error: { code: number; message: string }) => {
-					console.log('wallet provider disconnected', error);
-
-					setConnected(false)
-				});
-			}
-		} catch (error) {
-			handleWalletError(error);
-		}
 	}
 
 	useEffect(() => {
-		console.info('setting wallet connection action', );
+		console.info('setting wallet connection action', )
 		setConnectAction({ action: connectWallet })
 	}, [])
 
 	useEffect(() => {
-		console.info('initializationCallBack called');
+		console.info('initializationCallBack called')
 		initializationCallBack()
 	}, [initialized, account, chainId])
 
@@ -176,10 +179,10 @@ function WalletContextProvider(props: any) {
 		primary,
 		isMelkor
 	}
-	WalletContext = React.createContext<walletProps>(providerProps);
+	WalletContext = React.createContext<walletProps>(providerProps)
 	return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
 
 }
 
 
-export { WalletContext, WalletContextProvider };
+export { WalletContext, WalletContextProvider }
