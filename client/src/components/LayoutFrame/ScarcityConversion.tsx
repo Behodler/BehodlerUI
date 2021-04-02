@@ -1,6 +1,6 @@
 import { Dialog, Grid, Typography, Button, makeStyles, createStyles, DialogContent, Container } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { formatDecimalStrings } from "src/util/jsHelpers";
+import { formatSignificantDecimalPlaces } from "src/util/jsHelpers";
 import API from '../../blockchain/ethereumAPI'
 import { WalletContext } from "../Contexts/WalletStatusContext";
 
@@ -33,7 +33,7 @@ const useStyle = makeStyles(theme => createStyles({
 const BoldDiv = function (props: { noFormat?: boolean, children?: any }) {
     const classes = useStyle()
     return <span className={classes.boldDiv}>
-        {props.noFormat ? props.children : formatDecimalStrings(props.children)}
+        {props.noFormat ? props.children : formatSignificantDecimalPlaces(props.children)}
     </span>
 }
 

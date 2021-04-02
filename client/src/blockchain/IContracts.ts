@@ -30,13 +30,14 @@ import { MintingModule } from './contractInterfaces/liquidQueue/MintingModule'
 import { LiquidQueue as LQ } from './contractInterfaces/liquidQueue/LiquidQueue'
 import { Reward } from './contractInterfaces/liquidQueue/Reward'
 import { SluiceGate } from './contractInterfaces/liquidQueue/SluiceGate'
-
+import UniswapV2Factory from './contractInterfaces/liquidQueue/UniswapV2Factory'
 
 export interface LiquidQueue {
 	MintingModule: MintingModule,
 	LiquidQueue: LQ,
 	Reward: Reward,
-	SluiceGate: SluiceGate
+	SluiceGate: SluiceGate,
+	UniswapV2Factory: UniswapV2Factory
 }
 
 export interface PowerInvokers {
@@ -60,7 +61,7 @@ export interface Behodler2Contracts {
 	Lachesis: Lachesis2,
 	LiquidityReceiver: LiquidityReceiver
 	Weth10: Weth,
-	LiquidQueue:LiquidQueue
+	LiquidQueue: LiquidQueue
 }
 
 export interface BehodlerContracts {
@@ -153,17 +154,25 @@ const defaultSluiceGate: SluiceGate = {
 	//State Change
 	betaApply: (lp: address) => { },
 	unstake: (lp: address) => { },
+	//view
+	LPstake: (user: address) => { },
+	whitelist: (user: address) => { },
 	//Ownable
 	configureLPs: (lp: address, index: uint8, required: uint) => { },
-	transferOwnership: (newOwner: address) => { },
-	setSluiceGate: (gate: address) => { }
+	transferOwnership: (newOwner: address) => { }
+}
+
+const defaultUniFactory: UniswapV2Factory = {
+	...defaultBase,
+	getPair: (token1: address,token2:address) => { }
 }
 
 const defaultLiquidQueue: LiquidQueue = {
-	MintingModule:defaultMintingModule,
-	LiquidQueue:defaultLQ,
-	Reward:defaultReward,
-	SluiceGate:defaultSluiceGate
+	MintingModule: defaultMintingModule,
+	LiquidQueue: defaultLQ,
+	Reward: defaultReward,
+	SluiceGate: defaultSluiceGate,
+	UniswapV2Factory: defaultUniFactory
 }
 
 const defaultBehodler: Behodler = {

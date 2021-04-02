@@ -128,10 +128,12 @@ export default function Swap(props: props) {
     })
 
 
-    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
+    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair|null> => {
         const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
+        if (pyroAddress === '0x0000000000000000000000000000000000000000')
+            return null
         const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
-        const name = await token.symbol().call(primaryOptions)
+        const name = await token.symbol().call(primaryOptions)//bug
 
         return {
             name,
@@ -140,17 +142,19 @@ export default function Swap(props: props) {
         }
     }
 
-    const pytoTokenPopulator = useCallback(async () => {
+    const pyroTokenPopulator = useCallback(async () => {
         let mapping: basePyroPair[] = []
         for (let i = 0; i < tokenList.length; i++) {
-            mapping.push(await fetchPyroTokenDetails(tokenList[i].address))
+            const pyro = await fetchPyroTokenDetails(tokenList[i].address)
+            if (pyro)
+                mapping.push(pyro)
         }
         setPyroTokenMapping(mapping)
     }, [walletContextProps.networkName])
 
     useEffect(() => {
         if (props.connected) {
-            pytoTokenPopulator()
+            pyroTokenPopulator()
         }
         else {
         }
@@ -224,7 +228,7 @@ export default function Swap(props: props) {
                     >
                         <Grid item>
                             <Typography variant="h4" className={classes.behodlerHeading}>
-                                Behodler Liquidity Market
+                                Behodler Liquidity Engine
             </Typography>
                         </Grid>
                     </Grid>
@@ -266,7 +270,6 @@ export default function Swap(props: props) {
 }
 
 function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] }) {
-
     switch (props.value) {
         case 'swap2':
             return <TradingBox2 />
