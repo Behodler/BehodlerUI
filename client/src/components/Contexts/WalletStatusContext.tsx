@@ -2,9 +2,11 @@ import * as React from "react"
 import Web3 from "web3"
 import Web3Modal from "web3modal"
 import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min"
+import { WalletLink } from "walletlink/dist/WalletLink.js"
 import { useState, useEffect } from "react"
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
+import coinbaseWalletIcon from '../../customIcons/coinbase-wallet.svg'
 
 interface walletProps {
 	chainId: number
@@ -44,26 +46,29 @@ const networkNameMapper = (id: number): string => {
 }
 
 let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
-	console.info('chainIdUpdater')
-	return (response: any) => {
-		const chainIDNum = API.pureHexToNumber(response)
-		setChainId(chainIDNum)
-		setNetworkName(networkNameMapper(chainIDNum))
+	return (hexChainId: any) => {
+		const decimalChainId = API.pureHexToNumber(hexChainId)
+		console.info('updating chainId', {
+			hexChainId,
+			decimalChainId,
+		})
+		setChainId(decimalChainId)
+		setNetworkName(networkNameMapper(decimalChainId))
 		setInitialized(false)
 	}
 }
 
 let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void) => {
-	console.info('accountUpdater')
-	return (response: any): string => {
-		if (!response || response.length === 0) {
+	return (accounts: any): string => {
+		console.info('setting current account', accounts)
+		if (!accounts || accounts.length === 0) {
 			setConnected(false)
 			setAccount('0x0')
 			return '0x0'
 		} else {
 			setInitialized(true)
 			setConnected(true)
-			const account = response[0]
+			const account = accounts[0]
 			setAccount(account)
 			setInitialized(false)
 			return account
@@ -84,10 +89,16 @@ function WalletContextProvider(props: any) {
 
 	const initializationCallBack = React.useCallback(async () => {
 		if (chainId > 0 && account.length > 3 && !initialized) {
+			console.info('initializationCallBack - initializing', {
+				chainId,
+				account,
+			});
+
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
 			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
 			const melkor = await c.behodler.Behodler2.Morgoth.PowersRegistry.isUserMinion(account, API.web3.utils.fromAscii('Melkor')).call({ from: account })
+
 			setMelkor(melkor)
 			setPrimary(owner.toLowerCase() === account.toLowerCase())
 			setInitialized(true)
@@ -112,10 +123,33 @@ function WalletContextProvider(props: any) {
 							infuraId: process.env.REACT_APP_INFURA_ID,
 						}
 					},
+					'custom-walletlink': {
+						display: {
+							logo: coinbaseWalletIcon,
+							name: 'Coinbase Wallet',
+							description: 'Scan with WalletLink to connect',
+						},
+						options: {
+							appName: 'Behodler',
+							infuraId: process.env.REACT_APP_INFURA_ID,
+							darkMode: false,
+						},
+						package: WalletLink,
+						connector: async (_, options) => {
+							const { appName, infuraId } = options
+							const walletLink = new WalletLink({
+								appName
+							});
+							const walletLinkProvider = walletLink
+								.makeWeb3Provider(`https://mainnet.infura.io/v3/${infuraId}`)
+							await walletLinkProvider.enable()
+
+							return walletLinkProvider
+						},
+					},
 				},
 			})
 			provider = await web3Modal.connect()
-
 			API.web3 = new Web3(provider)
 		} catch (error) {
 			console.info('Unable to establish wallet connection', error)
@@ -133,7 +167,7 @@ function WalletContextProvider(props: any) {
 			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {})
 			let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
 
-			chainIdUpdateHandlerOnce(provider.chainId)
+			chainIdUpdateHandlerOnce(provider.chainId || provider._chainId)
 
 			if (provider && typeof provider.on === 'function') {
 				provider.on("accountsChanged", accountUpdateHandler)
@@ -159,12 +193,10 @@ function WalletContextProvider(props: any) {
 	}
 
 	useEffect(() => {
-		console.info('setting wallet connection action', )
 		setConnectAction({ action: connectWallet })
 	}, [])
 
 	useEffect(() => {
-		console.info('initializationCallBack called')
 		initializationCallBack()
 	}, [initialized, account, chainId])
 
