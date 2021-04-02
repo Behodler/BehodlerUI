@@ -8,7 +8,6 @@ import StakingScreen from './StakingScreen'
 export default function LiquidityMining() {
     const [risksAcknowledged, setRisksAcknowledged] = useState<boolean>(!!localStorage.getItem('risks'))
     const [whiteListed, setWhiteListed] = useState<boolean>(false)
-    //https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_glowing_text for nice text
     useEffect(() => {
         const effect = API.sluiceGateEffects.whiteListEffect()
         const subscription = effect.Observable.subscribe(enabled => {
