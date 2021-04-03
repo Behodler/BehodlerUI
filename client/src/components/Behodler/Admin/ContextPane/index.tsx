@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as React from 'react'
 import { useContext, useState, useEffect } from 'react'
 import { Grid, Container, Typography, Button, Paper, makeStyles } from '@material-ui/core'
@@ -22,30 +21,31 @@ const useStyles = makeStyles({
 })
 
 interface contextPaneProps {
-    selectedContract: string,
+    selectedContract: string
 }
 
 function ContextPane(props: contextPaneProps) {
-
-    if (props.selectedContract.length == 0)
-        return <div></div>
     const classes = useStyles()
     const walletContextProps = useContext(WalletContext)
 
     const [currentOwner, setCurrentOwner] = useState<string>("")
     useEffect(() => {
+        if (!props.selectedContract.length) { return; }
         if (props.selectedContract.toLowerCase() !== 'weth' && props.selectedContract.toLowerCase() !== 'sisyphus' && props.selectedContract.toLowerCase() !== 'faucet')
             walletContextProps.contracts.behodler[props.selectedContract].primary()
                 .call()
                 .then(account => {
                     setCurrentOwner(account)
                 })
-    }, [])
+    }, [props.selectedContract])
 
 
     const changeOwner = async () => {
         await walletContextProps.contracts.behodler[props.selectedContract].transferPrimary(currentOwner).send({ from: walletContextProps.account })
     }
+
+    if (props.selectedContract.length == 0)
+        return null
 
     return (
         <Paper className={classes.contextPaneRoot}>

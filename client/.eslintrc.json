@@ -23,8 +23,10 @@
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "react-hooks/rules-of-hooks": 0,
     "@typescript-eslint/class-name-casing": 0,
-    "prefer-const": "off"
+    "prefer-const": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-empty-function": "off"
   }
 }

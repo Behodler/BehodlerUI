@@ -114,6 +114,8 @@ function WalletContextProvider(props: any) {
 			provider = await web3Modal.connect()
 			API.web3 = new Web3(provider)
 		} catch (error) {
+			setConnected(false)
+			web3Modal.clearCachedProvider();
 			console.info('Unable to establish wallet connection', error)
 		}
 
@@ -153,6 +155,9 @@ function WalletContextProvider(props: any) {
 				provider.on("disconnect", walletDisconnectionHandler)
 			}
 		} catch (error) {
+			setConnected(false)
+			web3Modal.clearCachedProvider();
+
 			if (error.code === 4001) {
 				console.info('User rejected connection request. see EIP 1193 for more details.')
 			} else {
