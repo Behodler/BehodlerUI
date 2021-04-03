@@ -249,8 +249,10 @@ class ethereumAPI {
 	}
 
 	public pureHexToNumberString(value: any): string {
-		return this.web3.utils.hexToNumberString(value)
-
+		if (this.web3.utils.isHexStrict(value)) {
+			return this.web3.utils.hexToNumberString(value)
+		}
+		return value.toString();
 	}
 
 	public pureHexToNumber(value: any): number {

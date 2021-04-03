@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as React from 'react'
 import { useContext, useState, useEffect } from 'react'
 import { Grid, Container, Typography, Button, Paper, makeStyles } from '@material-ui/core'
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
 })
 
 interface contextPaneProps {
-    selectedContract: string
+    selectedContract: string,
 }
 
 function ContextPane(props: contextPaneProps) {
@@ -42,7 +43,7 @@ function ContextPane(props: contextPaneProps) {
     }, [])
 
 
-    let changeOwner = async () => {
+    const changeOwner = async () => {
         await walletContextProps.contracts.behodler[props.selectedContract].transferPrimary(currentOwner).send({ from: walletContextProps.account })
     }
 
