@@ -39,13 +39,12 @@ function ContextPane(props: contextPaneProps) {
                 })
     }, [props.selectedContract])
 
+    if (props.selectedContract.length == 0)
+        return null
 
     const changeOwner = async () => {
         await walletContextProps.contracts.behodler[props.selectedContract].transferPrimary(currentOwner).send({ from: walletContextProps.account })
     }
-
-    if (props.selectedContract.length == 0)
-        return null
 
     return (
         <Paper className={classes.contextPaneRoot}>
