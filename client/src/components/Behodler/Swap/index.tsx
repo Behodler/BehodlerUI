@@ -13,6 +13,7 @@ import behodlerLogo from '../../../images/behodler/logo.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
+import BehodlerEye from 'src/components/LayoutFrame/BehodlerEye'
 import Governance from '../Swap/Governance/index'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
@@ -49,12 +50,13 @@ const useStyles = makeStyles(theme => createStyles({
     },
     traderContainer: {
         margin: "50px",
-        padding: "20px",
+        padding: "50px 20px 20px",
         backgroundColor: 'rgba(255,255,255,0.93)',
         borderRadius: 20,
         height: '100%',
         minHeight: 390,
-        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
+        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+        position: 'relative'
     },
     Grid: {
         minHeight: "700px",
@@ -250,6 +252,7 @@ export default function Swap(props: props) {
                 <DepaddedGridItem>
 
                     <div className={classes.traderContainer}>
+                        <BehodlerEye></BehodlerEye>
                         <Grid
                             container
                             direction="column"
