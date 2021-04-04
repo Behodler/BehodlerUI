@@ -49,6 +49,7 @@ import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
 import { BridgeEffects } from './observables/BridgeEffects'
 import { SluiceGateEffects } from './observables/SluiceGateEffects'
+import { LiquidQueueEffects } from './observables/LiquidQueueEffects'
 import Weth10JSON from './behodler2UI/WETH10.json'
 import PyrotokenJSON from './behodler2UI/Pyrotoken.json'
 import LiquidQueueJSON from "./liquidQueue/LiquidQueue.json"
@@ -68,6 +69,8 @@ import LiquidQueueAddresses from './liquidQueue/Addresses.json'
 import UniswapV2Factory from "./contractInterfaces/liquidQueue/UniswapV2Factory";
 import { UniswapV2Effects } from "./observables/UniswapEffects";
 import UniswapV2Pair from "./contractInterfaces/liquidQueue/UniswapV2Pair";
+
+
 
 interface AccountObservable {
 	account: string
@@ -108,6 +111,7 @@ class ethereumAPI {
 	public scarcityEffects: ERC20Effects
 	public bridgeEffects: BridgeEffects
 	public sluiceGateEffects: SluiceGateEffects
+	public liquidQueueEffects: LiquidQueueEffects
 	public eyeWethLPEffects: UniswapV2Effects
 	public scxEyeLPEffects: UniswapV2Effects
 	public UINTMAX: string = "115792089237316000000000000000000000000000000000000000000000000000000000000000"
@@ -136,7 +140,7 @@ class ethereumAPI {
 		this.initialized = true
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
 		this.bridgeEffects = new BridgeEffects(this.web3, behodlerContracts.Behodler2.Morgoth.ScarcityBridge, currentAccount)
-
+		this.liquidQueueEffects = new LiquidQueueEffects(this.web3, behodlerContracts.Behodler2.LiquidQueue.LiquidQueue, currentAccount)
 		this.sluiceGateEffects = new SluiceGateEffects(this.web3, behodlerContracts.Behodler2.LiquidQueue.SluiceGate, currentAccount)
 		const networkNameForQueue = networkName == 'private' ? 'development' : networkName
 
@@ -204,7 +208,7 @@ class ethereumAPI {
 
 	public async enableToken(tokenAddress: string, owner: string, spender: string, callBack?: () => void): Promise<void> {
 		const token: ERC20 = ((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20
-		await token.approve(spender, API.UINTMAX).send({ from: owner }, () => { 
+		await token.approve(spender, API.UINTMAX).send({ from: owner }, () => {
 			if (callBack) {
 				callBack()
 			}

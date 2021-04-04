@@ -15,11 +15,14 @@ import BigNumber from 'bignumber.js';
 const useStakeStyles = makeStyles(theme => createStyles({
     poolLink: {
         fontWeight: "bold",
-        decoration: "none"
+        '&:hover': {
+            textDecoration: 'none'
+        }
     },
     blurb: {
         maxWidth: 600,
-        textAlign: "center"
+        textAlign: "center",
+        lineHeight: 1.6
     },
     margin: {
         margin: theme.spacing(1),
@@ -29,10 +32,24 @@ const useStakeStyles = makeStyles(theme => createStyles({
         backgroundColor: 'grey'
     },
     uniImage: {
-        marginLeft: 10
+        marginLeft: 10,
+        maxWidth:30
+    },
+    boldGridItem: {
+        fontWeight: 'bold',
+        minHeight: 20,
+        color: 'darkgray',
+        fontSize: '0.75em'
+    }, blurbTitle: {
+        fontSize: '1.05em'
+    }, blurbBody: {
+        fontSize: '0.85em'
+    }, blurbDisclaimer: {
+        fontSize: '0.75em',
+        fontWeight: 'bold',
+        color: 'darkorchid'
     }
 }))
-
 
 enum StakeButtonState {
     Unset,
@@ -49,8 +66,6 @@ export default function StakingScreen() {
     const walletContextProps = useContext(WalletContext)
     const [scxEyeRequired, setScxEyeRequired] = useState<string>('')
     const [eyeEthRequired, setEyeEthRequired] = useState<string>('')
-    // const [scxEyeBalance, setScxEyeBalance] = useState<string>('0')
-    // const [eyeEthBalance, setEyeEthBalance] = useState<string>('0')
     const [scxEyeButtonState, setScxEyeButtonState] = useState<StakeButtonState>(StakeButtonState.Unset)
     const [eyeEthButtonState, setEyeEthButtonState] = useState<StakeButtonState>(StakeButtonState.Unset)
     const [eyeSCXEffect, setEyeSCXEffect] = useState<Token | null>()
@@ -131,7 +146,7 @@ export default function StakingScreen() {
             token.approve(Sluice, API.UINTMAX).send({ from: walletContextProps.account }, () => {
 
             }).on('receipt', function () {
-                setScxEyeButtonState(StakeButtonState.Approving)
+                setScxEyeButtonState(StakeButtonState.Approved)
             })
             setEyeSCXApproveClicked(false)
         }
@@ -150,7 +165,7 @@ export default function StakingScreen() {
             token.approve(Sluice, API.UINTMAX).send({ from: walletContextProps.account }, () => {
                 setEyeEthButtonState(StakeButtonState.Approving)
             }).on('receipt', function () {
-                setEyeEthButtonState(StakeButtonState.Approving)
+                setEyeEthButtonState(StakeButtonState.Approved)
             })
             setEyeEthApproveClicked(false)
         }
@@ -192,7 +207,7 @@ export default function StakingScreen() {
                 .betaApply(EYE_SCX)
                 .send({ from: walletContextProps.account })
                 .on('receipt', function () {
-                    console.log('preparing queue')
+                    setScxEyeButtonState(StakeButtonState.Staked)
                 })
             setStakeSCXClicked(false)
         }
@@ -207,22 +222,74 @@ export default function StakingScreen() {
                 .betaApply(EYE_ETH)
                 .send({ from: walletContextProps.account })
                 .on('receipt', function () {
-                    console.log('preparing queue')
+                    setEyeEthButtonState(StakeButtonState.Staked)
                 })
-                setStakeEYEClicked(false)
+            setStakeEYEClicked(false)
         }
     }, [stakeEYEClicked])
 
-    useEffect(() => { eyeClickedCallback() }, [stakeSCXClicked])
+    useEffect(() => { eyeClickedCallback() }, [stakeEYEClicked])
 
-    let stakeScxEyeText = scxEyeButtonState >= StakeButtonState.Approved ? `Stake ${scxEyeRequired} SCX/EYE` : `Approve SCX/EYE`
-    let stakeEyeEthText = eyeEthButtonState >= StakeButtonState.Approved ? `Stake ${eyeEthRequired} EYE/ETH` : `Approve EYE/ETH`
+
     const scxEyeVisible = scxEyeButtonState >= StakeButtonState.RequirementSet
     const eyeEthVisible = eyeEthButtonState >= StakeButtonState.RequirementSet
 
-    const eyeSCXAction = scxEyeButtonState < StakeButtonState.Approving ? () => setEyeSCXApproveClicked(true) : () => setStakeSCXClicked(true)
-    const eyeEthAction = eyeEthButtonState < StakeButtonState.Approving ? () => setEyeEthApproveClicked(true) : () => setStakeEYEClicked(true)
+    let ethEyeType: ButtonType = ButtonType.stake
+    if (eyeEthButtonState < StakeButtonState.Approved)
+        ethEyeType = ButtonType.approve
+    else if (eyeEthButtonState === StakeButtonState.BalanceTooLow)
+        ethEyeType = ButtonType.disabled
 
+    const eyeEthAction = ethEyeType === ButtonType.approve ? () => setEyeEthApproveClicked(true) : () => setStakeEYEClicked(true)
+
+    let eyeScxType: ButtonType = ButtonType.stake
+    if (scxEyeButtonState < StakeButtonState.Approved)
+        eyeScxType = ButtonType.approve
+    else if (scxEyeButtonState === StakeButtonState.BalanceTooLow)
+        eyeScxType = ButtonType.disabled
+
+    const eyeSCXAction = eyeScxType === ButtonType.approve ? () => setEyeSCXApproveClicked(true) : () => setStakeSCXClicked(true)
+
+    let stakeScxEyeText = eyeScxType == ButtonType.approve ? 'SCX/EYE' : `${scxEyeRequired} SCX/EYE deposit`
+    let stakeEyeEthText = ethEyeType == ButtonType.approve ? 'EYE/ETH' : `${eyeEthRequired} EYE/ETH deposit`
+    let eyeEthSubText = 'contains 1000 EYE'
+    let scxEyeSubtext = '10% of your balance'
+
+    const ButtonPanel = (props: { type: ButtonType, text: string, subtext: string, action: () => void }) => {
+        const classes = useStakeStyles()
+        return <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+        >
+            <Grid item>
+                <StakeButton type={props.type} action={props.action}>{props.text}</StakeButton>
+            </Grid>
+            <Grid item className={classes.boldGridItem}>
+                {props.type === ButtonType.stake ? props.subtext : ''}
+            </Grid>
+        </Grid>
+    }
+
+    const Blurb = <Grid
+        container
+        direction="column"
+        justify="space-between"
+        alignItems="center"
+        className={classes.blurb}
+        spacing={2}
+    >
+        <Grid item className={classes.blurbTitle}>
+            In order to participate in the BETA round of the Liquid Queue, you are required to stake Uniswap V2 liquidity pool tokens from either the <PoolLink link='https://info.uniswap.org/pair/0x54965801946d768b395864019903aef8b5b63bb3'>EYE/ETH</PoolLink> pool or the <PoolLink link="https://info.uniswap.org/pair/0xf047ee812b21050186f86106f6cabdfec35366c6">EYE/SCX</PoolLink> pool.
+        </Grid>
+        <Grid item className={classes.blurbBody}>
+            For EYE/ETH, the LP staked must contain 1000 EYE (currently {eyeEthRequired}). For SCX/EYE LP, 10% of your wallet balance is staked (currently {scxEyeRequired}).
+        </Grid>
+        <Grid item className={classes.blurbDisclaimer}>
+            The staked value is held in a custodial smart contract and is not utilized in the Liquid Queue. You can unstake your deposit at any time but the Liquid Queue is only available while the LP are staked.
+        </Grid>
+    </Grid>
 
     return <div>
         <Grid container
@@ -231,10 +298,8 @@ export default function StakingScreen() {
             alignItems="center"
             spacing={10}
         >
-            <Grid item className={classes.blurb}>
-                In order to participate in the Beta round, you are required to stake Uniswap V2 liquidity pool tokens from either the <PoolLink link='https://info.uniswap.org/pair/0x54965801946d768b395864019903aef8b5b63bb3'>EYE/ETH</PoolLink> pool or the <PoolLink link="https://info.uniswap.org/pair/0xf047ee812b21050186f86106f6cabdfec35366c6">EYE/SCX</PoolLink> pool.
-                The staked value is held in a custodial smart contract and is not utilized in the Liquid Queue. You may unstake them at any time, however the Liquid Queue will only be
-                available as long as they remain staked.
+            <Grid item >
+                {Blurb}
             </Grid>
             <Grid item>
                 <Grid
@@ -245,10 +310,10 @@ export default function StakingScreen() {
                     spacing={10}
                 >
                     <Grid item>
-                        {eyeEthVisible ? <StakeButton disabled={eyeEthButtonState === StakeButtonState.BalanceTooLow} action={eyeEthAction}>{stakeEyeEthText}</StakeButton> : ""}
+                        {eyeEthVisible ? <ButtonPanel type={ethEyeType} text={stakeEyeEthText} subtext={eyeEthSubText} action={eyeEthAction} /> : ""}
                     </Grid>
                     <Grid item>
-                        {scxEyeVisible ? <StakeButton disabled={scxEyeButtonState === StakeButtonState.BalanceTooLow} action={eyeSCXAction}>{stakeScxEyeText}</StakeButton> : ''}
+                        {scxEyeVisible ? <ButtonPanel type={eyeScxType} text={stakeScxEyeText} subtext={scxEyeSubtext} action={eyeSCXAction} /> : ''}
                     </Grid>
                 </Grid>
             </Grid>
@@ -286,19 +351,44 @@ const DisabledColorButton = withStyles((theme: Theme) => ({
     },
 }))(Button);
 
+const ApprovalButton = withStyles((theme: Theme) => ({
+    root: {
+        color: theme.palette.getContrastText(purple[500]),
+        fontWeight: "bold",
+        backgroundColor: '#482880',
+        '&:hover': {
+            backgroundColor: purple[700],
+            color: lightGreen[100]
+        },
+    },
+}))(Button);
+
 function UniImage(props: { grey?: boolean }) {
     const classes = useStakeStyles()
     return <img className={classes.uniImage} width={30} src={props.grey ? unigrey : uniswap} />
 }
 
-function StakeButton(props: { children: any, action: () => void, disabled?: boolean }) {
+enum ButtonType {
+    disabled,
+    approve,
+    stake
+}
+
+function StakeButton(props: { children: any, action: () => void, type: ButtonType }) {
     const classes = useStakeStyles()
 
-    return props.disabled ? <DisabledColorButton title="Insufficient Uniswap LP token balance" variant="contained" className={classes.margin}>
-        {props.children} <UniImage grey />
-    </DisabledColorButton>
-        : <ColorButton variant="contained" className={classes.margin} onClick={() => props.action()}>
-            {props.children} <UniImage />
-        </ColorButton>
+    switch (props.type) {
+        case ButtonType.disabled:
+            return <DisabledColorButton title="Insufficient Uniswap LP token balance" variant="contained" className={classes.margin}>
+                {props.children} <UniImage grey />
+            </DisabledColorButton>
+        case ButtonType.approve:
+            return <ApprovalButton variant="contained" className={classes.margin} onClick={() => props.action()}>Approve {props.children} < UniImage /></ApprovalButton >
+        case ButtonType.stake:
+            return <ColorButton variant="contained" className={classes.margin} onClick={() => props.action()}>Stake {props.children}< UniImage /></ColorButton >
+        default:
+            return <div></div>
+    }
 }
+
 
