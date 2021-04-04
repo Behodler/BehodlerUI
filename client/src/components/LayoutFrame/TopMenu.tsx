@@ -4,10 +4,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Grid, Hidden, Link, Menu, MenuItem } from '@material-ui/core';
+import { Grid, Hidden, Link, Menu, MenuItem, Button } from '@material-ui/core';
 import MetamaskGasWarning from "./MetamaskGasWarning"
 import { permittedRoutes } from '../Behodler/Swap';
 import metamaskAccount from '../../images/behodler/metamaskaccount.png'
+import ViewChangeAccountModal from 'src/components/LayoutFrame/ViewChangeAccountModal'
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 
@@ -49,7 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         search: {
             position: 'absolute',
-            borderRadius: theme.shape.borderRadius,
+            borderRadius: 10,
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
             backgroundColor: fade(theme.palette.common.white, 0.15),
             '&:hover': {
                 backgroundColor: fade(theme.palette.common.white, 0.25),
@@ -81,7 +84,6 @@ const useStyles = makeStyles((theme: Theme) =>
         menu: {
             borderRadius: 10
         },
-
         menuList: {
             marginTop: 20,
             backgroundColor: '#00A3DA',
@@ -122,9 +124,28 @@ const useStyles = makeStyles((theme: Theme) =>
             // color: theme.palette.type == 'dark' ? 'white' : 'black',
             border: '1px solid #3379DB',
             borderRadius: 10,
-            padding: '5px 10px 5px 10px',
+            padding: '5px 15px 5px 15px',
             backgroundColor: '#3379DB',
-            color: 'white'
+            color: 'white',
+            '&:hover': {
+                backgroundColor: '#2589d7',
+                border: '1px solid #298bd8'
+            },
+            marginLeft: '-2px'
+        },
+        chngAccount: {
+            fontSize: theme.typography.subtitle2.fontSize,
+            fontFamily: theme.typography.fontFamily,
+            // color: theme.palette.type == 'dark' ? 'white' : 'black',
+            border: '1px solid #3379DB',
+            borderRadius: 10,
+            padding: '5px 15px 5px 15px',
+            backgroundColor: '#3379DB',
+            color: 'white',
+            '&:hover': {
+                backgroundColor: '#2589d7',
+                border: '1px solid #298bd8'
+            },
         },
         fixGrid: {
             width: '100% !important',
@@ -159,6 +180,8 @@ export default function TopMenu(props: props) {
     )
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
+    const [dialogOpen, setDialogOpen] = React.useState<boolean>(false)
+
     const menuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -178,10 +201,10 @@ export default function TopMenu(props: props) {
                 <Toolbar>
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
-                        {props.admin ? <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} /> : <div></div>}
-
+                        {props.admin?<LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} />:<div></div>}
+                        
                         <LeftLink text="Liquidity Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
-
+                        <LeftLink text="Governance" nav={() => props.setRouteValue('governance')} selected={location === 'governance'} />
                         <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
                     </Hidden>
                     <div className={classes.search}>
@@ -195,19 +218,21 @@ export default function TopMenu(props: props) {
                         >
                             <Hidden mdDown>
                                 <Grid item>
-                                    <div className={classes.truncAccount}>
+                                    <Button
+                                        className={classes.truncAccount}
+                                        onClick={() => setDialogOpen(true)}
+                                        >
                                         <Grid
                                             container
                                             direction="row"
                                             justify="space-evenly"
                                             alignItems="center"
                                             spacing={1}
-                                            className={classes.fixGrid}
                                         >
                                             <Grid item> {props.truncAccount}</Grid>
-                                            <Grid item> <img src={metamaskAccount} width={15} /></Grid>
+                                            <img src={metamaskAccount} width={15} />
                                         </Grid>
-                                    </div>
+                                    </Button>
                                 </Grid>
                                 <Grid item>
                                     <div className={classes.ethBalance}>{props.ethBalance.truncBig()} ETH</div>
@@ -240,6 +265,7 @@ export default function TopMenu(props: props) {
                                 {props.admin ? <MenuItem className={classes.menuList} onClick={() => route('pyro')}>Pyrotokens</MenuItem> : <div></div>}
 
                                 <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquidity Queueing</MenuItem>
+                                <MenuItem className={classes.menuList} onClick={() => route('governance')}>Governance</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
                             </Menu>
                         </Hidden>
@@ -248,7 +274,7 @@ export default function TopMenu(props: props) {
 
                 <MetamaskGasWarning />
             </AppBar>
-
+            <ViewChangeAccountModal fullWidth={true} open={dialogOpen} onClose={() => setDialogOpen(false)}></ViewChangeAccountModal>
         </div>
     );
 }
