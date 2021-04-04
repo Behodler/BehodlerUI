@@ -124,9 +124,12 @@ export default function Swap(props: props) {
     }, [walletContextProps.account, walletContextProps.connected])
 
     useEffect(() => {
-        ethCallback()
-    })
-
+        if (props.connected) {
+            ethCallback()
+        }
+        else {
+        }
+    }, [props.connected])
 
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
         const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
