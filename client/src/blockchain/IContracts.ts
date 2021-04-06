@@ -134,7 +134,10 @@ const defaultMintingModule: MintingModule = {
 	transferOwnership: (newOwner: address) => { },
 	seed: (factory: address, router: address, reward: address, tiltPercentage: uint8) => { },
 	mapTokens: (input: address, output: address, tilting: address) => { },
-	setSluiceGate: (gate: address) => { }
+	setSluiceGate: (gate: address) => { },
+	inputTokenTilting: (token: address) => { },
+	inputOutputToken: (token: address) => { },
+	tiltPercentage: () => { }
 }
 
 const defaultReward: Reward = {
@@ -164,7 +167,7 @@ const defaultSluiceGate: SluiceGate = {
 
 const defaultUniFactory: UniswapV2Factory = {
 	...defaultBase,
-	getPair: (token1: address,token2:address) => { }
+	getPair: (token1: address, token2: address) => { }
 }
 
 const defaultLiquidQueue: LiquidQueue = {

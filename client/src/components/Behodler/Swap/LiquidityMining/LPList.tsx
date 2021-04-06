@@ -1,4 +1,5 @@
-import React, { /*useContext,*/ useEffect,/*, useState*/
+import React, {
+    useContext, useEffect,/*, useState*/
     useState
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,10 +14,11 @@ import Dai from '../../../../images/behodler/dai.png'
 import Eth from '../../../../images/behodler/3.png'
 import SCX from '../../../../images/behodler/7.png'
 import EYE from '../../../../images/behodler_b.png'
-import { Tooltip } from '@material-ui/core';
+import { Link, Tooltip } from '@material-ui/core';
 import { GetAPY } from './LQCalculationHelper'
-// import { WalletContext } from 'src/components/Contexts/WalletStatusContext';
+import { WalletContext } from 'src/components/Contexts/WalletStatusContext';
 import API from 'src/blockchain/ethereumAPI';
+import QueuePosition from './QueuePosition';
 
 
 const useStyles = makeStyles({
@@ -27,9 +29,9 @@ const useStyles = makeStyles({
     }
 });
 
-function createData(imgsrc: any, inputToken: string, rewardToken: string, ROI: number, APY: number, eye: string, velocity: number) {
+function createData(imgsrc: any, inputToken: string, rewardToken: string, ROI: number, APY: number, eye: string, velocity: number, inputTokenAddress: string) {
 
-    return { imgsrc, inputToken, rewardToken, ROI, APY, eye, velocity };
+    return { imgsrc, inputToken, rewardToken, ROI, APY, eye, velocity, inputTokenAddress };
 }
 
 interface Row {
@@ -39,10 +41,11 @@ interface Row {
     ROI: number
     APY: number
     eye: string
-    velocity: number
+    velocity: number,
+    inputTokenAddress: string
 }
 
-interface QueueData {
+export interface QueueData {
     burnRatio: number
     entryIndex: number
     last: number
@@ -62,13 +65,16 @@ let emptyQueueData: QueueData = {
 }
 
 export default function LPList() {
-    // const walletContextProps = useContext(WalletContext)
+    const walletContextProps = useContext(WalletContext)
+    const addresses = API.getLQInputAddresses(walletContextProps.networkName)
     const [queueData, setQueueData] = useState<QueueData>(emptyQueueData)
+    const [visiblePosition, setVisiblePosition] = useState<string | null>()
+
     const [rows, setRows] = useState<Row[]>([
-        createData(Dai, 'Dai', 'DAI/EYE', 130, 2000, '', 0),
-        createData(Eth, 'Ether', 'SCX/ETH', 130, 2000, '', 0),
-        createData(SCX, 'Scarcity (SCX)', 'SCX/EYE', 130, 2000, '', 0),
-        createData(EYE, 'EYE', 'SCX/EYE', 70, 2300, '', 0),
+        createData(Dai, 'Dai', 'DAI/EYE', 130, 2000, '', 0, addresses.Dai),
+        createData(Eth, 'Ether', 'SCX/ETH', 130, 2000, '', 0, addresses.Eth),
+        createData(SCX, 'Scarcity (SCX)', 'SCX/EYE', 130, 2000, '', 0, addresses.Scarcity),
+        createData(EYE, 'EYE', 'SCX/EYE', 70, 2300, '', 0, addresses.Eye),
     ])
     const classes = useStyles();
 
@@ -103,7 +109,7 @@ export default function LPList() {
         setRows(newRows)
     }, [queueData])
 
-    return (
+    return (visiblePosition ? <QueuePosition data={queueData} setVisiblePosition={setVisiblePosition} inputToken={visiblePosition} /> :
         <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
                 <TableHead>
@@ -130,7 +136,7 @@ export default function LPList() {
                             <TableCell align="center">{row.APY}%</TableCell>
                             <TableCell align="center">{row.eye} EYE</TableCell>
                             <TableCell align="center">{row.velocity}</TableCell>
-                            <TableCell align="center"><a href="#">View/Join</a></TableCell>
+                            <TableCell align="center"><Link onClick={() => setVisiblePosition(row.inputTokenAddress)}>View/Join</Link></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

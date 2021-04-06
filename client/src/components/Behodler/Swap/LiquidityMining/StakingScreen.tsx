@@ -33,7 +33,7 @@ const useStakeStyles = makeStyles(theme => createStyles({
     },
     uniImage: {
         marginLeft: 10,
-        maxWidth:30
+        maxWidth: 30
     },
     boldGridItem: {
         fontWeight: 'bold',
@@ -147,6 +147,7 @@ export default function StakingScreen() {
 
             }).on('receipt', function () {
                 setScxEyeButtonState(StakeButtonState.Approved)
+            }).on('confirmation', function (confirmationNumber, receipt) {
             })
             setEyeSCXApproveClicked(false)
         }
@@ -165,7 +166,10 @@ export default function StakingScreen() {
             token.approve(Sluice, API.UINTMAX).send({ from: walletContextProps.account }, () => {
                 setEyeEthButtonState(StakeButtonState.Approving)
             }).on('receipt', function () {
+                alert('received')
                 setEyeEthButtonState(StakeButtonState.Approved)
+            }).on('confirmation', function (confirmationNumber, receipt) {
+                console.log('confirming: ' + confirmationNumber)
             })
             setEyeEthApproveClicked(false)
         }
@@ -207,7 +211,10 @@ export default function StakingScreen() {
                 .betaApply(EYE_SCX)
                 .send({ from: walletContextProps.account })
                 .on('receipt', function () {
+                    alert('received')
                     setScxEyeButtonState(StakeButtonState.Staked)
+                }).on('confirmation', function (confirmationNumber, receipt) {
+                    console.log('confirming: ' + confirmationNumber)
                 })
             setStakeSCXClicked(false)
         }
@@ -222,7 +229,10 @@ export default function StakingScreen() {
                 .betaApply(EYE_ETH)
                 .send({ from: walletContextProps.account })
                 .on('receipt', function () {
+                    alert('received')
                     setEyeEthButtonState(StakeButtonState.Staked)
+                }).on('confirmation', function (confirmationNumber, receipt) {
+                    console.log('confirming: ' + confirmationNumber)
                 })
             setStakeEYEClicked(false)
         }

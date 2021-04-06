@@ -93,6 +93,13 @@ interface newContracts {
 	PRE: string
 }
 
+interface LQInputAddressList {
+	Dai: string,
+	Eth: string,
+	Scarcity: string,
+	Eye: string
+}
+
 class ethereumAPI {
 
 	private interval: any
@@ -140,7 +147,9 @@ class ethereumAPI {
 		this.initialized = true
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
 		this.bridgeEffects = new BridgeEffects(this.web3, behodlerContracts.Behodler2.Morgoth.ScarcityBridge, currentAccount)
-		this.liquidQueueEffects = new LiquidQueueEffects(this.web3, behodlerContracts.Behodler2.LiquidQueue.LiquidQueue, currentAccount)
+
+
+
 		this.sluiceGateEffects = new SluiceGateEffects(this.web3, behodlerContracts.Behodler2.LiquidQueue.SluiceGate, currentAccount)
 		const networkNameForQueue = networkName == 'private' ? 'development' : networkName
 
@@ -152,6 +161,20 @@ class ethereumAPI {
 		const eye: ERC20 = eyeDeployment.methods
 		eye.address = LiquidQueueAddresses[networkNameForQueue].EYE
 		this.eyeWethLPEffects = new UniswapV2Effects(this.web3, ethEyePair, eye, currentAccount, this.ONE.toString())
+
+		//this next line is mostly for the sake of dependency free debugging
+		const scxDeployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, LiquidQueueAddresses[networkNameForQueue].SCX)
+		const scx: Behodler2 = scxDeployment.methods
+		scx.address = scxDeployment.address
+
+		this.liquidQueueEffects = new LiquidQueueEffects(this.web3,
+			behodlerContracts.Behodler2.LiquidQueue.LiquidQueue,
+			behodlerContracts.Behodler2.LiquidQueue.MintingModule,
+			behodlerContracts.Behodler2.LiquidQueue.Reward.address,
+			currentAccount,
+			eye,
+			scx,
+			behodlerContracts.Behodler2.LiquidQueue.UniswapV2Factory)
 
 		const scxEyePairAddress = await behodlerContracts.Behodler2.LiquidQueue.UniswapV2Factory.getPair(LiquidQueueAddresses[networkNameForQueue].EYE, LiquidQueueAddresses[networkNameForQueue].SCX).call()
 		const scxEyePairDeployment = await this.deployBehodlerContract(UniswapV2PairJSON.abi, scxEyePairAddress)
@@ -217,7 +240,15 @@ class ethereumAPI {
 
 	public async getToken(tokenAddress: string, network: string): Promise<ERC20> {
 		network = network === 'private' || network === 'development' ? 'development' : network
-		return await (((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20)
+		var token = (((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20)
+		token.address = tokenAddress;
+		return token
+	}
+
+	public getEYEAddress(network: string): string {
+		const netName = network === 'private' ? 'development' : network
+		const EYE = LiquidQueueAddresses[netName].EYE
+		return EYE
 	}
 
 	public async getPyroToken(tokenAddress: string, network: string): Promise<Pyrotoken> {
@@ -262,6 +293,16 @@ class ethereumAPI {
 	public async EYE_SCXEffects(network: address, account: string): Promise<Token> {
 		const pair = await this.EYE_SCX_PAIR(network, account)
 		return this.generateNewEffects(pair, account, false)
+	}
+
+	public getLQInputAddresses(network: string): LQInputAddressList {
+		const netName = network === 'private' ? 'development' : network
+		return {
+			Dai: LiquidQueueAddresses[netName].DAI,
+			Eth: LiquidQueueAddresses[netName].WETH,
+			Scarcity: LiquidQueueAddresses[netName].SCX,
+			Eye: LiquidQueueAddresses[netName].EYE
+		}
 	}
 
 	public async getEthBalance(account: string): Promise<string> {
@@ -409,7 +450,7 @@ class ethereumAPI {
 		let lq: LQ = lqDeployment.methods
 		lq.address = lqDeployment.address
 
-		const mintingModuleDeployment = await this.deployBehodlerContract(MintingModuleJSON.abi, addresses.MintinModule)
+		const mintingModuleDeployment = await this.deployBehodlerContract(MintingModuleJSON.abi, addresses.MintingModule)
 		let mm: MintingModule = mintingModuleDeployment.methods
 		mm.address = mintingModuleDeployment.address
 

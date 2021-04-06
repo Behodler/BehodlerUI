@@ -9,6 +9,7 @@ import LPList from './LPList'
 // { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 
+
 export default function LiquidityMining() {
     const walletContextProps = useContext(WalletContext)
     const [risksAcknowledged, setRisksAcknowledged] = useState<boolean>(!!localStorage.getItem('risks'))
