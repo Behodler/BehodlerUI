@@ -46,7 +46,7 @@ const networkNameMapper = (id: number): string => {
 	}
 }
 
-let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
+const chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
 	return (hexChainId: any) => {
 		const decimalChainId = API.pureHexToNumber(hexChainId)
 		setChainId(decimalChainId)
@@ -55,7 +55,7 @@ let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetw
 	}
 }
 
-let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void, web3Modal) => {
+const accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void, web3Modal) => {
 	return (accounts: any): string => {
 		if (!accounts || accounts.length === 0) {
 			setConnected(false)
@@ -71,6 +71,114 @@ let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: b
 			setAccount(account)
 			setInitialized(false)
 			return account
+		}
+	}
+}
+
+const initWeb3Modal = () => (
+	new Web3Modal({
+		cacheProvider: true,
+		providerOptions: {
+			walletconnect: {
+				package: WalletConnectProvider,
+				options: {
+					infuraId: process.env.REACT_APP_INFURA_ID,
+				}
+			},
+			'custom-walletlink': {
+				display: {
+					logo: coinbaseWalletIcon,
+					name: 'Coinbase Wallet',
+					description: 'Scan with WalletLink to connect',
+				},
+				options: {
+					appName: 'Behodler',
+					infuraId: process.env.REACT_APP_INFURA_ID,
+				},
+				package: WalletLink,
+				connector: async (_, options) => {
+					const { appName, infuraId } = options
+					const walletLink = new WalletLink({ appName });
+					const walletLinkProvider = walletLink
+						.makeWeb3Provider(`https://mainnet.infura.io/v3/${infuraId}`)
+					await walletLinkProvider.enable()
+
+					return walletLinkProvider
+				},
+			},
+			portis: {
+				package: Portis,
+				options: {
+					id: process.env.REACT_APP_PORTIS_ID,
+				}
+			},
+		},
+	})
+);
+
+const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts) => async () => {
+	if (!process.env.REACT_APP_INFURA_ID) {
+		console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnect and WalletLink providers to work.')
+	}
+
+	if (!process.env.REACT_APP_PORTIS_ID) {
+		console.info('REACT_APP_PORTIS_ID environment variable is not set. It is required in order for Portis wallet provider to work.')
+	}
+
+	let provider
+
+	try {
+		provider = await web3Modal.connect()
+		API.web3 = new Web3(provider)
+	} catch (error) {
+		setConnected(false)
+		web3Modal.clearCachedProvider();
+		console.info('Unable to establish wallet connection', error)
+	}
+
+	if (!provider) { return }
+
+	try {
+		let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {}, null)
+		let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized, web3Modal)
+
+		const accounts = await API.web3.eth.getAccounts()
+		accountUpdateHandlerOnce(accounts)
+
+		let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {})
+		let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
+
+		const providerChainId = provider.isPortis
+			? provider._portis.config.network.chainId
+			: provider.chainId || provider._chainId
+
+		chainIdUpdateHandlerOnce(providerChainId)
+
+		const walletConnectionHandler = (info: { chainId: number }) => {
+			console.log('wallet provider connected', info)
+		}
+
+		const walletDisconnectionHandler = async (error: { code: number; message: string }) => {
+			console.log('wallet provider disconnected', error)
+
+			setConnected(false)
+			web3Modal.clearCachedProvider();
+		}
+
+		if (provider && typeof provider.on === 'function') {
+			provider.on("accountsChanged", accountUpdateHandler)
+			provider.on("chainChanged", chainIdUpdateHandler)
+			provider.on("connect", walletConnectionHandler)
+			provider.on("disconnect", walletDisconnectionHandler)
+		}
+	} catch (error) {
+		setConnected(false)
+		web3Modal.clearCachedProvider();
+
+		if (error.code === 4001) {
+			console.info('User rejected connection request. see EIP 1193 for more details.')
+		} else {
+			console.error('Unhandled wallet connection error: ' + error)
 		}
 	}
 }
@@ -99,117 +207,10 @@ function WalletContextProvider(props: any) {
 		}
 	}, [initialized, account, chainId])
 
-	const createConnectWallet = (web3Modal) => async () => {
-		if (!process.env.REACT_APP_INFURA_ID) {
-			console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnect and WalletLink providers to work.')
-		}
-
-		if (!process.env.REACT_APP_PORTIS_ID) {
-			console.info('REACT_APP_PORTIS_ID environment variable is not set. It is required in order for Portis wallet provider to work.')
-		}
-
-		let provider
-
-		try {
-			provider = await web3Modal.connect()
-			API.web3 = new Web3(provider)
-		} catch (error) {
-			setConnected(false)
-			web3Modal.clearCachedProvider();
-			console.info('Unable to establish wallet connection', error)
-		}
-
-		if (!provider) { return }
-
-		try {
-			let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {}, null)
-			let accountUpdateHandler = accountUpdater(setAccount, setConnected, setInitialized, web3Modal)
-
-			const accounts = await API.web3.eth.getAccounts()
-			accountUpdateHandlerOnce(accounts)
-
-			let chainIdUpdateHandlerOnce = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, () => {})
-			let chainIdUpdateHandler = chainIdUpdater(accounts[0], setChainId, setNetworkName, setContracts, setInitialized)
-
-			const providerChainId = provider.isPortis
-				? provider._portis.config.network.chainId
-				: provider.chainId || provider._chainId
-
-			chainIdUpdateHandlerOnce(providerChainId)
-
-			const walletConnectionHandler = (info: { chainId: number }) => {
-				console.log('wallet provider connected', info)
-			}
-
-			const walletDisconnectionHandler = async (error: { code: number; message: string }) => {
-				console.log('wallet provider disconnected', error)
-
-				setConnected(false)
-				web3Modal.clearCachedProvider();
-			}
-
-			if (provider && typeof provider.on === 'function') {
-				provider.on("accountsChanged", accountUpdateHandler)
-				provider.on("chainChanged", chainIdUpdateHandler)
-				provider.on("connect", walletConnectionHandler)
-				provider.on("disconnect", walletDisconnectionHandler)
-			}
-		} catch (error) {
-			setConnected(false)
-			web3Modal.clearCachedProvider();
-
-			if (error.code === 4001) {
-				console.info('User rejected connection request. see EIP 1193 for more details.')
-			} else {
-				console.error('Unhandled wallet connection error: ' + error)
-			}
-		}
-	}
-
 	useEffect(() => {
-		const web3Modal = new Web3Modal({
-			cacheProvider: true,
-			providerOptions: {
-				walletconnect: {
-					package: WalletConnectProvider,
-					options: {
-						infuraId: process.env.REACT_APP_INFURA_ID,
-					}
-				},
-				'custom-walletlink': {
-					display: {
-						logo: coinbaseWalletIcon,
-						name: 'Coinbase Wallet',
-						description: 'Scan with WalletLink to connect',
-					},
-					options: {
-						appName: 'Behodler',
-						infuraId: process.env.REACT_APP_INFURA_ID,
-						darkMode: false,
-					},
-					package: WalletLink,
-					connector: async (_, options) => {
-						const { appName, infuraId } = options
-						const walletLink = new WalletLink({
-							appName
-						});
-						const walletLinkProvider = walletLink
-							.makeWeb3Provider(`https://mainnet.infura.io/v3/${infuraId}`)
-						await walletLinkProvider.enable()
+		const web3Modal = initWeb3Modal()
 
-						return walletLinkProvider
-					},
-				},
-				portis: {
-					package: Portis,
-					options: {
-						id: process.env.REACT_APP_PORTIS_ID,
-					}
-				},
-			},
-		})
-
-		const connectWallet = createConnectWallet(web3Modal);
+		const connectWallet = createConnectWalletFn(web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts);
 		setConnectAction({ action: connectWallet })
 
 		if (web3Modal.cachedProvider) {
