@@ -75,46 +75,70 @@ const accountUpdater = (setAccount: (account: string) => void, setConnected: (c:
 	}
 }
 
-const initWeb3Modal = () => (
-	new Web3Modal({
-		cacheProvider: true,
-		providerOptions: {
-			walletconnect: {
-				package: WalletConnectProvider,
-				options: {
-					infuraId: process.env.REACT_APP_INFURA_ID,
-				}
-			},
-			'custom-walletlink': {
-				display: {
-					logo: coinbaseWalletIcon,
-					name: 'Coinbase Wallet',
-					description: 'Scan with WalletLink to connect',
-				},
-				options: {
-					appName: 'Behodler',
-					infuraId: process.env.REACT_APP_INFURA_ID,
-				},
-				package: WalletLink,
-				connector: async (_, options) => {
-					const { appName, infuraId } = options
-					const walletLink = new WalletLink({ appName });
-					const walletLinkProvider = walletLink
-						.makeWeb3Provider(`https://mainnet.infura.io/v3/${infuraId}`)
-					await walletLinkProvider.enable()
+const initWeb3Modal = () => {
+	let providerOptions = {};
 
-					return walletLinkProvider
-				},
+	// e.g REACT_APP_RPC_CONFIGS=1|https://mainnet.infura.io/v3/INFURA_ID,2|https://morder-rpc-url
+	if (process.env.REACT_APP_INFURA_ID || process.env.REACT_APP_RPC_CONFIGS) {
+		const rpcConfig = process.env.REACT_APP_RPC_CONFIGS
+			? Object
+				.fromEntries((
+					process.env.REACT_APP_RPC_CONFIGS
+						.split(',')
+						.map(chainIdToUrlString => chainIdToUrlString.split('|'))
+				))
+			: undefined;
+
+		// eslint-disable-next-line
+		// @ts-ignore
+		providerOptions.walletconnect = {
+			package: WalletConnectProvider,
+			options: {
+				infuraId: process.env.REACT_APP_RPC_CONFIGS
+					? undefined
+					: process.env.REACT_APP_INFURA_ID,
+				rpc: rpcConfig,
+			}
+		};
+
+		const walletlinkRPCURL = rpcConfig
+			? rpcConfig[1]
+			: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+
+		providerOptions['custom-walletlink'] = {
+			display: {
+				logo: coinbaseWalletIcon,
+				name: 'Coinbase Wallet',
+				description: 'Scan with WalletLink to connect',
 			},
-			portis: {
-				package: Portis,
-				options: {
-					id: process.env.REACT_APP_PORTIS_ID,
-				}
+			package: WalletLink,
+			connector: async () => {
+				const walletLink = new WalletLink({ appName: 'Behodler' });
+				const walletLinkProvider = walletLink
+					.makeWeb3Provider(walletlinkRPCURL)
+				await walletLinkProvider.enable()
+
+				return walletLinkProvider
 			},
-		},
-	})
-);
+		};
+	}
+
+	if (process.env.REACT_APP_PORTIS_ID) {
+		// eslint-disable-next-line
+		// @ts-ignore
+		providerOptions.portis = {
+			package: Portis,
+			options: {
+				id: process.env.REACT_APP_PORTIS_ID,
+			}
+		};
+	}
+
+	return new Web3Modal({
+		cacheProvider: true,
+		providerOptions,
+	});
+};
 
 const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts) => async () => {
 	if (!process.env.REACT_APP_INFURA_ID) {
