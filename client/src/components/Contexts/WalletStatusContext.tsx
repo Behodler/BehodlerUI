@@ -33,6 +33,12 @@ let WalletContext = React.createContext<walletProps>({
 	isMelkor: false
 })
 
+const {
+	REACT_APP_INFURA_ID: INFURA_ID,
+	REACT_APP_PORTIS_ID: PORTIS_ID,
+	REACT_APP_RPC_CONFIGS: RPC_CONFIGS,
+} = process.env;
+
 const networkNameMapper = (id: number): string => {
 	switch (id) {
 		case 1: return "main"
@@ -79,11 +85,11 @@ const initWeb3Modal = () => {
 	let providerOptions = {};
 
 	// e.g REACT_APP_RPC_CONFIGS=1|https://mainnet.infura.io/v3/INFURA_ID,2|https://morder-rpc-url
-	if (process.env.REACT_APP_INFURA_ID || process.env.REACT_APP_RPC_CONFIGS) {
-		const rpcConfig = process.env.REACT_APP_RPC_CONFIGS
+	if (INFURA_ID || RPC_CONFIGS) {
+		const rpcConfig = RPC_CONFIGS
 			? Object
 				.fromEntries((
-					process.env.REACT_APP_RPC_CONFIGS
+					RPC_CONFIGS
 						.split(',')
 						.map(chainIdToUrlString => chainIdToUrlString.split('|'))
 				))
@@ -94,16 +100,16 @@ const initWeb3Modal = () => {
 		providerOptions.walletconnect = {
 			package: WalletConnectProvider,
 			options: {
-				infuraId: process.env.REACT_APP_RPC_CONFIGS
+				infuraId: RPC_CONFIGS
 					? undefined
-					: process.env.REACT_APP_INFURA_ID,
+					: INFURA_ID,
 				rpc: rpcConfig,
 			}
 		};
 
 		const walletlinkRPCURL = rpcConfig
 			? rpcConfig[1]
-			: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+			: `https://mainnet.infura.io/v3/${INFURA_ID}`
 
 		providerOptions['custom-walletlink'] = {
 			display: {
@@ -123,13 +129,13 @@ const initWeb3Modal = () => {
 		};
 	}
 
-	if (process.env.REACT_APP_PORTIS_ID) {
+	if (PORTIS_ID) {
 		// eslint-disable-next-line
 		// @ts-ignore
 		providerOptions.portis = {
 			package: Portis,
 			options: {
-				id: process.env.REACT_APP_PORTIS_ID,
+				id: PORTIS_ID,
 			}
 		};
 	}
@@ -141,11 +147,11 @@ const initWeb3Modal = () => {
 };
 
 const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts) => async () => {
-	if (!process.env.REACT_APP_INFURA_ID) {
-		console.info('REACT_APP_INFURA_ID environment variable is not set. It is required in order for WalletConnect and WalletLink providers to work.')
+	if (!INFURA_ID && !RPC_CONFIGS) {
+		console.info('Neither REACT_APP_INFURA_ID nor REACT_APP_RPC_CONFIGS environment variable is set. One of these are required in order for WalletConnect and WalletLink providers to work.')
 	}
 
-	if (!process.env.REACT_APP_PORTIS_ID) {
+	if (!PORTIS_ID) {
 		console.info('REACT_APP_PORTIS_ID environment variable is not set. It is required in order for Portis wallet provider to work.')
 	}
 
