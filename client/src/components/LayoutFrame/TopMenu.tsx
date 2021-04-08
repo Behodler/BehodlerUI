@@ -172,7 +172,6 @@ export default function TopMenu(props: props) {
     const eyelink = 'https://www.dextools.io/app/uniswap/pair-explorer/0x54965801946d768b395864019903aef8b5b63bb3'
     return (
         <div className={classes.menuRoot}>
-            <iframe scrolling='no' src="http://liquidqueuecountdown.s3-website-us-east-1.amazonaws.com/" height="250px" width="100%"></iframe>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <Hidden mdDown>

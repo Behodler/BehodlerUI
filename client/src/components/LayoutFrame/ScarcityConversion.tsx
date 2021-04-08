@@ -48,8 +48,8 @@ enum Visibility {
     HideFor5Minutes,
     HiddenFor5Minutes
 }
-const DAY = 2160000 //8640000 = 1 day
-const FiveMins = 60000
+const DAY = 216000000 //8640000 = 1 day
+const FiveMins = 6000000
 export default function ScarcityConversion(props: {}) {
     const classes = useStyle()
     const walletContextProps = useContext(WalletContext)
@@ -203,7 +203,7 @@ export default function ScarcityConversion(props: {}) {
                         </Grid>
                         <Grid item>
                             <Button onClick={() => setDialogVisibility(Visibility.HideForDay)} variant="contained" color="secondary" className={classes.skip}>
-                                Sleep reminder for 6 hours
+                                Sleep reminder for 1 week
                          </Button>
                         </Grid>
                     </Grid>

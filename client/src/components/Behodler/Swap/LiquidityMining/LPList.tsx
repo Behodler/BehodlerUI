@@ -89,7 +89,6 @@ export default function LPList() {
                 velocity: parseInt(data.velocity),
                 eyeActive: data.eyeActive.toString().toLowerCase() === 'true',
                 eyeReward: data.eyeReward.toString()
-
             }
 
             setQueueData(item)

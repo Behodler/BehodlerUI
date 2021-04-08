@@ -238,6 +238,10 @@ class ethereumAPI {
 		})
 	}
 
+	public isEth(token: string, network: string): boolean {
+		const networkNameForQueue = network === 'private' || network === 'development' ? 'development' : network
+		return LiquidQueueAddresses[networkNameForQueue].WETH === token
+	}
 	public async getToken(tokenAddress: string, network: string): Promise<ERC20> {
 		network = network === 'private' || network === 'development' ? 'development' : network
 		var token = (((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20)

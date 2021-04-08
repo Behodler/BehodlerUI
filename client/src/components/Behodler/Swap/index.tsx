@@ -9,7 +9,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../blockchain/ethereumAPI'
-import behodlerLogo from '../../../images/behodler/logo.png'
+// import behodlerLogo from '../../../images/behodler/logo.png'
+import alternateLogo from '../../../images/behodler/tradhodler.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
@@ -128,7 +129,7 @@ export default function Swap(props: props) {
     })
 
 
-    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair|null> => {
+    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair | null> => {
         const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
         if (pyroAddress === '0x0000000000000000000000000000000000000000')
             return null
@@ -215,7 +216,7 @@ export default function Swap(props: props) {
                 : ''}
             {logoVisible ? <DepaddedGridItem>
                 <Container className={classes.logoContainer} >
-                    <img src={behodlerLogo} className={classes.behodlerLogo} />
+                    <img src={alternateLogo} className={classes.behodlerLogo} />
                 </Container>
             </DepaddedGridItem> : ''}
             <DepaddedGridItem>
