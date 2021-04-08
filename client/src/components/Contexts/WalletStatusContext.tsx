@@ -197,6 +197,7 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 			action: () => {
 				provider.close()
 				handleWalletDisconnected('Wallet disconnected by user')
+				window.location.reload() // temporary fix for walletconnect/walletlink QR code popups showing up after disconnect
 			}
 		})
 	}
