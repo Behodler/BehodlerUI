@@ -5,7 +5,7 @@ export interface LiquidQueue extends Ownable {
     join: (LP: address, recipient: address) => any
     //View
     getQueueData: () => any
-    getBatch: () => any
+    getBatch: (index:number) => any
     //Ownable
     pop: () => any
     transferOwnership: (newOwner: address) => any

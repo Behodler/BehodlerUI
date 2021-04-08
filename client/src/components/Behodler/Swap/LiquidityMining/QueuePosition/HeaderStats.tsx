@@ -20,18 +20,31 @@ const useHeaderStyles = makeStyles({
     }
 })
 
-export default function HeaderStats(props: { inputToken: string, APY: number, eyeActive: boolean, eyePerSecond: string, setVisiblePosition: (p: string | null) => any }) {
+interface props {
+    inputToken: string
+    APY: number
+    eyeActive: boolean
+    eyePerSecond: string
+    setVisiblePosition: (p: string | null) => any
+    tokenSymbol: string
+    setTokenSymbol: (t: string) => any
+    maxInputToken: string
+    setMaxInputToken: (t: string) => any
+    rewardToken: string
+    setRewardToken: (s: string) => any
+}
+
+export default function HeaderStats(props: props) {
     const classes = useHeaderStyles()
     const walletContextProps = useContext(WalletContext)
-    const [tokenSymbol, setTokenSymbol] = useState<string>('')
-    const [currentEyeBalance, setEyeBalance] = useState<string>()
+    const [currentEyeBalance, setEyeBalance] = useState<string>('')
     const [tiltToken, setTiltToken] = useState<string>('')
-    const [maxInputToken, setMaxInputToken] = useState<string>('')
+
     var addresses = API.getLQInputAddresses(walletContextProps.networkName)
     const keys = Object.keys(addresses)
     if (3 < 2) {
-        setEyeBalance(''); setTiltToken('')
-        console.log(tokenSymbol + currentEyeBalance + tiltToken)
+        setTiltToken('')
+        console.log(+ tiltToken)
     }
     let correctKey = ''
     for (var i = 0; i < keys.length; i++) {
@@ -41,6 +54,9 @@ export default function HeaderStats(props: { inputToken: string, APY: number, ey
         }
 
     }
+    useEffect(() => {
+        props.setRewardToken(API.constructRewardToken(props.inputToken, walletContextProps.networkName))
+    }, [])
 
     const eyeEffects = API.generateNewEffects(API.getEYEAddress(walletContextProps.networkName), walletContextProps.account, false)
 
@@ -51,7 +67,7 @@ export default function HeaderStats(props: { inputToken: string, APY: number, ey
     }, [])
 
     useEffect(() => {
-        setTokenSymbol(correctKey == 'Scarcity' ? 'SCX' : correctKey.toUpperCase())
+        props.setTokenSymbol(correctKey == 'Scarcity' ? 'SCX' : correctKey.toUpperCase())
 
         tiltTokenCallback()
         const eyeEffect = eyeEffects.balanceOfEffect(walletContextProps.account)
@@ -72,7 +88,7 @@ export default function HeaderStats(props: { inputToken: string, APY: number, ey
         const outputToken = await API.getToken(outputTokenAddress, walletContextProps.networkName)
         const effect = API.liquidQueueEffects.maxInputTokenGivenReward(inputToken, outputToken)
         const subscription = effect.Observable.subscribe(max => {
-            setMaxInputToken(max)
+            props.setMaxInputToken(max)
         })
         return () => { effect.cleanup(); subscription.unsubscribe() }
     }, [])
@@ -80,6 +96,8 @@ export default function HeaderStats(props: { inputToken: string, APY: number, ey
     useEffect(() => {
         maxCallback()
     }, [])
+
+    const slowBonusText = props.eyeActive ? `${API.fromWei(props.eyePerSecond)} EYE per second` : 'Inactive'
 
     return (
         <Grid
@@ -103,20 +121,23 @@ export default function HeaderStats(props: { inputToken: string, APY: number, ey
                 <ImageHeader imgKey={correctKey} />
             </Grid>
             <Grid item>
-                <JustifiedRowTwoItems left={"APY"} right={props.APY + "%"} />
+                <JustifiedRowTwoItems left={"APY"} right={formatSignificantDecimalPlaces(props.APY.toString(), 4) + "%"} />
             </Grid>
             <Grid item>
-                <JustifiedRowTwoItems left="Reward Token" right="SCX/EYE" />
+                <JustifiedRowTwoItems left="Reward Token" right={props.rewardToken} />
             </Grid>
             <Grid item>
-                <JustifiedRowTwoItems left="Slow Queue Bonus" right="0.003 EYE per second" />
+                <JustifiedRowTwoItems left="Slow Queue Bonus" right={slowBonusText} />
             </Grid>
             <Grid item>
                 <JustifiedRowTwoItems left="Deposit Fee" right="0%" />
             </Grid>
 
             <Grid item>
-                <JustifiedRowTwoItems left="Max purchase size" right={formatSignificantDecimalPlaces(maxInputToken, 2)} />
+                <JustifiedRowTwoItems left="Max purchase size" right={`${formatSignificantDecimalPlaces(props.maxInputToken, 2)} ${props.tokenSymbol}`} />
+            </Grid>
+            <Grid item>
+                <JustifiedRowTwoItems left="EYE wallet balance" right={`${formatSignificantDecimalPlaces(currentEyeBalance, 4)}`} />
             </Grid>
         </Grid>
     )

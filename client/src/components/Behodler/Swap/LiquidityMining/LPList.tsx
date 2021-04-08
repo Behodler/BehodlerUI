@@ -20,6 +20,7 @@ import { GetAPY } from './LQCalculationHelper'
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext';
 import API from 'src/blockchain/ethereumAPI';
 import QueuePosition from './QueuePosition';
+import { formatSignificantDecimalPlaces } from 'src/util/jsHelpers';
 
 
 const useStyles = makeStyles({
@@ -65,7 +66,6 @@ let emptyQueueData: QueueData = {
     eyeReward: '0'
 }
 
-
 export default function LPList() {
     const walletContextProps = useContext(WalletContext)
     const addresses = API.getLQInputAddresses(walletContextProps.networkName)
@@ -80,7 +80,7 @@ export default function LPList() {
     ])
     const classes = useStyles();
 
-    const getAPYfromRows = (address:string) => rows.filter(r=>r.inputTokenAddress===address)[0].APY 
+    const getAPYfromRows = (address: string) => rows.filter(r => r.inputTokenAddress === address)[0].APY
 
     const roiCallback = useCallback(async () => {
         const newRows = [...rows]
@@ -89,7 +89,7 @@ export default function LPList() {
             const tiltpercentage = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.tiltPercentage().call()
 
             const tiltDirection = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.inputTokenTilting(rows[i].inputTokenAddress).call()
-            const ROI = tiltDirection.toString()===rows[i].inputTokenAddress.toString() ? 100 - tiltpercentage : 100 + tiltpercentage
+            const ROI = tiltDirection.toString() === rows[i].inputTokenAddress.toString() ? 100 - tiltpercentage : 100 + tiltpercentage
             newRows[i].ROI = ROI;
             newRows[i].APY = GetAPY(rows[i].ROI, rows[i].velocity, queueData.length)
         }
@@ -151,7 +151,7 @@ export default function LPList() {
                             </TableCell>
                             <TableCell align="center">{row.rewardToken}</TableCell>
                             <TableCell align="center">{row.ROI}%</TableCell>
-                            <TableCell align="center">{row.APY}%</TableCell>
+                            <TableCell align="center">{formatSignificantDecimalPlaces(row.APY.toString(), 4)}%</TableCell>
                             <TableCell align="center">{row.eye} EYE</TableCell>
                             <TableCell align="center">{row.velocity}</TableCell>
                             <TableCell align="center"><Link onClick={() => setVisiblePosition(row.inputTokenAddress)}>View/Join</Link></TableCell>

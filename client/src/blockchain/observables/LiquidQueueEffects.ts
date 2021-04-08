@@ -6,6 +6,18 @@ import { address } from "../contractInterfaces/SolidityTypes";
 import { MintingModule } from '../contractInterfaces/liquidQueue/MintingModule'
 import { Effect, FetchEthereumNumber, FetchNumberFields } from './common'
 import EffectBase from './EffectBase'
+import ERC20JSON from "../behodlerUI/ERC20.json"
+import BigNumber from "bignumber.js";
+import API from "../ethereumAPI";
+
+export interface LiquidQueueBatch {
+    recipient: string,
+    LP: string,
+    amount: string,
+    joinTimeStamp: string,
+    durationSinceLast: string,
+    eyeHeightAtJoin: string
+}
 
 export class LiquidQueueEffects extends EffectBase {
 
@@ -80,12 +92,66 @@ export class LiquidQueueEffects extends EffectBase {
             return await FetchEthereumNumber(params)
         })
     }
+    /**
+\
+            address recipient,
+            address LP,
+            uint256 amount,
+            uint256 joinTimeStamp,
+            uint256 durationSinceLast,
+            uint256 eyeHeightAtJoin,
+            bool validIndex
+     */
+    //TODO: calculate eye height and figure out queue display
+    batches(): Effect {
+        const action = async (accounts: string[]) => {
+            const queueData = await this.liquidQueueInstance.getQueueData().call()
+            const qLength = parseInt(queueData[0].toString())
+            let batches: LiquidQueueBatch[] = []
+            for (let i = 0; i < qLength; i++) {
+                const batchData = await this.liquidQueueInstance.getBatch(i).call()
+                let batch: LiquidQueueBatch = {
+                    recipient: batchData[0].toString(),
+                    LP: batchData[1].toString(),
+                    amount: batchData[2].toString(),
+                    joinTimeStamp: batchData[3].toString(),
+                    durationSinceLast: batchData[4].toString(),
+                    eyeHeightAtJoin: batchData[5].toString(),
+                }
+                batches.push(batch)
+            }
+            return batches
+        }
 
+        return this.createEffect(async ({ account }) => {
+            const params: FetchNumberFields = {
+                web3: this.web3,
+                action,
+                defaultValue: "unset",
+                accounts: [account]
+            }
+            return await params.action(params.accounts)
+        })
+    }
 
-    /*
-    get reserve balances for input and tilted.
-    if input is tilted, adjust up other token, otherwise adjust down input
-    get balance of rewardtoken from reward contract
-    feed into equation to get max input possible
-    */
+    lpBalance(token: address, holder: string): Effect {
+        BigNumber.set({ EXPONENTIAL_AT: 18 });
+        const action = async (accounts: string[]) => {
+            const outputToken = await this.mintingModuleInstance.inputOutputToken(token).call()
+            const pair = await this.factory.getPair(token, outputToken).call()
+            const lpToken: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, pair).methods
+            lpToken.address = pair
+            return (await lpToken.balanceOf(holder).call()).toString()
+        }
+
+        return this.createEffect(async ({ account, blockNumber }) => {
+            const params: FetchNumberFields = {
+                web3: this.web3,
+                action,
+                defaultValue: "unset",
+                accounts: [holder, account]
+            }
+            return API.fromWei(await params.action(params.accounts))
+        })
+    }
 }

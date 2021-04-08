@@ -115,7 +115,7 @@ const defaultLQ: LQ = {
 	join: (LP: address, recipient: address) => { },
 	//View
 	getQueueData: () => { },
-	getBatch: () => { },
+	getBatch: (index:number) => { },
 	//Ownable
 	pop: () => { },
 	transferOwnership: (newOwner: address) => { },

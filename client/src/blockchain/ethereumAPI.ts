@@ -301,7 +301,7 @@ class ethereumAPI {
 
 	public getLQInputAddresses(network: string): LQInputAddressList {
 		const netName = network === 'private' ? 'development' : network
-		console.log( LiquidQueueAddresses[netName].EYE)
+
 		return {
 			Dai: LiquidQueueAddresses[netName].DAI,
 			Eth: LiquidQueueAddresses[netName].WETH,
@@ -313,6 +313,21 @@ class ethereumAPI {
 	public async getEthBalance(account: string): Promise<string> {
 
 		return await this.web3.eth.getBalance(account)
+	}
+
+	public constructRewardToken(tokenAddress: string, network: string) {
+		const netName = network === 'private' ? 'development' : network
+		switch (tokenAddress) {
+			case LiquidQueueAddresses[netName].DAI:
+				return 'EYE/DAI'
+			case LiquidQueueAddresses[netName].WETH:
+				return 'SCX/WETH'
+			case LiquidQueueAddresses[netName].SCX:
+				return 'SCX/EYE'
+			case LiquidQueueAddresses[netName].EYE:
+				return 'SCX/EYE'
+			default: return 'not found'
+		}
 	}
 
 	public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<string> {
