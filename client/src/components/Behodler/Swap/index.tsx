@@ -148,12 +148,12 @@ export default function Swap(props: props) {
     }, [walletContextProps.networkName])
 
     useEffect(() => {
-        if (props.connected) {
+        if (props.connected && walletContextProps.account.length > 5) {
             pytoTokenPopulator()
         }
         else {
         }
-    }, [props.connected])
+    }, [props.connected, walletContextProps.account])
 
     const classes = useStyles();
     const [showChip, setShowChip] = useState<boolean>(false)
