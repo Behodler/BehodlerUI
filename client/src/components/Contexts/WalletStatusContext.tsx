@@ -16,9 +16,10 @@ interface walletProps {
 	contracts: IContracts
 	connectAction: any
 	initialized: boolean
-	networkName: string,
+	networkName: string
 	primary: boolean
 	isMelkor: boolean
+	disconnectAction: any
 }
 
 let WalletContext = React.createContext<walletProps>({
@@ -30,7 +31,8 @@ let WalletContext = React.createContext<walletProps>({
 	initialized: false,
 	networkName: 'private',
 	primary: false,
-	isMelkor: false
+	isMelkor: false,
+	disconnectAction: () => { console.log('disconnect action not set') },
 })
 
 const {
@@ -148,7 +150,8 @@ const initWeb3Modal = () => {
 	});
 };
 
-const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts) => async () => {
+
+const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction) => async () => {
 	if (!INFURA_ID && !RPC_CONFIGS) {
 		console.info('Neither REACT_APP_INFURA_ID nor REACT_APP_RPC_CONFIGS environment variable is set. One of these are required in order for WalletConnect and WalletLink providers to work.')
 	}
@@ -157,18 +160,46 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 		console.info('REACT_APP_PORTIS_ID environment variable is not set. It is required in order for Portis wallet provider to work.')
 	}
 
+	const handleWalletDisconnected = (info: any = null) => {
+		console.log('wallet provider disconnected', info)
+
+		setConnected(false)
+		web3Modal.clearCachedProvider()
+	}
+
 	let provider
 
 	try {
 		provider = await web3Modal.connect()
 		API.web3 = new Web3(provider)
 	} catch (error) {
-		setConnected(false)
-		web3Modal.clearCachedProvider();
-		console.info('Unable to establish wallet connection', error)
+		handleWalletDisconnected(error)
 	}
 
 	if (!provider) { return }
+
+	if (provider.isMetaMask) {
+		setDisconnectAction({
+			action: () => {
+				provider.emit('disconnect')
+				handleWalletDisconnected('Metamask disconnected by user')
+			},
+		})
+	} else if (provider.isPortis) {
+		setDisconnectAction({
+			action: () => {
+				provider._portis.logout()
+				handleWalletDisconnected('Portis disconnected by user')
+			}
+		})
+	} else if (typeof provider.close === 'function') {
+		setDisconnectAction({
+			action: () => {
+				provider.close()
+				handleWalletDisconnected('Wallet disconnected by user')
+			}
+		})
+	}
 
 	try {
 		let accountUpdateHandlerOnce = accountUpdater(setAccount, setConnected, () => {}, null)
@@ -186,26 +217,18 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 
 		chainIdUpdateHandlerOnce(providerChainId)
 
-		const walletConnectionHandler = (info: { chainId: number }) => {
+		const handleWalletConnected = (info: { chainId: number }) => {
 			console.log('wallet provider connected', info)
-		}
-
-		const walletDisconnectionHandler = async (error: { code: number; message: string }) => {
-			console.log('wallet provider disconnected', error)
-
-			setConnected(false)
-			web3Modal.clearCachedProvider();
 		}
 
 		if (provider && typeof provider.on === 'function') {
 			provider.on("accountsChanged", accountUpdateHandler)
 			provider.on("chainChanged", chainIdUpdateHandler)
-			provider.on("connect", walletConnectionHandler)
-			provider.on("disconnect", walletDisconnectionHandler)
+			provider.on("connect", handleWalletConnected)
+			provider.on("disconnect", handleWalletDisconnected)
 		}
 	} catch (error) {
-		setConnected(false)
-		web3Modal.clearCachedProvider();
+		handleWalletDisconnected()
 
 		if (error.code === 4001) {
 			console.info('User rejected connection request. see EIP 1193 for more details.')
@@ -225,6 +248,7 @@ function WalletContextProvider(props: any) {
 	const [networkName, setNetworkName] = useState<string>("")
 	const [primary, setPrimary] = useState<boolean>(false)
 	const [isMelkor, setMelkor] = useState<boolean>(false)
+	const [disconnectAction, setDisconnectAction] = useState<any>()
 
 	const initializationCallBack = React.useCallback(async () => {
 		if (chainId > 0 && account.length > 3 && !initialized) {
@@ -242,7 +266,7 @@ function WalletContextProvider(props: any) {
 	useEffect(() => {
 		const web3Modal = initWeb3Modal()
 
-		const connectWallet = createConnectWalletFn(web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts);
+		const connectWallet = createConnectWalletFn(web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction);
 		setConnectAction({ action: connectWallet })
 
 		if (web3Modal.cachedProvider) {
@@ -260,6 +284,7 @@ function WalletContextProvider(props: any) {
 		account,
 		contracts,
 		connectAction,
+		disconnectAction,
 		initialized,
 		networkName,
 		primary,

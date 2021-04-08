@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -10,6 +10,7 @@ import { permittedRoutes } from '../Behodler/Swap';
 import metamaskAccount from '../../images/behodler/metamaskaccount.png'
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import {WalletContext} from "../Contexts/WalletStatusContext";
 
 declare global {
     interface String {
@@ -152,6 +153,7 @@ interface props {
 export default function TopMenu(props: props) {
     const classes = useStyles();
     const location = useLocation().pathname.substring(1)
+    const walletContextProps = useContext(WalletContext)
     const LeftLink = (props: { text: string, nav: () => void, selected: boolean }) => (
         <Link className={props.selected ? classes.textLinkSelected : classes.textLink} onClick={props.nav} component="button">
             {props.text}
@@ -206,6 +208,14 @@ export default function TopMenu(props: props) {
                                         >
                                             <Grid item> {props.truncAccount}</Grid>
                                             <Grid item> <img src={metamaskAccount} width={15} /></Grid>
+
+                                            {walletContextProps.disconnectAction ? (
+                                                <Grid item>
+                                                    <button onClick={() => walletContextProps.disconnectAction.action()}>
+                                                        Disconnect
+                                                    </button>
+                                                </Grid>
+                                            ) : null}
                                         </Grid>
                                     </div>
                                 </Grid>
