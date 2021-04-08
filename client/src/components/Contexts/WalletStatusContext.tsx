@@ -1,6 +1,6 @@
 import * as React from "react"
 import Web3 from "web3"
-import Web3Modal from "web3modal"
+import Web3Modal, { IProviderOptions } from "web3modal"
 import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min"
 import { WalletLink } from "walletlink/dist/WalletLink.js"
 import { useState, useEffect } from "react"
@@ -82,7 +82,7 @@ const accountUpdater = (setAccount: (account: string) => void, setConnected: (c:
 }
 
 const initWeb3Modal = () => {
-	let providerOptions = {};
+	let providerOptions: IProviderOptions = {}
 
 	// e.g REACT_APP_RPC_CONFIGS=1|https://mainnet.infura.io/v3/INFURA_ID,2|https://morder-rpc-url
 	if (INFURA_ID || RPC_CONFIGS) {
@@ -93,10 +93,8 @@ const initWeb3Modal = () => {
 						.split(',')
 						.map(chainIdToUrlString => chainIdToUrlString.split('|'))
 				))
-			: undefined;
+			: undefined
 
-		// eslint-disable-next-line
-		// @ts-ignore
 		providerOptions.walletconnect = {
 			package: WalletConnectProvider,
 			options: {
@@ -105,33 +103,37 @@ const initWeb3Modal = () => {
 					: INFURA_ID,
 				rpc: rpcConfig,
 			}
-		};
+		}
 
-		const walletlinkRPCURL = rpcConfig
-			? rpcConfig[1]
-			: `https://mainnet.infura.io/v3/${INFURA_ID}`
+		if (!rpcConfig[1] && !INFURA_ID) {
+			console.info('There is no RPC URL defined for chainId 1 in REACT_APP_RPC_CONFIGS node env variable - it is required in order for WalletLink to work');
+		}
 
-		providerOptions['custom-walletlink'] = {
-			display: {
-				logo: coinbaseWalletIcon,
-				name: 'Coinbase Wallet',
-				description: 'Scan with WalletLink to connect',
-			},
-			package: WalletLink,
-			connector: async () => {
-				const walletLink = new WalletLink({ appName: 'Behodler' });
-				const walletLinkProvider = walletLink
-					.makeWeb3Provider(walletlinkRPCURL)
-				await walletLinkProvider.enable()
+		if (rpcConfig[1] || INFURA_ID) {
+			const walletlinkRPCURL = rpcConfig
+				? rpcConfig[1]
+				: `https://mainnet.infura.io/v3/${INFURA_ID}`
 
-				return walletLinkProvider
-			},
-		};
+			providerOptions['custom-walletlink'] = {
+				display: {
+					logo: coinbaseWalletIcon,
+					name: 'Coinbase Wallet',
+					description: 'Scan with WalletLink to connect',
+				},
+				package: WalletLink,
+				connector: async () => {
+					const walletLink = new WalletLink({ appName: 'Behodler' })
+					const walletLinkProvider = walletLink
+						.makeWeb3Provider(walletlinkRPCURL)
+					await walletLinkProvider.enable()
+
+					return walletLinkProvider
+				},
+			}
+		}
 	}
 
 	if (PORTIS_ID) {
-		// eslint-disable-next-line
-		// @ts-ignore
 		providerOptions.portis = {
 			package: Portis,
 			options: {
