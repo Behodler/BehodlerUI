@@ -8,6 +8,7 @@ interface props {
     inputToken: string
     setVisiblePosition: (p: string | null) => any
     data: QueueData
+    APY:number
 }
 
 const useStyles = makeStyles({
@@ -29,7 +30,7 @@ export default function QueuePosition(props: props) {
                 className={classes.paper}
             >
                 <Grid item>
-                    <HeaderStats inputToken={props.inputToken} eyeActive={props.data.eyeActive} eyePerSecond={props.data.eyeReward} setVisiblePosition={props.setVisiblePosition} />
+                    <HeaderStats APY ={props.APY} inputToken={props.inputToken} eyeActive={props.data.eyeActive} eyePerSecond={props.data.eyeReward} setVisiblePosition={props.setVisiblePosition} />
                 </Grid>
                
                 <Grid item>

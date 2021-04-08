@@ -90,7 +90,7 @@ export default function ActionPanel(props: { inputToken: string }) {
                 alignItems="center"
             >
                 <Grid item>
-                    <Button variant="outlined" color="primary" >Enter Queue</Button>
+                    <Button variant="contained" color="primary" >Enter Queue</Button>
                 </Grid>
             </Grid>
         </Grid>

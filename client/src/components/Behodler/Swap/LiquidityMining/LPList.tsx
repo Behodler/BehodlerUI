@@ -1,4 +1,5 @@
 import React, {
+    useCallback,
     useContext, useEffect,/*, useState*/
     useState
 } from 'react';
@@ -64,6 +65,7 @@ let emptyQueueData: QueueData = {
     eyeReward: '0'
 }
 
+
 export default function LPList() {
     const walletContextProps = useContext(WalletContext)
     const addresses = API.getLQInputAddresses(walletContextProps.networkName)
@@ -78,6 +80,23 @@ export default function LPList() {
     ])
     const classes = useStyles();
 
+    const getAPYfromRows = (address:string) => rows.filter(r=>r.inputTokenAddress===address)[0].APY 
+
+    const roiCallback = useCallback(async () => {
+        const newRows = [...rows]
+
+        for (let i = 0; i < 4; i++) {
+            const tiltpercentage = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.tiltPercentage().call()
+
+            const tiltDirection = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.inputTokenTilting(rows[i].inputTokenAddress).call()
+            const ROI = tiltDirection.toString()===rows[i].inputTokenAddress.toString() ? 100 - tiltpercentage : 100 + tiltpercentage
+            newRows[i].ROI = ROI;
+            newRows[i].APY = GetAPY(rows[i].ROI, rows[i].velocity, queueData.length)
+        }
+        setRows(newRows)
+    }, [queueData])
+
+    useEffect(() => { roiCallback() })
     useEffect(() => {
         const effect = API.liquidQueueEffects.queueDataEffect()
         const subscription = effect.Observable.subscribe(data => {
@@ -108,7 +127,7 @@ export default function LPList() {
         setRows(newRows)
     }, [queueData])
 
-    return (visiblePosition ? <QueuePosition data={queueData} setVisiblePosition={setVisiblePosition} inputToken={visiblePosition} /> :
+    return (visiblePosition ? <QueuePosition data={queueData} setVisiblePosition={setVisiblePosition} inputToken={visiblePosition} APY={getAPYfromRows(visiblePosition)} /> :
         <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
                 <TableHead>

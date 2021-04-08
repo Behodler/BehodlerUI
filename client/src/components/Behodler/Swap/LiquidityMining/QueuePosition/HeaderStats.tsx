@@ -20,7 +20,7 @@ const useHeaderStyles = makeStyles({
     }
 })
 
-export default function HeaderStats(props: { inputToken: string, eyeActive: boolean, eyePerSecond: string, setVisiblePosition: (p: string | null) => any }) {
+export default function HeaderStats(props: { inputToken: string, APY: number, eyeActive: boolean, eyePerSecond: string, setVisiblePosition: (p: string | null) => any }) {
     const classes = useHeaderStyles()
     const walletContextProps = useContext(WalletContext)
     const [tokenSymbol, setTokenSymbol] = useState<string>('')
@@ -30,8 +30,8 @@ export default function HeaderStats(props: { inputToken: string, eyeActive: bool
     var addresses = API.getLQInputAddresses(walletContextProps.networkName)
     const keys = Object.keys(addresses)
     if (3 < 2) {
-       setEyeBalance(''); setTiltToken('')
-        console.log(tokenSymbol  + currentEyeBalance + tiltToken)
+        setEyeBalance(''); setTiltToken('')
+        console.log(tokenSymbol + currentEyeBalance + tiltToken)
     }
     let correctKey = ''
     for (var i = 0; i < keys.length; i++) {
@@ -41,7 +41,7 @@ export default function HeaderStats(props: { inputToken: string, eyeActive: bool
         }
 
     }
-   
+
     const eyeEffects = API.generateNewEffects(API.getEYEAddress(walletContextProps.networkName), walletContextProps.account, false)
 
     const tiltTokenCallback = useCallback(async () => {
@@ -52,7 +52,7 @@ export default function HeaderStats(props: { inputToken: string, eyeActive: bool
 
     useEffect(() => {
         setTokenSymbol(correctKey == 'Scarcity' ? 'SCX' : correctKey.toUpperCase())
-     
+
         tiltTokenCallback()
         const eyeEffect = eyeEffects.balanceOfEffect(walletContextProps.account)
         const eyeSubscription = eyeEffect.Observable.subscribe(e => {
@@ -103,7 +103,7 @@ export default function HeaderStats(props: { inputToken: string, eyeActive: bool
                 <ImageHeader imgKey={correctKey} />
             </Grid>
             <Grid item>
-                <JustifiedRowTwoItems left={"APY"} right={"60%"} />
+                <JustifiedRowTwoItems left={"APY"} right={props.APY + "%"} />
             </Grid>
             <Grid item>
                 <JustifiedRowTwoItems left="Reward Token" right="SCX/EYE" />

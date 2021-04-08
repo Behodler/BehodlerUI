@@ -301,6 +301,7 @@ class ethereumAPI {
 
 	public getLQInputAddresses(network: string): LQInputAddressList {
 		const netName = network === 'private' ? 'development' : network
+		console.log( LiquidQueueAddresses[netName].EYE)
 		return {
 			Dai: LiquidQueueAddresses[netName].DAI,
 			Eth: LiquidQueueAddresses[netName].WETH,
