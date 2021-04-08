@@ -150,6 +150,27 @@ const initWeb3Modal = () => {
 	});
 };
 
+const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
+	if (provider.isMetaMask) {
+		return () => {
+			provider.emit('disconnect')
+			handleWalletDisconnected('Metamask disconnected by user')
+		}
+	} else if (provider.isPortis) {
+		return () => {
+			provider._portis.logout()
+			handleWalletDisconnected('Portis disconnected by user')
+		}
+	} else if (typeof provider.close === 'function') {
+		return () => {
+			provider.close()
+			handleWalletDisconnected('Wallet disconnected by user')
+			window.location.reload() // temporary fix for walletconnect/walletlink QR code popups showing up after disconnect
+		}
+	}
+
+	return;
+}
 
 const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction) => async () => {
 	if (!INFURA_ID && !RPC_CONFIGS) {
@@ -178,28 +199,10 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 
 	if (!provider) { return }
 
-	if (provider.isMetaMask) {
-		setDisconnectAction({
-			action: () => {
-				provider.emit('disconnect')
-				handleWalletDisconnected('Metamask disconnected by user')
-			},
-		})
-	} else if (provider.isPortis) {
-		setDisconnectAction({
-			action: () => {
-				provider._portis.logout()
-				handleWalletDisconnected('Portis disconnected by user')
-			}
-		})
-	} else if (typeof provider.close === 'function') {
-		setDisconnectAction({
-			action: () => {
-				provider.close()
-				handleWalletDisconnected('Wallet disconnected by user')
-				window.location.reload() // temporary fix for walletconnect/walletlink QR code popups showing up after disconnect
-			}
-		})
+	const disconnectFn = getDisconnectProviderFn(provider, handleWalletDisconnected);
+
+	if (typeof disconnectFn === 'function') {
+		setDisconnectAction({ action: disconnectFn })
 	}
 
 	try {
