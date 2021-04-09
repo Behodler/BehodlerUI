@@ -92,35 +92,22 @@ export class LiquidQueueEffects extends EffectBase {
             return await FetchEthereumNumber(params)
         })
     }
-    /**
-\
-            address recipient,
-            address LP,
-            uint256 amount,
-            uint256 joinTimeStamp,
-            uint256 durationSinceLast,
-            uint256 eyeHeightAtJoin,
-            bool validIndex
-     */
-    //TODO: calculate eye height and figure out queue display
-    batches(): Effect {
+  
+
+    pendingEye(): Effect {
         const action = async (accounts: string[]) => {
             const queueData = await this.liquidQueueInstance.getQueueData().call()
             const qLength = parseInt(queueData[0].toString())
-            let batches: LiquidQueueBatch[] = []
+            let totalEye = BigInt(0);
+            let currentEyeHeight = BigInt(queueData.eyeHeight.toString())
             for (let i = 0; i < qLength; i++) {
                 const batchData = await this.liquidQueueInstance.getBatch(i).call()
-                let batch: LiquidQueueBatch = {
-                    recipient: batchData[0].toString(),
-                    LP: batchData[1].toString(),
-                    amount: batchData[2].toString(),
-                    joinTimeStamp: batchData[3].toString(),
-                    durationSinceLast: batchData[4].toString(),
-                    eyeHeightAtJoin: batchData[5].toString(),
+                let eyeHeight = BigInt(batchData[5].toString())
+                if (eyeHeight < currentEyeHeight) {
+                    totalEye += currentEyeHeight - eyeHeight
                 }
-                batches.push(batch)
             }
-            return batches
+            return totalEye.toString()
         }
 
         return this.createEffect(async ({ account }) => {

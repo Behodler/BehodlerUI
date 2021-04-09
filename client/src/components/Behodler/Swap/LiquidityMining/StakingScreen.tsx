@@ -64,6 +64,7 @@ enum StakeButtonState {
 export default function StakingScreen() {
     const classes = useStakeStyles()
     const walletContextProps = useContext(WalletContext)
+    const Sluice = walletContextProps.contracts.behodler.Behodler2.LiquidQueue.SluiceGate.address
     const [scxEyeRequired, setScxEyeRequired] = useState<string>('')
     const [eyeEthRequired, setEyeEthRequired] = useState<string>('')
     const [scxEyeButtonState, setScxEyeButtonState] = useState<StakeButtonState>(StakeButtonState.Unset)
@@ -82,7 +83,37 @@ export default function StakingScreen() {
 
     }, [])
 
+
     useEffect(() => { pairEffectCallback() }, [])
+
+    useEffect(() => {
+        if (eyeETHEffect && !isNaN(parseFloat(eyeEthRequired))) {
+            const effect = eyeETHEffect.allowance(walletContextProps.account, Sluice)
+            const subscription = effect.Observable.subscribe(all => {
+                if (new BigNumber(API.toWei(eyeEthRequired)).lte(new BigNumber(all.toString()))) {
+                    setEyeEthButtonState(StakeButtonState.Approved)
+                }
+            })
+
+            return () => { subscription.unsubscribe(); effect.cleanup() }
+        }
+        return () => { }
+    }, [eyeETHEffect, eyeEthRequired])
+
+    useEffect(() => {
+        if (eyeSCXEffect && !isNaN(parseFloat(scxEyeRequired))) {
+            const effect = eyeSCXEffect.allowance(walletContextProps.account, Sluice)
+            const subscription = effect.Observable.subscribe(all => {
+                if (new BigNumber(API.toWei(scxEyeRequired)).lte(new BigNumber(all.toString()))) {
+                    setScxEyeButtonState(StakeButtonState.Approved)
+                }
+            })
+
+            return () => { subscription.unsubscribe(); effect.cleanup() }
+        }
+        return () => { }
+    }, [eyeSCXEffect, scxEyeRequired])
+
 
     //Figure out how much of each LP required
     useEffect(() => {
@@ -126,8 +157,6 @@ export default function StakingScreen() {
                 const balWei = new BigNumber(balance)
                 const reqWei = new BigNumber(eyeEthRequired)
                 setEyeEthButtonState(balWei.lt(reqWei) ? StakeButtonState.BalanceTooLow : StakeButtonState.BalanceHighEnough)
-                // setEyeEthBalance(formatSignificantDecimalPlaces(balance, 2))
-
             })
             return () => {
                 effect.cleanup(); subscription.unsubscribe();
@@ -135,7 +164,6 @@ export default function StakingScreen() {
         }
         return () => { }
     }, [scxEyeButtonState, eyeEthButtonState, eyeSCXEffect, eyeETHEffect])
-
 
 
     const eyeSCXApproveClickedCallback = useCallback(async () => {
@@ -180,30 +208,6 @@ export default function StakingScreen() {
         eyeETHApproveClickedCallback()
     }, [eyeEthApproveClicked])
 
-    const allowanceCheck = useCallback(async () => {
-        const Sluice = walletContextProps.contracts.behodler.Behodler2.LiquidQueue.SluiceGate.address
-        if (scxEyeButtonState === StakeButtonState.RequirementSet || scxEyeButtonState === StakeButtonState.Approving || scxEyeButtonState === StakeButtonState.NotApproved) {
-            const EYE_SCX = await API.EYE_SCX_PAIR(walletContextProps.networkName, walletContextProps.account)
-            const allowance = await API.getTokenAllowance(EYE_SCX, walletContextProps.account, false, 18, Sluice)
-            if (new BigNumber(API.toWei(scxEyeRequired)).lte(new BigNumber(allowance.toString()))) {
-                setScxEyeButtonState(StakeButtonState.Approved)
-            }
-        }
-
-        if (eyeEthButtonState === StakeButtonState.RequirementSet || eyeEthButtonState === StakeButtonState.Approving || eyeEthButtonState === StakeButtonState.NotApproved) {
-            const EYE_ETH = await API.EYE_ETH_PAIR(walletContextProps.networkName, walletContextProps.account)
-            const allowance = await API.getTokenAllowance(EYE_ETH, walletContextProps.account, false, 18, Sluice)
-            if (new BigNumber(API.toWei(eyeEthRequired)).lte(new BigNumber(allowance.toString()))) {
-                setEyeEthButtonState(StakeButtonState.Approved)
-            }
-        }
-
-    }, [scxEyeButtonState, eyeEthButtonState])
-
-    useEffect(() => {
-        allowanceCheck()
-    }, [scxEyeButtonState, eyeEthButtonState])
-
     const scxClickedCallback = useCallback(async () => {
         if (stakeSCXClicked) {
             const EYE_SCX = await API.EYE_SCX_PAIR(walletContextProps.networkName, walletContextProps.account)
@@ -224,6 +228,7 @@ export default function StakingScreen() {
 
     const eyeClickedCallback = useCallback(async () => {
         if (stakeEYEClicked) {
+            console.log('applying')
             const EYE_ETH = await API.EYE_ETH_PAIR(walletContextProps.networkName, walletContextProps.account)
             walletContextProps.contracts.behodler.Behodler2.LiquidQueue.SluiceGate
                 .betaApply(EYE_ETH)

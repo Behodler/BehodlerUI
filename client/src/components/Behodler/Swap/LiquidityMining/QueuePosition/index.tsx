@@ -4,7 +4,6 @@ import ActionPanel from './ActionPanel'
 import HeaderStats from './HeaderStats'
 import { Drawer, Grid, Hidden, makeStyles } from '@material-ui/core';
 import { QueueData } from '../LPList';
-import { LiquidQueueBatch } from '../../../../../blockchain/observables/LiquidQueueEffects'
 import API from '../../../../../blockchain/ethereumAPI'
 
 interface props {
@@ -25,14 +24,12 @@ export default function QueuePosition(props: props) {
     const [tokenSymbol, setTokenSymbol] = useState<string>('')
     const [maxInputToken, setMaxInputToken] = useState<string>('')
     const [rewardToken, setRewardToken] = useState<string>('')
-    const [batches, setBatches] = useState<LiquidQueueBatch[]>([])
+    const [pendingEye, setPendingEye] = useState<string>('')
 
     useEffect(() => {
-        const effect = API.liquidQueueEffects.batches()
-        const subscription = effect.Observable.subscribe(list => {
-            setBatches(list)
-            if (list.length > 300)
-                console.log(JSON.stringify(batches))
+        const effect = API.liquidQueueEffects.pendingEye()
+        const subscription = effect.Observable.subscribe(eye => {
+            setPendingEye(API.fromWei(eye))
         })
 
         return () => { effect.cleanup(); subscription.unsubscribe() }
@@ -63,7 +60,7 @@ export default function QueuePosition(props: props) {
                 </Grid>
 
                 <Grid item>
-                    <ActionPanel inputToken={props.inputToken} tokenSymbol={tokenSymbol} maxInputToken={maxInputToken} rewardToken={rewardToken} />
+                    <ActionPanel inputToken={props.inputToken} tokenSymbol={tokenSymbol} maxInputToken={maxInputToken} rewardToken={rewardToken} pendingEye= {pendingEye}/>
                 </Grid>
             </Grid>
             <Hidden mdDown>

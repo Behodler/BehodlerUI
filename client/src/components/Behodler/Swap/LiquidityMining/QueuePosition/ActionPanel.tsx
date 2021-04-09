@@ -1,4 +1,4 @@
-import { Button, createStyles, Divider, Grid, /*InputAdornment,*/ makeStyles, TextField, Theme, Tooltip } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Divider, Grid, /*InputAdornment,*/ makeStyles, TextField, Theme, Tooltip } from '@material-ui/core';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import API from 'src/blockchain/ethereumAPI';
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext';
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 
-export default function ActionPanel(props: { inputToken: string, tokenSymbol: string, maxInputToken: string, rewardToken: string }) {
+export default function ActionPanel(props: { inputToken: string, tokenSymbol: string, maxInputToken: string, rewardToken: string, pendingEye: string }) {
     const classes = useStyles()
     const walletContextProps = useContext(WalletContext)
     const [userBalanceOfInput, setUserBalanceOfInput] = useState<string>('')
@@ -68,9 +68,13 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
     const [purchaseLPClicked, setPurchaseLPClicked] = useState<boolean>(false)
     const [approveClicked, setApproveclicked] = useState<boolean>(false)
     const [inputApproved, setInputApproved] = useState<boolean>(API.isEth(props.inputToken, walletContextProps.networkName))
+    const [zapApproved, setZapApproved] = useState<boolean>(false)
+    const [zapClicked, setZapClicked] = useState<boolean>(false)
+    const [showZapConfirmation, setShowZapConfirmation] = useState<boolean>(false)
+    const [approveZapClicked, setApproveZapClicked] = useState<boolean>(false)
+    const [uniPair, setUniPair] = useState<string>('')
     const tokenEffects = API.generateNewEffects(props.inputToken, walletContextProps.account, API.isEth(props.inputToken, walletContextProps.networkName))
     const effect = tokenEffects.balanceOfEffect(walletContextProps.account)
-    console.log('is eth though ' + API.isEth(props.inputToken, walletContextProps.networkName))
     const subcription = effect.Observable.subscribe(bl => {
         API.fromWei(bl)
         setUserBalanceOfInput(bl)
@@ -79,6 +83,46 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
             subcription.unsubscribe()
         }
     })
+
+    const zapCallback = useCallback(async () => {
+        if (zapClicked) {
+            setZapClicked(false)
+            setShowZapConfirmation(true)
+        }
+    }, [zapClicked])
+    useEffect(() => { zapCallback() }, [zapClicked])
+
+    const uniPairCallback = useCallback(async () => {
+        const outputAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.inputOutputToken(props.inputToken).call()
+        const pair = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.UniswapV2Factory.getPair(props.inputToken, outputAddress).call()
+        setUniPair(pair)
+        console.log('pair: ' + pair)
+    }, [])
+
+    useEffect(() => { uniPairCallback() }, [])
+
+    const approveZapCallback = useCallback(async () => {
+        if (approveZapClicked) {
+            setApproveZapClicked(false)
+            const lpToken = await API.getToken(uniPair, walletContextProps.networkName)
+            await lpToken.approve(walletContextProps.contracts.behodler.Behodler2.Behodler2.address, API.UINTMAX).send({ from: walletContextProps.account })
+        }
+    }, [approveZapClicked])
+    useEffect(() => { approveZapCallback() }, [approveZapClicked])
+
+    useEffect(() => {
+        if (uniPair.length > 3) {
+            const uniPairMonitor = API.generateNewEffects(uniPair, walletContextProps.account, false)
+            const effect = uniPairMonitor.allowance(walletContextProps.account, walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
+            const subscription = effect.Observable.subscribe(allowance => {
+                const bigBal = BigInt(userBalanceOfInput)
+                setZapApproved(BigInt(allowance) > bigBal)
+            })
+
+            return () => { effect.cleanup(); subscription.unsubscribe() }
+        }
+        return () => { }
+    }, [uniPair])
 
     useEffect(() => {
         const effect = API.liquidQueueEffects.lpBalance(props.inputToken, walletContextProps.account)
@@ -90,12 +134,13 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
 
     const purchaseLPCallback = useCallback(async () => {
         if (purchaseLPClicked) {
+            setPurchaseLPClicked(false)
             const purchaseValWei = API.toWei(purchaseValue)
             const options = (API.isEth(props.inputToken, walletContextProps.networkName)) ? { from: walletContextProps.account, value: purchaseValWei }
                 : { from: walletContextProps.account }
             await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.purchaseLP(props.inputToken, purchaseValWei).send(options)
-            setPurchaseLPClicked(false)
         }
+
     }, [purchaseLPClicked])
 
     useEffect(() => { purchaseLPCallback() }, [purchaseLPClicked])
@@ -130,54 +175,62 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
     if (!isNaN(floatBalance) && !isNaN(floatMax)) {
         max = floatBalance < floatMax ? floatBalance : floatMax
     }
-    return <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-        spacing={2}>
-        <Grid item>
-            <InputText setEnterQueueEnabled={setQueueEnabled} absoluteMax={max.toString()} inputBalance={userBalanceOfInput} tokenSymbol={props.tokenSymbol} text={purchaseValue} setText={setPurchaseValue} />
-        </Grid>
-        <Grid item>
-            <Grid
-                container
-                direction="column"
-                justify="center"
-                alignItems="center" >
-                <Grid item>
-                    {inputApproved ? <Button variant="contained" disabled={!queueEnabled} color="primary" onClick={() => setPurchaseLPClicked(true)}>Enter Queue</Button> :
-                        <Button variant="outlined" color="secondary" onClick={() => setApproveclicked(true)}>Approve</Button>}
-                </Grid>
+
+    return <div>{
+        uniPair.length < 3 ? <div></div> :
+            <ZapDialog show={showZapConfirmation} close={() => setShowZapConfirmation(false)} lpTokenAddress={uniPair} LPname={props.rewardToken} />
+    }
+        <Grid
+            container
+            direction="column"
+            justify="flex-start"
+            alignItems="stretch"
+            spacing={2}>
+            <Grid item>
+                <InputText setEnterQueueEnabled={setQueueEnabled} absoluteMax={max.toString()} inputBalance={userBalanceOfInput} tokenSymbol={props.tokenSymbol} text={purchaseValue} setText={setPurchaseValue} />
             </Grid>
-        </Grid>
-        <Grid>
-            <Divider />
-        </Grid>
-        <Grid item>
-            <JustifiedRowTwoItems left={`${props.tokenSymbol} balance`} right={userBalanceOfInput}></JustifiedRowTwoItems>
-        </Grid>
-        <Grid item>
-            <JustifiedRowTwoItems left={`${props.rewardToken} balance`} right={lpBalance}></JustifiedRowTwoItems>
-        </Grid>
-        <Grid item>
-            <JustifiedRowTwoItems left={`Pending EYE rewards`} right="0"></JustifiedRowTwoItems>
-        </Grid>
-        <Grid item>
-            <Tooltip title={<h3 style={{ color: "white", fontWeight: 'bold' }}>Instantly convert your LP to SCX to save on gas</h3>} >
+            <Grid item>
                 <Grid
                     container
                     direction="column"
                     justify="center"
-                    alignItems="center"
-                >
+                    alignItems="center" >
                     <Grid item>
-                        <Button className={classes.gradientButton} variant="contained" >ZAP</Button>
+                        {inputApproved ? <Button variant="contained" disabled={!queueEnabled} color="primary" onClick={() => setPurchaseLPClicked(true)}>Enter Queue</Button> :
+                            <Button variant="outlined" color="secondary" onClick={() => setApproveclicked(true)}>Approve</Button>}
                     </Grid>
                 </Grid>
-            </Tooltip>
+            </Grid>
+            <Grid>
+                <Divider />
+            </Grid>
+            <Grid item>
+                <JustifiedRowTwoItems left={`${props.tokenSymbol} balance`} right={userBalanceOfInput}></JustifiedRowTwoItems>
+            </Grid>
+            <Grid item>
+                <JustifiedRowTwoItems left={`${props.rewardToken} balance`} right={lpBalance}></JustifiedRowTwoItems>
+            </Grid>
+            <Grid item>
+                <JustifiedRowTwoItems left={`Pending EYE rewards`} right={formatSignificantDecimalPlaces(props.pendingEye, 4)}></JustifiedRowTwoItems>
+            </Grid>
+            <Grid item>
+                <Tooltip title={<h3 style={{ color: "white", fontWeight: 'bold' }}>Instantly convert your LP to SCX to save on gas</h3>} >
+                    <Grid
+                        container
+                        direction="column"
+                        justify="center"
+                        alignItems="center"
+                    >
+                        <Grid item>{zapApproved ? <Button className={classes.gradientButton} variant="contained" onClick={() => setZapClicked(true)} >ZAP</Button>
+                            : <Button variant="outlined" color="secondary" onClick={() => setApproveZapClicked(true)} >Approve Zap</Button>
+                        }
+
+                        </Grid>
+                    </Grid>
+                </Tooltip>
+            </Grid>
         </Grid>
-    </Grid>
+    </div>
 }
 
 
@@ -241,4 +294,86 @@ function InputText(props: InputTextProps) {
         </Grid>
     </div>
 
+}
+
+interface ZapDialogProps {
+    show: boolean
+    close: () => void
+    lpTokenAddress: string,
+    LPname: string
+}
+
+function ZapDialog(props: ZapDialogProps) {
+    /*
+    1. get lp token
+    2. get current user balance
+    3. estimate behodler SCX generation
+    4. Tell user
+    5. On user confirm, trigger transaction
+    6. On user reject, don't
+    7. After any action close dialog
+    */
+    /*
+    const scx = await behodler.addLiquidity(inputAddress, inputValWei).call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions)
+     const scxString = scx.toString()
+     setOutputValueWei(scxString)
+     setOutputValue(API.fromWei(scxString))
+     setTerms(inputValWei, scxString)
+    */
+    const walletContextProps = useContext(WalletContext)
+    const [scxEstimate, setSCXEstimate] = useState<string>('')
+    const [userBalance, setUserBalance] = useState<string>('')
+    const [yesClicked, setYesClicked] = useState<boolean>(false)
+    const [popupReady, setPopupReady] = useState<boolean>(false)
+    const primaryOptions = { from: walletContextProps.account }
+    const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+    if (2 < 1) {
+        setSCXEstimate('2');
+    }
+    const estimationCallback = useCallback(async () => {
+        if (props.show) {
+            const lpToken = await API.getToken(props.lpTokenAddress, walletContextProps.networkName)
+            const currentUserBalance = (await lpToken.balanceOf(walletContextProps.account).call()).toString()
+            console.log('current user balance ' + currentUserBalance)
+            setUserBalance(API.fromWei(currentUserBalance))
+            const scx = await behodler.addLiquidity(props.lpTokenAddress, currentUserBalance).call(primaryOptions)
+            const scxString = scx.toString()
+            setSCXEstimate(API.fromWei(scxString))
+            setPopupReady(true)
+        }
+    }, [props.show])
+
+    useEffect(() => { estimationCallback() })
+
+    const yesClickedCallback = useCallback(async () => {
+        if (yesClicked) {
+            setYesClicked(false)
+            props.close()
+            await behodler.addLiquidity(props.lpTokenAddress, API.toWei(userBalance)).send(primaryOptions)
+        }
+    }, [yesClicked])
+
+    useEffect(() => { yesClickedCallback() })
+
+    return (<Dialog
+        open={props.show && popupReady}
+        onClose={() => props.close()}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+    >
+        <DialogTitle id="alert-dialog-title">{`Would you like to zap ${formatSignificantDecimalPlaces(userBalance, 5)} ${props.LPname} into ${formatSignificantDecimalPlaces(scxEstimate, 5)} Scarcity (SCX)?`}</DialogTitle>
+        <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                Unwinding LP tokens on Uniswap can consume a large amount of gas. Why not Zap it straight into Behodler in return for Scarcity?
+      </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={() => props.close()} color="primary">
+                Cancel
+      </Button>
+            <Button onClick={() => setYesClicked(true)} color="primary" autoFocus>
+                Zap it!
+      </Button>
+        </DialogActions>
+    </Dialog>)
 }
