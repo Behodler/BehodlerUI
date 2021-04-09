@@ -11,7 +11,7 @@ import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../blockchain/ethereumAPI'
 // import behodlerLogo from '../../../images/behodler/logo.png'
 import alternateLogo from '../../../images/behodler/tradhodler.png'
-import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
+import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
 import Governance from '../Swap/Governance/index'
@@ -109,6 +109,10 @@ const useStyles = makeStyles(theme => createStyles({
     },
     nopadding: {
         padding: 0
+    },
+    eyeLogo:{
+        width:400,
+        margin: '0 -20px -60px 0'
     }
 }));
 
@@ -196,7 +200,7 @@ export default function Swap(props: props) {
             </Grid> : ""}
             {logoVisible ?
                 <DepaddedGridItem>
-                    <img src={eyelogo} />
+                    <img src={eyelogo} className={classes.eyeLogo} />
                 </DepaddedGridItem>
                 : ''}
             {logoVisible ? <DepaddedGridItem>
