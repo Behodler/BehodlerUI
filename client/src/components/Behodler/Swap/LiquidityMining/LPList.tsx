@@ -89,7 +89,7 @@ export default function LPList() {
             const tiltpercentage = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.tiltPercentage().call()
 
             const tiltDirection = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.inputTokenTilting(rows[i].inputTokenAddress).call()
-            const ROI = tiltDirection.toString() === rows[i].inputTokenAddress.toString() ? 100 - tiltpercentage : 100 + tiltpercentage
+            const ROI = tiltDirection.toString() === rows[i].inputTokenAddress.toString() ? 100 + tiltpercentage : 100 - tiltpercentage
             newRows[i].ROI = ROI;
             newRows[i].APY = GetAPY(rows[i].ROI, rows[i].velocity, queueData.length)
         }

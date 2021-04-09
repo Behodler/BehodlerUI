@@ -13,4 +13,5 @@ export interface LiquidQueue extends Ownable {
     setMintingModule: (m: address) => any
     configure: (targetVelocity: uint24, size: uint8, eye: address, stagnationRewardTimeout: uint, eyeReward: uint, LPburnDisabled: boolean) => any
     pause: (paws: boolean) => any
+    removeLP:(lp:address) => any
 }

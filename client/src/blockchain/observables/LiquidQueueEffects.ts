@@ -92,7 +92,7 @@ export class LiquidQueueEffects extends EffectBase {
             return await FetchEthereumNumber(params)
         })
     }
-  
+
 
     pendingEye(): Effect {
         const action = async (accounts: string[]) => {
@@ -110,6 +110,31 @@ export class LiquidQueueEffects extends EffectBase {
             return totalEye.toString()
         }
 
+        return this.createEffect(async ({ account }) => {
+            const params: FetchNumberFields = {
+                web3: this.web3,
+                action,
+                defaultValue: "unset",
+                accounts: [account]
+            }
+            return await params.action(params.accounts)
+        })
+    }
+
+    latestPositionInQueue(currentUser: address): Effect {
+        const action = async (accounts: string[]) => {
+            const queueData = await this.liquidQueueInstance.getQueueData().call()
+            const qLength = parseInt(queueData[0].toString())
+
+            for (let i = 0; i < qLength; i++) {
+                const batchData = await this.liquidQueueInstance.getBatch(i).call()
+                let recipient = batchData[0];
+
+                if (recipient.toLowerCase() === currentUser.toLowerCase())
+                    return i;
+            }
+            return -1
+        }
         return this.createEffect(async ({ account }) => {
             const params: FetchNumberFields = {
                 web3: this.web3,

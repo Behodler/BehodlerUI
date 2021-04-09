@@ -115,14 +115,15 @@ const defaultLQ: LQ = {
 	join: (LP: address, recipient: address) => { },
 	//View
 	getQueueData: () => { },
-	getBatch: (index:number) => { },
+	getBatch: (index: number) => { },
 	//Ownable
 	pop: () => { },
 	transferOwnership: (newOwner: address) => { },
 	setReward: (reward: address) => { },
 	setMintingModule: (m: address) => { },
 	configure: (targetVelocity: uint24, size: uint8, eye: address, stagnationRewardTimeout: uint, eyeReward: uint, LPburnDisabled: boolean) => { },
-	pause: (paws: boolean) => { }
+	pause: (paws: boolean) => { },
+	removeLP: (lp: address) => { }
 }
 
 const defaultMintingModule: MintingModule = {

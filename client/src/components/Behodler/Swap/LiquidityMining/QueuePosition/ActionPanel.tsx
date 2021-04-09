@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ActionPanel(props: { inputToken: string, tokenSymbol: string, maxInputToken: string, rewardToken: string, pendingEye: string }) {
     const classes = useStyles()
     const walletContextProps = useContext(WalletContext)
-    const [userBalanceOfInput, setUserBalanceOfInput] = useState<string>('')
+    const [userBalanceOfInput, setUserBalanceOfInput] = useState<string>('0')
     const [purchaseValue, setPurchaseValue] = useState<string>('')
     const [lpBalance, setLPbalance] = useState<string>('0')
     const [queueEnabled, setQueueEnabled] = useState<boolean>(false)
@@ -72,9 +72,13 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
     const [zapClicked, setZapClicked] = useState<boolean>(false)
     const [showZapConfirmation, setShowZapConfirmation] = useState<boolean>(false)
     const [approveZapClicked, setApproveZapClicked] = useState<boolean>(false)
+    const [latestPositionInQueue, setLatestPositionInQueue] = useState<string>('Not in queue')
+
     const [uniPair, setUniPair] = useState<string>('')
     const tokenEffects = API.generateNewEffects(props.inputToken, walletContextProps.account, API.isEth(props.inputToken, walletContextProps.networkName))
+    console.log('is eth: ' + API.isEth(props.inputToken, walletContextProps.networkName))
     const effect = tokenEffects.balanceOfEffect(walletContextProps.account)
+
     const subcription = effect.Observable.subscribe(bl => {
         API.fromWei(bl)
         setUserBalanceOfInput(bl)
@@ -96,10 +100,23 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
         const outputAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.inputOutputToken(props.inputToken).call()
         const pair = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.UniswapV2Factory.getPair(props.inputToken, outputAddress).call()
         setUniPair(pair)
-        console.log('pair: ' + pair)
     }, [])
 
     useEffect(() => { uniPairCallback() }, [])
+
+    useEffect(() => {
+        const effect = API.liquidQueueEffects.latestPositionInQueue(walletContextProps.account)
+        const subscription = effect.Observable.subscribe(position => {
+            if (position === -1) {
+                setLatestPositionInQueue('Not in queue')
+            } else {
+               
+                setLatestPositionInQueue(`You have LP in the queue`)
+            }
+            return () => { effect.cleanup(); subscription.unsubscribe() }
+        })
+        return () => { }
+    }, [])
 
     const approveZapCallback = useCallback(async () => {
         if (approveZapClicked) {
@@ -212,6 +229,9 @@ export default function ActionPanel(props: { inputToken: string, tokenSymbol: st
             </Grid>
             <Grid item>
                 <JustifiedRowTwoItems left={`Pending EYE rewards`} right={formatSignificantDecimalPlaces(props.pendingEye, 4)}></JustifiedRowTwoItems>
+            </Grid>
+            <Grid item>
+                <JustifiedRowTwoItems left={`Participation`} right={latestPositionInQueue}></JustifiedRowTwoItems>
             </Grid>
             <Grid item>
                 <Tooltip title={<h3 style={{ color: "white", fontWeight: 'bold' }}>Instantly convert your LP to SCX to save on gas</h3>} >
