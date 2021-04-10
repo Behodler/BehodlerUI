@@ -12,6 +12,7 @@ import { Lachesis } from './contractInterfaces/behodler/hephaestus/Lachesis'
 
 //Behodler2
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
+import { BehodlerPrice } from './contractInterfaces/behodler2/BehodlerPrice'
 import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
 import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
 
@@ -37,6 +38,7 @@ export interface BehodlerContracts {
 
 export default interface IContracts {
 	behodler: BehodlerContracts
+	behodlerPrice: BehodlerPrice
 }
 
 const defaultBase = {
@@ -210,6 +212,12 @@ export const DefaultBehodlerContracts: BehodlerContracts = {
 	Lachesis: defaultLachesis
 }
 
+
+export const DefaultBehodlerPrice: BehodlerPrice = {
+	addLiquidity: (amount: uint, amountInPool: uint, burnFee: uint) => { },
+}
+
 export const DefaultContracts: IContracts = {
-	behodler: DefaultBehodlerContracts
+	behodler: DefaultBehodlerContracts,
+	behodlerPrice: DefaultBehodlerPrice,
 }

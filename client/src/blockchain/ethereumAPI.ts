@@ -17,6 +17,7 @@ import { PyrotokenEffects } from './observables/PyrotokenEffects'
 
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
+import BehodlerPriceContractMappings from '../blockchain/behodler2UI/BehodlerPrice.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
 
@@ -118,13 +119,28 @@ class ethereumAPI {
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
 		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
-		let contracts: IContracts = { behodler: behodlerContracts }
+
+		const behodlerPrice = await this.fetchBehodlerPriceContract()
+
+		let contracts: IContracts = {
+			behodler: behodlerContracts,
+			behodlerPrice: behodlerPrice.methods,
+		}
 		this.initialized = true
 		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
 
 		await this.setupSubscriptions()
 
 		return contracts
+	}
+
+	public async fetchBehodlerPriceContract(): Promise<deployment> {
+		var web3 = new Web3(new Web3.providers.HttpProvider(
+			'https://ropsten.infura.io/v3/89186fb2b74d4c7ead47759a5044c3fc'
+		));
+		const address = BehodlerPriceContractMappings.networks['3'].address
+		const contractInstance = await new web3.eth.Contract(BehodlerPriceContractMappings.abi as any, address)
+		return { methods: contractInstance.methods, address: address, contractInstance };
 	}
 
 	public toBytes(input: string) {

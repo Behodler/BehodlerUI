@@ -113,7 +113,8 @@ export default function TradeBox2(props: props) {
     const bigOutputValue = new BigNumber(outputValue)
 
     const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
-    const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
+    const inputReadyToEstimate = !bigInputValue.isNaN()
+
 
     const swapEnabled = swapPossible && inputEnabled
 
@@ -194,7 +195,9 @@ export default function TradeBox2(props: props) {
         }
     }
     const swapPreparationCallback = useCallback(async () => {
-        if (inputReadyToSwap) {
+        if (inputReadyToEstimate) {
+            const inputAmount = API.toWei(inputValue, inputDecimals)
+
             //if input is scx, figure out tokensToRelease
             //if output is scx, nothing to figure out
             //if swap, set output Val
@@ -221,19 +224,18 @@ export default function TradeBox2(props: props) {
                 const actualString = actual.toString()
                 setOutputValueWei(actualString)
                 setOutputValue(API.fromWei(actualString))
-                setTerms(inputValWei, actualString)
-            } else if (isScarcityPredicate(outputAddress)) {
-                //add liquidity
-
-                let scx;
+                setTerms(inputAmount, actualString)
+            } else if (isScarcityPredicate(outputAddress)) { //add liquidity
+                let scx
                 try {
-                    scx = await behodler
-                        .addLiquidity(inputAddress, inputValWei)
-                        .call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions);
-                    const scxString = scx.toString();
-                    setOutputValueWei(scxString);
-                    setOutputValue(API.fromWei(scxString));
-                    setTerms(inputValWei, scxString);
+                    const I_i = new BigNumber(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals))
+                    const burnFee = (await behodler.getConfiguration().call(primaryOptions))[1]
+                    const behodlerPrice = walletContextProps.contracts.behodlerPrice
+                    scx = await behodlerPrice.addLiquidity(inputAmount, I_i.toString(), burnFee.toString()).call()
+                    const scxString = scx.toString()
+                    setOutputValueWei(scxString)
+                    setOutputValue(API.fromWei(scxString))
+                    setTerms(inputValWei, scxString)
                 } catch {
                     setInputValid(false);
                 }
@@ -258,13 +260,13 @@ export default function TradeBox2(props: props) {
                 setTerms(inputValWei, outputWei);
             }
         }
-    }, [inputReadyToSwap, inputValue])
+    }, [inputReadyToEstimate, inputValue])
 
     useEffect(() => {
-        if (inputReadyToSwap) {
-            swapPreparationCallback()
+        if (inputReadyToEstimate) {
+            swapPreparationCallback();
         }
-    }, [inputReadyToSwap, inputValue])
+    }, [inputReadyToEstimate, inputValue])
     const textFieldLabels = ['From', 'To']
     return (
         <Box className={classes.root}>
