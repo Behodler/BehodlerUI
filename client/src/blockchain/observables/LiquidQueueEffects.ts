@@ -121,11 +121,12 @@ export class LiquidQueueEffects extends EffectBase {
         })
     }
 
+
     latestPositionInQueue(currentUser: address): Effect {
         const action = async (accounts: string[]) => {
             const queueData = await this.liquidQueueInstance.getQueueData().call()
             const qLength = parseInt(queueData[0].toString())
-
+          
             for (let i = 0; i < qLength; i++) {
                 const batchData = await this.liquidQueueInstance.getBatch(i).call()
                 let recipient = batchData[0];

@@ -86,6 +86,8 @@ export default function LPList() {
         const newRows = [...rows]
 
         for (let i = 0; i < 4; i++) {
+            if (walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.address === undefined)
+                return
             const tiltpercentage = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.tiltPercentage().call()
 
             const tiltDirection = await walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.inputTokenTilting(rows[i].inputTokenAddress).call()
@@ -94,7 +96,7 @@ export default function LPList() {
             newRows[i].APY = GetAPY(rows[i].ROI, rows[i].velocity, queueData.length)
         }
         setRows(newRows)
-    }, [queueData])
+    }, [walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule.address])
 
     useEffect(() => { roiCallback() })
     useEffect(() => {
@@ -113,7 +115,7 @@ export default function LPList() {
             setQueueData(item)
 
         })
-        return () => { effect.cleanup(); subscription.unsubscribe() }
+        return () => { subscription.unsubscribe() }
     }, [])
 
     useEffect(() => {

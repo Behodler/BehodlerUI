@@ -12,6 +12,7 @@ import { WalletContext } from "../../../Contexts/WalletStatusContext"
 
 export default function LiquidityMining() {
     const walletContextProps = useContext(WalletContext)
+
     const [risksAcknowledged, setRisksAcknowledged] = useState<boolean>(!!localStorage.getItem('risks'))
     const [whiteListed, setWhiteListed] = useState<boolean>(false)
     const [unstakeClicked, setUnstakeClicked] = useState<boolean>(false)
@@ -22,7 +23,7 @@ export default function LiquidityMining() {
             setWhiteListed(enabled)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
     const unstakeCallback = useCallback(async () => {

@@ -174,7 +174,7 @@ export default function ExtendedTextField(props: props) {
       }
     })
 
-    return () => { subscription.unsubscribe(); effect.cleanup() }
+    return () => { subscription.unsubscribe();  }
   })
 
   useEffect(() => {
@@ -182,7 +182,7 @@ export default function ExtendedTextField(props: props) {
     const subscription = effect.Observable.subscribe(balance => {
       setCurrentBalance(balance)
     })
-    return () => { subscription.unsubscribe(); effect.cleanup() }
+    return () => { subscription.unsubscribe();  }
   });
 
   useEffect(() => {
@@ -192,7 +192,7 @@ export default function ExtendedTextField(props: props) {
         if (props.exchangeRate && props.exchangeRate.setReserve)
           props.exchangeRate.setReserve(balance)
       })
-      return () => { subscription.unsubscribe(); effect.cleanup() }
+      return () => { subscription.unsubscribe();  }
     }
     return () => { }
   })

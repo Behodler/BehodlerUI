@@ -38,14 +38,9 @@ export default function HeaderStats(props: props) {
     const classes = useHeaderStyles()
     const walletContextProps = useContext(WalletContext)
     const [currentEyeBalance, setEyeBalance] = useState<string>('')
-    const [tiltToken, setTiltToken] = useState<string>('')
 
     var addresses = API.getLQInputAddresses(walletContextProps.networkName)
     const keys = Object.keys(addresses)
-    if (3 < 2) {
-        setTiltToken('')
-        console.log(+ tiltToken)
-    }
     let correctKey = ''
     for (var i = 0; i < keys.length; i++) {
         const key = keys[i]
@@ -60,24 +55,14 @@ export default function HeaderStats(props: props) {
 
     const eyeEffects = API.generateNewEffects(API.getEYEAddress(walletContextProps.networkName), walletContextProps.account, false)
 
-    const tiltTokenCallback = useCallback(async () => {
-        const contract = walletContextProps.contracts.behodler.Behodler2.LiquidQueue.MintingModule
-        if (contract.address !== '')
-            setTiltToken(await contract.inputTokenTilting(props.inputToken).call())
-    }, [])
-
     useEffect(() => {
         props.setTokenSymbol(correctKey == 'Scarcity' ? 'SCX' : correctKey.toUpperCase())
-
-        tiltTokenCallback()
         const eyeEffect = eyeEffects.balanceOfEffect(walletContextProps.account)
         const eyeSubscription = eyeEffect.Observable.subscribe(e => {
             setEyeBalance(e)
         })
 
         return () => {
-
-            eyeEffect.cleanup()
             eyeSubscription.unsubscribe()
         }
     }, [])
@@ -90,7 +75,7 @@ export default function HeaderStats(props: props) {
         const subscription = effect.Observable.subscribe(max => {
             props.setMaxInputToken(max)
         })
-        return () => { effect.cleanup(); subscription.unsubscribe() }
+        return () => {  subscription.unsubscribe() }
     }, [])
 
     useEffect(() => {

@@ -182,6 +182,7 @@ class ethereumAPI {
 		scxEyePair.address = scxEyePairAddress
 		this.scxEyeLPEffects = new UniswapV2Effects(this.web3, scxEyePair, eye, currentAccount, this.ONE.toString())
 		await this.setupSubscriptions()
+
 		return contracts
 	}
 
@@ -465,7 +466,6 @@ class ethereumAPI {
 	private async fetchLiquidQueue(network: string): Promise<LiquidQueue> {
 		network = network == 'private' ? 'development' : network
 		const addresses = LiquidQueueAddresses[network]
-
 		const lqDeployment = await this.deployBehodlerContract(LiquidQueueJSON.abi, addresses.LiquidQueue)
 		let lq: LQ = lqDeployment.methods
 		lq.address = lqDeployment.address

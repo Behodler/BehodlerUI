@@ -95,7 +95,7 @@ export default function StakingScreen() {
                 }
             })
 
-            return () => { subscription.unsubscribe(); effect.cleanup() }
+            return () => { subscription.unsubscribe();  }
         }
         return () => { }
     }, [eyeETHEffect, eyeEthRequired])
@@ -109,7 +109,7 @@ export default function StakingScreen() {
                 }
             })
 
-            return () => { subscription.unsubscribe(); effect.cleanup() }
+            return () => { subscription.unsubscribe();  }
         }
         return () => { }
     }, [eyeSCXEffect, scxEyeRequired])
@@ -123,7 +123,7 @@ export default function StakingScreen() {
                 setEyeEthRequired(formatSignificantDecimalPlaces(ethEye, 2))
                 setEyeEthButtonState(StakeButtonState.RequirementSet)
             })
-            return () => { eyeEffect.cleanup(); subscription.unsubscribe() }
+            return () => {  subscription.unsubscribe() }
         }
 
         if (scxEyeButtonState === StakeButtonState.Unset) {
@@ -133,7 +133,7 @@ export default function StakingScreen() {
                 setScxEyeButtonState(StakeButtonState.RequirementSet)
             })
 
-            return () => { scxEffect.cleanup(); subscription.unsubscribe() }
+            return () => {  subscription.unsubscribe() }
         }
         return () => { }
     }, [walletContextProps.account, scxEyeButtonState, eyeEthButtonState])
@@ -147,7 +147,7 @@ export default function StakingScreen() {
 
             })
             return () => {
-                effect.cleanup(); subscription.unsubscribe();
+                 subscription.unsubscribe();
             }
         }
 
@@ -159,7 +159,7 @@ export default function StakingScreen() {
                 setEyeEthButtonState(balWei.lt(reqWei) ? StakeButtonState.BalanceTooLow : StakeButtonState.BalanceHighEnough)
             })
             return () => {
-                effect.cleanup(); subscription.unsubscribe();
+                 subscription.unsubscribe();
             }
         }
         return () => { }
@@ -194,10 +194,9 @@ export default function StakingScreen() {
             token.approve(Sluice, API.UINTMAX).send({ from: walletContextProps.account }, () => {
                 setEyeEthButtonState(StakeButtonState.Approving)
             }).on('receipt', function () {
-                alert('received')
                 setEyeEthButtonState(StakeButtonState.Approved)
             }).on('confirmation', function (confirmationNumber, receipt) {
-                console.log('confirming: ' + confirmationNumber)
+
             })
             setEyeEthApproveClicked(false)
         }
@@ -228,16 +227,13 @@ export default function StakingScreen() {
 
     const eyeClickedCallback = useCallback(async () => {
         if (stakeEYEClicked) {
-            console.log('applying')
             const EYE_ETH = await API.EYE_ETH_PAIR(walletContextProps.networkName, walletContextProps.account)
             walletContextProps.contracts.behodler.Behodler2.LiquidQueue.SluiceGate
                 .betaApply(EYE_ETH)
                 .send({ from: walletContextProps.account })
                 .on('receipt', function () {
-                    alert('received')
                     setEyeEthButtonState(StakeButtonState.Staked)
                 }).on('confirmation', function (confirmationNumber, receipt) {
-                    console.log('confirming: ' + confirmationNumber)
                 })
             setStakeEYEClicked(false)
         }

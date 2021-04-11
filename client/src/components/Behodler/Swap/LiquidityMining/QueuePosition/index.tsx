@@ -32,7 +32,7 @@ export default function QueuePosition(props: props) {
             setPendingEye(API.fromWei(eye))
         })
 
-        return () => { effect.cleanup(); subscription.unsubscribe() }
+        return () => {  subscription.unsubscribe() }
     }, [])
 
     return (

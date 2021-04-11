@@ -143,7 +143,7 @@ export default function ScarcityConversion(props: {}) {
             setExchangeRate(API.pureHexToNumberString(ex))
         })
 
-        return () => { scxSubscription.unsubscribe(); scxEffect.cleanup(); bridgeSub.unsubscribe(); bridgeEffect.cleanup() }
+        return () => { scxSubscription.unsubscribe();  bridgeSub.unsubscribe(); }
     })
 
     useEffect(() => {

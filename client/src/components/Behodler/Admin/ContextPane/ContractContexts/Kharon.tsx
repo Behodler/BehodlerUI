@@ -60,7 +60,7 @@ function Donations(props: donationsProps) {
             setOXT(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
     useEffect(() => {
@@ -70,7 +70,7 @@ function Donations(props: donationsProps) {
             setPNK(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
 
@@ -81,7 +81,7 @@ function Donations(props: donationsProps) {
             setWeth(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
 
@@ -92,7 +92,7 @@ function Donations(props: donationsProps) {
             setLink(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
 
@@ -103,7 +103,7 @@ function Donations(props: donationsProps) {
             setLoom(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
 
@@ -114,7 +114,7 @@ function Donations(props: donationsProps) {
             setWBTC(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
 
@@ -125,7 +125,7 @@ function Donations(props: donationsProps) {
             setMKR(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
 
@@ -136,7 +136,7 @@ function Donations(props: donationsProps) {
             setBAT(balance)
         })
 
-        return () => { subscription.unsubscribe(); effect.cleanup() }
+        return () => { subscription.unsubscribe();  }
     })
 
     return <Paper>
