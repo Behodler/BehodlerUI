@@ -175,14 +175,17 @@ export default function TradeBox2(props: props) {
             }
             else {
                 // I_f/I_i = O_i/O_f
-                const I_i = new BigNumber(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals))
-                const burnFee = (await behodler.getConfiguration().call(primaryOptions))[1]
-                const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
-                const I_f = I_i.plus(netAmount)
+                const I_i = BigInt(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals))
+                const burnFee = BigInt((await behodler.getConfiguration().call(primaryOptions))[1].toString())
+                const bigInputValWei = BigInt(inputValWei)
+                const netAmount = bigInputValWei - (burnFee * bigInputValWei) / BigInt(1000)
+                // const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
+                const I_f = I_i + netAmount
 
-                const O_i = new BigNumber(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals))
-                const O_f = O_i.times(I_i.div(I_f))
-                let outputWei = O_i.minus(O_f).toString()
+                const O_i = BigInt(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals))
+
+                const O_f = (O_i * I_i) / I_f
+                let outputWei = (O_i -  O_f).toString()
                 const indexOfPoint = outputWei.indexOf('.')
                 outputWei = indexOfPoint === -1 ? outputWei : outputWei.substring(0, indexOfPoint)
                 await validateLiquidityExit(BigInt(outputWei))
