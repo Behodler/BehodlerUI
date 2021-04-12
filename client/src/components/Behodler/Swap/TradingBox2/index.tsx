@@ -15,7 +15,7 @@ interface props {
 export default function TradeBox2(props: props) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 })
     const walletContextProps = useContext(WalletContext)
-    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(t => t.name !== 'WBTC' && t.name!== 'BAT')
+    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(t => t.name !== 'WBTC' && t.name !== 'BAT')
     const indexOfWeth = tokenList.findIndex(item => item.name.toLowerCase().indexOf('weth') !== -1)
     const indexOfScarcityAddress = tokenList.findIndex(item => item.name.toLowerCase().indexOf('scarcity') !== -1)
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address
@@ -85,8 +85,6 @@ export default function TradeBox2(props: props) {
     const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
     const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
 
-
-
     const swapEnabled = swapPossible && inputEnabled
 
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, inputDecimals) : "0"
@@ -132,11 +130,12 @@ export default function TradeBox2(props: props) {
         setExchangeRate(oBig.dividedBy(iBig).toString())
     }
 
-    const validateLiquidityExit = async (tokensToWithdraw: BigNumber) => {
-        const maxLiquidityExit = new BigNumber((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString())
+    const validateLiquidityExit = async (tokensToWithdraw: any) => {
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString())
         const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals)
-        const exitRatio = new BigNumber(tokensToWithdraw.times(100).div(O_i.toString()).toFixed(0).toString())
-        if (exitRatio.isGreaterThan(maxLiquidityExit)) {
+        const hundred: any = BigInt(100)
+        const exitRatio = (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any)
+        if (exitRatio > (maxLiquidityExit)) {
             setInputValid(false)
         }
     }
@@ -153,7 +152,7 @@ export default function TradeBox2(props: props) {
 
                 const O_i = new BigNumber(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals))
                 const guess = O_i.div(2).toFixed(0);
-                const actual = new BigNumber((await behodler.withdrawLiquidityFindSCX(outputAddress, guess.toString(), inputValWei, "15").call(primaryOptions)).toString())
+                const actual = BigInt((await behodler.withdrawLiquidityFindSCX(outputAddress, guess.toString(), inputValWei, "15").call(primaryOptions)).toString())
                 await validateLiquidityExit(actual)
 
                 const actualString = actual.toString()
@@ -163,25 +162,33 @@ export default function TradeBox2(props: props) {
 
             } else if (isScarcityPredicate(outputAddress)) { //add liquidity
 
-                const scx = await behodler.addLiquidity(inputAddress, inputValWei).call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions)
-                const scxString = scx.toString()
-                setOutputValueWei(scxString)
-                setOutputValue(API.fromWei(scxString))
-                setTerms(inputValWei, scxString)
+                let scx
+                try {
+                    scx = await behodler.addLiquidity(inputAddress, inputValWei).call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions)
+                    const scxString = scx.toString()
+                    setOutputValueWei(scxString)
+                    setOutputValue(API.fromWei(scxString))
+                    setTerms(inputValWei, scxString)
+                } catch {
+                    setInputValid(false)
+                }
             }
             else {
                 // I_f/I_i = O_i/O_f
-                const I_i = new BigNumber(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals))
-                const burnFee = (await behodler.getConfiguration().call(primaryOptions))[1]
-                const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
-                const I_f = I_i.plus(netAmount)
+                const I_i = BigInt(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals))
+                const burnFee = BigInt((await behodler.getConfiguration().call(primaryOptions))[1].toString())
+                const bigInputValWei = BigInt(inputValWei)
+                const netAmount = bigInputValWei - (burnFee * bigInputValWei) / BigInt(1000)
+                // const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
+                const I_f = I_i + netAmount
 
-                const O_i = new BigNumber(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals))
-                const O_f = O_i.times(I_i.div(I_f))
-                let outputWei = O_i.minus(O_f).toString()
+                const O_i = BigInt(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals))
+
+                const O_f = (O_i * I_i) / I_f
+                let outputWei = (O_i -  O_f).toString()
                 const indexOfPoint = outputWei.indexOf('.')
                 outputWei = indexOfPoint === -1 ? outputWei : outputWei.substring(0, indexOfPoint)
-                await validateLiquidityExit(new BigNumber(outputWei))
+                await validateLiquidityExit(BigInt(outputWei))
                 setOutputValueWei(outputWei)
                 setOutputValue(API.fromWei(outputWei))
                 setTerms(inputValWei, outputWei)

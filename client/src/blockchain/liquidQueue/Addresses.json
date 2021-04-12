@@ -1,0 +1,24 @@
+{
+    "development": {
+        "LiquidQueue": "0x2f7Da881BA1E43e302ba2FC01481b6087c41F150",
+        "MintingModule": "0x64cc03b2Cc220d650Dca86c083BB96E049Fb9Da1",
+        "Reward": "0x193Ae3560012672681853705632ABf300fF4A5E0",
+        "SluiceGate": "0x363EcCB8DCbB0f75F7148f0dDfd51b1A071b12d9",
+        "UniswapV2Factory": "0x335506F717659CA9698ad2d3431EdE460B119A97",
+        "EYE": "0x23420De11eF83DB414965C96fB28667Cf0C41e04",
+        "WETH": "0x6925bD4fF1106dffa6A411eA1720254db4ca014A",
+        "SCX": "0x98A0f2cdEdEd861d471d2FFC178bc46a79092bc5",
+        "DAI": "0x631Ff6Eb0556A1522fD10c51eFEC2c5425B410E5"
+    },
+    "main": {
+        "UniswapV2Factory": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+        "EYE": "0x155ff1A85F440EE0A382eA949f24CE4E0b751c65",
+        "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "SCX": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
+        "DAI": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "Reward": "0xbd5f2409cfcd68c1867db80c77d90ff5bb6e9d45",
+        "LiquidQueue": "0xb5d20efb19bfcda3184a6f606abfe203c83fc4a4",
+        "MintingModule": "0x3ae5642BE1277e4CBdd45C82Db5710c234e7Eee5",
+        "SluiceGate": "0xcbb60e99976eecf9b9cd31424fca43075a421991"
+    }
+}

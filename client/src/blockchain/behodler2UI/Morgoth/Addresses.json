@@ -10,13 +10,13 @@
         "SetSilmaril": "0x439e02B4496567184018fB35FD417A6BAF35c8ac"
     },
     "development": {
-        "AddTokenToBehodler": "0x62fB6E3eaf3a3aA6fB0213dA53728beAF89506aC",
-        "Angband": "0xC061f2C62Dca8166b0253Fe1a6DA4B4cb80B85D5",
-        "ConfigureScarcity": "0xf348227738A41C81F5858E5A7468d666C3BbED27",
-        "IronCrown": "0xF765F42A8B4e7E9EA944dCB4baaD765f0c079875",
-        "Migrator": "0x76e4bfB220c083475555e8cf4642D9F621acc25d",
-        "PowersRegistry": "0x64cc03b2Cc220d650Dca86c083BB96E049Fb9Da1",
-        "ScarcityBridge": "0x00B05a72E4965CAd699065e54b9BF254706E2921",
-        "SetSilmaril": "0x16f0389D36c597d37598bB1770837BaCa94F268f"
+        "AddTokenToBehodler": "0x5906a9C50263b1df17415928aaadD374C7A026d6",
+        "Angband": "0x30DbD1fe1BDEA026B372715C13390891d5c1aE5F",
+        "ConfigureScarcity": "0x16Cb19C0715C8E5e09C015f14c0e87C8F872ff15",
+        "IronCrown": "0xb784022bc11CAd6bAead8f30b581eD0c1aAE3F2B",
+        "Migrator": "0x38e53f9462142d6C58C754E4e9F76Ff8546e43e4",
+        "PowersRegistry": "0xF0858a8aFA8655BDfC97837962C719D814f8d95E",
+        "ScarcityBridge": "0x71E472B7E0CE360b5d3D7890Ccd61B7120B8e37B",
+        "SetSilmaril": "0x86a17d63Dee64fe9eff56C6E2221cd6da9e6Fc7d"
     }
 }

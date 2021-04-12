@@ -9,8 +9,9 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
 import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
 import API from '../../../blockchain/ethereumAPI'
-import behodlerLogo from '../../../images/behodler/logo.png'
-import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
+// import behodlerLogo from '../../../images/behodler/logo.png'
+import alternateLogo from '../../../images/behodler/tradhodler.png'
+import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
 import Governance from '../Swap/Governance/index'
@@ -107,6 +108,10 @@ const useStyles = makeStyles(theme => createStyles({
     },
     nopadding: {
         padding: 0
+    },
+    eyeLogo:{
+        width:400,
+        margin: '0 -20px -60px 0'
     }
 }));
 
@@ -127,10 +132,12 @@ export default function Swap(props: props) {
     })
 
 
-    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair> => {
+    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair | null> => {
         const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
+        if (pyroAddress === '0x0000000000000000000000000000000000000000')
+            return null
         const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
-        const name = await token.symbol().call(primaryOptions)
+        const name = await token.symbol().call(primaryOptions)//bug
 
         return {
             name,
@@ -139,21 +146,23 @@ export default function Swap(props: props) {
         }
     }
 
-    const pytoTokenPopulator = useCallback(async () => {
+    const pyroTokenPopulator = useCallback(async () => {
         let mapping: basePyroPair[] = []
         for (let i = 0; i < tokenList.length; i++) {
-            mapping.push(await fetchPyroTokenDetails(tokenList[i].address))
+            const pyro = await fetchPyroTokenDetails(tokenList[i].address)
+            if (pyro)
+                mapping.push(pyro)
         }
         setPyroTokenMapping(mapping)
     }, [walletContextProps.networkName])
 
     useEffect(() => {
-        if (props.connected && walletContextProps.account.length > 5) {
-            pytoTokenPopulator()
+        if (props.connected) {
+            pyroTokenPopulator()
         }
         else {
         }
-    }, [props.connected, walletContextProps.account])
+    }, [props.connected])
 
     const classes = useStyles();
     const [showChip, setShowChip] = useState<boolean>(false)
@@ -190,7 +199,7 @@ export default function Swap(props: props) {
             </Grid> : ""}
             {logoVisible ?
                 <DepaddedGridItem>
-                    <img src={eyelogo} />
+                    <img src={eyelogo} className={classes.eyeLogo} />
                 </DepaddedGridItem>
                 : ''}
             {logoVisible ? <DepaddedGridItem>
@@ -210,7 +219,7 @@ export default function Swap(props: props) {
                 : ''}
             {logoVisible ? <DepaddedGridItem>
                 <Container className={classes.logoContainer} >
-                    <img src={behodlerLogo} className={classes.behodlerLogo} />
+                    <img src={alternateLogo} className={classes.behodlerLogo} />
                 </Container>
             </DepaddedGridItem> : ''}
             <DepaddedGridItem>
@@ -223,7 +232,7 @@ export default function Swap(props: props) {
                     >
                         <Grid item>
                             <Typography variant="h4" className={classes.behodlerHeading}>
-                                Behodler Liquidity Market
+                                Behodler Liquidity Engine
             </Typography>
                         </Grid>
                     </Grid>
@@ -265,7 +274,6 @@ export default function Swap(props: props) {
 }
 
 function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] }) {
-
     switch (props.value) {
         case 'swap2':
             return <TradingBox2 />

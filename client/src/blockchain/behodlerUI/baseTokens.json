@@ -43,6 +43,22 @@
         {
             "name": "Dai",
             "address": "0x6b175474e89094c44da98b954eedeac495271d0f"
+        },
+        {
+            "name": "EYE",
+            "address": "0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
+        },
+        {
+            "name": "EYE/DAI UniV2LP",
+            "address": "0x890ff7533ca0c44f33167fdeeeab1ca7e690634f"
+        },
+        {
+            "name": "SCX/ETH UniV2LP",
+            "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb"
+        },
+        {
+            "name": "SCX/EYE UniV2LP",
+            "address": "0xf047ee812b21050186f86106f6cabdfec35366c6"
         }
     ],
     "morden": [],

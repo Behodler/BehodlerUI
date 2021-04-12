@@ -1,6 +1,6 @@
 import { Dialog, Grid, Typography, Button, makeStyles, createStyles, DialogContent, Container } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { formatDecimalStrings } from "src/util/jsHelpers";
+import { formatSignificantDecimalPlaces } from "src/util/jsHelpers";
 import API from '../../blockchain/ethereumAPI'
 import { WalletContext } from "../Contexts/WalletStatusContext";
 
@@ -33,7 +33,7 @@ const useStyle = makeStyles(theme => createStyles({
 const BoldDiv = function (props: { noFormat?: boolean, children?: any }) {
     const classes = useStyle()
     return <span className={classes.boldDiv}>
-        {props.noFormat ? props.children : formatDecimalStrings(props.children)}
+        {props.noFormat ? props.children : formatSignificantDecimalPlaces(props.children)}
     </span>
 }
 
@@ -48,8 +48,8 @@ enum Visibility {
     HideFor5Minutes,
     HiddenFor5Minutes
 }
-const DAY = 2160000 //8640000 = 1 day
-const FiveMins = 60000
+const DAY = 216000000 //8640000 = 1 day
+const FiveMins = 6000000
 export default function ScarcityConversion(props: {}) {
     const classes = useStyle()
     const walletContextProps = useContext(WalletContext)
@@ -143,7 +143,7 @@ export default function ScarcityConversion(props: {}) {
             setExchangeRate(API.pureHexToNumberString(ex))
         })
 
-        return () => { scxSubscription.unsubscribe(); scxEffect.cleanup(); bridgeSub.unsubscribe(); bridgeEffect.cleanup() }
+        return () => { scxSubscription.unsubscribe();  bridgeSub.unsubscribe(); }
     })
 
     useEffect(() => {
@@ -203,7 +203,7 @@ export default function ScarcityConversion(props: {}) {
                         </Grid>
                         <Grid item>
                             <Button onClick={() => setDialogVisibility(Visibility.HideForDay)} variant="contained" color="secondary" className={classes.skip}>
-                                Sleep reminder for 6 hours
+                                Sleep reminder for 1 week
                          </Button>
                         </Grid>
                     </Grid>

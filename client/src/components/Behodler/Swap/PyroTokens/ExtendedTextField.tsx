@@ -17,7 +17,7 @@ import {
   DialogContentText,
   Typography,
 } from '@material-ui/core';
-import { isNullOrWhiteSpace, formatNumberText, formatDecimalStrings } from '../../../../util/jsHelpers'
+import { isNullOrWhiteSpace, formatNumberText, formatSignificantDecimalPlaces } from '../../../../util/jsHelpers'
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
 import API from '../../../../blockchain/ethereumAPI'
 
@@ -149,9 +149,9 @@ export default function ExtendedTextField(props: props) {
 
   let exchangeRateString = ''
   if (props.exchangeRate && props.exchangeRate.baseAddress !== '') {
-    let ratio = formatDecimalStrings(props.exchangeRate.ratio, 4)
+    let ratio = formatSignificantDecimalPlaces(props.exchangeRate.ratio, 4)
     for (let i = 5; i < 19 && ratio === '0'; i++) {
-      ratio = formatDecimalStrings(props.exchangeRate.ratio, i)
+      ratio = formatSignificantDecimalPlaces(props.exchangeRate.ratio, i)
     }
 
     if (props.exchangeRate.setReserve)
@@ -174,7 +174,7 @@ export default function ExtendedTextField(props: props) {
       }
     })
 
-    return () => { subscription.unsubscribe(); effect.cleanup() }
+    return () => { subscription.unsubscribe();  }
   })
 
   useEffect(() => {
@@ -182,7 +182,7 @@ export default function ExtendedTextField(props: props) {
     const subscription = effect.Observable.subscribe(balance => {
       setCurrentBalance(balance)
     })
-    return () => { subscription.unsubscribe(); effect.cleanup() }
+    return () => { subscription.unsubscribe();  }
   });
 
   useEffect(() => {
@@ -192,7 +192,7 @@ export default function ExtendedTextField(props: props) {
         if (props.exchangeRate && props.exchangeRate.setReserve)
           props.exchangeRate.setReserve(balance)
       })
-      return () => { subscription.unsubscribe(); effect.cleanup() }
+      return () => { subscription.unsubscribe();  }
     }
     return () => { }
   })
@@ -260,7 +260,7 @@ export default function ExtendedTextField(props: props) {
                 className={props.disabledInput ? classes.balanceDisabled : classes.balanceEnabled}
                 onClick={() => setFormattedInput(currentBalance)}
               >
-                Balance: {formatDecimalStrings(currentBalance, 4)}
+                Balance: {formatSignificantDecimalPlaces(currentBalance, 4)}
               </Typography>
             </Grid>
           </Grid>
