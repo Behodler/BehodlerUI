@@ -121,6 +121,7 @@ export default function Swap(props: props) {
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
+
     const ethCallback = useCallback(async () => {
         if (walletContextProps.connected && walletContextProps.account.length > 5) {
             setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
@@ -157,12 +158,12 @@ export default function Swap(props: props) {
     }, [walletContextProps.networkName])
 
     useEffect(() => {
-        if (props.connected) {
+        if (walletContextProps.connected && walletContextProps.account.length > 5) {
             pyroTokenPopulator()
         }
         else {
         }
-    }, [props.connected])
+    }, [props.connected, walletContextProps.account])
 
     const classes = useStyles();
     const [showChip, setShowChip] = useState<boolean>(false)

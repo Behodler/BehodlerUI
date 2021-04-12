@@ -280,6 +280,11 @@ class ethereumAPI {
 		const EYE = LiquidQueueAddresses[netName].EYE
 		const WETH = LiquidQueueAddresses[netName].WETH
 		const factoryInstance: UniswapV2Factory = (await this.deployBehodlerContract(UniswapV2FactoryJSON.abi, LiquidQueueAddresses[netName].UniswapV2Factory)).methods
+
+		if (account.length <= 5) {
+			return Promise.reject(`Invalid account: #${account}`)
+		}
+
 		return await factoryInstance.getPair(EYE, WETH).call({ from: account })
 	}
 
@@ -383,8 +388,12 @@ class ethereumAPI {
 	public pureHexToNumberString(value: any): string {
 		if (value === "0")
 			return "0"
-		return this.web3.utils.hexToNumberString(value)
 
+		if (this.web3.utils.isHexStrict(value)) {
+			return this.web3.utils.hexToNumberString(value)
+		}
+
+		return value.toString();
 	}
 
 	public pureHexToNumber(value: any): number {

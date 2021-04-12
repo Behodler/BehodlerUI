@@ -38,12 +38,12 @@ export default function LiquidityMining() {
 
             if (scxStake > 0)
                 sluice.unstake(EYE_SCX_PAIR).send({ from: account }).on('receipt', function () {
-                    location.reload();
+                    window.location.reload();
                 })
 
             if (eyeStake > 0)
                 sluice.unstake(EYE_ETH_PAIR).send({ from: account }).on('receipt', function () {
-                    location.reload();
+                    window.location.reload();
                 })
 
         }
