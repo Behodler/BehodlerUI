@@ -151,21 +151,33 @@ const initWeb3Modal = () => {
 };
 
 const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
+	const triggerCommonDisconnectFn = async () => {
+	    if (typeof provider.disconnect === 'function') await provider.disconnect()
+	    if (typeof provider.close === 'function') await provider.close()
+	}
+
 	if (provider.isMetaMask) {
-		return () => {
+		return async () => {
+			await triggerCommonDisconnectFn()
 			provider.emit('disconnect')
-			handleWalletDisconnected('Metamask disconnected by user')
+			handleWalletDisconnected(': Metamask disconnected by user')
 		}
 	} else if (provider.isPortis) {
-		return () => {
+		return async () => {
+			await triggerCommonDisconnectFn()
 			provider._portis.logout()
-			handleWalletDisconnected('Portis disconnected by user')
+			handleWalletDisconnected(': Portis disconnected by user')
 		}
-	} else if (typeof provider.close === 'function') {
-		return () => {
-			provider.close()
-			handleWalletDisconnected('Wallet disconnected by user')
-			window.location.reload() // temporary fix for walletconnect/walletlink QR code popups showing up after disconnect
+	} else if (provider.wc) {
+		return async () => {
+			await triggerCommonDisconnectFn()
+			handleWalletDisconnected(': Walletconnect provider disconnected by user')
+			window.location.reload() // temporary fix for walletconnect QR code popups showing up after disconnect
+		}
+	} else if (provider.isWalletLink) {
+		return async () => {
+			await triggerCommonDisconnectFn()
+			handleWalletDisconnected(': Walletlink provider disconnected by user')
 		}
 	}
 
@@ -198,6 +210,8 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 	}
 
 	if (!provider) { return }
+
+	console.info('provider', provider);
 
 	const disconnectFn = getDisconnectProviderFn(provider, handleWalletDisconnected);
 
