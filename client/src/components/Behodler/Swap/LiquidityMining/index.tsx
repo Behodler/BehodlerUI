@@ -23,7 +23,7 @@ export default function LiquidityMining() {
             setWhiteListed(enabled)
         })
 
-        return () => { subscription.unsubscribe();  }
+        return () => { subscription.unsubscribe(); }
     })
 
     const unstakeCallback = useCallback(async () => {

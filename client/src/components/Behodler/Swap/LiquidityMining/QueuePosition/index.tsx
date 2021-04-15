@@ -6,6 +6,8 @@ import { Drawer, Grid, Hidden, makeStyles } from '@material-ui/core';
 import { QueueData } from '../LPList';
 import API from '../../../../../blockchain/ethereumAPI'
 
+
+
 interface props {
     inputToken: string
     setVisiblePosition: (p: string | null) => any
@@ -20,6 +22,7 @@ const useStyles = makeStyles({
 })
 
 export default function QueuePosition(props: props) {
+
     const classes = useStyles()
     const [tokenSymbol, setTokenSymbol] = useState<string>('')
     const [maxInputToken, setMaxInputToken] = useState<string>('')
@@ -32,8 +35,10 @@ export default function QueuePosition(props: props) {
             setPendingEye(API.fromWei(eye))
         })
 
-        return () => {  subscription.unsubscribe() }
+        return () => { subscription.unsubscribe() }
     }, [])
+
+ 
 
     return (
         <div>
@@ -60,7 +65,7 @@ export default function QueuePosition(props: props) {
                 </Grid>
 
                 <Grid item>
-                    <ActionPanel inputToken={props.inputToken} tokenSymbol={tokenSymbol} maxInputToken={maxInputToken} rewardToken={rewardToken} pendingEye= {pendingEye}/>
+                    <ActionPanel inputToken={props.inputToken} tokenSymbol={tokenSymbol} maxInputToken={maxInputToken} rewardToken={rewardToken} pendingEye={pendingEye} />
                 </Grid>
             </Grid>
             <Hidden mdDown>
