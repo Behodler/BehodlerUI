@@ -167,12 +167,13 @@ const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 			await triggerCommonDisconnectFn()
 			provider._portis.logout()
 			handleWalletDisconnected(': Portis disconnected by user')
+			window.location.reload() // after logging out, Portis still pulls from Infura API, I couldn't find other way to get it to stop
 		}
 	} else if (provider.wc) {
 		return async () => {
 			await triggerCommonDisconnectFn()
 			handleWalletDisconnected(': Walletconnect provider disconnected by user')
-			window.location.reload() // temporary fix for walletconnect QR code popups showing up after disconnect
+			window.location.reload() // fix for walletconnect QR code popup showing up after a disconnection
 		}
 	} else if (provider.isWalletLink) {
 		return async () => {
@@ -205,13 +206,15 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 	try {
 		provider = await web3Modal.connect()
 		API.web3 = new Web3(provider)
+		console.info('connected to a wallet provider', {
+			web3Modal,
+			provider,
+		});
 	} catch (error) {
 		handleWalletDisconnected(error)
 	}
 
 	if (!provider) { return }
-
-	console.info('provider', provider);
 
 	const disconnectFn = getDisconnectProviderFn(provider, handleWalletDisconnected);
 
