@@ -15,12 +15,11 @@ import Dai from '../../../../images/behodler/dai.png'
 import Eth from '../../../../images/behodler/3.png'
 import SCX from '../../../../images/behodler/7.png'
 import EYE from '../../../../images/behodler_b.png'
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 import { GetAPY } from './LQCalculationHelper'
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext';
 import API from 'src/blockchain/ethereumAPI';
 import QueuePosition from './QueuePosition';
-import { formatSignificantDecimalPlaces } from 'src/util/jsHelpers';
 
 
 const useStyles = makeStyles({
@@ -151,12 +150,12 @@ export default function LPList() {
                             <TableCell component="th" scope="row">
                                 {row.inputToken}
                             </TableCell>
-                            <TableCell align="center">{row.rewardToken}</TableCell>
-                            <TableCell align="center">{row.ROI}%</TableCell>
-                            <TableCell align="center">{formatSignificantDecimalPlaces(row.APY.toString(), 4)}%</TableCell>
-                            <TableCell align="center">{row.eye} EYE</TableCell>
-                            <TableCell align="center">{row.velocity}</TableCell>
-                            <TableCell align="center"><Link onClick={() => setVisiblePosition(row.inputTokenAddress)}>View/Join</Link></TableCell>
+                            <TableCell align="center">N/A</TableCell>
+                            <TableCell align="center">N/A</TableCell>
+                            <TableCell align="center">N/A</TableCell>
+                            <TableCell align="center">N/A</TableCell>
+                            <TableCell align="center">N/A</TableCell>
+                            <TableCell align="center">N/A</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
