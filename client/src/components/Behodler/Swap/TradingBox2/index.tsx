@@ -196,7 +196,7 @@ export default function TradeBox2(props: props) {
     }
     const swapPreparationCallback = useCallback(async () => {
         if (inputReadyToEstimate) {
-            const inputAmount = new BigNumber(API.toWei(inputValue, inputDecimals)).toNumber().toString();
+            const inputAmount = new BigNumber(API.toWei(inputValue, inputDecimals)).toFormat({groupSeparator: ''});
 
             //if input is scx, figure out tokensToRelease
             //if output is scx, nothing to figure out
