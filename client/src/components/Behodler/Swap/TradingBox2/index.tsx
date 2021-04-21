@@ -89,8 +89,8 @@ export default function TradeBox2(props: props) {
 
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo("0") ? API.toWei(inputValue, inputDecimals) : "0"
 
-    const primaryOptions = { from: walletContextProps.account }
-    const ethOptions = { from: walletContextProps.account, value: inputValWei, gas: "200000" }
+    let primaryOptions = { from: walletContextProps.account, gas: undefined }
+    let ethOptions = { from: walletContextProps.account, value: inputValWei, gas: undefined }
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean => tokenDropDownList.filter(item => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
     const isEthPredicate = isTokenPredicateFactory('Eth')
@@ -108,11 +108,29 @@ export default function TradeBox2(props: props) {
     const swap2Callback = useCallback(async () => {
         if (swapClicked) {
             if (inputAddress.toLowerCase() === scarcityAddress) {
-                behodler.withdrawLiquidity(outputAddress, outputValueWei).send(primaryOptions, clearInput)
+                behodler.withdrawLiquidity(outputAddress, outputValueWei).estimateGas(primaryOptions, function (error, gas) {
+                    if (error)
+                        console.error('gas estimation error: ' + error)
+                    primaryOptions.gas = gas
+                    behodler.withdrawLiquidity(outputAddress, outputValueWei).send(primaryOptions, clearInput)
+                })
+
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
-                behodler.addLiquidity(inputAddress, inputValWei).send(isEthPredicate(inputAddress) ? ethOptions : primaryOptions, clearInput)
+                let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions
+                behodler.addLiquidity(inputAddress, inputValWei).estimateGas(options, function (error, gas) {
+                    if (error)
+                        console.error('gas estimation error: ' + error)
+                    options.gas = gas
+                    behodler.addLiquidity(inputAddress, inputValWei).send(options, clearInput)
+                })
             } else {
-                behodler.swap(inputAddress, outputAddress, inputValWei, outputValueWei).send(isEthPredicate(inputAddress) ? ethOptions : primaryOptions, clearInput)
+                let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions
+                behodler.swap(inputAddress, outputAddress, inputValWei, outputValueWei).estimateGas(options, function (error, gas) {
+                    if (error)
+                        console.error('gas estimation error: ' + error)
+                    options.gas = gas
+                    behodler.swap(inputAddress, outputAddress, inputValWei, outputValueWei).send(options, clearInput)
+                })
             }
         }
         setSwapClicked(false)
@@ -185,7 +203,7 @@ export default function TradeBox2(props: props) {
                 const O_i = BigInt(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals))
 
                 const O_f = (O_i * I_i) / I_f
-                let outputWei = (O_i -  O_f).toString()
+                let outputWei = (O_i - O_f).toString()
                 const indexOfPoint = outputWei.indexOf('.')
                 outputWei = indexOfPoint === -1 ? outputWei : outputWei.substring(0, indexOfPoint)
                 await validateLiquidityExit(BigInt(outputWei))
