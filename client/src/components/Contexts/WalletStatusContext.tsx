@@ -21,8 +21,11 @@ interface walletProps {
     initialized: boolean
     networkName: string
     primary: boolean
-    isMelkor: boolean
-    error: boolean
+    walletError: WalletError | undefined
+}
+
+export enum WalletError {
+    NETWORK_NOT_SUPPORTED = 1
 }
 
 let WalletContext = React.createContext<walletProps>({
@@ -37,30 +40,10 @@ let WalletContext = React.createContext<walletProps>({
     initialized: false,
     networkName: 'private',
     primary: false,
-    isMelkor: false,
-    error: false,
+    walletError: 0
 })
 
-const networkNameMapper = (id: number): string => {
-    switch (id) {
-        case 1:
-            return 'main'
-        case 2:
-            return 'morden'
-        case 3:
-            return 'ropsten'
-        case 4:
-            return 'rinkeby'
-        case 5:
-            return 'goerli'
-        case 42:
-            return 'kovan'
-        case 66:
-            return 'private'
-        default:
-            return 'private'
-    }
-}
+const networkNameMapper = (id: number): string => API.networkMapping[id]
 
 let chainIdUpdater = (
     account: string,
@@ -71,6 +54,7 @@ let chainIdUpdater = (
 ) => {
     return (response: any) => {
         const chainIDNum = API.pureHexToNumber(response)
+        console.log(chainIDNum)
         setChainId(chainIDNum)
         setNetworkName(networkNameMapper(chainIDNum))
         setInitialized(false)
@@ -105,21 +89,19 @@ function WalletContextProvider(props: any) {
     const [initialized, setInitialized] = useState<boolean>(false)
     const [networkName, setNetworkName] = useState<string>('')
     const [primary, setPrimary] = useState<boolean>(false)
-    const [isMelkor, setMelkor] = useState<boolean>(false)
-    const [error, setError] = useState<boolean>(false)
+    const [walletError, setWalletError] = useState<WalletError>()
 
     const initializationCallBack = React.useCallback(async () => {
-        try {
-            if (chainId > 0 && account.length > 3 && !initialized) {
-                const c = await API.initialize(chainId, account);
-                setContracts(c);
-                const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString();
-                setPrimary(owner.toLowerCase() === account.toLowerCase());
-                setInitialized(true);
+        if (chainId > 0 && account.length > 3 && !initialized) {
+            try {
+                const c = await API.initialize(chainId, account)
+                setContracts(c)
+                const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
+                setPrimary(owner.toLowerCase() === account.toLowerCase())
+                setInitialized(true)
+            } catch (err) {
+                setWalletError(err)
             }
-        } catch (err) {
-            // if people have their metamask in a wrong network, there's no error message atm
-            setError(true)
         }
     }, [initialized, account, chainId])
 
@@ -190,8 +172,7 @@ function WalletContextProvider(props: any) {
         initialized,
         networkName,
         primary,
-        isMelkor,
-        error,
+        walletError
     }
     WalletContext = React.createContext<walletProps>(providerProps)
     return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>

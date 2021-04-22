@@ -32,7 +32,7 @@ import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import LiquidityMining from './LiquidityMining/index'
 import { Typography, Button, Container, Box } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { WalletContext } from '../../Contexts/WalletStatusContext'
+import { WalletContext, WalletError } from '../../Contexts/WalletStatusContext'
 import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
 import alternateLogo from '../../../images/behodler/tradhodler.png'
@@ -113,6 +113,15 @@ const useStyles = makeStyles((theme) =>
         },
     })
 )
+
+const getMessageError = (walletError: WalletError): any => {
+    switch (walletError) {
+        case WalletError.NETWORK_NOT_SUPPORTED:
+            return <>Your wallet's network is currently not supported!<br/>Please make sure it is Ethereum Mainnet</>
+        default: 
+            return ''
+    }
+}
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
@@ -216,11 +225,9 @@ export default function Swap(props: props) {
                             Connect Your Wallet
                         </Button>
                     </Box>
-                    {walletContextProps.error ? (
+                    {walletContextProps.walletError ? (
                         <Box className={classes.errorMessage} mt={2}>
-                            Behodler cannot connect to your wallet!
-                            <br />
-                            Make sure your wallet is in Ethereum network!
+                            {getMessageError(walletContextProps.walletError)}
                         </Box>
                     ) : (
                         ''

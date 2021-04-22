@@ -26,22 +26,9 @@ import { Behodler2Contracts } from './IContracts'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 
 import Behodler2Addresses from './behodler2UI/Addresses.json'
-<<<<<<< HEAD
 
 import { Lachesis as Lachesis2 } from "./contractInterfaces/behodler2/Lachesis";
 import { LiquidityReceiver } from "./contractInterfaces/behodler2/LiquidityReceiver";
-=======
-import AddTokenToBehodlerPower from './behodler2UI/Morgoth/AddTokenToBehodlerPower.json'
-import AngbandJSON from './behodler2UI/Morgoth/Angband.json'
-import ConfigureScarcityPowerJSON from './behodler2UI/Morgoth/ConfigureScarcityPower.json'
-import IronCrownJSON from './behodler2UI/Morgoth/IronCrown.json'
-import MigratorJSON from './behodler2UI/Morgoth/Migrator.json'
-import PowersRegistryJSON from './behodler2UI/Morgoth/PowersRegistry.json'
-import ScarcityBridgeJSON from './behodler2UI/Morgoth/ScarcityBridge.json'
-import SetSilmarilJSON from './behodler2UI/Morgoth/SetSilmarilPower.json'
-import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
-import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
 import { BridgeEffects } from './observables/BridgeEffects'
 import { SluiceGateEffects } from './observables/SluiceGateEffects'
 import { LiquidQueueEffects } from './observables/LiquidQueueEffects'
@@ -52,6 +39,7 @@ import UniswapV2FactoryJSON from './liquidQueue/UniswapV2Factory.json'
 import LiquidQueueAddresses from './liquidQueue/Addresses.json'
 import UniswapV2Factory from "./contractInterfaces/liquidQueue/UniswapV2Factory";
 import { UniswapV2Effects } from "./observables/UniswapEffects";
+import { WalletError } from 'src/components/Contexts/WalletStatusContext'
 
 interface AccountObservable {
     account: string
@@ -86,12 +74,12 @@ class ethereumAPI {
 	private interval: any
 
 	private newContracts: newContracts
-	public initialized: boolean = false
-	public newContractObservable: Observable<newContracts> = new Observable<newContracts>()
-	private networkMapping: any
-	public currentAccount: address = ''
-	public web3: Web3 = new Web3();
-	public accountObservable: Observable<AccountObservable> = new Observable<AccountObservable>()
+	public initialized: boolean
+	public newContractObservable: Observable<newContracts>
+    public networkMapping: { [key: number]: string }
+    public contractsAvailable: string[]
+	public web3: Web3;
+	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
 	public daiEffects: ERC20Effects
 	public preEffects: PatienceRegulationEffects
@@ -116,11 +104,17 @@ class ethereumAPI {
 			"66": "private",
 			"1337": "private"
 		}
+        // if we want to add more chains, add their ids and names in this.networkMapping and add their names to the array below
+        this.contractsAvailable = ['main']
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
 
 	public async initialize(chainId, currentAccount: string): Promise<IContracts> {
-		const networkName = this.networkMapping[chainId]
+        const network = this.networkMapping[chainId]
+        if (!network) return Promise.reject(WalletError.NETWORK_NOT_SUPPORTED)
+        const isProductionNetwork = this.contractsAvailable.filter(allowedNetwork => allowedNetwork === network).length > 0
+        // development is a fallback for networks that do not have contracts yet
+        const networkName = isProductionNetwork ? network : 'development'
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
 		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
@@ -187,24 +181,20 @@ class ethereumAPI {
 	}
 
 	public isEth(token: string, network: string): boolean {
-		const networkNameForQueue = network === 'private' || network === 'development' ? 'development' : network
-		return LiquidQueueAddresses[networkNameForQueue].WETH === token
+		return LiquidQueueAddresses[network].WETH === token
 	}
 	public async getToken(tokenAddress: string, network: string): Promise<ERC20> {
-		network = network === 'private' || network === 'development' ? 'development' : network
 		var token = (((new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress)).methods as unknown) as ERC20)
 		token.address = tokenAddress;
 		return token
 	}
 
 	public getEYEAddress(network: string): string {
-		const netName = network === 'private' ? 'development' : network
-		const EYE = LiquidQueueAddresses[netName].EYE
+		const EYE = LiquidQueueAddresses[network].EYE
 		return EYE
 	}
 
 	public async getPyroToken(tokenAddress: string, network: string): Promise<Pyrotoken> {
-		network = network === 'private' || network === 'development' ? 'development' : network
 		return await (((new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress)).methods as unknown) as Pyrotoken)
 	}
 
@@ -223,18 +213,16 @@ class ethereumAPI {
 	}
 
 	public async EYE_ETH_PAIR(network: address, account: string): Promise<string> {
-		const netName = network === 'private' ? 'development' : network
-		const EYE = LiquidQueueAddresses[netName].EYE
-		const WETH = LiquidQueueAddresses[netName].WETH
-		const factoryInstance: UniswapV2Factory = (await this.deployBehodlerContract(UniswapV2FactoryJSON.abi, LiquidQueueAddresses[netName].UniswapV2Factory)).methods
+		const EYE = LiquidQueueAddresses[network].EYE
+		const WETH = LiquidQueueAddresses[network].WETH
+		const factoryInstance: UniswapV2Factory = (await this.deployBehodlerContract(UniswapV2FactoryJSON.abi, LiquidQueueAddresses[network].UniswapV2Factory)).methods
 		return await factoryInstance.getPair(EYE, WETH).call({ from: account })
 	}
 
 	public async EYE_SCX_PAIR(network: address, account: string): Promise<string> {
-		const netName = network === 'private' ? 'development' : network
-		const EYE = LiquidQueueAddresses[netName].EYE
-		const SCX = LiquidQueueAddresses[netName].SCX
-		const factoryInstance: UniswapV2Factory = (await this.deployBehodlerContract(UniswapV2FactoryJSON.abi, LiquidQueueAddresses[netName].UniswapV2Factory)).methods
+		const EYE = LiquidQueueAddresses[network].EYE
+		const SCX = LiquidQueueAddresses[network].SCX
+		const factoryInstance: UniswapV2Factory = (await this.deployBehodlerContract(UniswapV2FactoryJSON.abi, LiquidQueueAddresses[network].UniswapV2Factory)).methods
 		return await factoryInstance.getPair(EYE, SCX).call({ from: account })
 	}
 	public async EYE_ETHEffects(network: address, account: string): Promise<Token> {

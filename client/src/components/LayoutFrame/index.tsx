@@ -85,7 +85,7 @@ export default function LayoutFrame(props: any) {
     const classes = useStyles();
 
     const notConnected: boolean =
-        !walletContextProps.connected || walletContextProps.networkName === "" || !walletContextProps.initialized; //|| walletContextProps.account.length < 5
+        !walletContextProps.connected || !walletContextProps.networkName || !walletContextProps.initialized; //|| walletContextProps.account.length < 5
     const openFooter = (url: string) => window.open(url, "_blank");
     return (
         <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
