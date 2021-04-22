@@ -97,12 +97,7 @@ export default function LayoutFrame(props: any) {
                 <Box className={classes.mainContent} flexGrow={1}>
                     <Switch>
                         <Route path="/" exact>
-                            <Swap
-                                setShowMetamaskInstallPopup={setShowMetamaskInstallPopup}
-                                connected={!notConnected}
-                                setRouteValue={setBehodlerRoute}
-                                route="swap2"
-                            />
+                            <Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
                         </Route>
                         <Route path="/liquidity">
                             <Swap
@@ -113,25 +108,8 @@ export default function LayoutFrame(props: any) {
                             />
                         </Route>
                         <Route path="/swap2">
-                            <Swap
-                                setShowMetamaskInstallPopup={setShowMetamaskInstallPopup}
-                                connected={!notConnected}
-                                setRouteValue={setBehodlerRoute}
-                                route="swap2"
-                            />
+                            <Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
                         </Route>
-                        {walletContextProps.isMelkor ? (
-                            <Route path="/pyro">
-                                <Swap
-                                    setShowMetamaskInstallPopup={setShowMetamaskInstallPopup}
-                                    connected={!notConnected}
-                                    setRouteValue={setBehodlerRoute}
-                                    route="pyro"
-                                />
-                            </Route>
-                        ) : (
-                            <div></div>
-                        )}
                         <Route path="/governance">
                             <Swap
                                 setShowMetamaskInstallPopup={setShowMetamaskInstallPopup}
@@ -145,55 +123,50 @@ export default function LayoutFrame(props: any) {
                 <Box className={classes.footer}>
                     <Box className={classes.footerPanel}>
                         <Box>
-                            <IconButton title="github" onClick={() => openFooter("https://github.com/WeiDaiEcosystem")}>
+                            <IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')}>
                                 <img src={github} width={footerIconWidth} />
                             </IconButton>
                         </Box>
                         <Box>
-                            <IconButton
-                                title="medium"
-                                onClick={() => openFooter("https://medium.com/weidaithriftcoin")}>
+                            <IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')}>
                                 <img src={medium} width={footerIconWidth} />
                             </IconButton>
                         </Box>
                         <Box>
-                            <IconButton title="twitter" onClick={() => openFooter("https://twitter.com/behodlerdex")}>
+                            <IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')}>
                                 <img src={twitter} width={footerIconWidth} />
                             </IconButton>
                         </Box>
                         <Box>
-                            <IconButton title="discord" onClick={() => openFooter("https://discord.gg/FHhsqmryZK")}>
+                            <IconButton title="discord" onClick={() => openFooter('https://discord.gg/FHhsqmryZK')}>
                                 <img src={discord} width={footerIconWidth} />
                             </IconButton>
                         </Box>
                         <Box>
                             <IconButton
                                 title="uniswap"
-                                onClick={() =>
-                                    openFooter(
-                                        "https://app.uniswap.org/#/swap?inputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65&outputCurrency=ETH"
-                                    )
-                                }>
+                                onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65&outputCurrency=ETH')}
+                            >
                                 <img src={uniswap} width={footerIconWidth} />
                             </IconButton>
                         </Box>
                         <Box>
-                            <IconButton title="telegram" onClick={() => openFooter("https://t.me/BehodlerDex")}>
+                            <IconButton title="telegram" onClick={() => openFooter('https://t.me/BehodlerDex')}>
                                 <img src={telegram} width={footerIconWidth} />
                             </IconButton>
                         </Box>
                         {walletContextProps.primary ? (
                             <Box>
-                                <IconButton title="governance" onClick={() => setBehodlerRoute("behodler/admin")}>
+                                <IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')}>
                                     src={twitter} width={footerIconWidth}
                                 </IconButton>
                             </Box>
                         ) : (
-                            ""
+                            ''
                         )}
                     </Box>
                 </Box>
             </Box>
         </Box>
-    );
+    )
 }

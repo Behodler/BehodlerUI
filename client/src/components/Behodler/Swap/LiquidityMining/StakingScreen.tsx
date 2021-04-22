@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useEffect, useState, useContext, useCallback } from 'react'
 import Token from '../../../../blockchain/observables/Token'
-import { createStyles, Grid, makeStyles } from '@material-ui/core'
+import { createStyles, Grid, makeStyles, Box } from '@material-ui/core'
 
 import API from "../../../../blockchain/ethereumAPI"
 import { WalletContext } from "../../../Contexts/WalletStatusContext"
@@ -252,7 +252,7 @@ export default function StakingScreen() {
         </Grid>
     </Grid>
 
-    return <div>
+    return <Box>
         <Grid container
             direction="column"
             justify="space-between"
@@ -266,5 +266,5 @@ export default function StakingScreen() {
 
             </Grid>
         </Grid>
-    </div >
+    </Box >
 }

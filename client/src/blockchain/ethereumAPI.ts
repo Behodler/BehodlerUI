@@ -236,13 +236,11 @@ class ethereumAPI {
 	}
 
 	public getLQInputAddresses(network: string): LQInputAddressList {
-		const netName = network === 'private' ? 'development' : network
-
 		return {
-			Dai: LiquidQueueAddresses[netName].DAI,
-			Eth: LiquidQueueAddresses[netName].WETH,
-			Scarcity: LiquidQueueAddresses[netName].SCX,
-			Eye: LiquidQueueAddresses[netName].EYE
+			Dai: LiquidQueueAddresses[network].DAI,
+			Eth: LiquidQueueAddresses[network].WETH,
+			Scarcity: LiquidQueueAddresses[network].SCX,
+			Eye: LiquidQueueAddresses[network].EYE
 		}
 	}
 
@@ -252,15 +250,14 @@ class ethereumAPI {
 	}
 
 	public constructRewardToken(tokenAddress: string, network: string) {
-		const netName = network === 'private' ? 'development' : network
 		switch (tokenAddress) {
-			case LiquidQueueAddresses[netName].DAI:
+			case LiquidQueueAddresses[network].DAI:
 				return 'EYE/DAI'
-			case LiquidQueueAddresses[netName].WETH:
+			case LiquidQueueAddresses[network].WETH:
 				return 'SCX/WETH'
-			case LiquidQueueAddresses[netName].SCX:
+			case LiquidQueueAddresses[network].SCX:
 				return 'SCX/EYE'
-			case LiquidQueueAddresses[netName].EYE:
+			case LiquidQueueAddresses[network].EYE:
 				return 'SCX/EYE'
 			default: return 'not found'
 		}
@@ -357,7 +354,6 @@ class ethereumAPI {
 
 	private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
 		let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
-		network = network == 'private' ? 'development' : network
 		let mappingsList = BehodlerContractMappings.filter(item => item.name == network)[0].list
 		const keys = Object.keys(behodlerContracts).filter(key => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
 		keys.forEach(async (key) => {
@@ -373,7 +369,6 @@ class ethereumAPI {
 	private async fetchBehodler2(network: string): Promise<Behodler2Contracts> {
 
 		let behodler2: Behodler2
-		network = network == 'private' ? 'development' : network
 		const addresses = Behodler2Addresses[network]
 
 
