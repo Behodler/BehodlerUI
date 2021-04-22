@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
 	"name": "client",
 	"version": "0.1.0",
 	"private": true,
@@ -59,4 +60,62 @@
 			"last 1 safari version"
 		]
 	}
+=======
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.9.11",
+    "@material-ui/icons": "^4.9.1",
+    "@truffle/hdwallet-provider": "^1.2.1",
+    "acorn": "^6.4.2",
+    "ajv": "^6.8.1",
+    "bignumber.js": "^8.0.1",
+    "connected-react-router": "^6.3.2",
+    "fork-ts-checker-webpack-plugin": "^0.2.10",
+    "handy-redis": "^2.2.1",
+    "openzeppelin-solidity": "^2.1.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^6.0.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts-ts": "^3.1.0",
+    "react-swipeable-views": "^0.13.9",
+    "rxjs": "^6.5.1",
+    "truffle-core": "^5.0.14",
+    "typeface-roboto": "0.0.75",
+    "web3": "^1.0.0-beta.37"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "s3:sync": "aws s3 sync ../build/ s3://behodler.io",
+    "build:no-deploy": "react-scripts-ts build",
+    "build": "npm run build:no-deploy && npm run s3:sync",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.12",
+    "@types/node": "^11.12.0",
+    "@types/react": "^16.14.5",
+    "@types/react-dom": "^16.9.12",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/web3": "^1.0.18",
+    "redis": "^3.0.2",
+    "types-web3-provider-engine": "0.0.2",
+    "typescript": "^3.3.4000"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+>>>>>>> added non-hex fix
 }

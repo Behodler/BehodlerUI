@@ -68,14 +68,7 @@ function Donations(props: donationsProps) {
             setOXT(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -85,14 +78,7 @@ function Donations(props: donationsProps) {
             setPNK(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -102,14 +88,7 @@ function Donations(props: donationsProps) {
             setWeth(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -119,14 +98,7 @@ function Donations(props: donationsProps) {
             setLink(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -136,14 +108,7 @@ function Donations(props: donationsProps) {
             setLoom(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -153,14 +118,7 @@ function Donations(props: donationsProps) {
             setWBTC(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -170,14 +128,7 @@ function Donations(props: donationsProps) {
             setMKR(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     useEffect(() => {
@@ -187,14 +138,7 @@ function Donations(props: donationsProps) {
             setBAT(balance)
         })
 
-<<<<<<< HEAD
         return () => { subscription.unsubscribe();  }
-=======
-        return () => {
-            subscription.unsubscribe()
-            effect.cleanup()
-        }
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
     })
 
     return (

@@ -42,7 +42,7 @@ export default function LiquidityMining() {
                     .unstake(EYE_SCX_PAIR)
                     .send({ from: account })
                     .on("receipt", function () {
-                        location.reload();
+                        window.location.reload()
                     });
 
             if (eyeStake > 0)
@@ -50,7 +50,7 @@ export default function LiquidityMining() {
                     .unstake(EYE_ETH_PAIR)
                     .send({ from: account })
                     .on("receipt", function () {
-                        location.reload();
+                        window.location.reload()
                     });
         }
     }, [unstakeClicked]);

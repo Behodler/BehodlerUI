@@ -316,13 +316,12 @@ class ethereumAPI {
 	}
 
 	public pureHexToNumberString(value: any): string {
-		if (value === "0")
-			return "0"
-		if (this.web3.utils.isHexStrict(value)) {
-			return this.web3.utils.hexToNumberString(value)
-		}
-
-		return value
+        if (value === '0') return '0'
+        try {
+            return this.web3.utils.hexToNumberString(value)
+        } catch (err) {
+            return value
+        }
 	}
 
 	public pureHexToNumber(value: any): number {

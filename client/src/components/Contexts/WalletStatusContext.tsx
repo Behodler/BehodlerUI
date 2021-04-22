@@ -54,7 +54,6 @@ let chainIdUpdater = (
 ) => {
     return (response: any) => {
         const chainIDNum = API.pureHexToNumber(response)
-        console.log(chainIDNum)
         setChainId(chainIDNum)
         setNetworkName(networkNameMapper(chainIDNum))
         setInitialized(false)
