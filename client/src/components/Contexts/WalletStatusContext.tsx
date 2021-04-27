@@ -8,6 +8,7 @@ import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import coinbaseWalletIcon from '../../customIcons/coinbase-wallet.svg'
 import * as Portis from "@portis/web3"
+import * as Fortmatic from "fortmatic"
 
 interface walletProps {
 	chainId: number
@@ -39,6 +40,7 @@ const {
 	REACT_APP_INFURA_ID: INFURA_ID,
 	REACT_APP_PORTIS_ID: PORTIS_ID,
 	REACT_APP_RPC_CONFIGS: RPC_CONFIGS,
+	REACT_APP_FORTMATIC_KEY: FORTMATIC_KEY,
 } = process.env;
 
 const networkNameMapper = (id: number): string => {
@@ -113,7 +115,7 @@ const initWeb3Modal = () => {
 
 		if (rpcConfig[1] || INFURA_ID) {
 			const walletlinkRPCURL = rpcConfig
-				? rpcConfig[1]
+				? rpcConfig[1] // hardcoded mainnet
 				: `https://mainnet.infura.io/v3/${INFURA_ID}`
 
 			providerOptions['custom-walletlink'] = {
@@ -141,7 +143,16 @@ const initWeb3Modal = () => {
 			options: {
 				id: PORTIS_ID,
 			}
-		};
+		}
+	}
+
+	if (FORTMATIC_KEY) {
+		providerOptions.fortmatic = {
+			package: Fortmatic,
+			options: {
+				key: FORTMATIC_KEY,
+			},
+		}
 	}
 
 	return new Web3Modal({
@@ -151,38 +162,42 @@ const initWeb3Modal = () => {
 };
 
 const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
-	const triggerCommonDisconnectFn = async () => {
+	const triggerCommonDisconnectFn = async (message) => {
 	    if (typeof provider.disconnect === 'function') await provider.disconnect()
 	    if (typeof provider.close === 'function') await provider.close()
+
+		handleWalletDisconnected(`: ${message}`)
 	}
 
 	if (provider.isMetaMask) {
 		return async () => {
-			await triggerCommonDisconnectFn()
 			provider.emit('disconnect')
-			handleWalletDisconnected(': Metamask disconnected by user')
+			await triggerCommonDisconnectFn('Metamask disconnected by user')
 		}
 	} else if (provider.isPortis) {
 		return async () => {
-			await triggerCommonDisconnectFn()
 			provider._portis.logout()
-			handleWalletDisconnected(': Portis disconnected by user')
+			await triggerCommonDisconnectFn('Portis disconnected by user')
 			window.location.reload() // after logging out, Portis still pulls from Infura API, I couldn't find other way to get it to stop
 		}
 	} else if (provider.wc) {
 		return async () => {
-			await triggerCommonDisconnectFn()
-			handleWalletDisconnected(': Walletconnect provider disconnected by user')
+			await triggerCommonDisconnectFn('Walletconnect provider disconnected by user')
 			window.location.reload() // fix for walletconnect QR code popup showing up after a disconnection
 		}
 	} else if (provider.isWalletLink) {
 		return async () => {
-			await triggerCommonDisconnectFn()
-			handleWalletDisconnected(': Walletlink provider disconnected by user')
+			await triggerCommonDisconnectFn('Walletlink provider disconnected by user')
+		}
+	} else if (provider.isFortmatic) {
+		return async () => {
+			if (provider.fm.user && typeof provider.fm.user.logout === 'function') await provider.fm.user.logout()
+			await triggerCommonDisconnectFn('Fortmatic disconnected by user')
+			window.location.reload()
 		}
 	}
 
-	return;
+	return
 }
 
 const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction) => async () => {
@@ -192,6 +207,10 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 
 	if (!PORTIS_ID) {
 		console.info('REACT_APP_PORTIS_ID environment variable is not set. It is required in order for Portis wallet provider to work.')
+	}
+
+	if (!FORTMATIC_KEY) {
+		console.info('REACT_APP_FORTMATIC_KEY environment variable is not set. It is required in order for Fortmatic wallet provider to work.')
 	}
 
 	const handleWalletDisconnected = (info: any = null) => {
@@ -234,7 +253,7 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 
 		const providerChainId = provider.isPortis
 			? provider._portis.config.network.chainId
-			: provider.chainId || provider._chainId
+			: provider.chainId || provider._chainId || 1
 
 		chainIdUpdateHandlerOnce(providerChainId)
 
@@ -275,6 +294,7 @@ function WalletContextProvider(props: any) {
 		if (chainId > 0 && account.length > 3 && !initialized) {
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
+
 			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
 			const melkor = await c.behodler.Behodler2.Morgoth.PowersRegistry.isUserMinion(account, API.web3.utils.fromAscii('Melkor')).call({ from: account })
 

@@ -13,6 +13,7 @@
     "bignumber.js": "^8.0.1",
     "connected-react-router": "^6.3.2",
     "fork-ts-checker-webpack-plugin": "^0.2.10",
+    "fortmatic": "^2.2.1",
     "handy-redis": "^2.2.1",
     "openzeppelin-solidity": "^2.1.1",
     "react": "^17.0.1",
