@@ -16,4 +16,5 @@ ganacheID.txt
 client/src/blockchain/behodlerUI/images/private
 *.txt
 *.rdb
+client/yarn.lock
 .idea

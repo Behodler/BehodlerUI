@@ -19,7 +19,6 @@ interface walletProps {
 	initialized: boolean
 	networkName: string
 	primary: boolean
-	isMelkor: boolean
 	disconnectAction: any
 }
 
@@ -32,7 +31,6 @@ let WalletContext = React.createContext<walletProps>({
 	initialized: false,
 	networkName: 'private',
 	primary: false,
-	isMelkor: false,
 	disconnectAction: () => { console.log('disconnect action not set') },
 })
 
@@ -56,9 +54,11 @@ const networkNameMapper = (id: number): string => {
 	}
 }
 
-const chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
+let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
 	return (hexChainId: any) => {
+		console.log('chainID response: ' + JSON.stringify(hexChainId))
 		const decimalChainId = API.pureHexToNumber(hexChainId)
+		console.log('chainID parsed ' + decimalChainId)
 		setChainId(decimalChainId)
 		setNetworkName(networkNameMapper(decimalChainId))
 		setInitialized(false)
@@ -287,7 +287,6 @@ function WalletContextProvider(props: any) {
 	const [initialized, setInitialized] = useState<boolean>(false)
 	const [networkName, setNetworkName] = useState<string>("")
 	const [primary, setPrimary] = useState<boolean>(false)
-	const [isMelkor, setMelkor] = useState<boolean>(false)
 	const [disconnectAction, setDisconnectAction] = useState<any>()
 
 	const initializationCallBack = React.useCallback(async () => {
@@ -296,9 +295,6 @@ function WalletContextProvider(props: any) {
 			setContracts(c)
 
 			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
-			const melkor = await c.behodler.Behodler2.Morgoth.PowersRegistry.isUserMinion(account, API.web3.utils.fromAscii('Melkor')).call({ from: account })
-
-			setMelkor(melkor)
 			setPrimary(owner.toLowerCase() === account.toLowerCase())
 			setInitialized(true)
 		}
@@ -329,7 +325,6 @@ function WalletContextProvider(props: any) {
 		initialized,
 		networkName,
 		primary,
-		isMelkor
 	}
 	WalletContext = React.createContext<walletProps>(providerProps)
 	return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
