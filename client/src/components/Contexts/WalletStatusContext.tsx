@@ -21,7 +21,6 @@ interface walletProps {
 	initialized: boolean
 	networkName: string,
 	primary: boolean
-	isMelkor: boolean
 }
 
 let WalletContext = React.createContext<walletProps>({
@@ -34,7 +33,6 @@ let WalletContext = React.createContext<walletProps>({
 	initialized: false,
 	networkName: 'private',
 	primary: false,
-	isMelkor: false
 });
 
 const networkNameMapper = (id: number): string => {
@@ -52,7 +50,9 @@ const networkNameMapper = (id: number): string => {
 
 let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
 	return (response: any) => {
+		console.log('chainID response: ' + JSON.stringify(response))
 		const chainIDNum = API.pureHexToNumber(response)
+		console.log('chainID parsed ' + chainIDNum)
 		setChainId(chainIDNum)
 		setNetworkName(networkNameMapper(chainIDNum))
 		setInitialized(false)
@@ -87,15 +87,12 @@ function WalletContextProvider(props: any) {
 	const [initialized, setInitialized] = useState<boolean>(false)
 	const [networkName, setNetworkName] = useState<string>("")
 	const [primary, setPrimary] = useState<boolean>(false)
-	const [isMelkor, setMelkor] = useState<boolean>(false)
 
 	const initializationCallBack = React.useCallback(async () => {
 		if (chainId > 0 && account.length > 3 && !initialized) {
 			const c = await API.initialize(chainId, account)
 			setContracts(c)
 			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
-			const melkor = await c.behodler.Behodler2.Morgoth.PowersRegistry.isUserMinion(account, API.web3.utils.fromAscii('Melkor')).call({ from: account })
-			setMelkor(melkor)
 			setPrimary(owner.toLowerCase() === account.toLowerCase())
 			setInitialized(true)
 		}
@@ -140,7 +137,9 @@ function WalletContextProvider(props: any) {
 			let connectionActionObject = {
 				action: () => {
 					window.ethereum.request({ method: 'eth_requestAccounts' })
-						.then(() => location.reload())
+						.then(() => {
+							window.location.reload()
+						})
 						.catch(err => {
 							setConnected(false)
 							if (err.code === 4001) {
@@ -164,9 +163,9 @@ function WalletContextProvider(props: any) {
 		connectAction,
 		initialized,
 		networkName,
-		primary,
-		isMelkor
+		primary
 	}
+	// console.log(JSON.stringify(providerProps, null, 4))
 	WalletContext = React.createContext<walletProps>(providerProps);
 	return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
 

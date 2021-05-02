@@ -7,10 +7,8 @@ import github from '../../../src/images/behodler/footer/Github.png'
 import twitter from '../../../src/images/behodler/footer/t.png'
 import uniswap from '../../../src/images/behodler/footer/uniswap.png'
 import telegram from '../../../src/images/behodler/footer/telegram.png'
-import ScarcityConversion from './ScarcityConversion'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
-import Admin from '../Behodler/Admin/index'
 
 //client/src/blockchain/ethereumAPI.ts
 import MetamaskNotFound from './MetamaskNotFound'
@@ -103,7 +101,6 @@ export default function LayoutFrame(props: any) {
 				{renderRedirect}
 
 			</div>
-			{notConnected ? '' : <ScarcityConversion />}
 
 			<Grid
 				container
@@ -119,22 +116,13 @@ export default function LayoutFrame(props: any) {
 							</Route>
 							{walletContextProps.primary ?
 								<Route path="/behodler/admin">
-									<Admin />
+			
 								</Route>
 								: ""
 							}
-							<Route path="/liquidity" exact>
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="liquidity" />
-							</Route>
 							<Route path="/swap2" exact>
-							
+
 								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
-							</Route>
-							{walletContextProps.isMelkor ? <Route path='/pyro'>
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="pyro" />
-							</Route> : <div></div>}
-							<Route path="/governance">
-								<Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="governance" />
 							</Route>
 						</Switch>
 					</div>

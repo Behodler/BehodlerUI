@@ -3,7 +3,6 @@ import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox2 from './TradingBox2/index'
 import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import LiquidityMining from './LiquidityMining/index'
 import { Grid, Typography, Button, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { WalletContext } from "../../Contexts/WalletStatusContext"
@@ -14,9 +13,8 @@ import alternateLogo from '../../../images/behodler/tradhodler.png'
 import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import TopMenu from 'src/components/LayoutFrame/TopMenu'
-import Governance from '../Swap/Governance/index'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
-export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
+export type permittedRoutes = 'swap' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'swap2' | 'pyro'
 
 interface props {
     connected: boolean
@@ -110,8 +108,8 @@ const useStyles = makeStyles(theme => createStyles({
     nopadding: {
         padding: 0
     },
-    eyeLogo:{
-        width:400,
+    eyeLogo: {
+        width: 400,
         margin: '0 -20px -60px 0'
     }
 }));
@@ -183,7 +181,7 @@ export default function Swap(props: props) {
 
     const DepaddedGridItem = (props: { children: any }) => <Grid className={classes.nopadding} item>{props.children}</Grid>
     return <div>
-        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} admin={walletContextProps.isMelkor} />}
+        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} />}
         <Grid
             container
             direction="column"
@@ -278,11 +276,6 @@ function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] })
     switch (props.value) {
         case 'swap2':
             return <TradingBox2 />
-        case 'liquidity':
-            return <LiquidityMining />
-        case 'governance':
-
-            return <Governance />
         case 'pyro':
             if (props.tokens.length > 1)
                 return <PyroTokens tokens={props.tokens} />

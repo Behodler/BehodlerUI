@@ -145,7 +145,6 @@ interface props {
     setRouteValue: (v: permittedRoutes) => void,
     ethBalance: string
     truncAccount: string
-    admin: boolean
 }
 
 export default function TopMenu(props: props) {
@@ -176,9 +175,6 @@ export default function TopMenu(props: props) {
                 <Toolbar>
                     <Hidden mdDown>
                         <LeftLink text="Swap" nav={() => props.setRouteValue('swap2')} selected={location === 'swap2'} />
-                        {props.admin ? <LeftLink text="Pyrotokens" nav={() => props.setRouteValue('pyro')} selected={location === 'pyro'} /> : <div></div>}
-
-                        <LeftLink text="Liquid Queue" nav={() => props.setRouteValue('liquidity')} selected={location === 'liquidity'} />
                         <LeftLink text="EYE" nav={() => window.open(eyelink, '_blank')} selected={false} />
                     </Hidden>
                     <div className={classes.search}>
@@ -234,10 +230,6 @@ export default function TopMenu(props: props) {
                                 className={classes.menu}
                             >
                                 <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap</MenuItem>
-                                {props.admin ? <MenuItem className={classes.menuList} onClick={() => route('pyro')}>Pyrotokens</MenuItem> : <div></div>}
-
-                                <MenuItem className={classes.menuList} onClick={() => route('liquidity')}>Liquid Queue</MenuItem>
-                                <MenuItem className={classes.menuList} onClick={() => route('governance')}>Governance</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
                             </Menu>
                         </Hidden>
