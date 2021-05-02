@@ -5,7 +5,7 @@
 		"module": "esnext",
 		"target": "es2016",
 		"lib": [
-			"es6",
+			"esnext",
 			"dom"
 		],
 		"sourceMap": true,
