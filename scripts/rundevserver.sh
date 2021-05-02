@@ -29,15 +29,3 @@ node ./scripts/behodler2DevCapture.js
 echo "**************CAPTURE DEV TRADING TOKENS***********"
 echo ""
 node scripts/captureDevTokens.js
-cd ../morgoth-dao
-echo "*************MIGRATING MORGOTH*********************"
-rm -rf build
-truffle migrate
-cp DevAddresses.json ../behodlerUI/temp/
-cd ../behodlerUI
-node scripts/morgothDevCapture.js
-echo "*************LIQUID QUEUE*********************"
-cd ../LiquidQueue
-rm -rf build
-truffle migrate
-cp deploymentObject.json ../behodlerUI/client/src/blockchain/liquidQueue/Addresses.json
