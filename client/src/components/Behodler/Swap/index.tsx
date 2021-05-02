@@ -1,48 +1,18 @@
-<<<<<<< HEAD
-import * as React from "react";
-import { useState, useContext, useEffect, useCallback } from "react";
-import TradingBox2 from "./TradingBox2/index";
-import PyroTokens from "./PyroTokens/index";
-import { basePyroPair, filterPredicate } from "./PyroTokens/index";
-import { Box, Typography, Button, Container } from "@material-ui/core";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { WalletContext } from "../../Contexts/WalletStatusContext";
-import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json";
-import API from "../../../blockchain/ethereumAPI";
-import alternateLogo from "../../../images/behodler/tradhodler.png";
-import eyelogo from "../../../images/behodler/landingPage/behodlerLogo.png";
-import TopMenu from "src/components/LayoutFrame/TopMenu";
-import { Pyrotoken } from "../../../blockchain/contractInterfaces/behodler2/Pyrotoken";
-import MetamaskGasWarning from "src/components/LayoutFrame/MetamaskGasWarning";
-export type permittedRoutes =
-    | "swap"
-    | "liquidity"
-    | "sisyphus"
-    | "faucet"
-    | "behodler/admin"
-    | "governance"
-    | "swap2"
-    | "pyro";
-=======
 import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox2 from './TradingBox2/index'
 import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import LiquidityMining from './LiquidityMining/index'
-import { Typography, Button, Container, Box } from '@material-ui/core'
-import { createStyles, makeStyles } from '@material-ui/core/styles'
+import { Typography, Button, Container, Box, makeStyles, createStyles } from '@material-ui/core'
 import { WalletContext, WalletError } from '../../Contexts/WalletStatusContext'
 import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
 import alternateLogo from '../../../images/behodler/tradhodler.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import TopMenu from '../../LayoutFrame/TopMenu'
-import Governance from '../Swap/Governance/index'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
 import MetamaskGasWarning from '../../LayoutFrame/MetamaskGasWarning'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
 
 interface props {
     connected: boolean
@@ -188,15 +158,11 @@ export default function Swap(props: props) {
         <Box className={classes.root}>
             {props.connected ? (
                 <>
-<<<<<<< HEAD
                     <TopMenu
                         setRouteValue={props.setRouteValue}
                         ethBalance={ethBalance}
                         truncAccount={truncAccount}
                     />
-=======
-                    <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} admin={walletContextProps.isMelkor} />
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
                     <MetamaskGasWarning />
                     <Box className={classes.headerText} mt={6}>
                         <div className={classes.alphadrop}>Swap, Own and Queue for Liquidity</div>
@@ -256,18 +222,9 @@ function RenderScreen(props: { value: permittedRoutes; tokens: basePyroPair[] })
     switch (props.value) {
         case 'swap2':
             return <TradingBox2 />
-<<<<<<< HEAD
         case 'pyro':
             if (props.tokens.length > 1)
                 return <PyroTokens tokens={props.tokens} />
-=======
-        case 'liquidity':
-            return <LiquidityMining />
-        case 'governance':
-            return <Governance />
-        case 'pyro':
-            if (props.tokens.length > 1) return <PyroTokens tokens={props.tokens} />
->>>>>>> migrated to create-react-app, added hot reloading, and fixed icon size
             return <Typography variant="subtitle1">fetching pyrotoken mapping from the blockchain...</Typography>
         default:
             return <div>Chronos</div>
