@@ -11,7 +11,6 @@ import alternateLogo from '../../../images/behodler/tradhodler.png'
 import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import TopMenu from '../../LayoutFrame/TopMenu'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
-import MetamaskGasWarning from '../../LayoutFrame/MetamaskGasWarning'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
 interface props {
@@ -163,7 +162,6 @@ export default function Swap(props: props) {
                         ethBalance={ethBalance}
                         truncAccount={truncAccount}
                     />
-                    <MetamaskGasWarning />
                     <Box className={classes.headerText} mt={6}>
                         <div className={classes.alphadrop}>Swap, Own and Queue for Liquidity</div>
                         <Typography variant="h4" className={classes.behodlerHeading}>
