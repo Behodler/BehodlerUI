@@ -4,12 +4,13 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import { createStyles, fade, Theme, makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
-import { Grid, Hidden, Link, Menu, MenuItem } from "@material-ui/core";
+import {Grid, Hidden, Icon, Link, Menu, MenuItem} from "@material-ui/core";
 import { permittedRoutes } from "../Behodler/Swap";
 import metamaskAccount from "../../images/behodler/metamaskaccount.png";
 import { useLocation } from "react-router-dom";
 import BigNumber from "bignumber.js";
 import { WalletContext } from "../Contexts/WalletStatusContext";
+import disconnectIcon from '../../customIcons/disconnect.svg';
 
 declare global {
     interface String {
@@ -122,7 +123,7 @@ const useStyles = makeStyles((theme: Theme) =>
             // color: theme.palette.type == 'dark' ? 'white' : 'black',
             border: "1px solid #3379DB",
             borderRadius: 10,
-            padding: "5px 10px 5px 10px",
+            padding: "5px 2px 5px 10px",
             backgroundColor: "#3379DB",
             color: "white",
         },
@@ -138,6 +139,15 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         metagrid: {
             paddingLeft: 10,
+        },
+        disconnectIcon: {
+            cursor: 'pointer',
+            filter: 'drop-shadow(0px 0px 2px #78ebf1)',
+            transition: 'filter 0.2s ease',
+            width: '18px',
+            "&:hover": {
+                filter: 'drop-shadow(0px 0px 3px #f17878)',
+            },
         },
     })
 );
@@ -208,9 +218,15 @@ export default function TopMenu(props: props) {
 
                                             {walletContextProps.disconnectAction ? (
                                                 <Grid item>
-                                                    <button onClick={() => walletContextProps.disconnectAction.action()}>
-                                                        Disconnect
-                                                    </button>
+                                                    <Icon>
+                                                        <img
+                                                            src={disconnectIcon}
+                                                            onClick={() => walletContextProps.disconnectAction.action()}
+                                                            className={classes.disconnectIcon}
+                                                            title="Disconnect wallet"
+                                                            alt="Disconnect"
+                                                        />
+                                                    </Icon>
                                                 </Grid>
                                             ) : null}
                                         </Grid>
