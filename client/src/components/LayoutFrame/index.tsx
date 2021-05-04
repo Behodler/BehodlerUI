@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { Grid, makeStyles, createStyles, IconButton } from '@material-ui/core';
+import { Box, makeStyles, createStyles, IconButton } from '@material-ui/core';
 import discord from '../../../src/images/behodler/footer/discord.png'
 import medium from '../../../src/images/behodler/footer/medium.png'
 import github from '../../../src/images/behodler/footer/Github.png'
@@ -14,179 +14,154 @@ import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Sw
 import { WalletContext } from '../Contexts/WalletStatusContext'
 
 //ocean, forest,skybackground
-import backImage from '../../images/behodler/ocean.gif'
-const useStyles = makeStyles(theme => createStyles({
-	layoutFrameroot: {
-		display: "flex",
-		flexFlow: 'column',
-		height: '100%',
-		width: '100%',
-		paddingBottom: 200,
-		backgroundImage: `url(${backImage})`,
-		backgroundRepeat: 'repeat-y',
-		backgroundSize: 'cover',
-		overflowY: 'hidden',
-	},
-	layoutFramerRotNotConnected: {
-		display: "flex",
-		flexFlow: 'column',
-		height: '100%',
-		width: '100%',
-		background: "linear-gradient(to bottom left, #9DC8F2, white)",
-		backgroundRepeat: 'repeat-y',
-		backgroundSize: 'cover'
-	},
-	content: {
-		flexGrow: 1,
-		width: '100%',
-		margin: 0,
-		height: '100%',
-	},
-	footerDiv: {
-		position: 'relative',
-		left: 0,
-		// bottom: 205,
-		bottom: 0,
-		width: '100%',
-		color: 'black',
-		textAlign: 'center',
-		height: 100,
-
-		backgroundColor: 'transparent'
-	},
-	footerGrid: {
-		width: '100%',
-		//marginBottom: '-8px',
-		backgroundColor: 'transparent'
-	},
-	filledGrid: {
-		width: '100%',
-		padding: '0 !important'
-	},
-	whiteText: {
-		color: 'white'
-	},
-	footerPanel: {
-		backgroundColor: 'rgba(255,255,255,0.7)',
-		borderRadius: 10
-	}
-}))
-
-
+import backImage from "../../images/behodler/ocean.gif";
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        layoutFrameroot: {
+            height: "100%",
+            width: "100%",
+            backgroundImage: `url(${backImage})`,
+            backgroundRepeat: "repeat-y",
+            backgroundSize: "cover",
+            overflowY: "scroll",
+        },
+        layoutFramerRotNotConnected: {
+            height: "100%",
+            width: "100%",
+            background: "linear-gradient(to bottom left, #9DC8F2, white)",
+            backgroundRepeat: "repeat-y",
+            backgroundSize: "cover",
+            overflowY: "scroll",
+        },
+        content: {
+            width: "100%",
+            margin: 0,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+        mainContent: {
+            width: "100%",
+        },
+        whiteText: {
+            color: "white",
+        },
+        footer: {
+            width: "90%",
+            maxWidth: "360px",
+            paddingBottom: 40,
+        },
+        footerPanel: {
+            backgroundColor: "rgba(255,255,255,0.7)",
+            borderRadius: 10,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0px 16px",
+            flexWrap: "wrap",
+            [theme.breakpoints.down("sm")]: {
+                padding: 0,
+            },
+        },
+    })
+);
 
 export default function LayoutFrame(props: any) {
-	const [redirect, setRedirect] = useState<string>("")
-	const renderRedirect = redirect !== '' ? <Redirect to={redirect} /> : ''
-	const walletContextProps = useContext(WalletContext)
-	const setBehodlerRoute = (route: permittedBehodlerRoutes) => {
-		setRedirect(route)
-	}
-	const footerIconWidth = 24
-	useEffect(() => {
-		if (renderRedirect !== '')
-			setRedirect('')
-	})
+    const [redirect, setRedirect] = useState<string>("");
+    const renderRedirect = redirect !== "" ? <Redirect to={redirect} /> : "";
+    const walletContextProps = useContext(WalletContext);
+    const setBehodlerRoute = (route: permittedBehodlerRoutes) => {
+        setRedirect(route);
+    };
+    const footerIconWidth = 24;
+    useEffect(() => {
+        if (renderRedirect !== "") setRedirect("");
+    });
 
-	const classes = useStyles()
-	const FilledGridCell = (props: { children: any }) => <Grid className={classes.filledGrid} item> {props.children}</Grid>
-	const notConnected: boolean = !walletContextProps.connected || walletContextProps.networkName === '' || !walletContextProps.initialized//|| walletContextProps.account.length < 5
-	const openFooter = (url: string) => window.open(url, '_blank')
-	return (
-		<div className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
-			{/* */}
-			<div>
-				{renderRedirect}
-			</div>
+    const classes = useStyles();
 
-			<Grid
-				container
-				direction="column"
-				justify="space-evenly"
-				alignItems="center" className={classes.content}
-				spacing={1}>
-				<FilledGridCell>
-					<div>
-						<Switch>
-							<Route path="/" exact >
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
-							</Route>
-							{walletContextProps.primary ?
-								<Route path="/behodler/admin">
+    const notConnected: boolean =
+        !walletContextProps.connected || !walletContextProps.networkName || !walletContextProps.initialized; //|| walletContextProps.account.length < 5
+    const openFooter = (url: string) => window.open(url, "_blank");
+    return (
+        <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
+            {/* */}
+            <div>{renderRedirect}</div>
 
-								</Route>
-								: ""
-							}
-							<Route path="/swap2" exact>
-								<Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
-							</Route>
-						</Switch>
-					</div>
-				</FilledGridCell>
-				<FilledGridCell>
-					<footer>
-						<div className={classes.footerDiv}>
-							<Grid
-								container
-								direction="column"
-								justify="center"
-								alignItems="center"
-								spacing={2}
-								className={classes.footerGrid}
-							>
-								<Grid item>
-									<div className={classes.footerPanel}>
-										<Grid
-											container
-											direction="row"
-											justify="center"
-											alignItems="center"
-											spacing={2}
-										>
-
-											<Grid item>
-												<IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')} >
-													<img src={github} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
-											<Grid item>
-												<IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')} >
-													<img src={medium} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
-											<Grid item>
-												<IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')} >
-													<img src={twitter} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
-											<Grid item>
-												<IconButton title="discord" onClick={() => openFooter('https://discord.gg/FHhsqmryZK')} >
-													<img src={discord} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
-											<Grid item>
-												<IconButton title="uniswap" onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65&outputCurrency=ETH')} >
-													<img src={uniswap} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
-											<Grid item>
-												<IconButton title="telegram" onClick={() => openFooter('https://t.me/BehodlerDex')} >
-													<img src={telegram} width={footerIconWidth} />
-												</IconButton>
-											</Grid>
-											{walletContextProps.primary ? <Grid item>
-												<IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')} >
-													<img src={twitter} width={footerIconWidth} />
-												</IconButton>
-											</Grid> : ''}
-
-										</Grid>
-									</div>
-								</Grid>
-							</Grid>
-						</div>
-					</footer>
-				</FilledGridCell>
-			</Grid>
-		</div>
-	)
+            <Box className={classes.content}>
+                <Box className={classes.mainContent} flexGrow={1}>
+                    <Switch>
+                        <Route path="/" exact>
+                            <Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
+                        </Route>
+                        <Route path="/liquidity">
+                            <Swap
+                                connected={!notConnected}
+                                setRouteValue={setBehodlerRoute}
+                                route="liquidity"
+                            />
+                        </Route>
+                        <Route path="/swap2">
+                            <Swap connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
+                        </Route>
+                        <Route path="/governance">
+                            <Swap
+                                connected={!notConnected}
+                                setRouteValue={setBehodlerRoute}
+                                route="governance"
+                            />
+                        </Route>
+                    </Switch>
+                </Box>
+                <Box className={classes.footer}>
+                    <Box className={classes.footerPanel}>
+                        <Box>
+                            <IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')}>
+                                <img src={github} width={footerIconWidth} />
+                            </IconButton>
+                        </Box>
+                        <Box>
+                            <IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')}>
+                                <img src={medium} width={footerIconWidth} />
+                            </IconButton>
+                        </Box>
+                        <Box>
+                            <IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')}>
+                                <img src={twitter} width={footerIconWidth} />
+                            </IconButton>
+                        </Box>
+                        <Box>
+                            <IconButton title="discord" onClick={() => openFooter('https://discord.gg/FHhsqmryZK')}>
+                                <img src={discord} width={footerIconWidth} />
+                            </IconButton>
+                        </Box>
+                        <Box>
+                            <IconButton
+                                title="uniswap"
+                                onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65&outputCurrency=ETH')}
+                            >
+                                <img src={uniswap} width={footerIconWidth} />
+                            </IconButton>
+                        </Box>
+                        <Box>
+                            <IconButton title="telegram" onClick={() => openFooter('https://t.me/BehodlerDex')}>
+                                <img src={telegram} width={footerIconWidth} />
+                            </IconButton>
+                        </Box>
+                        {walletContextProps.primary ? (
+                            <Box>
+                                <IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')}>
+                                    src={twitter} width={footerIconWidth}
+                                </IconButton>
+                            </Box>
+                        ) : (
+                            ''
+                        )}
+                    </Box>
+                </Box>
+            </Box>
+        </Box>
+    )
 }

@@ -1,37 +1,47 @@
-import * as React from "react"
-import Web3 from "web3"
-import Web3Modal, { IProviderOptions } from "web3modal"
-import WalletConnectProvider from "@walletconnect/web3-provider/dist/umd/index.min"
-import { WalletLink } from "walletlink/dist/WalletLink.js"
-import { useState, useEffect } from "react"
+import * as React from 'react'
+import Web3 from 'web3'
+import { useState, useEffect } from 'react'
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
+import Web3Modal, { IProviderOptions } from 'web3modal'
+import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min'
+import { WalletLink } from 'walletlink/dist/WalletLink.js'
 import coinbaseWalletIcon from '../../customIcons/coinbase-wallet.svg'
-import * as Portis from "@portis/web3"
-import * as Fortmatic from "fortmatic"
+import * as Portis from '@portis/web3'
+import * as Fortmatic from 'fortmatic'
 
 interface walletProps {
-	chainId: number
-	connected: boolean
-	account: string
-	contracts: IContracts
-	connectAction: any
-	initialized: boolean
-	networkName: string
-	primary: boolean
+    chainId: number
+    connected: boolean
+    account: string
+    contracts: IContracts
+    connectAction: any
+    initialized: boolean
+    networkName: string
+    primary: boolean
+    walletError: WalletError | undefined
 	disconnectAction: any
 }
 
+export enum WalletError {
+    NETWORK_NOT_SUPPORTED = 1
+}
+
 let WalletContext = React.createContext<walletProps>({
-	chainId: 0,
-	connected: false,
-	account: "0x0",
-	connectAction: async () => { console.log('connect action not set') },
-	contracts: DefaultContracts,
-	initialized: false,
-	networkName: 'private',
-	primary: false,
-	disconnectAction: () => { console.log('disconnect action not set') },
+    chainId: 0,
+    connected: false,
+    account: '0x0',
+    connectAction: async () => {
+        console.log('connect action not set')
+    },
+    contracts: DefaultContracts,
+    initialized: false,
+    networkName: 'private',
+    primary: false,
+    walletError: 0,
+	disconnectAction: () => {
+    	console.log('disconnect action not set')
+	},
 })
 
 const {
@@ -41,20 +51,15 @@ const {
 	REACT_APP_FORTMATIC_KEY: FORTMATIC_KEY,
 } = process.env;
 
-const networkNameMapper = (id: number): string => {
-	switch (id) {
-		case 1: return "main"
-		case 2: return "morden"
-		case 3: return "ropsten"
-		case 4: return "rinkeby"
-		case 5: return "goerli"
-		case 42: return "kovan"
-		case 66: return "private"
-		default: return "private"
-	}
-}
+const networkNameMapper = (id: number): string => API.networkMapping[id]
 
-let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetworkName: (name: string) => void, setContracts: (contracts: IContracts) => void, setInitialized: (boolean) => void) => {
+let chainIdUpdater = (
+    account: string,
+    setChainId: (id: number) => void,
+    setNetworkName: (name: string) => void,
+    setContracts: (contracts: IContracts) => void,
+    setInitialized: (boolean) => void
+) => {
 	return (hexChainId: any) => {
 		console.log('chainID response: ' + JSON.stringify(hexChainId))
 		const decimalChainId = API.pureHexToNumber(hexChainId)
@@ -65,7 +70,7 @@ let chainIdUpdater = (account: string, setChainId: (id: number) => void, setNetw
 	}
 }
 
-const accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void, web3Modal) => {
+let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: boolean) => void, setInitialized: (boolean) => void, web3Modal) => {
 	return (accounts: any): string => {
 		if (!accounts || accounts.length === 0) {
 			setConnected(false)
@@ -163,8 +168,8 @@ const initWeb3Modal = () => {
 
 const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 	const triggerCommonDisconnectFn = async (message) => {
-	    if (typeof provider.disconnect === 'function') await provider.disconnect()
-	    if (typeof provider.close === 'function') await provider.close()
+		if (typeof provider.disconnect === 'function') await provider.disconnect()
+		if (typeof provider.close === 'function') await provider.close()
 
 		handleWalletDisconnected(`: ${message}`)
 	}
@@ -279,26 +284,30 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 }
 
 function WalletContextProvider(props: any) {
-	const [connected, setConnected] = useState<boolean>(false)
-	const [chainId, setChainId] = useState<number>(0)
-	const [account, setAccount] = useState<string>('0x0')
-	const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
-	const [connectAction, setConnectAction] = useState<any>()
-	const [initialized, setInitialized] = useState<boolean>(false)
-	const [networkName, setNetworkName] = useState<string>("")
-	const [primary, setPrimary] = useState<boolean>(false)
+    const [connected, setConnected] = useState<boolean>(false)
+    const [chainId, setChainId] = useState<number>(0)
+    const [account, setAccount] = useState<string>('0x0')
+    const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
+    const [connectAction, setConnectAction] = useState<any>()
+    const [initialized, setInitialized] = useState<boolean>(false)
+    const [networkName, setNetworkName] = useState<string>('')
+    const [primary, setPrimary] = useState<boolean>(false)
+    const [walletError, setWalletError] = useState<WalletError>()
 	const [disconnectAction, setDisconnectAction] = useState<any>()
 
-	const initializationCallBack = React.useCallback(async () => {
-		if (chainId > 0 && account.length > 3 && !initialized) {
-			const c = await API.initialize(chainId, account)
-			setContracts(c)
-
-			const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
-			setPrimary(owner.toLowerCase() === account.toLowerCase())
-			setInitialized(true)
-		}
-	}, [initialized, account, chainId])
+    const initializationCallBack = React.useCallback(async () => {
+        if (chainId > 0 && account.length > 3 && !initialized) {
+            try {
+				const c = await API.initialize(chainId, account)
+				setContracts(c)
+				const owner = (await c.behodler.Behodler.primary().call({ from: account })).toString()
+				setPrimary(owner.toLowerCase() === account.toLowerCase())
+				setInitialized(true)
+            } catch (err) {
+                setWalletError(err)
+            }
+        }
+    }, [initialized, account, chainId])
 
 	useEffect(() => {
 		const web3Modal = initWeb3Modal()
@@ -315,21 +324,20 @@ function WalletContextProvider(props: any) {
 		initializationCallBack()
 	}, [initialized, account, chainId])
 
-	const providerProps: walletProps = {
-		chainId,
-		connected,
-		account,
-		contracts,
-		connectAction,
+    const providerProps: walletProps = {
+        chainId,
+        connected,
+        account,
+        contracts,
+        connectAction,
+        initialized,
+        networkName,
+        primary,
+        walletError,
 		disconnectAction,
-		initialized,
-		networkName,
-		primary,
 	}
-	WalletContext = React.createContext<walletProps>(providerProps)
-	return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
-
+    WalletContext = React.createContext<walletProps>(providerProps)
+    return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
 }
-
 
 export { WalletContext, WalletContextProvider }

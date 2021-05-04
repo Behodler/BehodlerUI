@@ -28,7 +28,10 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"isolatedModules": true,
-		"noEmit": true
+        "noEmit": true,
+        "types": [
+            "webpack-env"
+        ],
 	},
 	"exclude": [
 		"node_modules",

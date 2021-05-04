@@ -3,18 +3,15 @@ import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox2 from './TradingBox2/index'
 import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import { Grid, Typography, Button, Container } from '@material-ui/core'
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { WalletContext } from "../../Contexts/WalletStatusContext"
-import tokenListJSON from "../../../blockchain/behodlerUI/baseTokens.json"
+import { Typography, Button, Container, Box, makeStyles, createStyles } from '@material-ui/core'
+import { WalletContext, WalletError } from '../../Contexts/WalletStatusContext'
+import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
-// import behodlerLogo from '../../../images/behodler/logo.png'
 import alternateLogo from '../../../images/behodler/tradhodler.png'
-import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
-import blueGrey from '@material-ui/core/colors/blueGrey'
-import TopMenu from 'src/components/LayoutFrame/TopMenu'
+import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
+import TopMenu from '../../LayoutFrame/TopMenu'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
-export type permittedRoutes = 'swap' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'swap2' | 'pyro'
+export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
 interface props {
     connected: boolean
@@ -22,96 +19,77 @@ interface props {
     setRouteValue: (v: permittedRoutes) => void
 }
 
-const useStyles = makeStyles(theme => createStyles({
-    SwapRoot: {
-        flexGrow: 1,
-        margin: 0,
-        marginTop: -100,
-        paddingTop: 150,
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: 'transparent',
-        backgroundSize: 'cover',
-        width: '100% !important'
-    },
-    SwapRootNotConnected: {
-        flexGrow: 1,
-        margin: 0,
-        width: '100% !important'
-    },
-    tabs: {
-        marginBottom: '20px'
-    }, Paper: {
-        margin: "50px",
-        padding: "20px",
-        backgroundColor: blueGrey['600'],
-    },
-    traderContainer: {
-        margin: "50px",
-        padding: "20px",
-        backgroundColor: 'rgba(255,255,255,0.93)',
-        borderRadius: 20,
-        height: '100%',
-        minHeight: 390,
-        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
-    },
-    Grid: {
-        minHeight: "700px",
-        with: "100%",
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        root: {},
+        SwapRoot: {
+            flexGrow: 1,
+            margin: 0,
+            paddingTop: 50,
+        },
+        SwapRootNotConnected: {
+            flexGrow: 1,
+            margin: 0,
+        },
+        noWalletContent: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '64px 16px 32px 16px',
+        },
+        behodlerHeading: {
+            color: 'white',
+            fontWeight: 'bold',
+        },
+        behodlerSubheading: {
+            color: 'midnightblue',
+            textTransform: 'uppercase',
+            fontWeight: 'bold',
+            fontStyle: 'italic',
+        },
+        alphadrop: {
+            color: 'white',
+            fontFamily: theme.typography.fontFamily,
+            fontSize: theme.typography.h6.fontSize || '1.25rem',
+            fontWeight: 'bold',
+        },
+        link: {
+            fontStyle: 'italic',
+        },
+        connectButton: {
+            margin: '20px 0 0 0',
+        },
+        warningText: {
+            color: 'black',
+            fontStyle: 'italic',
+            maxWidth: 500,
+            textAlign: 'center',
+        },
+        behodlerLogo: {
+            width: '30%',
+        },
+        logoContainer: {
+            textAlign: 'center',
+            display: 'block',
+        },
+        headerText: {
+            textAlign: 'center',
+        },
+        errorMessage: {
+            color: theme.palette.secondary.main,
+            textAlign: 'center',
+        },
+    })
+)
 
-    },
-    divider: {
-        marginBottom: "20px"
-    },
-    image: {
-        height: "250px"
-    },
-    behodlerHeading: {
-        color: 'white',
-        fontWeight: 'bold'
-    },
-    behodlerSubheading: {
-        color: 'midnightblue',
-        textTransform: 'uppercase',
-        fontWeight: 'bold',
-        fontStyle: 'italic'
-    },
-    link: {
-        fontStyle: "italic"
-    },
-    connectButton: {
-        margin: "20px 0 0 0"
-    },
-    warningText: {
-        color: 'black',
-        fontStyle: 'italic',
-        maxWidth: 500,
-        textAlign: 'center',
-    },
-    alphadrop: {
-        color: 'white',
-        fontFamily: theme.typography.fontFamily,
-        fontSize: theme.typography.h6.fontSize || '1.25rem',
-        fontWeight: 'bold'
-    },
-    alphadropLink: {
-        fontFamily: theme.typography.fontFamily,
-        fontSize: theme.typography.h6.fontSize || '1.25rem'
-    }, behodlerLogo: {
-        width: '30%',
-
-    },
-    logoContainer: {
-        textAlign: "center",
-        display: "block"
-    },
-    nopadding: {
-        padding: 0
-    },
-    eyeLogo: {
-        width: 400,
-        margin: '0 -20px -60px 0'
+const getMessageError = (walletError: WalletError): any => {
+    switch (walletError) {
+        case WalletError.NETWORK_NOT_SUPPORTED:
+            return <>Your wallet's network is currently not supported!<br/>Please make sure it is Ethereum Mainnet</>
+        default:
+            return ''
     }
-}));
+}
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
@@ -119,7 +97,6 @@ export default function Swap(props: props) {
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
-
     const ethCallback = useCallback(async () => {
         if (walletContextProps.connected && walletContextProps.account.length > 5) {
             setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
@@ -130,27 +107,26 @@ export default function Swap(props: props) {
         ethCallback()
     })
 
-
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair | null> => {
-        const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(baseToken).call(primaryOptions)
-        if (pyroAddress === '0x0000000000000000000000000000000000000000')
-            return null
-        const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName)
-        const name = await token.symbol().call(primaryOptions)//bug
+        const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(
+            baseToken
+        ).call(primaryOptions);
+        if (pyroAddress === "0x0000000000000000000000000000000000000000") return null;
+        const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName);
+        const name = await token.symbol().call(primaryOptions); //bug
 
         return {
             name,
             base: baseToken,
-            pyro: pyroAddress
+            pyro: pyroAddress,
         }
     }
 
     const pyroTokenPopulator = useCallback(async () => {
-        let mapping: basePyroPair[] = []
+        let mapping: basePyroPair[] = [];
         for (let i = 0; i < tokenList.length; i++) {
-            const pyro = await fetchPyroTokenDetails(tokenList[i].address)
-            if (pyro)
-                mapping.push(pyro)
+            const pyro = await fetchPyroTokenDetails(tokenList[i].address);
+            if (pyro) mapping.push(pyro);
         }
         setPyroTokenMapping(mapping)
     }, [walletContextProps.networkName])
@@ -159,11 +135,9 @@ export default function Swap(props: props) {
         if (walletContextProps.connected && walletContextProps.account.length > 5) {
             pyroTokenPopulator()
         }
-        else {
-        }
     }, [props.connected, walletContextProps.account])
 
-    const classes = useStyles();
+    const classes = useStyles()
     const [showChip, setShowChip] = useState<boolean>(false)
 
     useEffect(() => {
@@ -171,108 +145,76 @@ export default function Swap(props: props) {
         if (lastHide) {
             const duration = parseInt(lastHide)
             const elapsed = new Date().getTime() - duration
-            setShowChip(elapsed > 604800000)//604800000 = 1 week
-        } else
-            setShowChip(true)
+            setShowChip(elapsed > 604800000) //604800000 = 1 week
+        } else setShowChip(true)
     }, [showChip])
 
-    const logoVisible = !props.connected
     const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
 
-    const DepaddedGridItem = (props: { children: any }) => <Grid className={classes.nopadding} item>{props.children}</Grid>
-    return <div>
-        {logoVisible ? '' : <TopMenu setRouteValue={props.setRouteValue} ethBalance={ethBalance} truncAccount={truncAccount} />}
-        <Grid
-            container
-            direction="column"
-            justify="space-around"
-            alignItems="center"
-            spacing={6}
-            className={props.connected ? classes.SwapRoot : classes.SwapRootNotConnected}>
-            {showChip && props.connected ? <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-            >
-            </Grid> : ""}
-            {logoVisible ?
-                <DepaddedGridItem>
-                    <img src={eyelogo} className={classes.eyeLogo} />
-                </DepaddedGridItem>
-                : ''}
-            {logoVisible ? <DepaddedGridItem>
-                <Button className={classes.connectButton} color="primary" variant="outlined" onClick={async () => {
-                    walletContextProps.connectAction.action()
-                }}>Connect Your Wallet</Button>
-            </DepaddedGridItem> : ''}
-            {logoVisible ?
-                <DepaddedGridItem>
-                    <Typography className={classes.warningText} variant='subtitle1'>
-                        Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
-                        Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken wrapper.
-                        Exploit price arbitrage with a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the Liquid Queue (coming soon).
-                        While you wait in the queue, we pay you Eye on an hourly basis. The more spots in the queue you occupy, the more Eye you earn per hour.
-            </Typography>
-                </DepaddedGridItem>
-                : ''}
-            {logoVisible ? <DepaddedGridItem>
-                <Container className={classes.logoContainer} >
-                    <img src={alternateLogo} className={classes.behodlerLogo} />
-                </Container>
-            </DepaddedGridItem> : ''}
-            <DepaddedGridItem>
-                {logoVisible ? '' :
-                    <Grid
-                        container
-                        direction="row"
-                        justify="center"
-                        alignItems="center"
-                    >
-                        <Grid item>
-                            <Typography variant="h4" className={classes.behodlerHeading}>
-                                Behodler Liquidity Engine
-            </Typography>
-                        </Grid>
-                    </Grid>
-                }
-            </DepaddedGridItem>
-            {props.connected ? <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-            >
-                <Grid item>
-                    <div className={classes.alphadrop}>
-                        Swap, Own and Queue for Liquidity
-                    </div>
-                </Grid>
-            </Grid>
-                : ''}
-            {props.connected ?
-                <DepaddedGridItem>
-
-                    <div className={classes.traderContainer}>
-                        <Grid
-                            container
-                            direction="column"
-                            justify="space-between"
-                            alignItems="center"
-                            spacing={3}
+    return (
+        <Box className={classes.root}>
+            {props.connected ? (
+                <>
+                    <TopMenu
+                        setRouteValue={props.setRouteValue}
+                        ethBalance={ethBalance}
+                        truncAccount={truncAccount}
+                    />
+                    <Box className={classes.headerText} mt={6}>
+                        <div className={classes.alphadrop}>Swap, Own and Queue for Liquidity</div>
+                        <Typography variant="h4" className={classes.behodlerHeading}>
+                            Behodler Liquidity Market
+                        </Typography>
+                    </Box>
+                    <Box>
+                        <RenderScreen value={props.route} tokens={pyroTokenMapping} />
+                    </Box>
+                </>
+            ) : (
+                <Box className={classes.noWalletContent}>
+                    <Box>
+                        <img src={eyelogo} />
+                    </Box>
+                    <Box mt={3}>
+                        <Button
+                            className={classes.connectButton}
+                            color="primary"
+                            variant="outlined"
+                            onClick={async () => {
+                                walletContextProps.connectAction.action()
+                            }}
                         >
-                            <Grid item>
-                                <RenderScreen value={props.route} tokens={pyroTokenMapping} />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </DepaddedGridItem>
-                : ""}
-        </Grid>
-    </div>
+                            Connect Your Wallet
+                        </Button>
+                    </Box>
+                    {walletContextProps.walletError ? (
+                        <Box className={classes.errorMessage} mt={2}>
+                            {getMessageError(walletContextProps.walletError)}
+                        </Box>
+                    ) : (
+                        ''
+                    )}
+                    <Box mt={3}>
+                        <Typography className={classes.warningText} variant="subtitle1">
+                            Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
+                            Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken
+                            wrapper. Exploit price arbitrage with a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the
+                            Liquid Queue (coming soon). While you wait in the queue, we pay you Eye on an hourly basis. The more spots in the queue you occupy, the more
+                            Eye you earn per hour.
+                        </Typography>
+                    </Box>
+                    <Box mt={3}>
+                        <Container className={classes.logoContainer}>
+                            <img src={alternateLogo} className={classes.behodlerLogo} />
+                        </Container>
+                    </Box>
+                </Box>
+            )}
+        </Box>
+    )
 }
 
-function RenderScreen(props: { value: permittedRoutes, tokens: basePyroPair[] }) {
+function RenderScreen(props: { value: permittedRoutes; tokens: basePyroPair[] }) {
     switch (props.value) {
         case 'swap2':
             return <TradingBox2 />
