@@ -1,17 +1,24 @@
 import * as React from 'react'
-import { useState, useContext, useEffect, useCallback } from 'react'
+import {useState, useContext, useEffect, useCallback} from 'react'
 import TradingBox2 from './TradingBox2/index'
 import PyroTokens from './PyroTokens/index'
-import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import { Typography, Button, Container, Box, makeStyles, createStyles } from '@material-ui/core'
-import { WalletContext, WalletError } from '../../Contexts/WalletStatusContext'
+import {basePyroPair, filterPredicate} from './PyroTokens/index'
+import {Typography, Box, makeStyles, createStyles} from '@material-ui/core'
+import {WalletContext} from '../../Contexts/WalletStatusContext'
 import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
-import alternateLogo from '../../../images/behodler/tradhodler.png'
-import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
 import TopMenu from '../../LayoutFrame/TopMenu'
-import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
-export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
+import {Pyrotoken} from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
+
+export type permittedRoutes =
+    'swap'
+    | 'liquidity'
+    | 'sisyphus'
+    | 'faucet'
+    | 'behodler/admin'
+    | 'governance'
+    | 'swap2'
+    | 'pyro'
 
 interface props {
     connected: boolean
@@ -23,21 +30,6 @@ interface props {
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {},
-        SwapRoot: {
-            flexGrow: 1,
-            margin: 0,
-            paddingTop: 50,
-        },
-        SwapRootNotConnected: {
-            flexGrow: 1,
-            margin: 0,
-        },
-        noWalletContent: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '64px 16px 32px 16px',
-        },
         behodlerHeading: {
             color: 'white',
             fontWeight: 'bold',
@@ -54,50 +46,18 @@ const useStyles = makeStyles((theme) =>
             fontSize: theme.typography.h6.fontSize || '1.25rem',
             fontWeight: 'bold',
         },
-        link: {
-            fontStyle: 'italic',
-        },
-        connectButton: {
-            margin: '20px 0 0 0',
-        },
-        warningText: {
-            color: 'black',
-            fontStyle: 'italic',
-            maxWidth: 500,
-            textAlign: 'center',
-        },
-        behodlerLogo: {
-            width: '30%',
-        },
-        logoContainer: {
-            textAlign: 'center',
-            display: 'block',
-        },
         headerText: {
-            textAlign: 'center',
-        },
-        errorMessage: {
-            color: theme.palette.secondary.main,
             textAlign: 'center',
         },
     })
 )
-
-const getMessageError = (walletError: WalletError): any => {
-    switch (walletError) {
-        case WalletError.NETWORK_NOT_SUPPORTED:
-            return <>Your wallet's network is currently not supported!<br/>Please make sure it is Ethereum Mainnet</>
-        default: 
-            return ''
-    }
-}
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
     const [ethBalance, setEthBalance] = useState<string>('')
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
-    const primaryOptions = { from: walletContextProps.account }
+    const primaryOptions = {from: walletContextProps.account}
     const ethCallback = useCallback(async () => {
         if (walletContextProps.connected && walletContextProps.account.length > 5) {
             setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
@@ -169,49 +129,10 @@ export default function Swap(props: props) {
                         </Typography>
                     </Box>
                     <Box>
-                        <RenderScreen value={props.route} tokens={pyroTokenMapping} />
+                        <RenderScreen value={props.route} tokens={pyroTokenMapping}/>
                     </Box>
                 </>
-            ) : (
-                <Box className={classes.noWalletContent}>
-                    <Box>
-                        <img src={eyelogo} />
-                    </Box>
-                    <Box mt={3}>
-                        <Button
-                            className={classes.connectButton}
-                            color="primary"
-                            variant="outlined"
-                            onClick={async () => {
-                                walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
-                            }}
-                        >
-                            Connect Your Wallet
-                        </Button>
-                    </Box>
-                    {walletContextProps.walletError ? (
-                        <Box className={classes.errorMessage} mt={2}>
-                            {getMessageError(walletContextProps.walletError)}
-                        </Box>
-                    ) : (
-                        ''
-                    )}
-                    <Box mt={3}>
-                        <Typography className={classes.warningText} variant="subtitle1">
-                            Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
-                            Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken
-                            wrapper. Exploit price arbitrage with a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the
-                            Liquid Queue (coming soon). While you wait in the queue, we pay you Eye on an hourly basis. The more spots in the queue you occupy, the more
-                            Eye you earn per hour.
-                        </Typography>
-                    </Box>
-                    <Box mt={3}>
-                        <Container className={classes.logoContainer}>
-                            <img src={alternateLogo} className={classes.behodlerLogo} />
-                        </Container>
-                    </Box>
-                </Box>
-            )}
+            ) : null}
         </Box>
     )
 }
@@ -219,10 +140,10 @@ export default function Swap(props: props) {
 function RenderScreen(props: { value: permittedRoutes; tokens: basePyroPair[] }) {
     switch (props.value) {
         case 'swap2':
-            return <TradingBox2 />
+            return <TradingBox2/>
         case 'pyro':
             if (props.tokens.length > 1)
-                return <PyroTokens tokens={props.tokens} />
+                return <PyroTokens tokens={props.tokens}/>
             return <Typography variant="subtitle1">fetching pyrotoken mapping from the blockchain...</Typography>
         default:
             return <div>Chronos</div>

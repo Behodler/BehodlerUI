@@ -69,6 +69,10 @@ interface LQInputAddressList {
 	Eye: string
 }
 
+export enum BlockchainError {
+    ERROR_ACCESSING_CONTRACTS = 1,
+}
+
 class ethereumAPI {
 
 	private interval: any
@@ -116,15 +120,20 @@ class ethereumAPI {
         // development is a fallback for networks that do not have contracts yet
         const networkName = isProductionNetwork ? network : 'development'
 
-		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
-		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
-		let contracts: IContracts = { behodler: behodlerContracts }
-		this.initialized = true
-		this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
+        try {
+            const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
+            behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
+            let contracts: IContracts = { behodler: behodlerContracts }
+            this.initialized = true
+            this.scarcityEffects = new ERC20Effects(this.web3, behodlerContracts.Scarcity, currentAccount)
 
-		await this.setupSubscriptions()
+            await this.setupSubscriptions()
 
-		return contracts
+            return contracts
+        } catch (err) {
+            console.error(err)
+            return Promise.reject(BlockchainError.ERROR_ACCESSING_CONTRACTS)
+        }		
 	}
 
 	public toBytes(input: string) {
