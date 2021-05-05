@@ -18,3 +18,4 @@ client/src/blockchain/behodlerUI/images/private
 *.rdb
 client/yarn.lock
 client/behodlerDB
+README.pdf
