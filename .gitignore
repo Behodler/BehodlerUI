@@ -17,4 +17,6 @@ client/src/blockchain/behodlerUI/images/private
 *.txt
 *.rdb
 client/yarn.lock
+client/behodlerDB
+README.pdf
 .idea

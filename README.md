@@ -19,3 +19,15 @@ Do not try to install the node_modules manually. Instead run
     npm run install:docker
 ```
 which will run the container in the specified version of node known to work with the dependencies. It will then populate your local node_modules.
+
+## Dev server
+So as to simulate the mechanics of Behodler, a dev instance of ganache has been included with contracts pre deployed. To run the dev ganache as well as the dev server
+```
+npm run start:dev
+```
+In order to get free eth, you'll need to use the following seed phrase
+
+```
+eight fun oak spot hip pencil matter domain bright fiscal nurse easy 
+```
+Do note that the images of the tokens will be out of sync because they don't correspond to mainnet images. This is normal.

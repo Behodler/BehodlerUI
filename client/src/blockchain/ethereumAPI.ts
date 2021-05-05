@@ -42,24 +42,24 @@ import { UniswapV2Effects } from "./observables/UniswapEffects";
 import { WalletError } from 'src/components/Contexts/WalletStatusContext'
 
 interface AccountObservable {
-    account: string
-    isPrimary: boolean
-    enabled: boolean
-    versionBalances: userWeiDaiBalances[]
-    oldBalances: boolean
+	account: string
+	isPrimary: boolean
+	enabled: boolean
+	versionBalances: userWeiDaiBalances[]
+	oldBalances: boolean
 }
 
 export interface userWeiDaiBalances {
-    version: string
-    incubating: string
-    actual: string
-    enabled: boolean
+	version: string
+	incubating: string
+	actual: string
+	enabled: boolean
 }
 
 interface newContracts {
-    weiDai: string
-    weiDaiBank: string
-    PRE: string
+	weiDai: string
+	weiDaiBank: string
+	PRE: string
 }
 
 interface LQInputAddressList {
@@ -76,8 +76,8 @@ class ethereumAPI {
 	private newContracts: newContracts
 	public initialized: boolean
 	public newContractObservable: Observable<newContracts>
-    public networkMapping: { [key: number]: string }
-    public contractsAvailable: string[]
+	public networkMapping: { [key: number]: string }
+	public contractsAvailable: string[]
 	public web3: Web3;
 	public accountObservable: Observable<AccountObservable>
 	public weiDaiEffects: ERC20Effects
@@ -104,17 +104,17 @@ class ethereumAPI {
 			"66": "private",
 			"1337": "private"
 		}
-        // if we want to add more chains, add their ids and names in this.networkMapping and add their names to the array below
-        this.contractsAvailable = ['main']
+		// if we want to add more chains, add their ids and names in this.networkMapping and add their names to the array below
+		this.contractsAvailable = ['main']
 		this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 	}
 
 	public async initialize(chainId, currentAccount: string): Promise<IContracts> {
-        const network = this.networkMapping[chainId]
-        if (!network) return Promise.reject(WalletError.NETWORK_NOT_SUPPORTED)
-        const isProductionNetwork = this.contractsAvailable.filter(allowedNetwork => allowedNetwork === network).length > 0
-        // development is a fallback for networks that do not have contracts yet
-        const networkName = isProductionNetwork ? network : 'development'
+		const network = this.networkMapping[chainId]
+		if (!network) return Promise.reject(WalletError.NETWORK_NOT_SUPPORTED)
+		const isProductionNetwork = this.contractsAvailable.filter(allowedNetwork => allowedNetwork === network).length > 0
+		// development is a fallback for networks that do not have contracts yet
+		const networkName = isProductionNetwork ? network : 'development'
 
 		const behodlerContracts: BehodlerContracts = await this.fetchBehodlerDeployments(networkName)
 		behodlerContracts.Behodler2 = await this.fetchBehodler2(networkName)
@@ -318,12 +318,12 @@ class ethereumAPI {
 	}
 
 	public pureHexToNumberString(value: any): string {
-        if (value === '0') return '0'
-        try {
-            return this.web3.utils.hexToNumberString(value)
-        } catch (err) {
-            return value
-        }
+		if (value === '0') return '0'
+		try {
+			return this.web3.utils.hexToNumberString(value)
+		} catch (err) {
+			return value
+		}
 	}
 
 	public pureHexToNumber(value: any): number {
@@ -400,9 +400,9 @@ class ethereumAPI {
 }
 
 interface deployment {
-    methods: any
-    address: string
-    contractInstance: any
+	methods: any
+	address: string
+	contractInstance: any
 }
 
 const API: ethereumAPI = new ethereumAPI()
