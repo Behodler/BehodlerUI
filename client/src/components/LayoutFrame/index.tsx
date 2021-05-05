@@ -97,7 +97,7 @@ export default function LayoutFrame(props: any) {
                                         setRouteValue={setBehodlerRoute}
                                         route="governance"
                                     />
-                                </Route>
+                             </Route>
                             </Switch>
                         </Box>
                     </>
