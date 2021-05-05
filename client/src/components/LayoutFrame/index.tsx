@@ -155,15 +155,6 @@ export default function LayoutFrame(props: any) {
                                 <img src={telegram} width={footerIconWidth} />
                             </IconButton>
                         </Box>
-                        {walletContextProps.primary ? (
-                            <Box>
-                                <IconButton title="governance" onClick={() => setBehodlerRoute('behodler/admin')}>
-                                    src={twitter} width={footerIconWidth}
-                                </IconButton>
-                            </Box>
-                        ) : (
-                            ''
-                        )}
                     </Box>
                 </Box>
             </Box>

@@ -30,11 +30,12 @@
 		"docker:deploy": "react-scripts build && aws s3 sync ../build/ s3://behodler.io",
 		"install:docker": "rm -rf node_modules/* && rm -f yarn.lock && docker-compose up install",
 		"start": "docker-compose up --remove-orphans  -d client",
-		"stop": "docker-compose down",
+		"stop": "cp src/temp/ProductionMappings.json src/temp/BehodlerABIAddressMapping.json && docker-compose down",
 		"build": "docker-compose up build",
 		"deploy": "docker-compose up deploy",
+		"devserver":"docker-compose up --remove-orphans dev",
 		"ganache": "docker-compose up --remove-orphans -d ganache",
-		"dev": "npm run ganache && npm start"
+		"start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start"
 	},
 	"devDependencies": {
 		"@types/jest": "^23.3.12",
