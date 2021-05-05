@@ -25,5 +25,9 @@ So as to simulate the mechanics of Behodler, a dev instance of ganache has been 
 ```
 npm run start:dev
 ```
+In order to get free eth, you'll need to use the following seed phrase
 
+```
+eight fun oak spot hip pencil matter domain bright fiscal nurse easy 
+```
 Do note that the images of the tokens will be out of sync because they don't correspond to mainnet images. This is normal.
