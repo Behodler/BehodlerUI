@@ -49,6 +49,7 @@ const {
 	REACT_APP_PORTIS_ID: PORTIS_ID,
 	REACT_APP_RPC_CONFIGS: RPC_CONFIGS,
 	REACT_APP_FORTMATIC_KEY: FORTMATIC_KEY,
+	REACT_APP_FORTMATIC_CHAIN_ID: FORTMATIC_CHAIN_ID,
 } = process.env;
 
 const networkNameMapper = (id: number): string => API.networkMapping[id]
@@ -90,37 +91,51 @@ let accountUpdater = (setAccount: (account: string) => void, setConnected: (c: b
 	}
 }
 
+const convertRPCConfigsStringToObject = rpcConfigs => (
+	Object
+		.fromEntries((
+			rpcConfigs
+				.split(',')
+				.map(chainIdToUrlString => chainIdToUrlString.split('|'))
+		))
+);
+
 const initWeb3Modal = () => {
 	let providerOptions: IProviderOptions = {}
 
-	// e.g REACT_APP_RPC_CONFIGS=1|https://mainnet.infura.io/v3/INFURA_ID,2|https://morder-rpc-url
-	if (INFURA_ID || RPC_CONFIGS) {
-		const rpcConfig = RPC_CONFIGS
-			? Object
-				.fromEntries((
-					RPC_CONFIGS
-						.split(',')
-						.map(chainIdToUrlString => chainIdToUrlString.split('|'))
-				))
-			: undefined
+	const rpcConfig = RPC_CONFIGS
+		? convertRPCConfigsStringToObject(RPC_CONFIGS)
+		: undefined
 
+	const mainnetRpc = rpcConfig && rpcConfig[1];
+	const fortmaticCustomNodeOptions = (
+		FORTMATIC_KEY && FORTMATIC_CHAIN_ID && rpcConfig && rpcConfig[FORTMATIC_CHAIN_ID]
+			? {
+				rpcUrl: rpcConfig[FORTMATIC_CHAIN_ID],
+				chainId: parseInt(FORTMATIC_CHAIN_ID, 10),
+			}
+			: undefined
+	);
+
+	// e.g REACT_APP_RPC_CONFIGS=1|https://mainnet.infura.io/v3/INFURA_ID,2|https://morder-rpc-url
+	if (INFURA_ID || rpcConfig) {
 		providerOptions.walletconnect = {
 			package: WalletConnectProvider,
 			options: {
-				infuraId: RPC_CONFIGS
+				infuraId: rpcConfig
 					? undefined
 					: INFURA_ID,
 				rpc: rpcConfig,
 			}
 		}
 
-		if (!rpcConfig[1] && !INFURA_ID) {
+		if (!mainnetRpc && !INFURA_ID) {
 			console.info('There is no RPC URL defined for chainId 1 in REACT_APP_RPC_CONFIGS node env variable - it is required in order for WalletLink to work');
 		}
 
-		if (rpcConfig[1] || INFURA_ID) {
+		if (mainnetRpc || INFURA_ID) {
 			const walletlinkRPCURL = rpcConfig
-				? rpcConfig[1] // hardcoded mainnet
+				? mainnetRpc // hardcoded mainnet
 				: `https://mainnet.infura.io/v3/${INFURA_ID}`
 
 			providerOptions['custom-walletlink'] = {
@@ -156,6 +171,7 @@ const initWeb3Modal = () => {
 			package: Fortmatic,
 			options: {
 				key: FORTMATIC_KEY,
+				network: fortmaticCustomNodeOptions,
 			},
 		}
 	}
@@ -258,7 +274,9 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 
 		const providerChainId = provider.isPortis
 			? provider._portis.config.network.chainId
-			: provider.chainId || provider._chainId || 1
+			: provider.chainId || provider._chainId || FORTMATIC_CHAIN_ID || 1
+
+		console.info('providerChainId', providerChainId);
 
 		chainIdUpdateHandlerOnce(providerChainId)
 
