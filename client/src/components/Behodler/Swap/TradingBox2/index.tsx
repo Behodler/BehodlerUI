@@ -184,7 +184,7 @@ export default function TradeBox2(props: props) {
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
         const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals);
         const hundred: any = BigInt(100);
-        const exitRatio = (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any);
+        const exitRatio = O_i !== '0' ? (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any) : 0;
         if (exitRatio > maxLiquidityExit) {
             setInputValid(false);
         }
