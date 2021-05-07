@@ -93,52 +93,66 @@ const getMessageError = (walletError: WalletError): any => {
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
+    const classes = useStyles()
+
     const [ethBalance, setEthBalance] = useState<string>('')
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
-    const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
+    const [showChip, setShowChip] = useState<boolean>(false)
+
     const primaryOptions = { from: walletContextProps.account }
+    const isAccountReady = walletContextProps.connected && walletContextProps.account.length > 5;
+    const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
+
     const ethCallback = useCallback(async () => {
-        if (walletContextProps.connected && walletContextProps.account.length > 5) {
-            setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
+        if (isAccountReady) {
+            const weiBalance = await API.getEthBalance(walletContextProps.account)
+            setEthBalance(API.fromWei(weiBalance))
         }
-    }, [walletContextProps.account, walletContextProps.connected])
+    }, [walletContextProps.account, isAccountReady])
+
+    const fetchPyroTokenDetails = useCallback(async (baseToken: string): Promise<basePyroPair | null> => {
+        const tokenMappings = walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(
+            baseToken
+        );
+
+        if (tokenMappings) {
+            const pyroAddress = await tokenMappings.call(primaryOptions);
+            if (pyroAddress === "0x0000000000000000000000000000000000000000") return null;
+            const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName);
+            const name = await token.symbol().call(primaryOptions); //bug
+
+            return {
+                name,
+                base: baseToken,
+                pyro: pyroAddress,
+            }
+        }
+
+        return null
+    }, [walletContextProps.contracts, walletContextProps.networkName, primaryOptions])
+
+    const pyroTokenPopulator = useCallback(async () => {
+        if (isAccountReady && walletContextProps.networkName) {
+            let mapping: basePyroPair[] = [];
+            const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(filterPredicate)
+
+            for (let i = 0; i < tokenList.length; i++) {
+                const pyro = await fetchPyroTokenDetails(tokenList[i].address);
+                if (pyro) mapping.push(pyro);
+            }
+            setPyroTokenMapping(mapping)
+        }
+    }, [walletContextProps.networkName, isAccountReady])
 
     useEffect(() => {
         ethCallback()
-    })
-
-    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair | null> => {
-        const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(
-            baseToken
-        ).call(primaryOptions);
-        if (pyroAddress === "0x0000000000000000000000000000000000000000") return null;
-        const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName);
-        const name = await token.symbol().call(primaryOptions); //bug
-
-        return {
-            name,
-            base: baseToken,
-            pyro: pyroAddress,
-        }
-    }
-
-    const pyroTokenPopulator = useCallback(async () => {
-        let mapping: basePyroPair[] = [];
-        for (let i = 0; i < tokenList.length; i++) {
-            const pyro = await fetchPyroTokenDetails(tokenList[i].address);
-            if (pyro) mapping.push(pyro);
-        }
-        setPyroTokenMapping(mapping)
-    }, [walletContextProps.networkName])
+    }, [walletContextProps.account, isAccountReady])
 
     useEffect(() => {
-        if (walletContextProps.connected && walletContextProps.account.length > 5) {
+        if (isAccountReady) {
             pyroTokenPopulator()
         }
-    }, [props.connected, walletContextProps.account])
-
-    const classes = useStyles()
-    const [showChip, setShowChip] = useState<boolean>(false)
+    }, [isAccountReady])
 
     useEffect(() => {
         const lastHide = localStorage.getItem('lastBehodlerHide')
@@ -148,8 +162,6 @@ export default function Swap(props: props) {
             setShowChip(elapsed > 604800000) //604800000 = 1 week
         } else setShowChip(true)
     }, [showChip])
-
-    const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
 
     return (
         <Box className={classes.root}>
