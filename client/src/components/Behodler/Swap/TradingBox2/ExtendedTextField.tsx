@@ -225,7 +225,7 @@ function ExtendedTextField(props: props) {
                             {listTokens.map((t) => (
                                 <ListItem
                                     button
-                                    key={t.address}
+                                    key={`${t.address}-${t.name}`}
                                     alignItems="flex-start"
                                     onClick={() => {
                                         props.setTokenAddress(t.address)
