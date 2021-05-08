@@ -49,7 +49,7 @@ const {
 	REACT_APP_PORTIS_ID: PORTIS_ID,
 	REACT_APP_RPC_CONFIGS: RPC_CONFIGS,
 	REACT_APP_FORTMATIC_KEY: FORTMATIC_KEY,
-	REACT_APP_FORTMATIC_CHAIN_ID: FORTMATIC_CHAIN_ID,
+	REACT_APP_CUSTOM_CHAIN_ID: CUSTOM_CHAIN_ID,
 } = process.env;
 
 const networkNameMapper = (id: number): string => API.networkMapping[id]
@@ -109,10 +109,19 @@ const initWeb3Modal = () => {
 
 	const mainnetRpc = rpcConfig && rpcConfig[1];
 	const fortmaticCustomNodeOptions = (
-		FORTMATIC_KEY && FORTMATIC_CHAIN_ID && rpcConfig && rpcConfig[FORTMATIC_CHAIN_ID]
+		FORTMATIC_KEY && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
 			? {
-				rpcUrl: rpcConfig[FORTMATIC_CHAIN_ID],
-				chainId: parseInt(FORTMATIC_CHAIN_ID, 10),
+				rpcUrl: rpcConfig[CUSTOM_CHAIN_ID],
+				chainId: parseInt(CUSTOM_CHAIN_ID, 10),
+			}
+			: undefined
+	);
+
+	const portisCustomNodeOptions = (
+		PORTIS_ID && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
+			? {
+				nodeUrl: rpcConfig[CUSTOM_CHAIN_ID],
+				chainId: parseInt(CUSTOM_CHAIN_ID, 10),
 			}
 			: undefined
 	);
@@ -162,6 +171,7 @@ const initWeb3Modal = () => {
 			package: Portis,
 			options: {
 				id: PORTIS_ID,
+				network: portisCustomNodeOptions,
 			}
 		}
 	}
@@ -274,7 +284,7 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 
 		const providerChainId = provider.isPortis
 			? provider._portis.config.network.chainId
-			: provider.chainId || provider._chainId || FORTMATIC_CHAIN_ID || 1
+			: provider.chainId || provider._chainId || CUSTOM_CHAIN_ID || 1
 
 		console.info('providerChainId', providerChainId);
 
