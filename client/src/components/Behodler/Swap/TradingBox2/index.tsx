@@ -243,7 +243,7 @@ export default function TradeBox2(props: props) {
                 // I_f/I_i = O_i/O_f
                 const I_i = BigInt(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals));
                 const burnFee = BigInt((await behodler.getConfiguration().call(primaryOptions))[1].toString());
-                const bigInputValWei = BigInt(inputValWei);
+                const bigInputValWei = BigInt(inputAmount);
                 const netAmount = bigInputValWei - (burnFee * bigInputValWei) / BigInt(1000);
                 // const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
                 const I_f = I_i + netAmount;
