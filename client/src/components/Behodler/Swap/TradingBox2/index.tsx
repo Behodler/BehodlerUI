@@ -9,7 +9,7 @@ import SwapVertIcon from '@material-ui/icons/SwapVert'
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 
-interface props {}
+interface props { }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -183,6 +183,10 @@ export default function TradeBox2(props: props) {
     const validateLiquidityExit = async (tokensToWithdraw: any) => {
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
         const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals);
+        if (O_i === '0') {// division by zero
+            setInputValid(false)
+            return;
+        }
         const hundred: any = BigInt(100);
         const exitRatio = O_i !== '0' ? (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any) : 0;
         if (!exitRatio || exitRatio > maxLiquidityExit) {

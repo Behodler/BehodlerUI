@@ -8,7 +8,7 @@ import { WalletContext, WalletError } from '../../Contexts/WalletStatusContext'
 import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
 import alternateLogo from '../../../images/behodler/tradhodler.png'
-import eyelogo from '../../../images/behodler/landingPage/EyeLogo.png'
+import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
 import TopMenu from '../../LayoutFrame/TopMenu'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
@@ -75,10 +75,15 @@ const useStyles = makeStyles((theme) =>
         headerText: {
             textAlign: 'center',
         },
+    eyeLogo:{
+        width:400,
+        margin: '0 -20px -60px 0'
+    },
         errorMessage: {
             color: theme.palette.secondary.main,
             textAlign: 'center',
         },
+        
     })
 )
 
@@ -175,7 +180,7 @@ export default function Swap(props: props) {
                     <Box className={classes.headerText} mt={6}>
                         <div className={classes.alphadrop}>Swap, Own and Queue for Liquidity</div>
                         <Typography variant="h4" className={classes.behodlerHeading}>
-                            Behodler Liquidity Market
+                            Behodler Liquidity Engine
                         </Typography>
                     </Box>
                     <Box>
@@ -185,7 +190,7 @@ export default function Swap(props: props) {
             ) : (
                 <Box className={classes.noWalletContent}>
                     <Box>
-                        <img src={eyelogo} />
+                    <img src={eyelogo} className={classes.eyeLogo} />
                     </Box>
                     <Box mt={3}>
                         <Button

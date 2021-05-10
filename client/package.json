@@ -32,12 +32,11 @@
 	"scripts": {
 		"docker:start": "react-scripts start",
 		"docker:build": "rm -rf build && npx react-scripts build",
-		"docker:deploy": "react-scripts build && aws s3 sync ../build/ s3://behodler.io",
 		"install:docker": "rm -rf node_modules/* && rm -f yarn.lock && docker-compose up install",
 		"start": "docker-compose up --remove-orphans  -d client",
 		"stop": "cp src/temp/ProductionMappings.json src/temp/BehodlerABIAddressMapping.json && docker-compose down",
 		"build": "docker-compose up build",
-		"deploy": "docker-compose up deploy",
+		"deploy": "docker-compose up build && docker-compose up S3",
 		"devserver":"docker-compose up --remove-orphans dev",
 		"ganache": "docker-compose up --remove-orphans -d ganache",
 		"start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start"
