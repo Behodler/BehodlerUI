@@ -3,12 +3,13 @@ import Web3 from 'web3'
 import { useState, useEffect } from 'react'
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
-import Web3Modal, { IProviderOptions } from 'web3modal'
+import Web3Modal, { IProviderOptions,  } from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min'
 import { WalletLink } from 'walletlink/dist/WalletLink.js'
 import coinbaseWalletIcon from '../../customIcons/coinbase-wallet.svg'
 import * as Portis from '@portis/web3'
 import * as Fortmatic from 'fortmatic'
+import { Loading } from '../Common/Loading'
 
 interface walletProps {
     chainId: number
@@ -198,6 +199,13 @@ const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 		if (typeof provider.close === 'function') await provider.close()
 
 		handleWalletDisconnected(`: ${message}`)
+		/*
+		* it seems that using a wallet provider API to logout/disconnect usually doesn't
+		* end up with desired outcome: Portis still pulls from Infura API,
+		* walletconnect QR code popup shows up after a disconnection, in overall - there
+		* are some unhandled left-overs. Reloading the page resolves the issues.
+		*/
+		window.location.reload()
 	}
 
 	if (provider.isMetaMask) {
@@ -209,12 +217,10 @@ const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 		return async () => {
 			provider._portis.logout()
 			await triggerCommonDisconnectFn('Portis disconnected by user')
-			window.location.reload() // after logging out, Portis still pulls from Infura API, I couldn't find other way to get it to stop
 		}
 	} else if (provider.wc) {
 		return async () => {
 			await triggerCommonDisconnectFn('Walletconnect provider disconnected by user')
-			window.location.reload() // fix for walletconnect QR code popup showing up after a disconnection
 		}
 	} else if (provider.isWalletLink) {
 		return async () => {
@@ -224,14 +230,13 @@ const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 		return async () => {
 			if (provider.fm.user && typeof provider.fm.user.logout === 'function') await provider.fm.user.logout()
 			await triggerCommonDisconnectFn('Fortmatic disconnected by user')
-			window.location.reload()
 		}
 	}
 
 	return
 }
 
-const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction) => async () => {
+const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction, setConnecting) => async () => {
 	if (!INFURA_ID && !RPC_CONFIGS) {
 		console.info('Neither REACT_APP_INFURA_ID nor REACT_APP_RPC_CONFIGS environment variable is set. One of these are required in order for WalletConnect and WalletLink providers to work.')
 	}
@@ -244,16 +249,25 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 		console.info('REACT_APP_FORTMATIC_KEY environment variable is not set. It is required in order for Fortmatic wallet provider to work.')
 	}
 
+	const providerButtonDOMElements = document
+		.querySelectorAll('.web3modal-provider-container') || []
+
+	const displayLoader = () => setConnecting(true);
+
 	const handleWalletDisconnected = (info: any = null) => {
 		console.log('wallet provider disconnected', info)
 
+		setConnecting(false)
 		setConnected(false)
 		web3Modal.clearCachedProvider()
+		providerButtonDOMElements.forEach(el => el.removeEventListener('click', displayLoader))
 	}
 
 	let provider
 
+
 	try {
+		providerButtonDOMElements.forEach(el => el.addEventListener('click', displayLoader))
 		provider = await web3Modal.connect()
 		API.web3 = new Web3(provider)
 		console.info('connected to a wallet provider', {
@@ -264,7 +278,10 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 		handleWalletDisconnected(error)
 	}
 
-	if (!provider) { return }
+	if (!provider) {
+		setConnecting(false)
+		return;
+	}
 
 	const disconnectFn = getDisconnectProviderFn(provider, handleWalletDisconnected);
 
@@ -300,6 +317,8 @@ const createConnectWalletFn = (web3Modal, setConnected, setAccount, setInitializ
 			provider.on("connect", handleWalletConnected)
 			provider.on("disconnect", handleWalletDisconnected)
 		}
+
+		setConnecting(false)
 	} catch (error) {
 		handleWalletDisconnected()
 
@@ -322,6 +341,7 @@ function WalletContextProvider(props: any) {
     const [primary, setPrimary] = useState<boolean>(false)
     const [walletError, setWalletError] = useState<WalletError>()
 	const [disconnectAction, setDisconnectAction] = useState<any>()
+    const [connecting, setConnecting] = useState<boolean>(false)
 
     const initializationCallBack = React.useCallback(async () => {
         if (chainId > 0 && account.length > 3 && !initialized) {
@@ -340,10 +360,11 @@ function WalletContextProvider(props: any) {
 	useEffect(() => {
 		const web3Modal = initWeb3Modal()
 
-		const connectWallet = createConnectWalletFn(web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction);
+		const connectWallet = createConnectWalletFn(web3Modal, setConnected, setAccount, setInitialized, setChainId, setNetworkName, setContracts, setDisconnectAction, setConnecting);
 		setConnectAction({ action: connectWallet })
 
 		if (web3Modal.cachedProvider) {
+			setConnecting(true);
 			connectWallet();
 		}
 	}, [])
@@ -364,8 +385,23 @@ function WalletContextProvider(props: any) {
         walletError,
 		disconnectAction,
 	}
+
     WalletContext = React.createContext<walletProps>(providerProps)
-    return <WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
+
+    return (
+    	<>
+			<WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
+			{connecting && (
+				<div
+
+				>
+					<Loading
+						headingMessage="Please wait while we connect to your wallet provider"
+					/>
+				</div>
+			)}
+		</>
+	)
 }
 
 export { WalletContext, WalletContextProvider }

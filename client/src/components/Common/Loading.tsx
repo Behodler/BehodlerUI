@@ -9,12 +9,14 @@ const styleObject = {
 		flexGrow: 1,
 	},
 	heading: {
-		fontSize: 30,
-		margin: "10px 0 5px 0"
+		color: '#ddd',
+		fontSize: 24,
+		margin: "0 0 20px 0"
 	},
 	subheading: {
-		fontSize: 16,
-		margin: "0px 0 5px 0"
+		color: '#dddddd',
+		fontSize: 14,
+		margin: "20px 0 0"
 	},
 	image:{
 		maxWidth:'100px'
@@ -24,14 +26,34 @@ let styles = (theme: any) => styleObject
 
 interface props {
 	classes?: any
+	headingMessage?: string|boolean
+	subheadingMessage?: string|boolean
 }
 
 function LoadingComponent(props: props) {
+	const {
+		classes,
+		headingMessage,
+		subheadingMessage,
+	} = props;
 
 	return (
-		<div className={props.classes.root}>
-			<div className={props.classes.content}>
-				<main>
+		<div className={classes.root}>
+			<div className={classes.content}>
+				<main
+					style={{
+						backgroundColor: 'rgba(0,0,0,0.9)',
+						display: 'flex',
+						height: '100%',
+						justifyContent: 'center',
+						left: 0,
+						padding: '32px',
+						position: 'absolute',
+						top: 0,
+						width: '100%',
+						zIndex: 999,
+					}}
+				>
 					<Grid
 						container
 						direction="column"
@@ -46,7 +68,19 @@ function LoadingComponent(props: props) {
 								spacing={1}
 							>
 								<Grid item>
-									<h3>Loading from the Ethereum blockchain...</h3>
+									<h3 className={classes.heading}>
+										{headingMessage && (
+											<span>
+												{headingMessage}
+											</span>
+										)}
+
+										{!headingMessage && headingMessage !== false && (
+											<span>
+												Loading blockchain data, please wait...
+											</span>
+										)}
+									</h3>
 								</Grid>
 							</Grid>
 						</Grid>
@@ -68,7 +102,7 @@ function LoadingComponent(props: props) {
 										&nbsp;
 										</Grid>
 										<Grid item>
-											<img src={loading} className={props.classes.image} />
+											<img src={loading} className={classes.image} />
 										</Grid>
 										<Grid item>
 										&nbsp;
@@ -78,7 +112,19 @@ function LoadingComponent(props: props) {
 							</Grid>
 						</Grid>
 						<Grid item>
-						<h5>If this takes too long, consider resetting the MetaMask extension or restarting your browser </h5>
+							<h5 className={classes.subheading}>
+								{subheadingMessage && (
+									<span>
+										{subheadingMessage}
+									</span>
+								)}
+
+								{!subheadingMessage && subheadingMessage !== false && (
+									<span>
+										If this takes too long, consider refreshing your browser and/or reconnecting your wallet provider
+									</span>
+								)}
+							</h5>
 						</Grid>
 					</Grid>
 				</main>
