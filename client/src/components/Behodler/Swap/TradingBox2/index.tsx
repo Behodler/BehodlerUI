@@ -188,8 +188,8 @@ export default function TradeBox2(props: props) {
             return;
         }
         const hundred: any = BigInt(100);
-        const exitRatio = O_i !== '0' ? (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any) : 0;
-        if (!exitRatio || exitRatio > maxLiquidityExit) {
+        const exitRatio = (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any);
+        if (exitRatio > maxLiquidityExit) {
             setInputValid(false);
         }
     }
