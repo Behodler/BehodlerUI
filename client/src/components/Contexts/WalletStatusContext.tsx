@@ -205,7 +205,7 @@ const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 		* walletconnect QR code popup shows up after a disconnection, in overall - there
 		* are some unhandled left-overs. Reloading the page resolves the issues.
 		*/
-		window.location.reload()
+		setTimeout(window.location.reload)
 	}
 
 	if (provider.isMetaMask) {
@@ -215,7 +215,7 @@ const getDisconnectProviderFn = (provider, handleWalletDisconnected): any => {
 		}
 	} else if (provider.isPortis) {
 		return async () => {
-			provider._portis.logout()
+			await provider._portis.logout()
 			await triggerCommonDisconnectFn('Portis disconnected by user')
 		}
 	} else if (provider.wc) {
