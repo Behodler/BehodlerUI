@@ -1,14 +1,15 @@
 import * as React from 'react'
 import Web3 from 'web3'
 import { useState, useEffect } from 'react'
-import API from '../../blockchain/ethereumAPI'
-import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import Web3Modal, { IProviderOptions,  } from 'web3modal'
-import WalletConnectProvider from '@walletconnect/web3-provider/dist/umd/index.min'
-import { WalletLink } from 'walletlink/dist/WalletLink.js'
-import coinbaseWalletIcon from '../../customIcons/coinbase-wallet.svg'
+import WalletConnectProvider from '@walletconnect/web3-provider'
+import { WalletLink } from 'walletlink'
 import * as Portis from '@portis/web3'
 import * as Fortmatic from 'fortmatic'
+
+import API from '../../blockchain/ethereumAPI'
+import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
+import coinbaseWalletIcon from '../../customIcons/coinbase-wallet.svg'
 import { Loading } from '../Common/Loading'
 
 interface walletProps {
@@ -392,13 +393,9 @@ function WalletContextProvider(props: any) {
     	<>
 			<WalletContext.Provider value={providerProps}> {props.children}</WalletContext.Provider>
 			{connecting && (
-				<div
-
-				>
-					<Loading
-						headingMessage="Please wait while we connect to your wallet provider"
-					/>
-				</div>
+				<Loading
+					headingMessage="Please wait while we connect to your wallet provider"
+				/>
 			)}
 		</>
 	)
