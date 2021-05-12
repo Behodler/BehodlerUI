@@ -4,6 +4,8 @@ The UI for Behodler is divided into a swap page and a dapps subdomain. This proj
 ## Developers
 If you would like to submit a pull request, it's required that you test and run the dapp through the docker containers specified in docker-compose. 
 
+All commands are meant to be run from the `client` directory.
+
 To start up the UI container,
 ```
 npm start
