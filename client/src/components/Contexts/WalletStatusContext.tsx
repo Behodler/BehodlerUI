@@ -110,23 +110,6 @@ const initWeb3Modal = () => {
 		: undefined
 
 	const mainnetRpc = rpcConfig && rpcConfig[1];
-	const fortmaticCustomNodeOptions = (
-		FORTMATIC_KEY && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
-			? {
-				rpcUrl: rpcConfig[CUSTOM_CHAIN_ID],
-				chainId: parseInt(CUSTOM_CHAIN_ID, 10),
-			}
-			: undefined
-	);
-
-	const portisCustomNodeOptions = (
-		PORTIS_ID && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
-			? {
-				nodeUrl: rpcConfig[CUSTOM_CHAIN_ID],
-				chainId: parseInt(CUSTOM_CHAIN_ID, 10),
-			}
-			: undefined
-	);
 
 	// e.g REACT_APP_RPC_CONFIGS=1|https://mainnet.infura.io/v3/INFURA_ID,2|https://morder-rpc-url
 	if (INFURA_ID || rpcConfig) {
@@ -169,6 +152,15 @@ const initWeb3Modal = () => {
 	}
 
 	if (PORTIS_ID) {
+		const portisCustomNodeOptions = (
+			PORTIS_ID && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
+				? {
+					nodeUrl: rpcConfig[CUSTOM_CHAIN_ID],
+					chainId: parseInt(CUSTOM_CHAIN_ID, 10),
+				}
+				: undefined
+		);
+
 		providerOptions.portis = {
 			package: Portis,
 			options: {
@@ -179,6 +171,15 @@ const initWeb3Modal = () => {
 	}
 
 	if (FORTMATIC_KEY) {
+		const fortmaticCustomNodeOptions = (
+			FORTMATIC_KEY && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
+				? {
+					rpcUrl: rpcConfig[CUSTOM_CHAIN_ID],
+					chainId: parseInt(CUSTOM_CHAIN_ID, 10),
+				}
+				: undefined
+		);
+
 		providerOptions.fortmatic = {
 			package: Fortmatic,
 			options: {
