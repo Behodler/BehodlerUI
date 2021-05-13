@@ -34,17 +34,11 @@ export const EffectFactory = (web3: Web3, account: string): EffectFactoryType =>
 )
 
 export class Effect {
-	private subscription: any
+	public subscription: any
 	public Observable: Observable<any>
 	public constructor(Observable: Observable<any>, subscription: any) {
 		this.subscription = subscription
 		this.Observable = Observable
-	}
-
-	cleanup() {
-		if (this.subscription !== null && this.subscription.id !== null) {
-			//	this.subscription.unsubscribe()
-		}
 	}
 }
 

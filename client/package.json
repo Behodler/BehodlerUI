@@ -13,34 +13,51 @@
 		"fork-ts-checker-webpack-plugin": "^0.2.10",
 		"handy-redis": "^2.2.1",
 		"openzeppelin-solidity": "^2.1.1",
-		"react": "^17.0.1",
-		"react-dom": "^17.0.1",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
 		"react-redux": "^6.0.1",
 		"react-router-dom": "^5.2.0",
-		"react-scripts-ts": "^3.1.0",
+		"react-scripts": "^3.1.0",
 		"react-swipeable-views": "^0.13.9",
 		"rxjs": "^6.5.1",
 		"truffle-core": "^5.0.14",
 		"typeface-roboto": "0.0.75",
-		"web3": "^1.0.0-beta.37"
+		"web3": "^1.3.5"
 	},
 	"scripts": {
-		"start": "react-scripts-ts start",
-		"s3:sync": "aws s3 sync ../build/ s3://behodler.io",
-		"build:no-deploy": "react-scripts-ts build",
-		"build": "npm run build:no-deploy && npm run s3:sync",
-		"test": "react-scripts-ts test --env=jsdom",
-		"eject": "react-scripts-ts eject"
+		"docker:start": "react-scripts start",
+		"docker:build": "rm -rf build && npx react-scripts build",
+		"install:docker": "rm -rf node_modules/* && rm -f yarn.lock && docker-compose up install",
+		"start": "docker-compose up --remove-orphans  -d client",
+		"stop": "cp src/temp/ProductionMappings.json src/temp/BehodlerABIAddressMapping.json && docker-compose down",
+		"build": "docker-compose up build",
+		"deploy": "docker-compose up build && docker-compose up S3",
+		"devserver":"docker-compose up --remove-orphans dev",
+		"ganache": "docker-compose up --remove-orphans -d ganache",
+		"start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start"
 	},
 	"devDependencies": {
 		"@types/jest": "^23.3.12",
 		"@types/node": "^11.12.0",
-		"@types/react": "^16.9.16",
-		"@types/react-dom": "^16.8.3",
+		"@types/react": "^16.14.5",
+		"@types/react-dom": "^16.9.12",
 		"@types/react-router-dom": "^5.1.5",
 		"@types/web3": "^1.0.18",
 		"redis": "^3.0.2",
 		"types-web3-provider-engine": "0.0.2",
-		"typescript": "^3.3.4000"
+		"typescript": "^3.7.4",
+        "@types/webpack-env": "1.16.0"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
 	}
 }

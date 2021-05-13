@@ -1,23 +1,33 @@
-# WeiDai: A stablecoin that only grows in value
-## backed by MakerDAO's Dai ERC20 stablecoin
-- WeiDai is issued and redeemed at an exchange rate determined by the reserve(DAI)/totalSupply(WEIDAI)
-- In addition to being a regular ERC20 token, WeiDai can be burnt. Whenever it is, the denominator of the exchange equation (above) declines, pushing up the price of WeiDai. This is the chief mechanism through which WeiDai gains value relative to Dai. Consider the following illustrative example:
-Suppose there are 100 WeiDai in circulation and 100 Dai in reserve. The exchange rate is 1. Nimrod owns 30 and Sarah owns 70. Nimrod decides to burn 20 for no reason because he's a little crazy. The exchange rate is now 100/80 = 1.25. Previously, Sarah could exchange her WeiDai for 70 Dai. Now she can exchange them for 87.5 Dai (=70*1.25). Her WeiDai has grown in value because Nimrod burnt some of his.
-- When WeiDai is redeemed for Dai, a percentage is burnt, implying that regular redemption gradually pushes up the price for those still holding.
-- The price cannot be pushed down through dumping since the token is 100% collateralized by DAI. Only DAI price instability can introduce instability into WeiDai
-- WeiDai is produced by mining _PATIENCE_ : In order to produce WeiDai, holders of Dai must send their Dai to a special contract known as the Patience Regulation Engine. Their new WeiDai is immediately produced at the current exchange rate but is held in reserve. The owner is advised to wait a certain number of blocks before claiming their new WeiDai. If they claim their holding prematurely, they incur a penalty tax which starts at 100% and declines linearly until the waiting period is over. The proceeds from this *impatience tax* are burnt, pushing up the redeem price of the remaining WeiDai in the system. The impatience duration is akin to a mining difficulty and adjusts dynamically according to how easy or hard users find it to wait out the duration.
-- There is no need for external oracles or centralized control of any kind. Everything happens in smart contracts on the Ethereum blockchain. Price feeds are *outsourced* to the Dai ecosystem. This means that WeiDai is only as reliable as Dai. There is a developer donation address to fund ongoing development. To assist in making donations easier, a portion of the amount reserved for burning can be allocated as a donation to the developer donation address instead of being burnt.
+# Behodler UI
+The UI for Behodler is divided into a swap page and a dapps subdomain. This project is exclusively concerned with the swap sectiom
 
-## Vision
-By creating a token that cannot fall relative to the US dollar but which will necessarily grow, it is hoped that WeiDai will provide a risk-free, inflation beating method of saving that allows HODLers to free themselves of having to research financial or crypto markets. 
+## Developers
+If you would like to submit a pull request, it's required that you test and run the dapp through the docker containers specified in docker-compose. 
 
-In time, it is hoped that marginalized, underbanked and unbanked communities around the world will be able to safely insulate themselves from inflation both in the short, medium and long term. By creating a new era of **thriftcoins** which rewards saving disproportionately, the cultural damage caused by central banking credit expansion which has given rise to an ambient norm of consumerism will be gradually reversed and replaced by a thrifty culture of self-reliance and monetary frugality. In turn, communities will be able to self capitalize, enabling both charity and business finance to naturally decentralize.
+To start up the UI container,
+```
+npm start
+```
 
-## Future Development
-The ethos of WeiDai will be to encourage burning. As such, WeiDai allows holders to grant 3rd parties the right to burn their tokens, similar to the ERC20 **approve** function. This will allow for the development of dapps that make purchases through WeiDai burns or partial burns. An example could be a governance game that utilizes the concept of Harberger taxes which are paid by burning WeiDai. Such additions to the ecosystem will complement the base layer of burn incentives created by the Patience Regulation Engine contract.
+To tear down the containers
+```
+npm stop
+```
 
-## Why the name?
-Since I wish to make it clear that this token extends the original Dai token, I thought it would be appropriate to use the same naming convention. Dai, loosely translated, is the Chinese word for lend/borrow. Originally I thought I'd name the token Updai since the name is catchy and the intention is clear. However, charged with a desire to linguistically acknowledge Dai, I fumbled around on Google Translate for a Chinese word that means something like "insulate" or "protect" because I wish to make it clear that the two chief properties are that it beats inflation and is stable relative to the US Dollar. Eventually I stumbled on Wei which means guard/protect. I couldn't resist! Wei Dai is one of the spiritual fathers of Bitcoin (and one of the potential Satoshi Nakamoto candidates). In summary, the final name choice acknowledges both MakerDao and Wei Dai while simultaneously communicating the values of a **thriftcoin**. 
+Do not try to install the node_modules manually. Instead run 
+```
+    npm run install:docker
+```
+which will run the container in the specified version of node known to work with the dependencies. It will then populate your local node_modules.
 
-## Will WeiDai take over the world?
-Bitcoin demonstrated that even the best economic theories are humbled by the chaotic winds of reality. While Austrian theory pointed to Bitcoin being an intelligent way to construct a new currency and Gresham's Law would predict holding to dominate spending, the wildness of Bitcoin's early life as well as the sociopolitical perturbations were beyond anyone's ability to predict. I have my own ideas of how WeiDai will impact the world but I have no doubt reality will be far different from my initial hopes and guesses. Like Bitcoin, it must always be borne in mind that WeiDai is *an experimental digital currency* and that no one can predict or promise what it will do. Also bear in mind that a total collapse of Dai would kill WeiDai instantly.
+## Dev server
+So as to simulate the mechanics of Behodler, a dev instance of ganache has been included with contracts pre deployed. To run the dev ganache as well as the dev server
+```
+npm run start:dev
+```
+In order to get free eth, you'll need to use the following seed phrase
+
+```
+eight fun oak spot hip pencil matter domain bright fiscal nurse easy 
+```
+Do note that the images of the tokens will be out of sync because they don't correspond to mainnet images. This is normal.

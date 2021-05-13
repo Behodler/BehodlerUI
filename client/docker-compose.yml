@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+    install:
+        image: node:14
+        command: sh -c "yarn install"
+        working_dir: /app
+        volumes:
+            - ./:/app
+    client:
+        image: node:14
+        command: sh -c "npm run docker:start"
+        working_dir: /app
+        ports:
+            - 3000:3000
+        volumes:
+            - ./:/app
+        tty: true
+    build:
+        image: node:14
+        command: sh -c "npm run docker:build"
+        working_dir: /app
+        volumes:
+            - ./:/app
+    deploy:
+        image: node:14
+        command: sh -c "npm run docker:deploy"
+        working_dir: /app
+        volumes:
+            - ./:/app
+    ganache:
+        image: trufflesuite/ganache-cli
+        ports:
+            - 8545:8545
+        tty: true
+        command: "-g 1 -l 15481674 --db behodlerDB -m 'eight fun oak spot hip pencil matter domain bright fiscal nurse easy'"
+        volumes:
+            - ./behodlerDB:/app/behodlerDB
+    S3:
+       image: amazon/aws-cli:latest
+       tty: true
+       command:  s3 sync /app/build/ s3://behodler.io
+       volumes:
+        - ./:/app
+        - ~/.aws:/root/.aws

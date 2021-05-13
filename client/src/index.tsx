@@ -1,11 +1,19 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import './index.css';
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import './index.css'
 import App from './App'
-//import { Route, Switch } from 'react-router'
 
-ReactDOM.render(
-		<App />,
-	document.getElementById('root') as HTMLElement
-);
+const rootEl = document.getElementById('root')
 
+const render = (Component) => {
+    return ReactDOM.render(<Component />, rootEl)
+}
+
+render(App)
+
+if (module.hot) {
+    module.hot.accept('./App', () => {
+        const App = require('./App').default
+        render(App)
+    })
+}
