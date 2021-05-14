@@ -65,6 +65,11 @@ function WalletContextProvider(props: any) {
 				setInitialized(true)
             } catch (err) {
                 setWalletError(err)
+				console.error('WalletError catched', err);
+
+				if (disconnectAction && disconnectAction.action) {
+					disconnectAction.action()
+				}
             }
         }
     }, [initialized, account, chainId])
