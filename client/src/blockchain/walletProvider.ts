@@ -129,7 +129,7 @@ export const getDisconnectProviderFn = (provider, handleWalletDisconnected): any
     * walletconnect QR code popup shows up after a disconnection, in overall - there
     * are some unhandled left-overs. Reloading the page resolves the issues.
     */
-    setTimeout(window.location.reload)
+    setTimeout(() => window.location.reload())
   }
 
   if (provider.isMetaMask) {
