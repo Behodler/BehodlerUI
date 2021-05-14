@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) =>
             color: theme.palette.secondary.main,
             textAlign: 'center',
         },
-        
+
     })
 )
 
@@ -92,7 +92,10 @@ const getMessageError = (walletError: WalletError): any => {
         case WalletError.NETWORK_NOT_SUPPORTED:
             return <>Your wallet's network is currently not supported!<br/>Please make sure it is Ethereum Mainnet</>
         default:
-            return ''
+            return <>
+                The connection with your wallet couldn't be established.<br/>
+                Please try again and make sure your wallet is configured to use Ethereum Mainnet network
+            </>
     }
 }
 
