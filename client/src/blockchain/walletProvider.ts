@@ -1,4 +1,4 @@
-import Web3Modal, { IProviderOptions } from 'web3modal';
+import Web3Modal, { IProviderOptions, isMobile } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import coinbaseWalletIcon from '../customIcons/coinbase-wallet.svg';
 import { WalletLink } from 'walletlink';
@@ -58,7 +58,9 @@ export const initWeb3Modal = () => {
         display: {
           logo: coinbaseWalletIcon,
           name: 'Coinbase Wallet',
-          description: 'Scan with WalletLink to connect',
+          description: !isMobile()
+            ? 'Scan with WalletLink to connect'
+            : 'Open in Coinbase Wallet app',
         },
         package: WalletLink,
         connector: async () => {
@@ -73,7 +75,7 @@ export const initWeb3Modal = () => {
     }
   }
 
-  if (PORTIS_ID) {
+  if (PORTIS_ID && !isMobile()) {
     const portisCustomNodeOptions = (
       PORTIS_ID && CUSTOM_CHAIN_ID && rpcConfig && rpcConfig[CUSTOM_CHAIN_ID]
         ? {
