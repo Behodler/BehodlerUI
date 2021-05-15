@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) =>
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '64px 16px 32px 16px',
+            padding: '40px 16px',
         },
         behodlerHeading: {
             color: 'white',
@@ -56,8 +56,11 @@ const useStyles = makeStyles((theme) =>
         link: {
             fontStyle: 'italic',
         },
+        connectButtonWrapper: {
+            margin: '20px 0 16px',
+        },
         connectButton: {
-            margin: '20px 0 0 0',
+            margin: '0',
         },
         warningText: {
             color: 'black',
@@ -75,10 +78,13 @@ const useStyles = makeStyles((theme) =>
         headerText: {
             textAlign: 'center',
         },
-    eyeLogo:{
-        width:400,
-        margin: '0 -20px -60px 0'
-    },
+        eyeLogoWrapper:{
+            padding: '0 10px',
+        },
+        eyeLogo:{
+            maxWidth: '380px',
+            width: '100%',
+        },
         errorMessage: {
             color: theme.palette.secondary.main,
             textAlign: 'center',
@@ -192,10 +198,10 @@ export default function Swap(props: props) {
                 </>
             ) : (
                 <Box className={classes.noWalletContent}>
-                    <Box>
-                    <img src={eyelogo} className={classes.eyeLogo} />
+                    <Box className={classes.eyeLogoWrapper}>
+                        <img src={eyelogo} className={classes.eyeLogo} />
                     </Box>
-                    <Box mt={3}>
+                    <Box className={classes.connectButtonWrapper}>
                         <Button
                             className={classes.connectButton}
                             color="primary"
