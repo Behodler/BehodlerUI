@@ -183,6 +183,28 @@ export default function TopMenu(props: props) {
         closeMenu();
     };
 
+    const DisconnectWalletButton = (props: { label?: string } = {}) => (
+        walletContextProps.disconnectAction ? (
+            <Grid item>
+                <div
+                    onClick={() => walletContextProps.disconnectAction.action()}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                >
+                    <Icon style={{ display: 'flex' }}>
+                        <img
+                            src={disconnectIcon}
+                            className={classes.disconnectIcon}
+                            title="Disconnect wallet"
+                            alt="Disconnect"
+                        />
+                    </Icon>
+
+                    {props.label && ' Disconnect'}
+                </div>
+            </Grid>
+        ) : null
+    )
+
     const eyelink = "https://www.dextools.io/app/uniswap/pair-explorer/0x54965801946d768b395864019903aef8b5b63bb3";
     return (
         <div className={classes.menuRoot}>
@@ -216,19 +238,7 @@ export default function TopMenu(props: props) {
                                                 <img src={metamaskAccount} width={15} />
                                             </Grid>
 
-                                            {walletContextProps.disconnectAction ? (
-                                                <Grid item>
-                                                    <Icon>
-                                                        <img
-                                                            src={disconnectIcon}
-                                                            onClick={() => walletContextProps.disconnectAction.action()}
-                                                            className={classes.disconnectIcon}
-                                                            title="Disconnect wallet"
-                                                            alt="Disconnect"
-                                                        />
-                                                    </Icon>
-                                                </Grid>
-                                            ) : null}
+                                            <DisconnectWalletButton />
                                         </Grid>
                                     </div>
                                 </Grid>
@@ -260,6 +270,10 @@ export default function TopMenu(props: props) {
                             >
                                 <MenuItem className={classes.menuList} onClick={() => route('swap2')}>Swap</MenuItem>
                                 <MenuItem className={classes.menuList} onClick={() => window.open(eyelink, '_blank')}>EYE</MenuItem>
+                                <hr/>
+                                <MenuItem className={classes.menuList}>
+                                    <DisconnectWalletButton label="Disconnect" />
+                                </MenuItem>
                             </Menu>
                         </Hidden>
                     </div>
