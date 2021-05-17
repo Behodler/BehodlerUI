@@ -18,6 +18,7 @@ interface walletProps {
     account: string
     contracts: IContracts
     connectAction: any
+    provider: any
     initialized: boolean
     networkName: string
     primary: boolean
@@ -35,6 +36,9 @@ let WalletContext = React.createContext<walletProps>({
     account: '0x0',
     connectAction: async () => {
         console.log('connect action not set')
+    },
+    provider: async () => {
+        console.log('no provider set')
     },
     contracts: DefaultContracts,
     initialized: false,
@@ -85,6 +89,7 @@ function WalletContextProvider(props: any) {
     const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
     const [loaded, setLoaded] = useState<boolean>(false)
     const [connectAction, setConnectAction] = useState<any>()
+    const [provider, setProvider] = useState<any>()
     const [initialized, setInitialized] = useState<boolean>(false)
     const [networkName, setNetworkName] = useState<string>('')
     const [primary, setPrimary] = useState<boolean>(false)
@@ -158,6 +163,7 @@ function WalletContextProvider(props: any) {
                 },
             }
             setConnectAction(connectionActionObject)
+            setProvider(window.ethereum)
         }
     })
 
@@ -168,6 +174,7 @@ function WalletContextProvider(props: any) {
         account,
         contracts,
         connectAction,
+        provider,
         initialized,
         networkName,
         primary,
