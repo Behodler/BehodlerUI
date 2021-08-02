@@ -203,11 +203,8 @@ export default function Swap(props: props) {
                     )}
                     <Box mt={3}>
                         <Typography className={classes.warningText} variant="subtitle1">
-                            Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves.
-                            Gain exposure to the entire pool of liquidity by minting Scarcity. Tap into the liquidity growth of a single token by minting a Pyrotoken
-                            wrapper. Exploit price arbitrage with a zero fee, low gas flashloan or let your tokens work for you passively by queuing for liquidity in the
-                            Liquid Queue (coming soon). While you wait in the queue, we pay you Eye on an hourly basis. The more spots in the queue you occupy, the more
-                            Eye you earn per hour.
+                        Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves or
+                        gain exposure to the entire pool of liquidity by minting Scarcity.
                         </Typography>
                     </Box>
                     <Box mt={3}>
