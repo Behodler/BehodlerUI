@@ -13,5 +13,4 @@ import eyedai from '../../../../images/behodler/eyedai.png'
 import scxeth from '../../../../images/behodler/scxeth.png'
 import scxeye from '../../../../images/behodler/scxeye.png'
 import eye from '../../../../images/behodler_b.png'
-
 export const Images = [One, Two, Three, Four, Five, Six, Seven/* Eight*/, Nine, /*Ten*/  Dai, eye,eyedai, scxeth, scxeye]

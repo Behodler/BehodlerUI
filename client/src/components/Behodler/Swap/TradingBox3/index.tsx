@@ -9,18 +9,19 @@ import SwapVertIcon from '@material-ui/icons/SwapVert'
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import NewField from './NewField'
+import TokenSelector from './TokenSelector'
 interface props { }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        boxSizing: 'border-box',
+        // boxSizing: 'border-box',
         margin: '50px auto',
-        maxWidth: '480px',
+        maxWidth: '800px',
         padding: '40px 20px',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         width: '90%',
-        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+        // boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
     },
     iconWrapper: {
         display: 'flex',
@@ -28,11 +29,52 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: '24px 0',
     },
     buttonWrapper: {
-        display: 'flex',
-        justifyContent: 'center',
-        marginTop: 36,
+        position: "absolute",
+        left: "43%",
+        top: "70%",
+        margin: "0 auto",
+        // display: 'flex',
+        // justifyContent: 'center',
+        // marginTop: 36,
     },
+    hideIt: { display: "none" },
+    centerWrapper: {
+        margin: "0 auto",
+        width:"80%",
+        maxWidth: "1300px",
+        position: "absolute",
+        left: "10%",
+        top: "40%",
+        // marginLeft:-250,
+        // marginTop:-250
+    },
+    leftSelector: {
+        position: "absolute",
+        left: "35%",
+        top:"40%"
+    },
+    rightSelector: {
+        position: "absolute",
+        right: "35%",
+        top:"40%"
+    },
+    leftField: {
+        position: "absolute",
+        left: "14%",
+        top:"40%"
+    },
+    rightField: {
+        position: "absolute",
+        right: "15%",
+        top:"40%"
+      
+    },
+    swapButton:{
+        background: "linear-gradient(105.11deg, rgba(23, 23, 20, 0) 46.06%, rgba(47, 48, 59, 0.255) 77.76%)",
+        width: 500
+    }
 }))
+
 
 export default function TradeBox2(props: props) {
     const classes = useStyles();
@@ -268,53 +310,60 @@ export default function TradeBox2(props: props) {
     const textFieldLabels = ['From', 'To']
     return (
         <Box className={classes.root}>
-            <ExtendedTextField
-                label={textFieldLabels[0]}
-                dropDownFields={tokenDropDownList}
-                valid={inputValid}
-                setValid={setInputValid}
-                setValue={setInputValue}
-                setEnabled={setInputEnabled}
-                setTokenAddress={setInputAddress}
-                address={inputAddress}
-                value={inputValue}
-                scarcityAddress={scarcityAddress}
-                clear={clearInput}
-                addressToEnableFor={walletContextProps.contracts.behodler.Behodler2.Behodler2.address}
-                decimalPlaces={inputDecimals}
-            />
-            <Box className={classes.iconWrapper}>
-                <IconButton aria-label="delete" onClick={swapInputAddresses}>
-                    <SwapVertIcon color="secondary" />
-                </IconButton>
-            </Box>
-            <ExtendedTextField
-                label={textFieldLabels[1]}
-                dropDownFields={tokenDropDownList}
-                valid={outputValid}
-                setValid={setOutputValid}
-                setValue={setOutputValue}
-                setTokenAddress={setOutputAddress}
-                address={outputAddress}
-                value={outputValue}
-                disabledInput
-                exchangeRate={{
-                    baseAddress: inputAddress,
-                    baseName: nameOfSelectedAddress(inputAddress),
-                    ratio: exchangeRate,
-                    valid: swapEnabled,
-                    reserve: outputReserve,
-                    setReserve: setOutputReserve,
-                }}
-                clear={clearInput}
-                decimalPlaces={outputDecimals}
-            />
-            <NewField direction = "FROM" balance="3.1"  estimate="1010.1" token="DAI" />
+            <div className={classes.hideIt}>
+                <ExtendedTextField
+                    label={textFieldLabels[0]}
+                    dropDownFields={tokenDropDownList}
+                    valid={inputValid}
+                    setValid={setInputValid}
+                    setValue={setInputValue}
+                    setEnabled={setInputEnabled}
+                    setTokenAddress={setInputAddress}
+                    address={inputAddress}
+                    value={inputValue}
+                    scarcityAddress={scarcityAddress}
+                    clear={clearInput}
+                    addressToEnableFor={walletContextProps.contracts.behodler.Behodler2.Behodler2.address}
+                    decimalPlaces={inputDecimals}
+                />
+                <Box className={classes.iconWrapper}>
+                    <IconButton aria-label="delete" onClick={swapInputAddresses}>
+                        <SwapVertIcon color="secondary" />
+                    </IconButton>
+                </Box>
+                <ExtendedTextField
+                    label={textFieldLabels[1]}
+                    dropDownFields={tokenDropDownList}
+                    valid={outputValid}
+                    setValid={setOutputValid}
+                    setValue={setOutputValue}
+                    setTokenAddress={setOutputAddress}
+                    address={outputAddress}
+                    value={outputValue}
+                    disabledInput
+                    exchangeRate={{
+                        baseAddress: inputAddress,
+                        baseName: nameOfSelectedAddress(inputAddress),
+                        ratio: exchangeRate,
+                        valid: swapEnabled,
+                        reserve: outputReserve,
+                        setReserve: setOutputReserve,
+                    }}
+                    clear={clearInput}
+                    decimalPlaces={outputDecimals}
+                />
+            </div>
+            <div  className={classes.leftSelector}><TokenSelector token={2} /></div>
+            <div  className={classes.rightSelector}>  <TokenSelector token={4} /></div>
+            <div className= {classes.leftField}> <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" /></div>
+            <div className= {classes.rightField}><NewField direction="TO" balance="200.1" estimate="4200.1" token="EYE" /></div>
+            
             <Box className={classes.buttonWrapper}>
-                <Button disabled={!swapEnabled} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
+                <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
                     {swapText}
                 </Button>
             </Box>
         </Box>
     )
 }
+

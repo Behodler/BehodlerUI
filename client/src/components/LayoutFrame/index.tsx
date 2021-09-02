@@ -1,12 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { Box, makeStyles, createStyles, IconButton } from '@material-ui/core';
-import discord from '../../../src/images/behodler/footer/discord.png'
-import medium from '../../../src/images/behodler/footer/medium.png'
-import github from '../../../src/images/behodler/footer/Github.png'
-import twitter from '../../../src/images/behodler/footer/t.png'
-import uniswap from '../../../src/images/behodler/footer/uniswap.png'
-import telegram from '../../../src/images/behodler/footer/telegram.png'
+import { Box, makeStyles, createStyles } from '@material-ui/core';
 import { Route, Switch, Redirect } from 'react-router-dom'
 import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
 
@@ -15,15 +9,17 @@ import MetamaskNotFound from "./MetamaskNotFound";
 import { WalletContext } from "../Contexts/WalletStatusContext";
 
 //ocean, forest,skybackground
-import backImage from "../../images/new/background.png";
+import backImage from "../../images/new/background3.png";
 const useStyles = makeStyles((theme) =>
     createStyles({
         layoutFrameroot: {
+            backdropFilter: "blur(4px)",
             height: "100%",
             width: "100%",
             backgroundImage: `url(${backImage})`,
+            background: '#C4C4C4',
             backgroundRepeat: "repeat-y",
-            backgroundSize: "cover",
+            backgroundSize: "100% 100%",
             overflowY: "scroll",
         },
         layoutFramerRotNotConnected: {
@@ -77,7 +73,6 @@ export default function LayoutFrame(props: any) {
     const setBehodlerRoute = (route: permittedBehodlerRoutes) => {
         setRedirect(route);
     };
-    const footerIconWidth = 24;
     useEffect(() => {
         if (renderRedirect !== "") setRedirect("");
     });
@@ -86,7 +81,7 @@ export default function LayoutFrame(props: any) {
 
     const notConnected: boolean =
         !walletContextProps.connected || !walletContextProps.networkName || !walletContextProps.initialized; //|| walletContextProps.account.length < 5
-    const openFooter = (url: string) => window.open(url, "_blank");
+
     return (
         <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
             {/* */}
@@ -120,43 +115,7 @@ export default function LayoutFrame(props: any) {
                         </Route>
                     </Switch>
                 </Box>
-                <Box className={classes.footer}>
-                    <Box className={classes.footerPanel}>
-                        <Box>
-                            <IconButton title="github" onClick={() => openFooter('https://github.com/WeiDaiEcosystem')}>
-                                <img src={github} width={footerIconWidth} />
-                            </IconButton>
-                        </Box>
-                        <Box>
-                            <IconButton title="medium" onClick={() => openFooter('https://medium.com/weidaithriftcoin')}>
-                                <img src={medium} width={footerIconWidth} />
-                            </IconButton>
-                        </Box>
-                        <Box>
-                            <IconButton title="twitter" onClick={() => openFooter('https://twitter.com/behodlerdex')}>
-                                <img src={twitter} width={footerIconWidth} />
-                            </IconButton>
-                        </Box>
-                        <Box>
-                            <IconButton title="discord" onClick={() => openFooter('https://discord.gg/FHhsqmryZK')}>
-                                <img src={discord} width={footerIconWidth} />
-                            </IconButton>
-                        </Box>
-                        <Box>
-                            <IconButton
-                                title="uniswap"
-                                onClick={() => openFooter('https://app.uniswap.org/#/swap?inputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65&outputCurrency=ETH')}
-                            >
-                                <img src={uniswap} width={footerIconWidth} />
-                            </IconButton>
-                        </Box>
-                        <Box>
-                            <IconButton title="telegram" onClick={() => openFooter('https://t.me/BehodlerDex')}>
-                                <img src={telegram} width={footerIconWidth} />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                </Box>
+            
             </Box>
         </Box>
     )

@@ -9,7 +9,6 @@ import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
 import alternateLogo from '../../../images/behodler/tradhodler.png'
 import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
-import TopMenu from '../../LayoutFrame/TopMenu'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
@@ -99,19 +98,9 @@ const getMessageError = (walletError: WalletError): any => {
 
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
-    const [ethBalance, setEthBalance] = useState<string>('')
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
     const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
     const primaryOptions = { from: walletContextProps.account }
-    const ethCallback = useCallback(async () => {
-        if (walletContextProps.connected && walletContextProps.account.length > 5) {
-            setEthBalance(API.fromWei(await API.getEthBalance(walletContextProps.account)))
-        }
-    }, [walletContextProps.account, walletContextProps.connected])
-
-    useEffect(() => {
-        ethCallback()
-    })
 
     const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair | null> => {
         const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(
@@ -156,23 +145,10 @@ export default function Swap(props: props) {
         } else setShowChip(true)
     }, [showChip])
 
-    const truncAccount = walletContextProps.account.substring(0, 6) + '...' + walletContextProps.account.substring(walletContextProps.account.length - 4)
-
     return (
         <Box className={classes.root}>
             {props.connected ? (
                 <>
-                    <TopMenu
-                        setRouteValue={props.setRouteValue}
-                        ethBalance={ethBalance}
-                        truncAccount={truncAccount}
-                    />
-                    <Box className={classes.headerText} mt={6}>
-                        <div className={classes.alphadrop}>Swap, Own and Queue for Liquidity</div>
-                        <Typography variant="h4" className={classes.behodlerHeading}>
-                            Behodler Liquidity Engine
-                        </Typography>
-                    </Box>
                     <Box>
                         <RenderScreen value={props.route} tokens={pyroTokenMapping} />
                     </Box>
