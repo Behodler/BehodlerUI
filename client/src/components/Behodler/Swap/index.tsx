@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useContext, useEffect, useCallback } from 'react'
-import TradingBox2 from './TradingBox2/index'
+import TradingBox3 from './TradingBox3'
 import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
 import { Typography, Button, Container, Box, makeStyles, createStyles } from '@material-ui/core'
@@ -221,7 +221,7 @@ export default function Swap(props: props) {
 function RenderScreen(props: { value: permittedRoutes; tokens: basePyroPair[] }) {
     switch (props.value) {
         case 'swap2':
-            return <TradingBox2 />
+            return <TradingBox3 />
         case 'pyro':
             if (props.tokens.length > 1)
                 return <PyroTokens tokens={props.tokens} />

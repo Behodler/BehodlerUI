@@ -15,7 +15,7 @@ import MetamaskNotFound from "./MetamaskNotFound";
 import { WalletContext } from "../Contexts/WalletStatusContext";
 
 //ocean, forest,skybackground
-import backImage from "../../images/behodler/ocean.gif";
+import backImage from "../../images/new/background.png";
 const useStyles = makeStyles((theme) =>
     createStyles({
         layoutFrameroot: {
