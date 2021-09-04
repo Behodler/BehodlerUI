@@ -1,15 +1,10 @@
 import * as React from 'react'
-import { useState, useEffect, useContext } from 'react'
+import { useContext } from 'react'
 import { Box, makeStyles, createStyles } from '@material-ui/core';
-import { Route, Switch, Redirect } from 'react-router-dom'
-import Swap, { permittedRoutes as permittedBehodlerRoutes } from '../Behodler/Swap/index'
-
-//client/src/blockchain/ethereumAPI.ts
-import MetamaskNotFound from "./MetamaskNotFound";
+import Swap from '../Behodler/Swap/index'
 import { WalletContext } from "../Contexts/WalletStatusContext";
-
-//ocean, forest,skybackground
 import backImage from "../../images/new/background3.png";
+
 const useStyles = makeStyles((theme) =>
     createStyles({
         layoutFrameroot: {
@@ -66,17 +61,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function LayoutFrame(props: any) {
-    const [redirect, setRedirect] = useState<string>("");
-    const [showMetamaskInstallPopup, setShowMetamaskInstallPopup] = useState<boolean>(false);
-    const renderRedirect = redirect !== "" ? <Redirect to={redirect} /> : "";
     const walletContextProps = useContext(WalletContext);
-    const setBehodlerRoute = (route: permittedBehodlerRoutes) => {
-        setRedirect(route);
-    };
-    useEffect(() => {
-        if (renderRedirect !== "") setRedirect("");
-    });
-
     const classes = useStyles();
 
     const notConnected: boolean =
@@ -84,38 +69,10 @@ export default function LayoutFrame(props: any) {
 
     return (
         <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
-            {/* */}
-            <MetamaskNotFound show={showMetamaskInstallPopup} closeAction={setShowMetamaskInstallPopup} />
-            <div>{renderRedirect}</div>
-
             <Box className={classes.content}>
                 <Box className={classes.mainContent} flexGrow={1}>
-                    <Switch>
-                        <Route path="/" exact>
-                            <Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
-                        </Route>
-                        <Route path="/liquidity">
-                            <Swap
-                                setShowMetamaskInstallPopup={setShowMetamaskInstallPopup}
-                                connected={!notConnected}
-                                setRouteValue={setBehodlerRoute}
-                                route="liquidity"
-                            />
-                        </Route>
-                        <Route path="/swap2">
-                            <Swap setShowMetamaskInstallPopup={setShowMetamaskInstallPopup} connected={!notConnected} setRouteValue={setBehodlerRoute} route="swap2" />
-                        </Route>
-                        <Route path="/governance">
-                            <Swap
-                                setShowMetamaskInstallPopup={setShowMetamaskInstallPopup}
-                                connected={!notConnected}
-                                setRouteValue={setBehodlerRoute}
-                                route="governance"
-                            />
-                        </Route>
-                    </Switch>
+                  {notConnected?"": <Swap connected={!notConnected} route="swap2" />}
                 </Box>
-            
             </Box>
         </Box>
     )

@@ -12,7 +12,7 @@ const theme = createMuiTheme({
         type: 'light',
     },
     typography: {
-        fontFamily: 'Inter',
+        fontFamily: 'Gilroy-medium',
         //fontSize:11
     },
 })

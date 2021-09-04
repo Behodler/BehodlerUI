@@ -10,9 +10,13 @@ interface props {
     token: string
 }
 
+
+
+const scaler = (scale)=> num => Math.floor(num*scale)
+const scale = scaler (0.9) 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        width: 278
+        width: scale(278)
     },
     Direction: {
 
@@ -20,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
-        fontSize: 14,
+        fontSize: scale(20),
         // lineHeight: 17,
         /* identical to box height */
         color: "darkGrey",
@@ -29,8 +33,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     input: {
         /* Vector */
-        width: 278,
-        height: 57,
+        width: scale(300),
+        height: scale(57),
         background: "#3B2F53",
         border: "1px solid rgba(70, 57, 130, 0.5)",
         boxSizing: "border-box",
@@ -39,10 +43,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 500,
-        fontSize: 24,
+        fontSize: scale(24),
         padding: "10px 20px 10px 20px",
         color: "#FFFFFF",
-        borderRadius: 10
+        borderRadius: 5
 
 
     },
@@ -53,35 +57,35 @@ const useStyles = makeStyles((theme: Theme) => ({
         /* Balance: 2.1 ETH */
 
 
-        height: 19,
+        height: scale(19),
 
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
-        fontSize: 16,
+        fontSize: scale(16),
         /* identical to box height */
 
         color: "darkGrey"
     },
     BalanceValue: {
 
-        height: 19,
+        height: scale(19),
 
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
-        fontSize: 16,
+        fontSize: scale(16),
         color: "white"
     },
     Max: {
         /* (MAX) */
 
-        height: 19,
+        height: scale(19),
 
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
-        fontSize: 16,
+        fontSize: scale(16),
         /* identical to box height */
 
         color: "#80C2FF",
@@ -93,12 +97,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: 0
     },
     estimate: {
-        height: 19,
+        height: scale(19),
 
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
-        fontSize: 16,
+        fontSize: scale(16),
         color: "white"
     }
 }))

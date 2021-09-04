@@ -10,8 +10,15 @@ import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import NewField from './NewField'
 import TokenSelector from './TokenSelector'
-interface props { }
 
+interface props {
+    
+ }
+
+const sideScaler = (scale) => (perc) => (perc / scale) + "%"
+
+
+const scaler = sideScaler(0.8)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         // boxSizing: 'border-box',
@@ -29,18 +36,35 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: '24px 0',
     },
     buttonWrapper: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "2px solid rgba(218, 86, 221)",
+        borderRadius: "5px",
+        bottom: "20%",
+        left: "35%",
         position: "absolute",
-        left: "43%",
-        top: "70%",
-        margin: "0 auto",
-        // display: 'flex',
-        // justifyContent: 'center',
-        // marginTop: 36,
+        // '&:hover': {
+        //     background: "rgba(218, 86, 221,0.9)",
+        //  },
+    },
+    swapButton: {
+        background: "linear-gradient(105.11deg, rgba(23, 23, 20, 0) 46.06%, rgba(47, 48, 59, 0.255) 77.76%)",
+        position: "relative",
+        top: "50%",
+        // left: "10%",
+        width: 500,
+        '&:hover': {
+            background: "rgba(218, 86, 221,0.4)",
+            fontWeight: "bolder",
+            textShadow: "2px 2px 5px white"
+        },
+
     },
     hideIt: { display: "none" },
     centerWrapper: {
         margin: "0 auto",
-        width:"80%",
+        width: "80%",
         maxWidth: "1300px",
         position: "absolute",
         left: "10%",
@@ -50,36 +74,34 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     leftSelector: {
         position: "absolute",
-        left: "35%",
-        top:"40%"
+        left: "37%",
+        top: "40%"
     },
     rightSelector: {
         position: "absolute",
-        right: "35%",
-        top:"40%"
+        right: "37%",
+        top: "40%"
     },
     leftField: {
         position: "absolute",
-        left: "14%",
-        top:"40%"
+        left: scaler(14),
+        top: "40%"
     },
     rightField: {
         position: "absolute",
-        right: "15%",
-        top:"40%"
-      
-    },
-    swapButton:{
-        background: "linear-gradient(105.11deg, rgba(23, 23, 20, 0) 46.06%, rgba(47, 48, 59, 0.255) 77.76%)",
-        width: 500
+        right: scaler(15),
+        top: "40%"
+
     }
+
 }))
 
 
-export default function TradeBox2(props: props) {
+export default function (props: props) {
     const classes = useStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
     const walletContextProps = useContext(WalletContext);
+    console.log("network name: " + walletContextProps.networkName)
     const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(
         (t) => t.name !== "WBTC" && t.name !== "BAT"
     );
@@ -353,11 +375,11 @@ export default function TradeBox2(props: props) {
                     decimalPlaces={outputDecimals}
                 />
             </div>
-            <div  className={classes.leftSelector}><TokenSelector token={2} /></div>
-            <div  className={classes.rightSelector}>  <TokenSelector token={4} /></div>
-            <div className= {classes.leftField}> <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" /></div>
-            <div className= {classes.rightField}><NewField direction="TO" balance="200.1" estimate="4200.1" token="EYE" /></div>
-            
+            <div className={classes.leftSelector}><TokenSelector token={2} /></div>
+            <div className={classes.rightSelector}>  <TokenSelector token={4} /></div>
+            <div className={classes.leftField}> <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" /></div>
+            <div className={classes.rightField}><NewField direction="TO" balance="200.1" estimate="4200.1" token="EYE" /></div>
+
             <Box className={classes.buttonWrapper}>
                 <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
                     {swapText}

@@ -3,20 +3,16 @@ import { useState, useContext, useEffect, useCallback } from 'react'
 import TradingBox3 from './TradingBox3'
 import PyroTokens from './PyroTokens/index'
 import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import { Typography, Button, Container, Box, makeStyles, createStyles } from '@material-ui/core'
-import { WalletContext, WalletError } from '../../Contexts/WalletStatusContext'
+import { Typography, Box, makeStyles, createStyles } from '@material-ui/core'
+import { WalletContext } from '../../Contexts/WalletStatusContext'
 import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
 import API from '../../../blockchain/ethereumAPI'
-import alternateLogo from '../../../images/behodler/tradhodler.png'
-import eyelogo from '../../../images/behodler/landingPage/behodlerLogo.png'
 import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
 interface props {
     connected: boolean
     route: permittedRoutes
-    setRouteValue: (v: permittedRoutes) => void
-    setShowMetamaskInstallPopup: (v: boolean) => void
 }
 
 const useStyles = makeStyles((theme) =>
@@ -87,15 +83,6 @@ const useStyles = makeStyles((theme) =>
     })
 )
 
-const getMessageError = (walletError: WalletError): any => {
-    switch (walletError) {
-        case WalletError.NETWORK_NOT_SUPPORTED:
-            return <>Your wallet's network is currently not supported!<br/>Please make sure it is Ethereum Mainnet</>
-        default: 
-            return ''
-    }
-}
-
 export default function Swap(props: props) {
     const walletContextProps = useContext(WalletContext)
     const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
@@ -147,49 +134,7 @@ export default function Swap(props: props) {
 
     return (
         <Box className={classes.root}>
-            {props.connected ? (
-                <>
-                    <Box>
-                        <RenderScreen value={props.route} tokens={pyroTokenMapping} />
-                    </Box>
-                </>
-            ) : (
-                <Box className={classes.noWalletContent}>
-                    <Box>
-                    <img src={eyelogo} className={classes.eyeLogo} />
-                    </Box>
-                    <Box mt={3}>
-                        <Button
-                            className={classes.connectButton}
-                            color="primary"
-                            variant="outlined"
-                            onClick={async () => {
-                                walletContextProps.isMetamask ? walletContextProps.connectAction.action() : props.setShowMetamaskInstallPopup(true)
-                            }}
-                        >
-                            Connect Your Wallet
-                        </Button>
-                    </Box>
-                    {walletContextProps.walletError ? (
-                        <Box className={classes.errorMessage} mt={2}>
-                            {getMessageError(walletContextProps.walletError)}
-                        </Box>
-                    ) : (
-                        ''
-                    )}
-                    <Box mt={3}>
-                        <Typography className={classes.warningText} variant="subtitle1">
-                        Behodler is a suite of liquidity management tools for the discerning DeFi connoisseur. Swap tokens cheaply with logarithmic bonding curves or
-                        gain exposure to the entire pool of liquidity by minting Scarcity.
-                        </Typography>
-                    </Box>
-                    <Box mt={3}>
-                        <Container className={classes.logoContainer}>
-                            <img src={alternateLogo} className={classes.behodlerLogo} />
-                        </Container>
-                    </Box>
-                </Box>
-            )}
+           <RenderScreen value={props.route} tokens={pyroTokenMapping} />
         </Box>
     )
 }
