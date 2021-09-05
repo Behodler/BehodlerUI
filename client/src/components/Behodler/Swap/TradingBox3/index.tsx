@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: '50px auto',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
-        alignContent: "center"
+        alignContent: "center",
+        height: "100vh",
     },
     iconWrapper: {
         display: 'flex',
@@ -50,7 +51,16 @@ const useStyles = makeStyles((theme: Theme) => ({
             fontWeight: "bolder",
             textShadow: "2px 2px 5px white"
         },
+    },
+    swapButtonMobile: {
+        background: "linear-gradient(105.11deg, rgba(218, 86, 221,0.1) 46.06%, rgba(218, 86, 221,0.1) 77.76%)",
 
+        width: 360,
+        '&:hover': {
+            background: "rgba(218, 86, 221,0.4)",
+            fontWeight: "bolder",
+            textShadow: "2px 2px 5px white"
+        },
     },
     hideIt: { display: "none" },
     centerWrapper: {
@@ -89,27 +99,60 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: 220,
         height: 220, borderRadius: "50%",
 
-        alignContent: "center"
+        alignContent: "center",
+
     },
     monster: {
         display: "block",
         margin: "auto",
         borderRadius: "50%",
-
+        '&:hover': {
+            cursor: "pointer"
+        }
     },
 
     fieldGrid: {
-        margin: "0 auto",
-        width: "80%",
-        top: "25%",
-        left: "10%",
-        position: "absolute",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: "100%"
 
     },
     Info: {
         right: "1%",
         color: "white",
         marginTop: 30
+    }, mobileGrid: {
+        width: 400,
+    },
+    mobileSelectorGrid: {
+    },
+    mobileContainer: {
+        height: "100vh",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    flippySwitch: {
+        /* Ellipse 18 */
+        width: 22,
+        height: 22,
+        position: "absolute",
+        background: "#2E2455",
+        border: "1px solid #3C3682",
+        boxSizing: "border-box",
+        top: 500,
+        left: 450,
+        borderRadius: "50%",
+        backgroundImage: `url(${Images[14]})`,
+        backgroundSize: "cover",
+        '&:hover': {
+            cursor: "pointer",
+            boxShadow:"0 0 4px 1px #AAf", 
+            background: "#473D6E",
+            backgroundImage: `url(${Images[14]})`,
+            backgroundSize: "cover",
+        }
     }
 
 
@@ -394,6 +437,76 @@ export default function (props: props) {
                     decimalPlaces={outputDecimals}
                 />
             </div>
+
+            <Hidden lgUp>
+                <div className={classes.mobileContainer}>
+                    <Grid
+                        container
+                        direction="column"
+                        justify="center"
+                        alignItems="center"
+                        className={classes.mobileGrid}
+                        spacing={3}
+                    >
+                        <Grid item>
+                            <Grid
+                                container
+                                direction="row"
+                                justify="center"
+                                alignItems="center"
+                                className={classes.mobileSelectorGrid}
+                            >
+                                <Grid item>
+                                    <TokenSelector token={2} scale={0.65} />
+                                </Grid>
+                                <Grid item>
+                                    <img width={180} src={Images[13]} className={classes.monster} />
+                                </Grid>
+                                <Grid item>
+                                    <TokenSelector token={4} scale={0.65} />
+                                </Grid>
+                            </Grid>
+
+                        </Grid>
+                        <Grid item>
+                            <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" mobile />
+                        </Grid>
+                        <Grid item>
+                            <NewField direction="TO" balance="30.1" estimate="101.1" token="SCX" mobile />
+                        </Grid>
+                        <Grid item>
+                            <Box className={classes.buttonWrapper}>
+                                <Button className={classes.swapButtonMobile} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
+                                    {swapText}
+                                </Button>
+                            </Box>
+                        </Grid>
+                        <Grid item>
+                            <div className={classes.flippySwitch} onClick={() => alert('TODO: flip tokens')} />
+                        </Grid>
+                        <Grid item>
+                            <Grid container
+                                direction="column"
+                                justify="center"
+                                alignItems="center"
+                                spacing={2}
+                                className={classes.Info}
+                            >
+                                <Grid item>
+                                    1 ETH = 1 EYE
+                                </Grid>
+                                <Grid item>
+                                    <Button color="secondary" variant="outlined">
+                                        More info
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
+                </div>
+            </Hidden>
+
             <Hidden mdDown>
 
                 <Grid container
@@ -422,16 +535,16 @@ export default function (props: props) {
                                     alignItems="center"
                                 >
                                     <Grid item>
-                                        <TokenSelector token={2} />
+                                        <TokenSelector token={2} scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer}>
 
-                                            <img width={220} src={Images[13]} className={classes.monster} />
+                                            <img width={220} src={Images[13]} className={classes.monster} onClick={() => alert("TODO: flip tokens")} />
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector token={4} />
+                                        <TokenSelector token={4} scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -451,8 +564,6 @@ export default function (props: props) {
                             </Button>
 
                         </Box>
-
-
                     </Grid>
                     <Grid item>
                         <Grid container

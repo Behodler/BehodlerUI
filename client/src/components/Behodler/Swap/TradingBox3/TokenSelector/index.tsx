@@ -3,9 +3,7 @@ import * as React from 'react'
 import { Images } from '../ImageLoader'
 import Menu from './Menu'
 
-const scale = 0.8
-
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles =(scale)=> makeStyles((theme: Theme) => ({
     root: {
     },
     outerCircle: {
@@ -36,12 +34,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 interface props {
-    token: number
+    token: number,
+    scale:number
 }
 export default function TokenSelector(props: props) {
     const [showMenu, setShowMenu] = React.useState<boolean>(false)
 
-    const classes = useStyles()
+    const classes = useStyles(props.scale)()
     return <div className={classes.root} >
         <Grid
             className={classes.outerCircle}
@@ -53,7 +52,7 @@ export default function TokenSelector(props: props) {
         >
             <Grid item>
                 <div className={classes.innerCircle}>
-                    <img alt="token" src={Images[props.token]} width={70 * scale} />
+                    <img alt="token" src={Images[props.token]} width={70 * props.scale} />
                 </div>
             </Grid>
 

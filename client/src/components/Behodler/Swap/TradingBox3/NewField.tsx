@@ -7,7 +7,8 @@ interface props {
     direction: string,
     estimate: string,
     balance: string,
-    token: string
+    token: string,
+    mobile?: boolean
 }
 
 
@@ -18,24 +19,30 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: scale(310),
     },
+    mobileRoot: {
+        width: scale(400),
+        background: "#360C57",
+        borderRadius:10,
+        padding:10
+    },
     Direction: {
 
         // height: 17,
         fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
-        fontSize: scale(20),
+        fontSize: scale(16),
         // lineHeight: 17,
         /* identical to box height */
         color: "darkGrey",
         textAlign: "center",
         verticalAlign: " middle",
     },
-    input: {
+    inputWide: {
         /* Vector */
         width: scale(300),
         height: scale(57),
-        background: "#3B2F53",
+        background: "#360C57",
         border: "1px solid rgba(70, 57, 130, 0.5)",
         boxSizing: "border-box",
         /* 2.00073731114506 */
@@ -46,9 +53,21 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: scale(24),
         padding: "10px 20px 10px 20px",
         color: "#FFFFFF",
+        outline: 0,
         borderRadius: 5,
+    },
+    inputNarrow: {
+        width: scale(270),
+        background: "transparent",
+        border: "none",
+        /* 2.00073731114506 */
 
-
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: scale(20),
+        color: "#FFFFFF",
+        outline: 0
     },
     BalanceContainer: {
 
@@ -104,29 +123,40 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 600,
         fontSize: scale(16),
         color: "white"
-    }
+    },
 }))
 
 
 export default function NewField(props: props) {
     const classes = useStyles()
+
+    const BorderedGridItem = (props: { children: any }) => <Grid item >{props.children}</Grid>
+
     return <Grid
         container
         direction="column"
-        justify="center"
+        justify="flex-start"
         alignItems="stretch"
         spacing={2}
-        className={classes.root}
+        className={props.mobile ? classes.mobileRoot : classes.root}
     >
-        <Grid item>
+        {props.mobile ? "" : <BorderedGridItem>
             <DirectionLabel direction={props.direction} />
-        </Grid>
-        <Grid item>
-            <InputBox />
-        </Grid>
-        <Grid item>
+        </BorderedGridItem>}
+
+        {props.mobile ?
+            <BorderedGridItem>
+                <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item><InputBox mobile /></Grid></Grid>
+            </BorderedGridItem>
+            :
+            <BorderedGridItem>
+                <InputBox />
+            </BorderedGridItem>
+        }
+
+        <BorderedGridItem>
             <BalanceContainer balance={props.balance} token={props.token} estimate={props.estimate} />
-        </Grid>
+        </BorderedGridItem>
     </Grid>
 }
 
@@ -137,9 +167,9 @@ function DirectionLabel(props: { direction: string }) {
     </div>
 }
 
-function InputBox() {
+function InputBox(props: { mobile?: boolean }) {
     const classes = useStyles()
-    return <div><input className={classes.input} /></div>
+    return <div><input className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
 }
 
 function BalanceContainer(props: { estimate: string, balance: string, token: string }) {
@@ -147,7 +177,7 @@ function BalanceContainer(props: { estimate: string, balance: string, token: str
     return <Grid
         container
         direction="row"
-        justify="space-around"
+        justify="space-between"
         alignItems="center"
         spacing={1}
         className={classes.BalanceContainer}
