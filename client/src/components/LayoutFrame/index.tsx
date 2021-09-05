@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { Box, makeStyles, createStyles } from '@material-ui/core';
 import Swap from '../Behodler/Swap/index'
 import { WalletContext } from "../Contexts/WalletStatusContext";
@@ -62,16 +62,21 @@ const useStyles = makeStyles((theme) =>
 
 export default function LayoutFrame(props: any) {
     const walletContextProps = useContext(WalletContext);
+    const [isConnected, setIsConnected] = React.useState(false);
     const classes = useStyles();
 
     const notConnected: boolean =
         !walletContextProps.connected || !walletContextProps.networkName || !walletContextProps.initialized; //|| walletContextProps.account.length < 5
-
+    useEffect(() => {
+        if (notConnected) {
+            walletContextProps.connectAction().then(() => setIsConnected(true))
+        }
+    }, [isConnected])
     return (
         <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
             <Box className={classes.content}>
                 <Box className={classes.mainContent} flexGrow={1}>
-                  {notConnected?"": <Swap connected={!notConnected} route="swap2" />}
+                    {notConnected ? "" : <Swap connected={!notConnected} route="swap2" />}
                 </Box>
             </Box>
         </Box>
