@@ -457,13 +457,13 @@ export default function (props: props) {
                                 className={classes.mobileSelectorGrid}
                             >
                                 <Grid item>
-                                    <TokenSelector token={2} scale={0.65} />
+                                    <TokenSelector token={2} scale={0.65} mobile />
                                 </Grid>
                                 <Grid item>
                                     <img width={180} src={Images[13]} className={classes.monster} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector token={4} scale={0.65} />
+                                    <TokenSelector token={4} scale={0.65} mobile/>
                                 </Grid>
                             </Grid>
 

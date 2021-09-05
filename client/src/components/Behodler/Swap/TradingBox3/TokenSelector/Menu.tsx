@@ -4,11 +4,12 @@ import tokenListJSON from '../../../../../blockchain/behodlerUI/baseTokens.json'
 import { Images } from '../ImageLoader'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 
-const useStyles = makeStyles((theme: Theme) => ({
+
+const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     root: {
         position: "absolute",
-        width: 400,
-        height: 671,
+        width: isMobile ? 250 : 400,
+        height: isMobile ? 500 : 671,
         left: "40%",
         top: "10%",
 
@@ -24,15 +25,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     search: {
         /* Rectangle 3172 */
 
-        width: 345,
-        height: 57,
+        width: isMobile ? 200 : 345,
+        height: isMobile?40:57,
         background: "#292743",
         border: "1px solid #795ECA",
         boxSizing: "border-box",
         borderRadius: 8,
         color: "white",
-        padding: "10px 20px 10px 20px",
-        fontSize: 16
+        padding: isMobile?"2px 5px 2px 5px":"10px 20px 10px 20px",
+        fontSize: isMobile ? 12 : 16
 
     },
     gridTitle: {
@@ -43,11 +44,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     list: {
         width: '100%',
-        maxWidth: 370,
+        maxWidth: isMobile ? 200 : 370,
         // backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',
-        maxHeight: 500,
+        maxHeight: isMobile ? 300 : 500,
 
         /* Rectangle 3173 */
 
@@ -59,6 +60,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: 50,
         color: 'darkgray',
         fontSize: 18
+    },
+    mobileText: {
+        fontSize: 11,
+        width: "100%"
+    },
+    regular: {
+        width: "100%",
     }
 
 }))
@@ -68,7 +76,8 @@ interface props {
     weth10Address: string
     scarcityAddress: string
     show: boolean
-    setShow: (show: boolean) => void
+    setShow: (show: boolean) => void,
+    mobile: boolean
 }
 
 interface MenuToken {
@@ -84,6 +93,12 @@ interface TokenMetadata {
     address: string
 }
 const randomInt = (range: number) => Math.floor(Math.random() * range)
+const trunc = (str: string, max: number) => {
+    if (str.length > max) {
+        return str.substring(0, max) + "..."
+    }
+    return str;
+}
 export default function Menu(props: props) {
     const tokenList: TokenMetadata[] = tokenListJSON[props.networkName].filter(
         (t) => t.name !== "WBTC" && t.name !== "BAT"
@@ -104,11 +119,11 @@ export default function Menu(props: props) {
         return item
     })
 
-    return <TokenPopup tokens={tokenDropDownList} open={props.show} setShow={props.setShow} />
+    return <TokenPopup tokens={tokenDropDownList} open={props.show} setShow={props.setShow} mobile={props.mobile} />
 }
 
-function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void }) {
-    const classes = useStyles();
+function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void, mobile: boolean }) {
+    const classes = useStyles(props.mobile)();
     const close = () => props.setShow(false)
     const [searchText, setSearchText] = useState("")
     const [filteredList, setFilteredList] = useState<MenuToken[]>(props.tokens)
@@ -144,21 +159,26 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                     {filteredList.length === 0 ? <div className={classes.noResults}>No results found.</div> : <List className={classes.list}>
                         {filteredList.map((t, i) => <ListItem button key={i} >
                             <ListItemIcon>
-                                <img width={32} src={t.image} alt={t.name} />
+                                <img width={props.mobile ? 24 : 32} src={t.image} alt={t.name} />
                             </ListItemIcon>
-                            <Grid
-                                container
-                                direction="row"
-                                justify="space-between"
-                                alignItems="center"
-                            >
-                                <Grid item>
-                                    {t.name}
+                            <div className={props.mobile ? classes.mobileText : classes.regular}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="space-between"
+                                    alignItems="center"
+                                    spacing={1}
+                                >
+
+                                    <Grid item>
+                                        {trunc(t.name, props.mobile ? 10 : 20)}
+                                    </Grid>
+
+                                    <Grid item>
+                                        {t.loading ? <CircularProgress size={props.mobile ? 30 : 40} /> : t.balance}
+                                    </Grid>
                                 </Grid>
-                                <Grid item>
-                                    {t.loading ? <CircularProgress /> : t.balance}
-                                </Grid>
-                            </Grid>
+                            </div>
                             {/* <ListItemText primary={t.name} /> */}
                         </ListItem>)}
                     </List>}

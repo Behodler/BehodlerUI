@@ -7,7 +7,6 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
     root: {
     },
     outerCircle: {
-        /* Vector */
         alignContent: "center",
         alignItems: "center",
         width: 140 * scale,
@@ -16,15 +15,12 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
         background: "rgba(54,12,87,0.9)",
         transitionProperty: "box-shadow",
         transitionDuration:"0.25s",
-        // boxShadow: "120px 80px 40px 20px #0ff",
         "&:hover": {
             cursor: "pointer",
             background: "rgba(54,12,87,0.7)",
             boxShadow:"0 0 10px 1px #fff", 
            
         }
-        //  /rgba(47, 48, 59, 0.255)
-        // background: "linear-gradient(72.04deg, rgba(23, 23, 20, 0) 7.74%, rgba(47, 48, 59, 0.255) 84.79%)"
     },
     innerCircle: {
         display: "flex",
@@ -35,7 +31,8 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
 
 interface props {
     token: number,
-    scale:number
+    scale:number,
+    mobile?:boolean
 }
 export default function TokenSelector(props: props) {
     const [showMenu, setShowMenu] = React.useState<boolean>(false)
@@ -61,6 +58,7 @@ export default function TokenSelector(props: props) {
         scarcityAddress="0x1b8568fbb47708e9e9d31ff303254f748805bf21"
         networkName="main" 
         setShow={setShowMenu}
+        mobile = {props.mobile || false}
         />
     </div>
 }
