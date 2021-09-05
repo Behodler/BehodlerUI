@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { Box, makeStyles, createStyles } from '@material-ui/core';
 import Swap from '../Behodler/Swap/index'
 import { WalletContext } from "../Contexts/WalletStatusContext";
-import backImage from "../../images/new/background3.png";
+import backImage from "../../images/new/background2.png";
 
 const useStyles = makeStyles((theme) =>
     createStyles({

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
 import ExtendedTextField from './ExtendedTextField'
-import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
+import { Button, IconButton, Box, makeStyles, Theme, Grid, Hidden } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Images } from './ImageLoader'
@@ -12,8 +12,8 @@ import NewField from './NewField'
 import TokenSelector from './TokenSelector'
 
 interface props {
-    
- }
+
+}
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
@@ -21,14 +21,11 @@ const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        // boxSizing: 'border-box',
+
         margin: '50px auto',
-        maxWidth: '800px',
-        padding: '40px 20px',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
-        width: '90%',
-        // boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+        alignContent: "center"
     },
     iconWrapper: {
         display: 'flex',
@@ -39,20 +36,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        border: "2px solid rgba(218, 86, 221)",
+        border: "1px solid rgba(218, 86, 221)",
         borderRadius: "5px",
-        bottom: "20%",
+        marginTop: 70,
         left: "35%",
-        position: "absolute",
-        // '&:hover': {
-        //     background: "rgba(218, 86, 221,0.9)",
-        //  },
     },
     swapButton: {
-        background: "linear-gradient(105.11deg, rgba(23, 23, 20, 0) 46.06%, rgba(47, 48, 59, 0.255) 77.76%)",
-        position: "relative",
-        top: "50%",
-        // left: "10%",
+        background: "linear-gradient(105.11deg, rgba(218, 86, 221,0.1) 46.06%, rgba(218, 86, 221,0.1) 77.76%)",
+
         width: 500,
         '&:hover': {
             background: "rgba(218, 86, 221,0.4)",
@@ -69,8 +60,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         position: "absolute",
         left: "10%",
         top: "40%",
-        // marginLeft:-250,
-        // marginTop:-250
     },
     leftSelector: {
         position: "absolute",
@@ -92,7 +81,37 @@ const useStyles = makeStyles((theme: Theme) => ({
         right: scaler(15),
         top: "40%"
 
+    },
+    monsterContainer: {
+        marginTop: 60,
+        position: "relative",
+        zIndex: 100,
+        width: 220,
+        height: 220, borderRadius: "50%",
+
+        alignContent: "center"
+    },
+    monster: {
+        display: "block",
+        margin: "auto",
+        borderRadius: "50%",
+
+    },
+
+    fieldGrid: {
+        margin: "0 auto",
+        width: "80%",
+        top: "25%",
+        left: "10%",
+        position: "absolute",
+
+    },
+    Info: {
+        right: "1%",
+        color: "white",
+        marginTop: 30
     }
+
 
 }))
 
@@ -375,16 +394,86 @@ export default function (props: props) {
                     decimalPlaces={outputDecimals}
                 />
             </div>
-            <div className={classes.leftSelector}><TokenSelector token={2} /></div>
-            <div className={classes.rightSelector}>  <TokenSelector token={4} /></div>
-            <div className={classes.leftField}> <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" /></div>
-            <div className={classes.rightField}><NewField direction="TO" balance="200.1" estimate="4200.1" token="EYE" /></div>
+            <Hidden mdDown>
 
-            <Box className={classes.buttonWrapper}>
-                <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
-                    {swapText}
-                </Button>
-            </Box>
+                <Grid container
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                    className={classes.fieldGrid}
+                >
+                    <Grid item>
+                        <Grid
+                            container
+                            direction="row"
+                            justify="center"
+                            alignItems="center"
+
+                            spacing={3}
+                        >
+                            <Grid item>
+                                <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" />
+                            </Grid>
+                            <Grid item>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="space-between"
+                                    alignItems="center"
+                                >
+                                    <Grid item>
+                                        <TokenSelector token={2} />
+                                    </Grid>
+                                    <Grid item>
+                                        <div className={classes.monsterContainer}>
+
+                                            <img width={220} src={Images[13]} className={classes.monster} />
+                                        </div>
+                                    </Grid>
+                                    <Grid item>
+                                        <TokenSelector token={4} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                            <Grid item>
+                                <NewField direction="TO" balance="200.1" estimate="4200.1" token="EYE" />
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
+                    <Grid item>
+
+                        <Box className={classes.buttonWrapper}>
+
+                            <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
+                                {swapText}
+                            </Button>
+
+                        </Box>
+
+
+                    </Grid>
+                    <Grid item>
+                        <Grid container
+                            direction="column"
+                            justify="center"
+                            alignItems="center"
+                            spacing={2}
+                            className={classes.Info}
+                        >
+                            <Grid item>
+                                1 ETH = 1 EYE
+                            </Grid>
+                            <Grid item>
+                                <Button color="secondary" variant="outlined">
+                                    More info
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Hidden>
         </Box>
     )
 }

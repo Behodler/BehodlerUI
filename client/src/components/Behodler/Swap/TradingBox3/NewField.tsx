@@ -12,11 +12,11 @@ interface props {
 
 
 
-const scaler = (scale)=> num => Math.floor(num*scale)
-const scale = scaler (0.9) 
+const scaler = (scale) => num => Math.floor(num * scale)
+const scale = scaler(0.9)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        width: scale(278)
+        width: scale(310),
     },
     Direction: {
 
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: scale(24),
         padding: "10px 20px 10px 20px",
         color: "#FFFFFF",
-        borderRadius: 5
+        borderRadius: 5,
 
 
     },
