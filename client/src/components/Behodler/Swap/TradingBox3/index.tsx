@@ -97,9 +97,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         position: "relative",
         zIndex: 100,
         width: 220,
-        height: 220, borderRadius: "50%",
-
+        height: 220,
+     //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
+      
 
     },
     monster: {

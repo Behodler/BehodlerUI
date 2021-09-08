@@ -46,7 +46,8 @@
 		"redis": "^3.0.2",
 		"types-web3-provider-engine": "0.0.2",
 		"typescript": "^3.7.4",
-        "@types/webpack-env": "1.16.0"
+        "@types/webpack-env": "1.16.0",
+		"@behodler/sdk": "0.1.1"
 	},
 	"browserslist": {
 		"production": [
