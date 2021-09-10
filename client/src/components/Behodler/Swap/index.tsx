@@ -1,18 +1,15 @@
 import * as React from 'react'
-import { useState, useContext, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import TradingBox3 from './TradingBox3'
-import PyroTokens from './PyroTokens/index'
-import { basePyroPair, filterPredicate } from './PyroTokens/index'
-import { Typography, Box, makeStyles, createStyles } from '@material-ui/core'
-import { WalletContext } from '../../Contexts/WalletStatusContext'
-import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
-import API from '../../../blockchain/ethereumAPI'
-import { Pyrotoken } from '../../../blockchain/contractInterfaces/behodler2/Pyrotoken'
+import { Box, makeStyles, createStyles } from '@material-ui/core'
+
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
 interface props {
     connected: boolean
-    route: permittedRoutes
+    route: permittedRoutes,
+    chainId:number
+    account:string
 }
 
 const useStyles = makeStyles((theme) =>
@@ -84,42 +81,6 @@ const useStyles = makeStyles((theme) =>
 )
 
 export default function Swap(props: props) {
-    const walletContextProps = useContext(WalletContext)
-    const [pyroTokenMapping, setPyroTokenMapping] = useState<basePyroPair[]>([])
-    const tokenList: any[] = props.connected ? tokenListJSON[walletContextProps.networkName].filter(filterPredicate) : []
-    const primaryOptions = { from: walletContextProps.account }
-
-    const fetchPyroTokenDetails = async (baseToken: string): Promise<basePyroPair | null> => {
-        const pyroAddress = await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(
-            baseToken
-        ).call(primaryOptions);
-        if (pyroAddress === "0x0000000000000000000000000000000000000000") return null;
-        const token: Pyrotoken = await API.getPyroToken(pyroAddress, walletContextProps.networkName);
-        const name = await token.symbol().call(primaryOptions); //bug
-
-        return {
-            name,
-            base: baseToken,
-            pyro: pyroAddress,
-        }
-    }
-
-    const pyroTokenPopulator = useCallback(async () => {
-        let mapping: basePyroPair[] = [];
-        for (let i = 0; i < tokenList.length; i++) {
-            const pyro = await fetchPyroTokenDetails(tokenList[i].address);
-            if (pyro) mapping.push(pyro);
-        }
-        setPyroTokenMapping(mapping)
-    }, [walletContextProps.networkName])
-
-    useEffect(() => {
-        if (props.connected) {
-            pyroTokenPopulator();
-        } else {
-        }
-    }, [props.connected])
-
     const classes = useStyles()
     const [showChip, setShowChip] = useState<boolean>(false)
 
@@ -134,20 +95,7 @@ export default function Swap(props: props) {
 
     return (
         <Box className={classes.root}>
-           <RenderScreen value={props.route} tokens={pyroTokenMapping} />
+          {props.connected?<TradingBox3 account={props.account} chainId={props.chainId} />:"Not connected"}
         </Box>
     )
-}
-
-function RenderScreen(props: { value: permittedRoutes; tokens: basePyroPair[] }) {
-    switch (props.value) {
-        case 'swap2':
-            return <TradingBox3 />
-        case 'pyro':
-            if (props.tokens.length > 1)
-                return <PyroTokens tokens={props.tokens} />
-            return <Typography variant="subtitle1">fetching pyrotoken mapping from the blockchain...</Typography>
-        default:
-            return <div>Chronos</div>
-    }
 }

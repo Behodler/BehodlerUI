@@ -1,64 +1,66 @@
 {
-	"name": "client",
-	"version": "0.1.0",
-	"private": true,
-	"dependencies": {
-		"@material-ui/core": "^4.9.11",
-		"@material-ui/icons": "^4.9.1",
-		"@truffle/hdwallet-provider": "^1.2.1",
-		"acorn": "^6.4.2",
-		"ajv": "^6.8.1",
-		"bignumber.js": "^8.0.1",
-		"connected-react-router": "^6.3.2",
-		"fork-ts-checker-webpack-plugin": "^0.2.10",
-		"handy-redis": "^2.2.1",
-		"openzeppelin-solidity": "^2.1.1",
-		"react": "^17.0.2",
-		"react-dom": "^17.0.2",
-		"react-redux": "^6.0.1",
-		"react-router-dom": "^5.2.0",
-		"react-scripts": "^3.1.0",
-		"react-swipeable-views": "^0.13.9",
-		"rxjs": "^6.5.1",
-		"truffle-core": "^5.0.14",
-		"typeface-roboto": "0.0.75",
-		"web3": "^1.3.5"
-	},
-	"scripts": {
-		"docker:start": "react-scripts start",
-		"docker:build": "rm -rf build && npx react-scripts build",
-		"install:docker": "rm -rf node_modules/* && rm -f yarn.lock && docker-compose up install",
-		"start": "docker-compose up --remove-orphans  -d client",
-		"stop": "cp src/temp/ProductionMappings.json src/temp/BehodlerABIAddressMapping.json && docker-compose down",
-		"build": "docker-compose up build",
-		"deploy": "docker-compose up build && docker-compose up S3",
-		"devserver":"docker-compose up --remove-orphans dev",
-		"ganache": "docker-compose up --remove-orphans -d ganache",
-		"start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start"
-	},
-	"devDependencies": {
-		"@types/jest": "^23.3.12",
-		"@types/node": "^11.12.0",
-		"@types/react": "^16.14.5",
-		"@types/react-dom": "^16.9.12",
-		"@types/react-router-dom": "^5.1.5",
-		"@types/web3": "^1.0.18",
-		"redis": "^3.0.2",
-		"types-web3-provider-engine": "0.0.2",
-		"typescript": "^3.7.4",
+    "name": "client",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@material-ui/core": "^4.9.11",
+        "@material-ui/icons": "^4.9.1",
+        "@truffle/hdwallet-provider": "^1.2.1",
+        "acorn": "^6.4.2",
+        "ajv": "^6.8.1",
+        "bignumber.js": "^8.0.1",
+        "connected-react-router": "^6.3.2",
+        "fork-ts-checker-webpack-plugin": "^0.2.10",
+        "handy-redis": "^2.2.1",
+        "openzeppelin-solidity": "^2.1.1",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-redux": "^6.0.1",
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "^3.1.0",
+        "react-swipeable-views": "^0.13.9",
+        "rxjs": "^6.5.1",
+        "truffle-core": "^5.0.14",
+        "typeface-roboto": "0.0.75",
+    	"web3": "^1.3.5"
+    },
+    "scripts": {
+        "docker:start": "react-scripts start",
+        "docker:build": "rm -rf build && npx react-scripts build",
+        "install:docker": "sudo rm -rf node_modules/* && sudo rm -f yarn.lock && docker-compose up install",
+        "start": "docker-compose up --remove-orphans  -d client",
+        "restart": "npm run stop && npm start",
+        "stop": "cp src/temp/ProductionMappings.json src/temp/BehodlerABIAddressMapping.json && docker-compose down",
+        "build": "docker-compose up build",
+        "deploy": "docker-compose up build && docker-compose up S3",
+        "devserver": "docker-compose up --remove-orphans dev",
+        "ganache": "docker-compose up --remove-orphans -d ganache",
+        "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start"
+    },
+    "devDependencies": {
+        "@behodler/sdk": "0.1.1",
+        "@types/jest": "^23.3.12",
+        "@types/node": "^11.12.0",
+        "@types/react": "^17.0.11",
+        "@types/react-dom": "^16.9.12",
+        "@types/react-router-dom": "^5.1.5",
+        "@types/web3": "^1.0.18",
         "@types/webpack-env": "1.16.0",
-		"@behodler/sdk": "0.1.1"
-	},
-	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
-		"development": [
-			"last 1 chrome version",
-			"last 1 firefox version",
-			"last 1 safari version"
-		]
-	}
+        "@web3-react/core": "^6.1.0",
+        "redis": "^3.0.2",
+        "types-web3-provider-engine": "0.0.2",
+        "typescript": "^3.7.4"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
 }

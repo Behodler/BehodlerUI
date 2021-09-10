@@ -2,8 +2,10 @@ import * as React from 'react'
 import { useContext } from 'react'
 import { Box, makeStyles, createStyles, Button } from '@material-ui/core';
 import Swap from '../Behodler/Swap/index'
-import { WalletContext } from "../Contexts/WalletStatusContext";
 import backImage from "../../images/new/background2.png";
+import { UIContainerContextProps } from '@behodler/sdk/dist/types';
+import { ContainerContext } from '../Contexts/UIContainerContextDev';
+import { WalletContext } from '../Contexts/WalletStatusContext';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -59,21 +61,25 @@ const useStyles = makeStyles((theme) =>
         },
     })
 );
-
-export default function LayoutFrame(props: any) {
+interface props {
+    account: string
+    chainId: number
+}
+export default function LayoutFrame(props: props) {
+    const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
     const walletContextProps = useContext(WalletContext);
     const classes = useStyles();
 
     const notConnected: boolean =
-        !walletContextProps.connected || !walletContextProps.networkName || !walletContextProps.initialized; //|| walletContextProps.account.length < 5
-
+        props.chainId === 0 || props.account.length < 5
+    const connector = uiContainerContextProps.walletContext.connector
     return (
         <div>
-            {notConnected ? <Button onClick={() => walletContextProps.connectAction.action()}>Connect</Button> : <div></div>}
+            {notConnected ? <Button onClick={async () => !!connector ? await uiContainerContextProps.walletContext.activate(connector) : alert("Could not connect")}>Connect</Button> : <div></div>}
             <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
                 <Box className={classes.content}>
                     <Box className={classes.mainContent} flexGrow={1}>
-                        {notConnected ? "" : <Swap connected={!notConnected} route="swap2" />}
+                        {walletContextProps.initialized ? <Swap chainId={props.chainId} account={props.account} connected={walletContextProps.initialized} route="swap2" /> : ""}
                     </Box>
                 </Box>
             </Box>

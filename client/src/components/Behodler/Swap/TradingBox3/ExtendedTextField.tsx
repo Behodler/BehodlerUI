@@ -59,7 +59,8 @@ interface props {
     disabledDropDown?: boolean
     liquidityMessage?: string
     decimalPlaces: number
-    width: string
+    width: string,
+    account:string
 }
 const scale = 8
 
@@ -68,9 +69,11 @@ const useStyles = makeStyles((theme) => ({
         padding: '12px 20px 8px 20px',
         border: '1px solid #eee',
         borderRadius: 16,
+        color:"white"
     },
     input: {
         width: '100%',
+        color:"white"
     },
     inputError: {
         color: theme.palette.secondary.main,
@@ -104,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
     },
     subfields: {
-        color: 'darkGrey',
+        color: 'white',
     },
     feeGrid: {
         paddingLeft: '20px',
@@ -152,10 +155,11 @@ function ExtendedTextField(props: props) {
         if (props.exchangeRate.setReserve) exchangeRateString = `1 ${props.exchangeRate.baseName} = ${ratio} ${nameOfSelectedAddress}`
         else exchangeRateString = `1 ${nameOfSelectedAddress} = ${ratio}  ${props.exchangeRate.baseName}`
     }
-    const currentTokenEffects = API.generateNewEffects(props.address, walletContextProps.account, useEth, props.decimalPlaces)
+
+    const currentTokenEffects = API.generateNewEffects(props.address, props.account, useEth, props.decimalPlaces)
 
     useEffect(() => {
-        const effect = currentTokenEffects.allowance(walletContextProps.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)
+        const effect = currentTokenEffects.allowance(props.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)
         const subscription = effect.Observable.subscribe((allowance) => {
             const scaledAllowance = API.fromWei(allowance)
             const allowanceFloat = parseFloat(scaledAllowance)
@@ -175,7 +179,7 @@ function ExtendedTextField(props: props) {
     })
 
     useEffect(() => {
-        const effect = currentTokenEffects.balanceOfEffect(walletContextProps.account)
+        const effect = currentTokenEffects.balanceOfEffect(props.account)
         const subscription = effect.Observable.subscribe((balance) => {
             setCurrentBalance(balance)
         })
@@ -285,7 +289,7 @@ function ExtendedTextField(props: props) {
                                     onClick={async () =>
                                         await API.enableToken(
                                             props.address,
-                                            walletContextProps.account,
+                                            props.account,
                                             props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address
                                         )
                                     }

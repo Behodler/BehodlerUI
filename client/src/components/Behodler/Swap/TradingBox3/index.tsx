@@ -12,7 +12,8 @@ import NewField from './NewField'
 import TokenSelector from './TokenSelector'
 
 interface props {
-
+    chainId: number
+    account: string
 }
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
@@ -62,7 +63,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             textShadow: "2px 2px 5px white"
         },
     },
-    hideIt: { display: "none" },
+    hideIt: {
+        color: "white",
+        fontWeight: "bold"
+        //  display: "none" 
+    },
     centerWrapper: {
         margin: "0 auto",
         width: "80%",
@@ -98,9 +103,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         zIndex: 100,
         width: 220,
         height: 220,
-     //   background: "radial-gradient(circle 90px, #DDD, transparent)",
+        //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
-      
+
 
     },
     monster: {
@@ -138,7 +143,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         /* Ellipse 18 */
         width: 22,
         height: 22,
-        marginTop:-260,
+        marginTop: -260,
         background: "#2E2455",
         border: "1px solid #3C3682",
         boxSizing: "border-box",
@@ -149,7 +154,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         backgroundSize: "cover",
         '&:hover': {
             cursor: "pointer",
-            boxShadow:"0 0 4px 1px #AAf", 
+            boxShadow: "0 0 4px 1px #AAf",
             background: "#473D6E",
             backgroundImage: `url(${Images[14]})`,
             backgroundSize: "cover",
@@ -164,10 +169,12 @@ export default function (props: props) {
     const classes = useStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
     const walletContextProps = useContext(WalletContext);
-    console.log("network name: " + walletContextProps.networkName)
-    const tokenList: any[] = tokenListJSON[walletContextProps.networkName].filter(
+    const account = props.account
+    const networkName = API.networkMapping[props.chainId.toString()]
+    const tokenList: any[] = tokenListJSON[networkName].filter(
         (t) => t.name !== "WBTC" && t.name !== "BAT"
     );
+
     const indexOfWeth = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("weth") !== -1);
     const indexOfScarcityAddress = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("scarcity") !== -1);
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
@@ -246,8 +253,8 @@ export default function (props: props) {
 
     const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo('0') ? API.toWei(inputValue, inputDecimals) : '0'
 
-    let primaryOptions = { from: walletContextProps.account, gas: undefined };
-    let ethOptions = { from: walletContextProps.account, value: inputValWei, gas: undefined };
+    let primaryOptions = { from: account, gas: undefined };
+    let ethOptions = { from: account, value: inputValWei, gas: undefined };
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean =>
         tokenDropDownList.filter((item) => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
@@ -270,14 +277,19 @@ export default function (props: props) {
                     .estimateGas(primaryOptions, function (error, gas) {
                         if (error) console.error("gas estimation error: " + error);
                         primaryOptions.gas = gas;
-                        behodler.withdrawLiquidity(outputAddress, outputValueWei).send(primaryOptions, clearInput);
+                        behodler.withdrawLiquidity(outputAddress, outputValueWei)
+                            .once('transactionHash', (hash) => alert('hash generated ' + JSON.stringify(hash, null, 4)))
+                            .send(primaryOptions, clearInput);
                     });
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
                 let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
                 behodler.addLiquidity(inputAddress, inputValWei).estimateGas(options, function (error, gas) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
-                    behodler.addLiquidity(inputAddress, inputValWei).send(options, clearInput);
+                    const d = behodler.addLiquidity(inputAddress, inputValWei)
+                    console.log(JSON.stringify(options))
+                    // .once('transactionHash', (hash)=>alert('hash generated '+hash))
+                    d.send(options, (hash) => alert('hash generated ' + JSON.stringify(hash, null, 4)));
                 });
             } else {
                 let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
@@ -410,6 +422,7 @@ export default function (props: props) {
                     clear={clearInput}
                     addressToEnableFor={walletContextProps.contracts.behodler.Behodler2.Behodler2.address}
                     decimalPlaces={inputDecimals}
+                    account={account}
                 />
                 <Box className={classes.iconWrapper}>
                     <IconButton aria-label="delete" onClick={swapInputAddresses}>
@@ -436,6 +449,7 @@ export default function (props: props) {
                     }}
                     clear={clearInput}
                     decimalPlaces={outputDecimals}
+                    account={account}
                 />
             </div>
 
@@ -464,7 +478,7 @@ export default function (props: props) {
                                     <img width={180} src={Images[13]} className={classes.monster} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector token={4} scale={0.65} mobile/>
+                                    <TokenSelector token={4} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
