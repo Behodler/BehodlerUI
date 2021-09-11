@@ -1,16 +1,12 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useContext } from 'react'
 import TradingBox3 from './TradingBox3'
 import { Box, makeStyles, createStyles } from '@material-ui/core'
+import { UIContainerContextProps } from '@behodler/sdk/dist/types'
+import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
+import { WalletContext, WalletContextProvider } from 'src/components/Contexts/WalletStatusContext'
 
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
-
-interface props {
-    connected: boolean
-    route: permittedRoutes,
-    chainId:number
-    account:string
-}
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -68,34 +64,36 @@ const useStyles = makeStyles((theme) =>
         headerText: {
             textAlign: 'center',
         },
-    eyeLogo:{
-        width:400,
-        margin: '0 -20px -60px 0'
-    },
+        eyeLogo: {
+            width: 400,
+            margin: '0 -20px -60px 0'
+        },
         errorMessage: {
             color: theme.palette.secondary.main,
             textAlign: 'center',
         },
-        
+
     })
 )
 
-export default function Swap(props: props) {
-    const classes = useStyles()
-    const [showChip, setShowChip] = useState<boolean>(false)
+export default function Swap(props: {}) {
 
-    useEffect(() => {
-        const lastHide = localStorage.getItem('lastBehodlerHide')
-        if (lastHide) {
-            const duration = parseInt(lastHide)
-            const elapsed = new Date().getTime() - duration
-            setShowChip(elapsed > 604800000) //604800000 = 1 week
-        } else setShowChip(true)
-    }, [showChip])
+    const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
+    const chainId = uiContainerContextProps.walletContext.chainId || 0;
+    const account = uiContainerContextProps.walletContext.account || '0x0'
 
     return (
-        <Box className={classes.root}>
-          {props.connected?<TradingBox3 account={props.account} chainId={props.chainId} />:"Not connected"}
-        </Box>
+        <WalletContextProvider containerProps={uiContainerContextProps} chainId={chainId} accountId={account}>
+            <ConnectedDapp />
+        </WalletContextProvider>
     )
+}
+
+
+function ConnectedDapp() {
+    const walletContextProps = useContext(WalletContext);
+    const classes = useStyles()
+    return <Box className={classes.root}>
+        {walletContextProps.initialized ? <TradingBox3 /> : "Not connected"}
+    </Box>
 }

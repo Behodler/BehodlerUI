@@ -5,7 +5,6 @@ import Swap from '../Behodler/Swap/index'
 import backImage from "../../images/new/background2.png";
 import { UIContainerContextProps } from '@behodler/sdk/dist/types';
 import { ContainerContext } from '../Contexts/UIContainerContextDev';
-import { WalletContext } from '../Contexts/WalletStatusContext';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -61,17 +60,14 @@ const useStyles = makeStyles((theme) =>
         },
     })
 );
-interface props {
-    account: string
-    chainId: number
-}
-export default function LayoutFrame(props: props) {
+export default function LayoutFrame(props: {}) {
     const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
-    const walletContextProps = useContext(WalletContext);
     const classes = useStyles();
 
+    const chainId = uiContainerContextProps.walletContext.chainId || 0;
+    const account = uiContainerContextProps.walletContext.account || '0x0'
     const notConnected: boolean =
-        props.chainId === 0 || props.account.length < 5
+        chainId === 0 || account.length < 5
     const connector = uiContainerContextProps.walletContext.connector
     return (
         <div>
@@ -79,7 +75,7 @@ export default function LayoutFrame(props: props) {
             <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
                 <Box className={classes.content}>
                     <Box className={classes.mainContent} flexGrow={1}>
-                        {walletContextProps.initialized ? <Swap chainId={props.chainId} account={props.account} connected={walletContextProps.initialized} route="swap2" /> : ""}
+                        <Swap />
                     </Box>
                 </Box>
             </Box>

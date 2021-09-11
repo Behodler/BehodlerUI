@@ -10,11 +10,8 @@ import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import NewField from './NewField'
 import TokenSelector from './TokenSelector'
-
-interface props {
-    chainId: number
-    account: string
-}
+import { UIContainerContextProps } from '@behodler/sdk/dist/types'
+import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
@@ -164,13 +161,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 }))
 
-
-export default function (props: props) {
+export default function (props: {}) {
     const classes = useStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
+
     const walletContextProps = useContext(WalletContext);
-    const account = props.account
-    const networkName = API.networkMapping[props.chainId.toString()]
+    const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
+
+    const account = uiContainerContextProps.walletContext.account || "0x0"
+    const networkName = API.networkMapping[(uiContainerContextProps.walletContext.chainId || 0).toString()]
     const tokenList: any[] = tokenListJSON[networkName].filter(
         (t) => t.name !== "WBTC" && t.name !== "BAT"
     );
@@ -268,7 +267,6 @@ export default function (props: props) {
     } else if (isScarcityPredicate(inputAddress)) {
         swapText = 'WITHDRAW LIQUIDITY'
     }
-
     const swap2Callback = useCallback(async () => {
         if (swapClicked) {
             if (inputAddress.toLowerCase() === scarcityAddress) {
@@ -278,19 +276,20 @@ export default function (props: props) {
                         if (error) console.error("gas estimation error: " + error);
                         primaryOptions.gas = gas;
                         behodler.withdrawLiquidity(outputAddress, outputValueWei)
-                            .once('transactionHash', (hash) => alert('hash generated ' + JSON.stringify(hash, null, 4)))
                             .send(primaryOptions, clearInput);
                     });
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
                 let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
+
                 behodler.addLiquidity(inputAddress, inputValWei).estimateGas(options, function (error, gas) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
-                    const d = behodler.addLiquidity(inputAddress, inputValWei)
-                    console.log(JSON.stringify(options))
-                    // .once('transactionHash', (hash)=>alert('hash generated '+hash))
-                    d.send(options, (hash) => alert('hash generated ' + JSON.stringify(hash, null, 4)));
-                });
+                    behodler.addLiquidity(inputAddress, inputValWei)
+                        .send(options, userConfirmation => alert("user confirmation hash " + userConfirmation.transactionHash))
+                    //TODO: implement this to clear at correct time
+
+                })
+
             } else {
                 let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
                 behodler

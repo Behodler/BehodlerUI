@@ -32,10 +32,7 @@ const defaultUIContainerContextProps = {
 let ContainerContext = React.createContext<UIContainerContextProps>(defaultUIContainerContextProps)
 
 interface props {
-    chainId: number
-    setChainId: (id: number) => void
-    account: string
-    setAccount: (account: string) => void
+
     children?: any
 }
 
@@ -46,32 +43,35 @@ function UIContainerContextDevProvider(props: props) {
     const [networkContext, setNetworkContext] = useState<Web3ReactContextInterface>(defaultWeb3ContextProps)
     const [walletState, setWalletState] = useState<WalletState>(getWalletState(setWalletTrigger))
     const [active, setActive] = useState<boolean>(false)
+    const [chainId, setChainId] = useState<number>(0)
+    const [account, setAccount] = useState<string>("0x0")
+
     // const [userState,setUserState] = useState<UserState>({userDarkMode:false})
     const userState: UserState = { userDarkMode: false }
 
     const walletCallBack = useCallback(async () => {
-        setWalletContext(await getWalletContext(provider, props.setChainId, props.setAccount, active, setActive))
-    }, [(window as any).ethereum, props.chainId, props.account, walletTrigger])
+        setWalletContext(await getWalletContext(provider, setChainId, setAccount, active, setActive))
+    }, [(window as any).ethereum, chainId, account, walletTrigger])
 
     useEffect(() => {
         walletCallBack()
-    }, [(window as any).ethereum, props.chainId, props.account, walletTrigger])
+    }, [(window as any).ethereum, chainId, account, walletTrigger])
 
     const networkCallBack = useCallback(async () => {
-        setNetworkContext(await getNetworkContext(provider, props.setChainId))
-    }, [(window as any).ethereum, props.chainId])
+        setNetworkContext(await getNetworkContext(provider, setChainId))
+    }, [(window as any).ethereum, chainId])
 
     useEffect(() => {
         networkCallBack()
-    }, [(window as any).ethereum, props.chainId])
+    }, [(window as any).ethereum, chainId])
 
     const walletStateCallback = useCallback(async () => {
         setWalletState(await getWalletState(setWalletTrigger))
-    }, [props.account])
+    }, [account])
 
     useEffect(() => {
         walletStateCallback()
-    }, [props.account])
+    }, [account])
 
     const containerContextProps: UIContainerContextProps = {
         walletContext,
