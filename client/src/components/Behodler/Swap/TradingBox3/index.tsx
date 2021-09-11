@@ -286,7 +286,8 @@ export default function (props: {}) {
                     options.gas = gas;
                     behodler.addLiquidity(inputAddress, inputValWei)
                         .send(options, userConfirmation => alert("user confirmation hash " + userConfirmation.transactionHash))
-                    //TODO: implement this to clear at correct time
+                    //TODO: implement this to clear at correct time: 
+                    // /https://web3js.readthedocs.io/en/v1.2.11/web3-eth.html?highlight=getTransactionReceipt#gettransactionreceipt
 
                 })
 
