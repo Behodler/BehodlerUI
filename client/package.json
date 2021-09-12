@@ -10,6 +10,7 @@
         "ajv": "^6.8.1",
         "bignumber.js": "^8.0.1",
         "connected-react-router": "^6.3.2",
+        "ethereum-multicall": "^2.8.0",
         "fork-ts-checker-webpack-plugin": "^0.2.10",
         "handy-redis": "^2.2.1",
         "openzeppelin-solidity": "^2.1.1",
@@ -22,7 +23,7 @@
         "rxjs": "^6.5.1",
         "truffle-core": "^5.0.14",
         "typeface-roboto": "0.0.75",
-		"web3": "1.2.11"
+        "web3": "1.2.11"
     },
     "scripts": {
         "docker:start": "react-scripts start",

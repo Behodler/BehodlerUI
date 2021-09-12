@@ -8,7 +8,7 @@ import { Images } from './ImageLoader'
 import SwapVertIcon from '@material-ui/icons/SwapVert'
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
-import NewField from './NewField'
+import NewField, { tokenProps } from './NewField'
 import TokenSelector from './TokenSelector'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
@@ -156,10 +156,35 @@ const useStyles = makeStyles((theme: Theme) => ({
             backgroundImage: `url(${Images[14]})`,
             backgroundSize: "cover",
         }
+    }, transactionFeedbackState: {
+        fontSize: 30,
+        color: "white"
     }
-
-
 }))
+
+enum TXType {
+    approval,
+    swap,
+    addLiquidity,
+    removeLiquidity,
+    mintPyro,
+    redeemPyro
+}
+
+interface PendingTX {
+    hash: string
+    type: TXType,
+    token1: string
+    token2: string
+}
+
+enum TradeTransactionState {
+    Dormant = "Dormant",
+    UserClicked = "UserClicked",
+    UserRejected = "UserRejected",
+    UserPosted = "UserPosted"
+}
+
 
 export default function (props: {}) {
     const classes = useStyles();
@@ -194,6 +219,53 @@ export default function (props: {}) {
         .address.toLowerCase()
         .trim()
 
+
+    //NEW HOOKS BEGIN
+    const [transactionState, setTransactionState] = useState<TradeTransactionState>(TradeTransactionState.Dormant)
+    const [pendingTXQueue, setPendingTXQueue] = useState<PendingTX[]>([])
+    const [queueMessage, setQueueMessage] = useState<string>("")
+    const [block, setBlock] = useState<string>("")
+
+    // const [intervalTracker, setIntervalTracker] = useState<any>()
+    const txQueuePush = (val: PendingTX) => {
+
+        const newQueue = [...pendingTXQueue, val]
+        setPendingTXQueue(newQueue)
+    }
+    const txDequeue = () => {
+        let newArray = [...pendingTXQueue]
+        newArray.shift()
+        setPendingTXQueue(newArray)
+    }
+    const peekTX = () => {
+        if (pendingTXQueue.length == 0)
+            return false
+        return pendingTXQueue[0]
+    }
+    if (block === "") {
+        API.addBlockWatcher(setBlock)
+    }
+    const queueUpdateCallback = useCallback(async () => {
+
+        const top = peekTX()
+        if (!top) return;
+        console.log('top hash '+top.hash)
+        const receipt = await API.getTransactionReceipt(top.hash)
+
+        if (!receipt)
+            setQueueMessage("waiting for " + top.hash)
+        else {
+            txDequeue()
+            setQueueMessage("transaction confirmed for " + top.hash)
+        }
+    }, [block])
+
+    useEffect(() => {
+        queueUpdateCallback()
+    }, [block])
+
+    //NEW HOOKS END
+
     const [inputValid, setInputValid] = useState<boolean>(true)
     const [outputValid, setOutputValid] = useState<boolean>(true)
     const [inputValue, setInputValue] = useState<string>('')
@@ -222,7 +294,6 @@ export default function (props: {}) {
     }
     const [exchangeRate, setExchangeRate] = useState<string>('')
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
-
     const [outputReserve, setOutputReserve] = useState<string>('')
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address === address)[0].name
     const clearInput = () => {
@@ -230,6 +301,12 @@ export default function (props: {}) {
         setOutputValue('')
         setSwapClicked(false)
     }
+
+    useEffect(() => {
+        if (swapClicked) {
+            setTransactionState(TradeTransactionState.UserClicked)
+        }
+    }, [swapClicked])
 
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
@@ -285,7 +362,20 @@ export default function (props: {}) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
                     behodler.addLiquidity(inputAddress, inputValWei)
-                        .send(options, userConfirmation => alert("user confirmation hash " + userConfirmation.transactionHash))
+                        .send(options, (err, hash:string) => {
+                            if (hash) {
+                                setTransactionState(TradeTransactionState.UserPosted)
+                                let t:PendingTX = {
+                                    hash,
+                                    type: TXType.addLiquidity,
+                                    token1: inputAddress,
+                                    token2: outputAddress,
+                                }
+                                txQueuePush(t)
+                            } else {
+                                setTransactionState(TradeTransactionState.UserRejected)
+                            }
+                        })
                     //TODO: implement this to clear at correct time: 
                     // /https://web3js.readthedocs.io/en/v1.2.11/web3-eth.html?highlight=getTransactionReceipt#gettransactionreceipt
 
@@ -405,6 +495,20 @@ export default function (props: {}) {
         }
     }, [inputReadyToSwap, inputValue])
     const textFieldLabels = ['From', 'To']
+    const FromProps: tokenProps = {
+        address: inputAddress,
+        value: { value: inputValue, set: setInputValue },
+        balance: BigInt(0),
+        estimate: "112"
+
+    }
+    const ToProps: tokenProps = {
+        address: inputAddress,
+        value: { value: inputValue, set: setInputValue },
+        balance: BigInt(0),
+        estimate: "112"
+
+    }
     return (
         <Box className={classes.root}>
             <div className={classes.hideIt}>
@@ -452,7 +556,11 @@ export default function (props: {}) {
                     account={account}
                 />
             </div>
-
+            <Box>
+                <div className={classes.transactionFeedbackState}>
+                    {`tx state: ${transactionState} and queue message ${queueMessage}`}
+                </div>
+            </Box>
             <Hidden lgUp>
                 <div className={classes.mobileContainer}>
                     <Grid
@@ -484,10 +592,10 @@ export default function (props: {}) {
 
                         </Grid>
                         <Grid item>
-                            <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" mobile />
+                            <NewField direction="FROM" token={FromProps} mobile />
                         </Grid>
                         <Grid item>
-                            <NewField direction="TO" balance="30.1" estimate="101.1" token="SCX" mobile />
+                            <NewField direction="TO" token={ToProps} mobile />
                         </Grid>
                         <Grid item>
                             <Box className={classes.buttonWrapper}>
@@ -540,7 +648,7 @@ export default function (props: {}) {
                             spacing={3}
                         >
                             <Grid item>
-                                <NewField direction="FROM" balance="3.1" estimate="1010.1" token="DAI" />
+                                <NewField direction="FROM" token={FromProps} />
                             </Grid>
                             <Grid item>
                                 <Grid
@@ -553,9 +661,13 @@ export default function (props: {}) {
                                         <TokenSelector token={2} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.monsterContainer}>
+                                        <div className={classes.monsterContainer} >
 
-                                            <img width={220} src={Images[13]} className={classes.monster} onClick={() => alert("TODO: flip tokens")} />
+                                            <img width={220} src={Images[13]} className={classes.monster} onClick={() => {
+                                                const inputAddressTemp = inputAddress
+                                                setInputAddress(outputAddress)
+                                                setOutputAddress(inputAddressTemp)
+                                            }} />
                                         </div>
                                     </Grid>
                                     <Grid item>
@@ -565,7 +677,7 @@ export default function (props: {}) {
                             </Grid>
 
                             <Grid item>
-                                <NewField direction="TO" balance="200.1" estimate="4200.1" token="EYE" />
+                                <NewField direction="TO" token={ToProps} />
                             </Grid>
                         </Grid>
 

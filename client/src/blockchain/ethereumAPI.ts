@@ -130,6 +130,14 @@ class ethereumAPI {
         return this.web3.utils.fromAscii(input)
     }
 
+   public addBlockWatcher (watcher:(b:string) => void) {
+        this.web3.eth.subscribe('newBlockHeaders', (err, result) => {watcher(result.number.toString())})
+   }
+
+    public async getTransactionReceipt(hash:string) {
+        return await this.web3.eth.getTransactionReceipt(hash)
+    }
+
     public toWei(eth: string, override?: number) {
         const decimalPlaces = override || 18
         if (eth == 'unset') return 'unset'

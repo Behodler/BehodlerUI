@@ -1,18 +1,8 @@
 import { Grid, Link, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
+// import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
 // import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
-
-interface props {
-    direction: string,
-    estimate: string,
-    balance: string,
-    token: string,
-    mobile?: boolean
-}
-
-
-
 const scaler = (scale) => num => Math.floor(num * scale)
 const scale = scaler(0.9)
 const useStyles = makeStyles((theme: Theme) => ({
@@ -126,9 +116,29 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
+interface Hook<T>{
+    set: (v:T)=>void
+    value:T
+}
+
+export interface tokenProps{
+    address:string
+    value:Hook<string>
+    balance:BigInt
+    estimate:string
+}
+
+interface props {
+    direction: string,
+    token: tokenProps,
+    mobile?: boolean,
+}
+
 
 export default function NewField(props: props) {
     const classes = useStyles()
+
+    // const walletContextProps = React.useContext(WalletContext);
 
     const BorderedGridItem = (props: { children: any }) => <Grid item >{props.children}</Grid>
 
@@ -155,7 +165,7 @@ export default function NewField(props: props) {
         }
 
         <BorderedGridItem>
-            <BalanceContainer balance={props.balance} token={props.token} estimate={props.estimate} />
+            <BalanceContainer balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
         </BorderedGridItem>
     </Grid>
 }
