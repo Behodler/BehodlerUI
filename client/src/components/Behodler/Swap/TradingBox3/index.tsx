@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
 import ExtendedTextField from './ExtendedTextField'
-import { Button, IconButton, Box, makeStyles, Theme, Grid, Hidden } from '@material-ui/core'
+import { Button, IconButton, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Images } from './ImageLoader'
@@ -12,7 +12,7 @@ import NewField, { tokenProps } from './NewField'
 import TokenSelector from './TokenSelector'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
-
+import { Notification, NotificationType } from './Notification'
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
 
@@ -178,14 +178,6 @@ interface PendingTX {
     token2: string
 }
 
-enum TradeTransactionState {
-    Dormant = "Dormant",
-    UserClicked = "UserClicked",
-    UserRejected = "UserRejected",
-    UserPosted = "UserPosted"
-}
-
-
 export default function (props: {}) {
     const classes = useStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
@@ -221,11 +213,19 @@ export default function (props: {}) {
 
 
     //NEW HOOKS BEGIN
-    const [transactionState, setTransactionState] = useState<TradeTransactionState>(TradeTransactionState.Dormant)
     const [pendingTXQueue, setPendingTXQueue] = useState<PendingTX[]>([])
-    const [queueMessage, setQueueMessage] = useState<string>("")
     const [block, setBlock] = useState<string>("")
+    const [showNotification, setShowNotification] = useState<boolean>(false)
+    const [currentTxHash, setCurrentTxHash] = useState<string>("")
+    const [notificationType, setNotificationType] = useState<NotificationType>(NotificationType.pending)
+    const [outstandingTXCount, setOutstandingTXCount] = useState<number>(0)
 
+    const notify = (hash: string, type: NotificationType) => {
+        setCurrentTxHash(hash)
+        setNotificationType(type)
+        setShowNotification(true)
+        setOutstandingTXCount(type===NotificationType.pending?outstandingTXCount+1:outstandingTXCount-1)
+    }
     // const [intervalTracker, setIntervalTracker] = useState<any>()
     const txQueuePush = (val: PendingTX) => {
 
@@ -245,23 +245,24 @@ export default function (props: {}) {
     if (block === "") {
         API.addBlockWatcher(setBlock)
     }
-    const queueUpdateCallback = useCallback(async () => {
+    const queueUpdateCallback = useCallback(async (outstanding:number) => {
 
         const top = peekTX()
         if (!top) return;
-        console.log('top hash '+top.hash)
         const receipt = await API.getTransactionReceipt(top.hash)
 
-        if (!receipt)
-            setQueueMessage("waiting for " + top.hash)
-        else {
+        if (!!receipt) {
+
             txDequeue()
-            setQueueMessage("transaction confirmed for " + top.hash)
+            if (receipt.status)
+                notify(top.hash, NotificationType.success)
+            else
+                notify(top.hash, NotificationType.fail)
         }
     }, [block])
 
     useEffect(() => {
-        queueUpdateCallback()
+        queueUpdateCallback(outstandingTXCount)
     }, [block])
 
     //NEW HOOKS END
@@ -277,6 +278,7 @@ export default function (props: {}) {
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address)
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
+
 
     useEffect(() => {
         API.getTokenDecimals(inputAddress).then(setInputDecimals)
@@ -301,12 +303,6 @@ export default function (props: {}) {
         setOutputValue('')
         setSwapClicked(false)
     }
-
-    useEffect(() => {
-        if (swapClicked) {
-            setTransactionState(TradeTransactionState.UserClicked)
-        }
-    }, [swapClicked])
 
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
@@ -362,18 +358,18 @@ export default function (props: {}) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
                     behodler.addLiquidity(inputAddress, inputValWei)
-                        .send(options, (err, hash:string) => {
+                        .send(options, (err, hash: string) => {
                             if (hash) {
-                                setTransactionState(TradeTransactionState.UserPosted)
-                                let t:PendingTX = {
+                                let t: PendingTX = {
                                     hash,
                                     type: TXType.addLiquidity,
                                     token1: inputAddress,
                                     token2: outputAddress,
                                 }
                                 txQueuePush(t)
+                                notify(hash, NotificationType.pending)
                             } else {
-                                setTransactionState(TradeTransactionState.UserRejected)
+                                notify(hash, NotificationType.rejected)
                             }
                         })
                     //TODO: implement this to clear at correct time: 
@@ -556,11 +552,6 @@ export default function (props: {}) {
                     account={account}
                 />
             </div>
-            <Box>
-                <div className={classes.transactionFeedbackState}>
-                    {`tx state: ${transactionState} and queue message ${queueMessage}`}
-                </div>
-            </Box>
             <Hidden lgUp>
                 <div className={classes.mobileContainer}>
                     <Grid
@@ -623,13 +614,16 @@ export default function (props: {}) {
                                         More info
                                     </Button>
                                 </Grid>
+                                <Grid item>
+                                    <CircularProgress />
+                                </Grid>
                             </Grid>
                         </Grid>
 
                     </Grid>
                 </div>
             </Hidden>
-
+            <Notification type={notificationType} hash={currentTxHash} open={showNotification} setOpen={setShowNotification} />
             <Hidden mdDown>
 
                 <Grid container
@@ -707,6 +701,14 @@ export default function (props: {}) {
                                 <Button color="secondary" variant="outlined">
                                     More info
                                 </Button>
+                            </Grid>
+                            <Grid item>
+                                {outstandingTXCount > 0 ?
+                                    <Tooltip title={"awaiting transaction " + currentTxHash}>
+                                        <CircularProgress />
+                                    </Tooltip>
+                                    : <div></div>
+                                }
                             </Grid>
                         </Grid>
                     </Grid>
