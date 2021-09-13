@@ -47,7 +47,6 @@ export function Notification(props: props) {
             break;
     }
 
-
     return (
         <Snackbar open={props.open} autoHideDuration={15000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} >
             <Alert onClose={handleClose} severity={severity} action={

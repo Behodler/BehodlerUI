@@ -178,6 +178,12 @@ interface PendingTX {
     token2: string
 }
 
+export interface TokenListItem {
+    address: string
+    name: string
+    image: string
+}
+
 export default function (props: {}) {
     const classes = useStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
@@ -195,7 +201,7 @@ export default function (props: {}) {
     const indexOfScarcityAddress = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("scarcity") !== -1);
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
-    let tokenDropDownList = tokenList.map((t, i) => {
+    let tokenDropDownList: TokenListItem[] = tokenList.map((t, i) => {
         let item = { ...t, image: Images[i] }
         if (i === indexOfWeth) {
             item.name = 'Eth'
@@ -224,8 +230,10 @@ export default function (props: {}) {
         setCurrentTxHash(hash)
         setNotificationType(type)
         setShowNotification(true)
-        setOutstandingTXCount(type===NotificationType.pending?outstandingTXCount+1:outstandingTXCount-1)
+        setOutstandingTXCount(type === NotificationType.pending ? outstandingTXCount + 1 : outstandingTXCount - 1)
     }
+
+    const fetchToken = (address: string): TokenListItem => tokenDropDownList.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
     // const [intervalTracker, setIntervalTracker] = useState<any>()
     const txQueuePush = (val: PendingTX) => {
 
@@ -245,7 +253,7 @@ export default function (props: {}) {
     if (block === "") {
         API.addBlockWatcher(setBlock)
     }
-    const queueUpdateCallback = useCallback(async (outstanding:number) => {
+    const queueUpdateCallback = useCallback(async (outstanding: number) => {
 
         const top = peekTX()
         if (!top) return;
@@ -279,7 +287,6 @@ export default function (props: {}) {
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
 
-
     useEffect(() => {
         API.getTokenDecimals(inputAddress).then(setInputDecimals)
     }, [inputAddress])
@@ -289,14 +296,15 @@ export default function (props: {}) {
     }, [outputAddress])
 
     if (tokenDropDownList.filter((t) => t.address === outputAddress).length === 0) {
-        setOutputAddress(tokenDropDownList[1])
+        setOutputAddress(tokenDropDownList[1].address)
     }
     if (tokenDropDownList.filter((t) => t.address === inputAddress).length === 0) {
-        setInputAddress(tokenDropDownList[0])
+        setInputAddress(tokenDropDownList[0].address)
     }
     const [exchangeRate, setExchangeRate] = useState<string>('')
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
     const [outputReserve, setOutputReserve] = useState<string>('')
+    console.log(JSON.stringify(tokenDropDownList, null, 4))
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address === address)[0].name
     const clearInput = () => {
         setInputValue('')
@@ -571,13 +579,13 @@ export default function (props: {}) {
                                 className={classes.mobileSelectorGrid}
                             >
                                 <Grid item>
-                                    <TokenSelector token={2} scale={0.65} mobile />
+                                    <TokenSelector network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.65} mobile />
                                 </Grid>
                                 <Grid item>
                                     <img width={180} src={Images[13]} className={classes.monster} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector token={4} scale={0.65} mobile />
+                                    <TokenSelector network={networkName} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
@@ -652,7 +660,7 @@ export default function (props: {}) {
                                     alignItems="center"
                                 >
                                     <Grid item>
-                                        <TokenSelector token={2} scale={0.8} />
+                                        <TokenSelector network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
@@ -665,7 +673,7 @@ export default function (props: {}) {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector token={4} scale={0.8} />
+                                        <TokenSelector network={networkName} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>

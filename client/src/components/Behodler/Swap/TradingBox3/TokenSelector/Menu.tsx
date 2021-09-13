@@ -26,13 +26,13 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
         /* Rectangle 3172 */
 
         width: isMobile ? 200 : 345,
-        height: isMobile?40:57,
+        height: isMobile ? 40 : 57,
         background: "#292743",
         border: "1px solid #795ECA",
         boxSizing: "border-box",
         borderRadius: 8,
         color: "white",
-        padding: isMobile?"2px 5px 2px 5px":"10px 20px 10px 20px",
+        padding: isMobile ? "2px 5px 2px 5px" : "10px 20px 10px 20px",
         fontSize: isMobile ? 12 : 16
 
     },
@@ -78,6 +78,8 @@ interface props {
     show: boolean
     setShow: (show: boolean) => void,
     mobile: boolean
+    setAddress: (a: string) => void
+
 }
 
 interface MenuToken {
@@ -119,10 +121,10 @@ export default function Menu(props: props) {
         return item
     })
 
-    return <TokenPopup tokens={tokenDropDownList} open={props.show} setShow={props.setShow} mobile={props.mobile} />
+    return <TokenPopup tokens={tokenDropDownList} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
 }
 
-function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void, mobile: boolean }) {
+function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void, mobile: boolean, setAddress: (a: string) => void }) {
     const classes = useStyles(props.mobile)();
     const close = () => props.setShow(false)
     const [searchText, setSearchText] = useState("")
@@ -157,7 +159,11 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                 </Grid>
                 <Grid item className={classes.listGridItem}>
                     {filteredList.length === 0 ? <div className={classes.noResults}>No results found.</div> : <List className={classes.list}>
-                        {filteredList.map((t, i) => <ListItem button key={i} >
+                        {filteredList.map((t, i) => <ListItem button key={i} onClick={() => {
+                            props.setShow(false)
+                            alert('settingAddresss ' + t.address)
+                            props.setAddress(t.address)
+                        }}>
                             <ListItemIcon>
                                 <img width={props.mobile ? 24 : 32} src={t.image} alt={t.name} />
                             </ListItemIcon>

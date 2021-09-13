@@ -1,6 +1,5 @@
 import { Grid, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
-import { Images } from '../ImageLoader'
 import Menu from './Menu'
 
 const useStyles =(scale)=> makeStyles((theme: Theme) => ({
@@ -30,10 +29,13 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
 }))
 
 interface props {
-    token: number,
+    tokenImage: string,
     scale:number,
+    setAddress:(a:string)=>void
+    network:string
     mobile?:boolean
 }
+
 export default function TokenSelector(props: props) {
     const [showMenu, setShowMenu] = React.useState<boolean>(false)
 
@@ -49,16 +51,17 @@ export default function TokenSelector(props: props) {
         >
             <Grid item>
                 <div className={classes.innerCircle}>
-                    <img alt="token" src={Images[props.token]} width={70 * props.scale} />
+                    <img alt="token" src={props.tokenImage} width={70 * props.scale} />
                 </div>
             </Grid>
 
         </Grid>
         <Menu show={showMenu} weth10Address="0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F" 
         scarcityAddress="0x1b8568fbb47708e9e9d31ff303254f748805bf21"
-        networkName="main" 
+        networkName={props.network} 
         setShow={setShowMenu}
         mobile = {props.mobile || false}
+        setAddress={props.setAddress}
         />
     </div>
 }
