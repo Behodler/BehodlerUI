@@ -24,9 +24,10 @@ interface props {
 export function Notification(props: props) {
 
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-        if(reason === 'clickaway') return;
+        if (reason === 'clickaway') return;
         props.setOpen(false);
     };
+    
     let severity: Color = "info"
     let message: string = "Transaction submitted"
 

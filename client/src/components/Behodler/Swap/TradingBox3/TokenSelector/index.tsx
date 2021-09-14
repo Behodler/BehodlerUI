@@ -1,7 +1,7 @@
 import { Grid, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import Menu from './Menu'
-
+import {TokenBalanceMapping} from '../index'
 const useStyles =(scale)=> makeStyles((theme: Theme) => ({
     root: {
     },
@@ -30,6 +30,7 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
 
 interface props {
     tokenImage: string,
+    balances:TokenBalanceMapping[]
     scale:number,
     setAddress:(a:string)=>void
     network:string
@@ -62,6 +63,7 @@ export default function TokenSelector(props: props) {
         setShow={setShowMenu}
         mobile = {props.mobile || false}
         setAddress={props.setAddress}
+        balances = {props.balances}
         />
     </div>
 }

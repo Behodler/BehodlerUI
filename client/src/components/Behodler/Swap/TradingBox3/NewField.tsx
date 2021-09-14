@@ -1,5 +1,6 @@
 import { Grid, Link, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
+import { formatNumberText, isNullOrWhiteSpace } from 'src/util/jsHelpers'
 // import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
 // import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
@@ -63,9 +64,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     },
     BalanceLabel: {
-        /* Balance: 2.1 ETH */
-
-
         height: scale(19),
 
         fontFamily: "Gilroy-medium",
@@ -126,6 +124,7 @@ export interface tokenProps{
     value:Hook<string>
     balance:BigInt
     estimate:string
+    valid:Hook<boolean>
 }
 
 interface props {
@@ -134,14 +133,13 @@ interface props {
     mobile?: boolean,
 }
 
-
 export default function NewField(props: props) {
     const classes = useStyles()
-
+    const bigOrderOfMagnitude = "1000000000000000000"
     // const walletContextProps = React.useContext(WalletContext);
 
     const BorderedGridItem = (props: { children: any }) => <Grid item >{props.children}</Grid>
-
+    
     return <Grid
         container
         direction="column"
@@ -156,16 +154,16 @@ export default function NewField(props: props) {
 
         {props.mobile ?
             <BorderedGridItem>
-                <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item><InputBox mobile /></Grid></Grid>
+                <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item><InputBox bigOrderOfMagnitude={bigOrderOfMagnitude} mobile token={props.token} /></Grid></Grid>
             </BorderedGridItem>
             :
             <BorderedGridItem>
-                <InputBox />
+                <InputBox bigOrderOfMagnitude={bigOrderOfMagnitude} token = {props.token} />
             </BorderedGridItem>
         }
 
         <BorderedGridItem>
-            <BalanceContainer balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
+            <BalanceContainer  balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
         </BorderedGridItem>
     </Grid>
 }
@@ -177,9 +175,25 @@ function DirectionLabel(props: { direction: string }) {
     </div>
 }
 
-function InputBox(props: { mobile?: boolean }) {
+function InputBox(props: { mobile?: boolean, token:tokenProps, bigOrderOfMagnitude:string }) {
     const classes = useStyles()
-    return <div><input className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
+
+
+    const setFormattedInput = (value: string) => {
+        if (isNullOrWhiteSpace(value)) {
+            props.token.value.set('')
+            props.token.valid.set(true)
+        }
+        else {
+        const formattedText = formatNumberText(value)
+        props.token.value.set(value)
+        const parsedValue = parseFloat(formattedText)
+        const comparisonNumber = !isNaN(parsedValue)?  BigInt(props.token.value.value)*BigInt(props.bigOrderOfMagnitude):BigInt(0)
+        const isValid = comparisonNumber<props.token.balance
+        props.token.valid.set(isValid)
+    }}
+
+    return <div><input value={props.token.value.value} onChange={(event)=>setFormattedInput(event.target.value)} className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
 }
 
 function BalanceContainer(props: { estimate: string, balance: string, token: string }) {

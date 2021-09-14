@@ -13,6 +13,7 @@ import TokenSelector from './TokenSelector'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
+import FetchBalances from './FetchBalances'
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
 
@@ -184,6 +185,10 @@ export interface TokenListItem {
     image: string
 }
 
+export interface TokenBalanceMapping {
+    address: string
+    balance: string
+}
 export default function (props: {}) {
     const classes = useStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
@@ -217,6 +222,8 @@ export default function (props: {}) {
         .address.toLowerCase()
         .trim()
 
+    const contracts = tokenDropDownList.map(t => ({ name: t.name, address: t.address }))
+
 
     //NEW HOOKS BEGIN
     const [pendingTXQueue, setPendingTXQueue] = useState<PendingTX[]>([])
@@ -225,13 +232,43 @@ export default function (props: {}) {
     const [currentTxHash, setCurrentTxHash] = useState<string>("")
     const [notificationType, setNotificationType] = useState<NotificationType>(NotificationType.pending)
     const [outstandingTXCount, setOutstandingTXCount] = useState<number>(0)
+    const [tokenBalances, setTokenBalances] = useState<TokenBalanceMapping[]>([])
+    const [swapping, setSwapping] = useState<boolean>(false)
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
         setNotificationType(type)
         setShowNotification(true)
         setOutstandingTXCount(type === NotificationType.pending ? outstandingTXCount + 1 : outstandingTXCount - 1)
+        if (type === NotificationType.pending)
+            setSwapping(true)
+        else setSwapping(false)
     }
+
+    const balanceCheck = async (menu: string) => {
+        const balanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", contracts)
+        let balances: TokenBalanceMapping[] = tokenDropDownList.map(t => {
+            let hexBalance = balanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+            let address = t.address
+            let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
+            return { address, balance: decimalBalance }
+        })
+        if (JSON.stringify(balances) !== JSON.stringify(tokenBalances)) {
+            setTokenBalances(balances)
+        }
+        // console.log("balance retrieved: " + balanceResults.results["Link"].callsReturnContext[0].returnValues[0].hex.toString())
+        // // const multiBalance = balanceResults.results["LINK"].callsReturnContext[0].returnValues[0]
+        // // console.log(multiBalance.toString())
+    }
+    const balanceCallback = useCallback(async (menu: string) => await balanceCheck(menu), [block])
+
+    useEffect(() => {
+        const bigBlock = BigInt(block)
+        const three = BigInt(1)
+        if (bigBlock % three === BigInt(0)) {
+            balanceCallback(block)
+        }
+    }, [block])
 
     const fetchToken = (address: string): TokenListItem => tokenDropDownList.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
     // const [intervalTracker, setIntervalTracker] = useState<any>()
@@ -282,8 +319,8 @@ export default function (props: {}) {
     const [outputValueWei, setOutputValueWei] = useState<string>('')
 
     const [inputEnabled, setInputEnabled] = useState<boolean>(false)
-    const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address)
-    const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address)
+    const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address.toLowerCase())
+    const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
 
@@ -295,17 +332,16 @@ export default function (props: {}) {
         API.getTokenDecimals(outputAddress).then(setOutputDecimals)
     }, [outputAddress])
 
-    if (tokenDropDownList.filter((t) => t.address === outputAddress).length === 0) {
-        setOutputAddress(tokenDropDownList[1].address)
+    if (tokenDropDownList.filter((t) => t.address.toLowerCase() === outputAddress.toLowerCase()).length === 0) {
+        setOutputAddress(tokenDropDownList[1].address.toLowerCase())
     }
-    if (tokenDropDownList.filter((t) => t.address === inputAddress).length === 0) {
-        setInputAddress(tokenDropDownList[0].address)
+    if (tokenDropDownList.filter((t) => t.address.toLowerCase() === inputAddress.toLowerCase()).length === 0) {
+        setInputAddress(tokenDropDownList[0].address.toLowerCase())
     }
     const [exchangeRate, setExchangeRate] = useState<string>('')
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
     const [outputReserve, setOutputReserve] = useState<string>('')
-    console.log(JSON.stringify(tokenDropDownList, null, 4))
-    const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address === address)[0].name
+    const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address.toLowerCase() === address.toLowerCase())[0].name
     const clearInput = () => {
         setInputValue('')
         setOutputValue('')
@@ -503,14 +539,15 @@ export default function (props: {}) {
         address: inputAddress,
         value: { value: inputValue, set: setInputValue },
         balance: BigInt(0),
-        estimate: "112"
-
+        estimate: "112",
+        valid: { value: inputValid, set: setInputValid }
     }
     const ToProps: tokenProps = {
         address: inputAddress,
-        value: { value: inputValue, set: setInputValue },
+        value: { value: outputValue, set: setOutputValue },
         balance: BigInt(0),
-        estimate: "112"
+        estimate: "112",
+        valid: { value: outputValid, set: setOutputValid }
 
     }
     return (
@@ -579,13 +616,14 @@ export default function (props: {}) {
                                 className={classes.mobileSelectorGrid}
                             >
                                 <Grid item>
-                                    <TokenSelector network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.65} mobile />
+                                    <TokenSelector network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image}
+                                        scale={0.65} mobile balances={tokenBalances} />
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={Images[13]} className={classes.monster} />
+                                    <img width={180} src={swapping ? Images[15] : Images[13]} className={classes.monster} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector network={networkName} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
+                                    <TokenSelector network={networkName} balances={tokenBalances} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
@@ -632,6 +670,8 @@ export default function (props: {}) {
                 </div>
             </Hidden>
             <Notification type={notificationType} hash={currentTxHash} open={showNotification} setOpen={setShowNotification} />
+            <Box>
+            </Box>
             <Hidden mdDown>
 
                 <Grid container
@@ -660,12 +700,12 @@ export default function (props: {}) {
                                     alignItems="center"
                                 >
                                     <Grid item>
-                                        <TokenSelector network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
+                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
 
-                                            <img width={220} src={Images[13]} className={classes.monster} onClick={() => {
+                                            <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => {
                                                 const inputAddressTemp = inputAddress
                                                 setInputAddress(outputAddress)
                                                 setOutputAddress(inputAddressTemp)
@@ -673,7 +713,7 @@ export default function (props: {}) {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector network={networkName} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
+                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>

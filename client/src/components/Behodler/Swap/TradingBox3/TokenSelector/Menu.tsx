@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react'
 import tokenListJSON from '../../../../../blockchain/behodlerUI/baseTokens.json'
 import { Images } from '../ImageLoader'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
-
-
+import { TokenBalanceMapping } from '../index'
+import { formatSignificantDecimalPlaces } from '../../../../../util/jsHelpers'
+import API from "../../../../../blockchain/ethereumAPI"
 const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     root: {
         position: "absolute",
@@ -79,7 +80,7 @@ interface props {
     setShow: (show: boolean) => void,
     mobile: boolean
     setAddress: (a: string) => void
-
+    balances: TokenBalanceMapping[]
 }
 
 interface MenuToken {
@@ -87,14 +88,14 @@ interface MenuToken {
     address: string
     image: string,
     loading: boolean,
-    balance: number
+    balance: string
 }
 
 interface TokenMetadata {
     name: string
     address: string
 }
-const randomInt = (range: number) => Math.floor(Math.random() * range)
+// const randomInt = (range: number) => Math.floor(Math.random() * range)
 const trunc = (str: string, max: number) => {
     if (str.length > max) {
         return str.substring(0, max) + "..."
@@ -108,9 +109,11 @@ export default function Menu(props: props) {
     const indexOfWeth = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("weth") !== -1);
     const indexOfScarcityAddress = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("scarcity") !== -1);
     const behodler2Weth = props.weth10Address;
-
-    let tokenDropDownList: MenuToken[] = tokenList.map((t, i) => {
-        let item: MenuToken = { ...t, image: Images[i], loading: randomInt(2) ? true : false, balance: randomInt(100000) / 100 }
+    const [menuItems, setMenuItems] = useState<MenuToken[]>(tokenList.map((t, i) => {
+        const token = props.balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
+        const showSwirly = token.length === 0
+        const balance = !showSwirly ? token[0].balance : "0"
+        let item: MenuToken = { ...t, image: Images[i], loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
         if (i === indexOfWeth) {
             item.name = 'Eth'
             item.address = behodler2Weth
@@ -119,9 +122,29 @@ export default function Menu(props: props) {
             item.address = props.scarcityAddress
         }
         return item
-    })
+    }));
 
-    return <TokenPopup tokens={tokenDropDownList} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
+    useEffect(() => {
+        const factory = (balances: TokenBalanceMapping[]) => tokenList.map((t, i) => {
+            const token = balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
+            const showSwirly = token.length === 0
+            const balance = !showSwirly ? token[0].balance : "0"
+            let item: MenuToken = { ...t, image: Images[i], loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
+            if (i === indexOfWeth) {
+                item.name = 'Eth'
+                item.address = behodler2Weth
+            }
+            if (i === indexOfScarcityAddress) {
+                item.address = props.scarcityAddress
+            }
+            return item
+        })
+        let tokenDropDownList: MenuToken[] = factory(props.balances)
+        setMenuItems(tokenDropDownList)
+    }, [props.balances])
+
+
+    return <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
 }
 
 function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void, mobile: boolean, setAddress: (a: string) => void }) {
@@ -131,8 +154,14 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
     const [filteredList, setFilteredList] = useState<MenuToken[]>(props.tokens)
 
     useEffect(() => {
-        setFilteredList(props.tokens.filter(t => t.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1))
-    }, [searchText])
+
+        var walletPattern = new RegExp(/^0x[a-fA-F0-9]{40}$/);
+        if (walletPattern.test(searchText)) {
+            setFilteredList(props.tokens.filter(t => t.address.toLowerCase() === searchText.toLowerCase()))
+        }
+        else
+            setFilteredList(props.tokens.filter(t => t.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1))
+    }, [searchText, props.tokens])
 
     return <Modal
 
@@ -161,7 +190,6 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                     {filteredList.length === 0 ? <div className={classes.noResults}>No results found.</div> : <List className={classes.list}>
                         {filteredList.map((t, i) => <ListItem button key={i} onClick={() => {
                             props.setShow(false)
-                            alert('settingAddresss ' + t.address)
                             props.setAddress(t.address)
                         }}>
                             <ListItemIcon>

@@ -138,9 +138,9 @@ function ExtendedTextField(props: props) {
             props.setValue('')
             props.setValid(true)
         }
-        const fomattedText = formatNumberText(value)
+        const formattedText = formatNumberText(value)
         props.setValue(value)
-        const parsedValue = parseFloat(fomattedText)
+        const parsedValue = parseFloat(formattedText)
         const isValid = !isNaN(parsedValue) && parsedValue <= parseFloat(currentBalance)
         props.setValid(isValid)
     }
