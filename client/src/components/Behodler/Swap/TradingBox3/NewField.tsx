@@ -135,6 +135,7 @@ export interface tokenProps {
 
 interface props {
     isEth: boolean
+    isSCX:boolean
     direction: 'FROM' | 'TO',
     token: tokenProps,
     mobile?: boolean,
@@ -153,7 +154,7 @@ export default function NewField(props: props) {
     useEffect(() => {
         if (props.direction === 'TO')
             return
-        if (props.isEth) {
+        if (props.isEth ||props.isSCX ) {
             props.token.approved?.set(true)
         }
 

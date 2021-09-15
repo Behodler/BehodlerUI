@@ -459,7 +459,7 @@ export default function (props: {}) {
 
     useEffect(() => {
 
-        if (!inputEnabled) {
+        if (!inputEnabled && !isScarcityPredicate(inputAddress)) {
             setSwapText('APPROVE ' + nameOfSelectedAddress(inputAddress))
         }
         else if (isScarcityPredicate(outputAddress)) {
@@ -702,10 +702,10 @@ export default function (props: {}) {
 
                         </Grid>
                         <Grid item>
-                            <NewField isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
+                            <NewField isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
                         </Grid>
                         <Grid item>
-                            <NewField isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
+                            <NewField isSCX={false} isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
                         </Grid>
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
@@ -772,7 +772,7 @@ export default function (props: {}) {
                             spacing={3}
                         >
                             <Grid item>
-                                <NewField isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
+                                <NewField isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
                             </Grid>
                             <Grid item>
                                 <Grid
@@ -802,7 +802,7 @@ export default function (props: {}) {
                             </Grid>
 
                             <Grid item>
-                                <NewField isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
+                                <NewField isSCX={false} isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
                             </Grid>
                         </Grid>
 
