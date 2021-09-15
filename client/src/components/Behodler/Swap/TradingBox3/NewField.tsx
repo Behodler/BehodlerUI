@@ -109,6 +109,8 @@ interface props {
     token: tokenProps,
     mobile?: boolean,
     inputKey:string
+    focus:boolean
+    setFocus: () => void
 }
 
 
@@ -158,11 +160,11 @@ export default function NewField(props: props) {
         {props.mobile ?
             <BorderedGridItem>
                 <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item>
-                    <InputBox mobile token={props.token} /></Grid></Grid>
+                    <InputBox setFocus ={props.setFocus}  focus={props.focus} mobile token={props.token} /></Grid></Grid>
             </BorderedGridItem>
             :
             <BorderedGridItem>
-                <InputBox token={props.token} />
+                <InputBox focus = {props.focus} setFocus ={props.setFocus} token={props.token} />
             </BorderedGridItem>
         }
 

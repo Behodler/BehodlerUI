@@ -1,5 +1,6 @@
-import { makeStyles, Theme } from '@material-ui/core'
+import { FormControl, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
+import { MoveFocusInside } from 'react-focus-lock'
 
 import { formatNumberText, isNullOrWhiteSpace } from 'src/util/jsHelpers'
 import { tokenProps } from "./NewField"
@@ -117,7 +118,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 
-export function StyledInput(props: { mobile?: boolean, token: tokenProps }) {
+export function StyledInput(props: { mobile?: boolean, token: tokenProps, focus: boolean, setFocus: () => void }) {
     const classes = useStyles()
 
     const setFormattedInput = (value: string) => {
@@ -137,8 +138,16 @@ export function StyledInput(props: { mobile?: boolean, token: tokenProps }) {
         }
     }
     console.log("re-render " + Date.now())
-
+    const FocusElement = props.focus ? (props: { children?: any }) => <MoveFocusInside>{props.children}</MoveFocusInside> : (props: { children?: any }) => <div>{props.children}</div>
     return <div>
-        <input value={props.token.value.value} onChange={(event) => setFormattedInput(event.target.value)} className={props.mobile ? classes.inputNarrow : classes.inputWide} />
+        <FormControl>
+            <FocusElement>
+                <input
+                    id={props.token.address}
+                    key={props.token.address}
+                    //  inputRef={input => input && input.focus()}
+                    value={props.token.value.value} onChange={(event) => { props.setFocus(); setFormattedInput(event.target.value) }} className={props.mobile ? classes.inputNarrow : classes.inputWide} />
+            </FocusElement>
+        </FormControl>
     </div>
 }

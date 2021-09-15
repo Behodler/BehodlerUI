@@ -259,6 +259,7 @@ export default function (props: {}) {
     const [outstandingTXCount, setOutstandingTXCount] = useState<number>(0)
     const [tokenBalances, setTokenBalances] = useState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useState<boolean>(false)
+    const [textFocus, setTextFocus] = useState<'Left-d' | 'Right-d' | 'Left-m' | 'Right-m'>('Left-d')
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -701,11 +702,11 @@ export default function (props: {}) {
                             </Grid>
 
                         </Grid>
-                        <Grid item>
-                            <NewField inputKey="mobileFrom" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
+                        <Grid item key="mobileGridInput">
+                            <NewField focus={textFocus == 'Left-m'} setFocus={() => setTextFocus('Left-m')} inputKey="mobileFrom" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
                         </Grid>
-                        <Grid item>
-                            <NewField inputKey="mobileTo" isSCX={false} isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
+                        <Grid item key="mobileGridOutput">
+                            <NewField focus={textFocus == 'Right-m'} setFocus={() => setTextFocus('Right-m')} inputKey="mobileTo" isSCX={false} isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
                         </Grid>
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
@@ -763,17 +764,16 @@ export default function (props: {}) {
                     className={classes.fieldGrid}
                     key="desktopContainer"
                 >
-                    <Grid item>
+                    <Grid item key="textSection">
                         <Grid
                             container
                             direction="row"
                             justify="center"
                             alignItems="center"
-
                             spacing={3}
                         >
-                            <Grid item>
-                                <NewField inputKey="desktopFromIn" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
+                            <Grid item key="dekstopGridInput">
+                                <NewField focus={textFocus == 'Left-d'} setFocus={() => setTextFocus('Left-d')} inputKey="desktopFromIn" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
                             </Grid>
                             <Grid item>
                                 <Grid
@@ -781,6 +781,7 @@ export default function (props: {}) {
                                     direction="row"
                                     justify="space-between"
                                     alignItems="center"
+                                    id="central-selector-monster-grid"
                                 >
                                     <Grid item>
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
@@ -802,8 +803,8 @@ export default function (props: {}) {
                                 </Grid>
                             </Grid>
 
-                            <Grid item>
-                                <NewField inputKey="desktopToIn" isSCX={false} isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
+                            <Grid item key="dekstopGridOuput">
+                                <NewField focus={textFocus == 'Right-d'} setFocus={() => setTextFocus('Right-d')} inputKey="desktopToIn" isSCX={false} isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
                             </Grid>
                         </Grid>
 
