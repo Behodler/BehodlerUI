@@ -355,12 +355,35 @@ export default function (props: {}) {
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
     const [swapText, setSwapText] = useState<string>("SWAP")
+    const [impliedExchangeRate, setImpliedExchangeRate] = useState<string>("")
+
+    useEffect(() => {
+        if (inputValue.length > 0 && outputValue.length > 0 && !isNaN(parseFloat(outputValue)) && parseFloat(outputValue) > 0 && inputValid && parseFloat(inputValue) > 0) {
+            const parsedInput = parseFloat(inputValue)
+            const parsedOutput = parseFloat(outputValue)
+            if (parsedInput > parsedOutput) {
+                const exchangeRate = formatSignificantDecimalPlaces((parsedInput / parsedOutput).toString(), 6)
+                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRate} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
+            } else {
+                const exchangeRate = formatSignificantDecimalPlaces((parsedOutput / parsedInput).toString(), 6)
+                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRate} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
+            }
+        }
+        else {
+            setImpliedExchangeRate("")
+        }
+    }, [inputValue, outputValue])
+
+
+
     useEffect(() => {
         API.getTokenDecimals(inputAddress).then(setInputDecimals)
+        setImpliedExchangeRate("")
     }, [inputAddress])
 
     useEffect(() => {
         API.getTokenDecimals(outputAddress).then(setOutputDecimals)
+        setImpliedExchangeRate("")
     }, [outputAddress])
 
     if (tokenDropDownList.filter((t) => t.address.toLowerCase() === outputAddress.toLowerCase()).length === 0) {
@@ -669,7 +692,7 @@ export default function (props: {}) {
                                 className={classes.Info}
                             >
                                 <Grid item>
-                                    1 ETH = 1 EYE
+                                    {impliedExchangeRate}
                                 </Grid>
                                 <Grid item>
                                     <Button color="secondary" variant="outlined">
@@ -725,7 +748,7 @@ export default function (props: {}) {
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
-                                            <Tooltip title={swapping ? "" : "click to flip token order"}>
+                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"}>
                                                 <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => {
                                                     const inputAddressTemp = inputAddress
                                                     setInputAddress(outputAddress)
@@ -765,7 +788,7 @@ export default function (props: {}) {
                             className={classes.Info}
                         >
                             <Grid item>
-                                1 ETH = 1 EYE
+                                {impliedExchangeRate}
                             </Grid>
                             <Grid item>
                                 <Button color="secondary" variant="outlined">
