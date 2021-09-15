@@ -195,7 +195,7 @@ export default function NewField(props: props) {
         }
 
         <BorderedGridItem>
-            <BalanceContainer balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
+            <BalanceContainer setValue={props.token.value.set} balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
         </BorderedGridItem>
     </Grid>
 }
@@ -232,7 +232,7 @@ function InputBox(props: { mobile?: boolean, token: tokenProps }) {
     return <div><input key={props.token.address} value={props.token.value.value} onChange={(event) => setFormattedInput(event.target.value)} className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
 }
 
-function BalanceContainer(props: { estimate: string, balance: string, token: string }) {
+function BalanceContainer(props: { estimate: string, balance: string, token: string, setValue: (v: string) => void }) {
     const classes = useStyles()
     return <Grid
         container
@@ -243,7 +243,7 @@ function BalanceContainer(props: { estimate: string, balance: string, token: str
         className={classes.BalanceContainer}
     >
         <Grid item>
-            <Balance balance={props.balance} token={props.token} />
+            <Balance setValue={props.setValue} balance={props.balance} token={props.token} />
         </Grid>
         <Grid item>
             <Estimate estimate={props.estimate} />
@@ -257,7 +257,7 @@ const PaddedGridItem = (props: { children?: any }) => {
         {props.children}
     </Grid>
 }
-function Balance(props: { token: string, balance: string }) {
+function Balance(props: { token: string, balance: string, setValue: (v: string) => void }) {
     const classes = useStyles()
     return <Grid
         container
@@ -268,7 +268,7 @@ function Balance(props: { token: string, balance: string }) {
     >
         <PaddedGridItem  ><div className={classes.BalanceLabel}>Balance</div></PaddedGridItem>
         <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance}</div></PaddedGridItem>
-        <PaddedGridItem ><Link className={classes.Max}>(MAX)</Link></PaddedGridItem>
+        <PaddedGridItem ><Link onClick={()=>props.setValue(props.balance)} className={classes.Max}>(MAX)</Link></PaddedGridItem>
     </Grid>
 }
 

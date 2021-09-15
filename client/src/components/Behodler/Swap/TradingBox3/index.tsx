@@ -40,6 +40,15 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: 70,
         left: "35%",
     },
+    buttonWrapperDisabled: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "1px solid rgba(60, 60, 60)",
+        borderRadius: "5px",
+        marginTop: 70,
+        left: "35%",
+    },
     swapButton: {
         background: "linear-gradient(105.11deg, rgba(218, 86, 221,0.1) 46.06%, rgba(218, 86, 221,0.1) 77.76%)",
 
@@ -50,6 +59,15 @@ const useStyles = makeStyles((theme: Theme) => ({
             textShadow: "2px 2px 5px white"
         },
     },
+    swapButtonDisabled: {
+        color: "grey",
+        backgroundColor: "rgba(100,100,100,0.3)",
+        width: 500,
+        '&:hover': {
+            backgroundColor: "rgba(100,100,100,0.3)",
+
+        },
+    },
     swapButtonMobile: {
         background: "linear-gradient(105.11deg, rgba(218, 86, 221,0.1) 46.06%, rgba(218, 86, 221,0.1) 77.76%)",
 
@@ -58,6 +76,15 @@ const useStyles = makeStyles((theme: Theme) => ({
             background: "rgba(218, 86, 221,0.4)",
             fontWeight: "bolder",
             textShadow: "2px 2px 5px white"
+        },
+    },
+    swapButtonMobileDisabled: {
+        color: "grey",
+        backgroundColor: "rgba(100,100,100,0.3)",
+
+        width: 360,
+        '&:hover': {
+            backgroundColor: "rgba(100,100,100,0.3)",
         },
     },
     hideIt: {
@@ -166,7 +193,7 @@ enum TXType {
     approval,
     swap,
     addLiquidity,
-    removeLiquidity,
+    withdrawLiquidity,
     mintPyro,
     redeemPyro
 }
@@ -345,11 +372,6 @@ export default function (props: {}) {
 
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address.toLowerCase() === address.toLowerCase())[0].name
-    const clearInput = () => {
-        setInputValue('')
-        setOutputValue('')
-        setSwapClicked(false)
-    }
 
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
@@ -387,7 +409,26 @@ export default function (props: {}) {
         else {
             setSwapText('SWAP')
         }
-    }, [inputEnabled, isEthPredicate(inputAddress), inputAddress])
+    }, [inputEnabled, isEthPredicate(inputAddress), inputAddress, outputAddress])
+
+    const hashBack = (type: TXType) => (err, hash: string) => {
+        if (hash) {
+            let t: PendingTX = {
+                hash,
+                type,
+                token1: inputAddress,
+                token2: outputAddress,
+            }
+            txQueuePush(t)
+            notify(hash, NotificationType.pending)
+        } else {
+            notify(hash, NotificationType.rejected)
+        }
+    }
+
+    const addLiquidityHashBack = hashBack(TXType.addLiquidity)
+    const withdrawLiquidityHashBack = hashBack(TXType.withdrawLiquidity)
+    const swapHashBack = hashBack(TXType.swap)
 
     const swap2Callback = useCallback(async () => {
         if (swapClicked) {
@@ -398,7 +439,8 @@ export default function (props: {}) {
                         if (error) console.error("gas estimation error: " + error);
                         primaryOptions.gas = gas;
                         behodler.withdrawLiquidity(outputAddress, outputValueWei)
-                            .send(primaryOptions, clearInput);
+                            .send(primaryOptions, withdrawLiquidityHashBack)
+                            .catch(err => console.log('user rejection'))
                     });
             } else if (outputAddress.toLowerCase() === scarcityAddress) {
                 let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
@@ -406,24 +448,9 @@ export default function (props: {}) {
                 behodler.addLiquidity(inputAddress, inputValWei).estimateGas(options, function (error, gas) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
-                   behodler.addLiquidity(inputAddress, inputValWei)
-                        .send(options, (err, hash: string) => {
-                            if (hash) {
-                                let t: PendingTX = {
-                                    hash,
-                                    type: TXType.addLiquidity,
-                                    token1: inputAddress,
-                                    token2: outputAddress,
-                                }
-                                txQueuePush(t)
-                                notify(hash, NotificationType.pending)
-                            } else {
-                                notify(hash, NotificationType.rejected)
-                            }
-                        }).catch(err=>console.log('user rejection'))
-                    //TODO: implement this to clear at correct time: 
-                    // /https://web3js.readthedocs.io/en/v1.2.11/web3-eth.html?highlight=getTransactionReceipt#gettransactionreceipt
-
+                    behodler.addLiquidity(inputAddress, inputValWei)
+                        .send(options, addLiquidityHashBack)
+                        .catch(err => console.log('user rejection'))
                 })
 
             } else {
@@ -435,7 +462,8 @@ export default function (props: {}) {
                         options.gas = gas;
                         behodler
                             .swap(inputAddress, outputAddress, inputValWei, outputValueWei)
-                            .send(options, clearInput);
+                            .send(options, swapHashBack)
+                            .catch(err => console.log('user rejection'))
                     });
             }
         }
@@ -552,6 +580,10 @@ export default function (props: {}) {
     }
 
     const swapAction = async () => {
+        if (!swapEnabled) {
+            console.log('no swap')
+            return
+        }
         if (inputEnabled)
             setSwapClicked(true)
         else {
@@ -574,7 +606,7 @@ export default function (props: {}) {
                 })
         }
     }
-
+    const greySwap = inputEnabled && !swapEnabled
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
@@ -615,14 +647,18 @@ export default function (props: {}) {
                             <NewField isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
                         </Grid>
                         <Grid item>
-                            <Box className={classes.buttonWrapper}>
-                                <Button className={classes.swapButtonMobile} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
+                            <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
+                                <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
                                     {swapText}
                                 </Button>
                             </Box>
                         </Grid>
                         <Grid item>
-                            <div className={classes.flippySwitch} onClick={() => alert('TODO: flip tokens')} />
+                            <div className={classes.flippySwitch} onClick={() => {
+                                const inputAddressTemp = inputAddress
+                                setInputAddress(outputAddress)
+                                setOutputAddress(inputAddressTemp)
+                            }} />
                         </Grid>
                         <Grid item>
                             <Grid container
@@ -641,7 +677,12 @@ export default function (props: {}) {
                                     </Button>
                                 </Grid>
                                 <Grid item>
-                                    <CircularProgress />
+                                    {outstandingTXCount > 0 ?
+                                        <Tooltip title={"awaiting transaction " + currentTxHash}>
+                                            <CircularProgress />
+                                        </Tooltip>
+                                        : <div></div>
+                                    }
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -684,12 +725,13 @@ export default function (props: {}) {
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
-
-                                            <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => {
-                                                const inputAddressTemp = inputAddress
-                                                setInputAddress(outputAddress)
-                                                setOutputAddress(inputAddressTemp)
-                                            }} />
+                                            <Tooltip title={swapping ? "" : "click to flip token order"}>
+                                                <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => {
+                                                    const inputAddressTemp = inputAddress
+                                                    setInputAddress(outputAddress)
+                                                    setOutputAddress(inputAddressTemp)
+                                                }} />
+                                            </Tooltip>
                                         </div>
                                     </Grid>
                                     <Grid item>
@@ -706,9 +748,9 @@ export default function (props: {}) {
                     </Grid>
                     <Grid item>
 
-                        <Box className={classes.buttonWrapper}>
+                        <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
 
-                            <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
+                            <Button className={greySwap ? classes.swapButtonDisabled : classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
                                 {swapText}
                             </Button>
 

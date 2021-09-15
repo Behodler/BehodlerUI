@@ -67,7 +67,6 @@ export class ERC20Effects extends Token {
     }
 
     allowance(owner: string, spender: string): Effect {
-        console.log('setting up')
         return this.createEffect(async ({ account, blockNumber }) => {
             const params: FetchNumberFields = {
                 web3: this.web3,
