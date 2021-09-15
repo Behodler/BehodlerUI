@@ -671,7 +671,7 @@ export default function (props: {}) {
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
-                <div className={classes.mobileContainer}>
+                <div className={classes.mobileContainer} key="mobileContainer">
                     <Grid
                         container
                         direction="column"
@@ -702,10 +702,10 @@ export default function (props: {}) {
 
                         </Grid>
                         <Grid item>
-                            <NewField isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
+                            <NewField inputKey="mobileFrom" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
                         </Grid>
                         <Grid item>
-                            <NewField isSCX={false} isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
+                            <NewField inputKey="mobileTo" isSCX={false} isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
                         </Grid>
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
@@ -761,6 +761,7 @@ export default function (props: {}) {
                     justify="center"
                     alignItems="center"
                     className={classes.fieldGrid}
+                    key="desktopContainer"
                 >
                     <Grid item>
                         <Grid
@@ -772,7 +773,7 @@ export default function (props: {}) {
                             spacing={3}
                         >
                             <Grid item>
-                                <NewField isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
+                                <NewField inputKey="desktopFromIn" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
                             </Grid>
                             <Grid item>
                                 <Grid
@@ -802,7 +803,7 @@ export default function (props: {}) {
                             </Grid>
 
                             <Grid item>
-                                <NewField isSCX={false} isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
+                                <NewField inputKey="desktopToIn" isSCX={false} isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
                             </Grid>
                         </Grid>
 

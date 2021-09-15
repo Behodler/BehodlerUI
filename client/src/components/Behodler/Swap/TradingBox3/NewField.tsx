@@ -3,9 +3,9 @@ import { Grid, Link, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import { useEffect } from 'react'
 import API from 'src/blockchain/ethereumAPI'
-import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
+import { ContainerContext  } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
-import { formatNumberText, isNullOrWhiteSpace } from 'src/util/jsHelpers'
+import {StyledInput as InputBox} from './StyledInput'
 // import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
 // import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
@@ -33,37 +33,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "darkGrey",
         textAlign: "center",
         verticalAlign: " middle",
-    },
-    inputWide: {
-        /* Vector */
-        width: scale(300),
-        height: scale(57),
-        background: "#360C57",
-        border: "1px solid rgba(70, 57, 130, 0.5)",
-        boxSizing: "border-box",
-        /* 2.00073731114506 */
-
-        fontFamily: "Gilroy-medium",
-        fontStyle: "normal",
-        fontWeight: 500,
-        fontSize: scale(24),
-        padding: "10px 20px 10px 20px",
-        color: "#FFFFFF",
-        outline: 0,
-        borderRadius: 5,
-    },
-    inputNarrow: {
-        width: scale(270),
-        background: "transparent",
-        border: "none",
-        /* 2.00073731114506 */
-
-        fontFamily: "Gilroy-medium",
-        fontStyle: "normal",
-        fontWeight: 500,
-        fontSize: scale(20),
-        color: "#FFFFFF",
-        outline: 0
     },
     BalanceContainer: {
 
@@ -139,7 +108,9 @@ interface props {
     direction: 'FROM' | 'TO',
     token: tokenProps,
     mobile?: boolean,
+    inputKey:string
 }
+
 
 export default function NewField(props: props) {
     const classes = useStyles()
@@ -208,28 +179,6 @@ function DirectionLabel(props: { direction: string }) {
     </div>
 }
 
-function InputBox(props: { mobile?: boolean, token: tokenProps }) {
-    const classes = useStyles()
-
-    const setFormattedInput = (value: string) => {
-        if (isNullOrWhiteSpace(value)) {
-
-            props.token.value.set('')
-            if (!props.token.valid.value)
-                props.token.valid.set(true)
-        }
-        else {
-            const formattedText = formatNumberText(value)
-            props.token.value.set(value)
-            const parsedValue = parseFloat(formattedText)
-            const isValid = isNaN(parsedValue) ? false : parsedValue < parseFloat(props.token.balance)
-            if (props.token.valid.value != isValid)
-                props.token.valid.set(isValid)
-        }
-    }
-
-    return <div><input key={props.token.address} value={props.token.value.value} onChange={(event) => setFormattedInput(event.target.value)} className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
-}
 
 function BalanceContainer(props: { estimate: string, balance: string, token: string, setValue: (v: string) => void }) {
     const classes = useStyles()
