@@ -154,13 +154,15 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
     const [filteredList, setFilteredList] = useState<MenuToken[]>(props.tokens)
 
     useEffect(() => {
-
         var walletPattern = new RegExp(/^0x[a-fA-F0-9]{40}$/);
-        if (walletPattern.test(searchText)) {
-            setFilteredList(props.tokens.filter(t => t.address.toLowerCase() === searchText.toLowerCase()))
-        }
-        else
-            setFilteredList(props.tokens.filter(t => t.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1))
+        const list = ((walletPattern.test(searchText)) ?
+            props.tokens.filter(t => t.address.toLowerCase() === searchText.toLowerCase())
+            : props.tokens.filter(t => t.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1)
+        ).sort((left, right) => {
+            return parseFloat(right.balance) - parseFloat(left.balance)
+        })
+
+        setFilteredList(list)
     }, [searchText, props.tokens])
 
     return <Modal

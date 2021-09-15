@@ -253,8 +253,15 @@ export default function (props: {}) {
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
             return { address, balance: decimalBalance }
         })
-        if (JSON.stringify(balances) !== JSON.stringify(tokenBalances)) {
-            setTokenBalances(balances)
+        const ethBalance = await API.getEthBalance(uiContainerContextProps.walletContext.account || "0x0")
+        let ethUpdated = balances.map(b => {
+            if (b.address === behodler2Weth) {
+                return { ...b, balance: ethBalance }
+            }
+            return b
+        })
+        if (JSON.stringify(ethUpdated) !== JSON.stringify(tokenBalances)) {
+            setTokenBalances(ethUpdated)
         }
         // console.log("balance retrieved: " + balanceResults.results["Link"].callsReturnContext[0].returnValues[0].hex.toString())
         // // const multiBalance = balanceResults.results["LINK"].callsReturnContext[0].returnValues[0]
