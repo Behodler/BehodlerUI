@@ -221,8 +221,6 @@ function InputBox(props: { mobile?: boolean, token: tokenProps }) {
             const formattedText = formatNumberText(value)
             props.token.value.set(value)
             const parsedValue = parseFloat(formattedText)
-            console.log('parse: ' + parsedValue)
-            console.log('balance: ' + props.token.balance)
             const isValid = isNaN(parsedValue) ? false : parsedValue < parseFloat(props.token.balance)
             if (props.token.valid.value != isValid)
                 props.token.valid.set(isValid)

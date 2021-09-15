@@ -356,6 +356,8 @@ export default function (props: {}) {
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
     const [swapText, setSwapText] = useState<string>("SWAP")
     const [impliedExchangeRate, setImpliedExchangeRate] = useState<string>("")
+    const [inputSpotDaiPrice, setInputSpotDaiPrice] = useState<string>("")
+    const [outputSpotDaiPrice, setOutputSpotDaiPrice] = useState<string>("")
 
     useEffect(() => {
         if (inputValue.length > 0 && outputValue.length > 0 && !isNaN(parseFloat(outputValue)) && parseFloat(outputValue) > 0 && inputValid && parseFloat(inputValue) > 0) {
@@ -374,7 +376,43 @@ export default function (props: {}) {
         }
     }, [inputValue, outputValue])
 
+    const spotPriceCallback = useCallback(async () => {
+        const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
+        const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
+        const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account }))
 
+
+        if (isScarcityPredicate(inputAddress)) {
+            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "16").call({ from: account })).toString()
+            const scxSpotPrice = new BigNumber(scxSpotString)
+                .div(10)
+                .toString()
+            setInputSpotDaiPrice(formatSignificantDecimalPlaces(scxSpotPrice, 2))
+        } else {
+            const inputToken = await API.getToken(inputAddress, walletContextProps.networkName)
+            const inputBalanceOnBehodler = await inputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
+            const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
+            setInputSpotDaiPrice(formatSignificantDecimalPlaces(inputSpot, 2))
+        }
+
+        if (isScarcityPredicate(outputAddress)) {
+            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "16").call({ from: account })).toString()
+            const scxSpotPrice = new BigNumber(scxSpotString)
+                .div(10)
+                .toString()
+            setOutputSpotDaiPrice(formatSignificantDecimalPlaces(scxSpotPrice, 2))
+        }
+        else {
+            const outputToken = await API.getToken(outputAddress, walletContextProps.networkName)
+            const outputBalanceOnBehodler = await outputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
+            const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
+            setOutputSpotDaiPrice(formatSignificantDecimalPlaces(outputSpot, 2))
+        }
+    }, [inputAddress, outputAddress])
+
+    useEffect(() => {
+        spotPriceCallback()
+    }, [inputAddress, outputAddress])
 
     useEffect(() => {
         API.getTokenDecimals(inputAddress).then(setInputDecimals)
@@ -589,7 +627,7 @@ export default function (props: {}) {
         address: inputAddress,
         value: { value: inputValue, set: setInputValue },
         balance: formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4),
-        estimate: "112",
+        estimate: inputSpotDaiPrice,
         valid: { value: inputValid, set: setInputValid },
         approved: { value: inputEnabled, set: setInputEnabled }
     }
@@ -597,7 +635,7 @@ export default function (props: {}) {
         address: inputAddress,
         value: { value: outputValue, set: setOutputValue },
         balance: formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4),
-        estimate: "112",
+        estimate: outputSpotDaiPrice,
         valid: { value: outputValid, set: setOutputValid }
 
     }

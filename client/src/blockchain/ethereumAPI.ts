@@ -264,13 +264,17 @@ class ethereumAPI {
         }
     }
 
-    public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<string> {
+    public async getTokenBalanceBig(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<any> {
         if (isEth) {
-            return (await this.web3.eth.getBalance(currentAccount)).toString()
+            return (await this.web3.eth.getBalance(currentAccount))
         }
         const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
-        const balance = (await token.balanceOf(currentAccount).call({ from: currentAccount })).toString()
+        const balance = (await token.balanceOf(currentAccount).call({ from: currentAccount }))
         return balance
+    }
+
+    public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<string> {
+        return await this.getTokenBalanceBig(tokenAddress,currentAccount,isEth,decimalPlaces)
     }
 
     public async getTokenSymbol(tokenAddress: string): Promise<string> {
