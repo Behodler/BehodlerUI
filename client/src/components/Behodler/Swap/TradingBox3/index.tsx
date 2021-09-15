@@ -1,11 +1,9 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
-import ExtendedTextField from './ExtendedTextField'
-import { Button, IconButton, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip } from '@material-ui/core'
+import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Images } from './ImageLoader'
-import SwapVertIcon from '@material-ui/icons/SwapVert'
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import NewField, { tokenProps } from './NewField'
@@ -14,6 +12,7 @@ import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
+import { formatSignificantDecimalPlaces } from 'src/util/jsHelpers'
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
 
@@ -63,8 +62,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     hideIt: {
         color: "white",
-        fontWeight: "bold"
-        //  display: "none" 
+        fontWeight: "bold",
+        display: "none"
     },
     centerWrapper: {
         margin: "0 auto",
@@ -224,7 +223,6 @@ export default function (props: {}) {
 
     const contracts = tokenDropDownList.map(t => ({ name: t.name, address: t.address }))
 
-
     //NEW HOOKS BEGIN
     const [pendingTXQueue, setPendingTXQueue] = useState<PendingTX[]>([])
     const [block, setBlock] = useState<string>("")
@@ -304,7 +302,6 @@ export default function (props: {}) {
         const receipt = await API.getTransactionReceipt(top.hash)
 
         if (!!receipt) {
-
             txDequeue()
             if (receipt.status)
                 notify(top.hash, NotificationType.success)
@@ -330,7 +327,7 @@ export default function (props: {}) {
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
     const [inputDecimals, setInputDecimals] = useState<number>(18)
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
-
+    const [swapText, setSwapText] = useState<string>("SWAP")
     useEffect(() => {
         API.getTokenDecimals(inputAddress).then(setInputDecimals)
     }, [inputAddress])
@@ -345,9 +342,8 @@ export default function (props: {}) {
     if (tokenDropDownList.filter((t) => t.address.toLowerCase() === inputAddress.toLowerCase()).length === 0) {
         setInputAddress(tokenDropDownList[0].address.toLowerCase())
     }
-    const [exchangeRate, setExchangeRate] = useState<string>('')
+
     const [swapClicked, setSwapClicked] = useState<boolean>(false)
-    const [outputReserve, setOutputReserve] = useState<string>('')
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address.toLowerCase() === address.toLowerCase())[0].name
     const clearInput = () => {
         setInputValue('')
@@ -357,13 +353,6 @@ export default function (props: {}) {
 
     if (inputAddress === outputAddress) {
         setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
-    }
-
-    const swapInputAddresses = () => {
-        const temp = inputAddress
-        setInputAddress(outputAddress)
-        setOutputAddress(temp)
-        clearInput()
     }
 
     const bigInputValue = new BigNumber(inputValue)
@@ -384,13 +373,22 @@ export default function (props: {}) {
     const isEthPredicate = isTokenPredicateFactory('Eth')
     const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
-    let swapText = 'SWAP'
 
-    if (isScarcityPredicate(outputAddress)) {
-        swapText = 'ADD LIQUIDITY'
-    } else if (isScarcityPredicate(inputAddress)) {
-        swapText = 'WITHDRAW LIQUIDITY'
-    }
+    useEffect(() => {
+
+        if (!inputEnabled) {
+            setSwapText('APPROVE ' + nameOfSelectedAddress(inputAddress))
+        }
+        else if (isScarcityPredicate(outputAddress)) {
+            setSwapText('ADD LIQUIDITY')
+        } else if (isScarcityPredicate(inputAddress)) {
+            setSwapText('WITHDRAW LIQUIDITY')
+        }
+        else {
+            setSwapText('SWAP')
+        }
+    }, [inputEnabled, isEthPredicate(inputAddress), inputAddress])
+
     const swap2Callback = useCallback(async () => {
         if (swapClicked) {
             if (inputAddress.toLowerCase() === scarcityAddress) {
@@ -408,7 +406,7 @@ export default function (props: {}) {
                 behodler.addLiquidity(inputAddress, inputValWei).estimateGas(options, function (error, gas) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
-                    behodler.addLiquidity(inputAddress, inputValWei)
+                   behodler.addLiquidity(inputAddress, inputValWei)
                         .send(options, (err, hash: string) => {
                             if (hash) {
                                 let t: PendingTX = {
@@ -422,7 +420,7 @@ export default function (props: {}) {
                             } else {
                                 notify(hash, NotificationType.rejected)
                             }
-                        })
+                        }).catch(err=>console.log('user rejection'))
                     //TODO: implement this to clear at correct time: 
                     // /https://web3js.readthedocs.io/en/v1.2.11/web3-eth.html?highlight=getTransactionReceipt#gettransactionreceipt
 
@@ -449,12 +447,6 @@ export default function (props: {}) {
             swap2Callback()
         }
     }, [swapClicked])
-
-    const setTerms = (i: string, o: string) => {
-        const iBig = new BigNumber(i)
-        const oBig = new BigNumber(o)
-        setExchangeRate(oBig.dividedBy(iBig).toString())
-    }
 
     const validateLiquidityExit = async (tokensToWithdraw: any) => {
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
@@ -497,7 +489,7 @@ export default function (props: {}) {
                 const actualString = actual.toString()
                 setOutputValueWei(actualString)
                 setOutputValue(API.fromWei(actualString))
-                setTerms(inputValWei, actualString)
+
             } else if (isScarcityPredicate(outputAddress)) {
                 //add liquidity
 
@@ -508,8 +500,7 @@ export default function (props: {}) {
                         .call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions);
                     const scxString = scx.toString();
                     setOutputValueWei(scxString);
-                    setOutputValue(API.fromWei(scxString));
-                    setTerms(inputValWei, scxString);
+                    setOutputValue(API.fromWei(scxString))
                 } catch {
                     setInputValid(false);
                 }
@@ -531,7 +522,7 @@ export default function (props: {}) {
                 await validateLiquidityExit(BigInt(outputWei));
                 setOutputValueWei(outputWei);
                 setOutputValue(API.fromWei(outputWei));
-                setTerms(inputValWei, outputWei);
+
             }
         }
     }, [inputReadyToSwap, inputValue])
@@ -541,69 +532,51 @@ export default function (props: {}) {
             swapPreparationCallback()
         }
     }, [inputReadyToSwap, inputValue])
-    const textFieldLabels = ['From', 'To']
+    const fromBalance = tokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
+    const toBalance = tokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
     const FromProps: tokenProps = {
         address: inputAddress,
         value: { value: inputValue, set: setInputValue },
-        balance: BigInt(0),
+        balance: formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4),
         estimate: "112",
-        valid: { value: inputValid, set: setInputValid }
+        valid: { value: inputValid, set: setInputValid },
+        approved: { value: inputEnabled, set: setInputEnabled }
     }
     const ToProps: tokenProps = {
         address: inputAddress,
         value: { value: outputValue, set: setOutputValue },
-        balance: BigInt(0),
+        balance: formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4),
         estimate: "112",
         valid: { value: outputValid, set: setOutputValid }
 
     }
+
+    const swapAction = async () => {
+        if (inputEnabled)
+            setSwapClicked(true)
+        else {
+            await API.enableToken(
+                inputAddress,
+                uiContainerContextProps.walletContext.account || "",
+                walletContextProps.contracts.behodler.Behodler.address, (err, hash: string) => {
+                    if (hash) {
+                        let t: PendingTX = {
+                            hash,
+                            type: TXType.approval,
+                            token1: inputAddress,
+                            token2: outputAddress,
+                        }
+                        txQueuePush(t)
+                        notify(hash, NotificationType.pending)
+                    } else {
+                        notify(hash, NotificationType.rejected)
+                    }
+                })
+        }
+    }
+
     return (
         <Box className={classes.root}>
-            <div className={classes.hideIt}>
-                <ExtendedTextField
-                    label={textFieldLabels[0]}
-                    dropDownFields={tokenDropDownList}
-                    valid={inputValid}
-                    setValid={setInputValid}
-                    setValue={setInputValue}
-                    setEnabled={setInputEnabled}
-                    setTokenAddress={setInputAddress}
-                    address={inputAddress}
-                    value={inputValue}
-                    scarcityAddress={scarcityAddress}
-                    clear={clearInput}
-                    addressToEnableFor={walletContextProps.contracts.behodler.Behodler2.Behodler2.address}
-                    decimalPlaces={inputDecimals}
-                    account={account}
-                />
-                <Box className={classes.iconWrapper}>
-                    <IconButton aria-label="delete" onClick={swapInputAddresses}>
-                        <SwapVertIcon color="secondary" />
-                    </IconButton>
-                </Box>
-                <ExtendedTextField
-                    label={textFieldLabels[1]}
-                    dropDownFields={tokenDropDownList}
-                    valid={outputValid}
-                    setValid={setOutputValid}
-                    setValue={setOutputValue}
-                    setTokenAddress={setOutputAddress}
-                    address={outputAddress}
-                    value={outputValue}
-                    disabledInput
-                    exchangeRate={{
-                        baseAddress: inputAddress,
-                        baseName: nameOfSelectedAddress(inputAddress),
-                        ratio: exchangeRate,
-                        valid: swapEnabled,
-                        reserve: outputReserve,
-                        setReserve: setOutputReserve,
-                    }}
-                    clear={clearInput}
-                    decimalPlaces={outputDecimals}
-                    account={account}
-                />
-            </div>
             <Hidden lgUp>
                 <div className={classes.mobileContainer}>
                     <Grid
@@ -636,14 +609,14 @@ export default function (props: {}) {
 
                         </Grid>
                         <Grid item>
-                            <NewField direction="FROM" token={FromProps} mobile />
+                            <NewField isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
                         </Grid>
                         <Grid item>
-                            <NewField direction="TO" token={ToProps} mobile />
+                            <NewField isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
                         </Grid>
                         <Grid item>
                             <Box className={classes.buttonWrapper}>
-                                <Button className={classes.swapButtonMobile} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
+                                <Button className={classes.swapButtonMobile} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
                                     {swapText}
                                 </Button>
                             </Box>
@@ -697,7 +670,7 @@ export default function (props: {}) {
                             spacing={3}
                         >
                             <Grid item>
-                                <NewField direction="FROM" token={FromProps} />
+                                <NewField isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
                             </Grid>
                             <Grid item>
                                 <Grid
@@ -726,7 +699,7 @@ export default function (props: {}) {
                             </Grid>
 
                             <Grid item>
-                                <NewField direction="TO" token={ToProps} />
+                                <NewField isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
                             </Grid>
                         </Grid>
 
@@ -735,7 +708,7 @@ export default function (props: {}) {
 
                         <Box className={classes.buttonWrapper}>
 
-                            <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => setSwapClicked(true)}>
+                            <Button className={classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
                                 {swapText}
                             </Button>
 
@@ -769,7 +742,7 @@ export default function (props: {}) {
                     </Grid>
                 </Grid>
             </Hidden>
-        </Box>
+        </Box >
     )
 }
 

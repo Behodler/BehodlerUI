@@ -1,5 +1,10 @@
+import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { Grid, Link, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
+import { useEffect } from 'react'
+import API from 'src/blockchain/ethereumAPI'
+import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
+import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 import { formatNumberText, isNullOrWhiteSpace } from 'src/util/jsHelpers'
 // import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
@@ -13,8 +18,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     mobileRoot: {
         width: scale(400),
         background: "#360C57",
-        borderRadius:10,
-        padding:10
+        borderRadius: 10,
+        padding: 10
     },
     Direction: {
 
@@ -114,32 +119,58 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-interface Hook<T>{
-    set: (v:T)=>void
-    value:T
+interface Hook<T> {
+    set: (v: T) => void
+    value: T
 }
 
-export interface tokenProps{
-    address:string
-    value:Hook<string>
-    balance:BigInt
-    estimate:string
-    valid:Hook<boolean>
+export interface tokenProps {
+    address: string
+    value: Hook<string>
+    balance: string
+    estimate: string
+    valid: Hook<boolean>
+    approved?: Hook<boolean>
 }
 
 interface props {
-    direction: string,
+    isEth: boolean
+    direction: 'FROM' | 'TO',
     token: tokenProps,
     mobile?: boolean,
 }
 
 export default function NewField(props: props) {
     const classes = useStyles()
-    const bigOrderOfMagnitude = "1000000000000000000"
+    const uiContainerContextProps = React.useContext<UIContainerContextProps>(ContainerContext)
+    const walletContextProps = React.useContext(WalletContext);
+    const behodlerAddress = walletContextProps.contracts.behodler.Behodler2.Behodler2.address
     // const walletContextProps = React.useContext(WalletContext);
-
+    const account = uiContainerContextProps.walletContext.account || '0x0'
     const BorderedGridItem = (props: { children: any }) => <Grid item >{props.children}</Grid>
-    
+    const currentTokenEffects = API.generateNewEffects(props.token.address, account, props.isEth)
+
+    useEffect(() => {
+        if (props.direction === 'TO')
+            return
+        if (props.isEth) {
+            props.token.approved?.set(true)
+        }
+
+        const effect = currentTokenEffects.allowance(account, behodlerAddress)
+        const subscription = effect.Observable.subscribe((allowance) => {
+            const scaledAllowance = API.fromWei(allowance)
+            const allowanceFloat = parseFloat(scaledAllowance)
+            const balanceFloat = parseFloat(props.token.balance)
+            const en = !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
+            props.token.approved?.set(en)
+        })
+
+        return () => {
+            subscription.unsubscribe()
+        }
+    }, [props.token.address])
+
     return <Grid
         container
         direction="column"
@@ -154,16 +185,17 @@ export default function NewField(props: props) {
 
         {props.mobile ?
             <BorderedGridItem>
-                <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item><InputBox bigOrderOfMagnitude={bigOrderOfMagnitude} mobile token={props.token} /></Grid></Grid>
+                <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item>
+                    <InputBox mobile token={props.token} /></Grid></Grid>
             </BorderedGridItem>
             :
             <BorderedGridItem>
-                <InputBox bigOrderOfMagnitude={bigOrderOfMagnitude} token = {props.token} />
+                <InputBox token={props.token} />
             </BorderedGridItem>
         }
 
         <BorderedGridItem>
-            <BalanceContainer  balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
+            <BalanceContainer balance={props.token.balance.toString()} token={props.token.address} estimate={props.token.estimate} />
         </BorderedGridItem>
     </Grid>
 }
@@ -175,25 +207,29 @@ function DirectionLabel(props: { direction: string }) {
     </div>
 }
 
-function InputBox(props: { mobile?: boolean, token:tokenProps, bigOrderOfMagnitude:string }) {
+function InputBox(props: { mobile?: boolean, token: tokenProps }) {
     const classes = useStyles()
-
 
     const setFormattedInput = (value: string) => {
         if (isNullOrWhiteSpace(value)) {
+
             props.token.value.set('')
-            props.token.valid.set(true)
+            if (!props.token.valid.value)
+                props.token.valid.set(true)
         }
         else {
-        const formattedText = formatNumberText(value)
-        props.token.value.set(value)
-        const parsedValue = parseFloat(formattedText)
-        const comparisonNumber = !isNaN(parsedValue)?  BigInt(props.token.value.value)*BigInt(props.bigOrderOfMagnitude):BigInt(0)
-        const isValid = comparisonNumber<props.token.balance
-        props.token.valid.set(isValid)
-    }}
+            const formattedText = formatNumberText(value)
+            props.token.value.set(value)
+            const parsedValue = parseFloat(formattedText)
+            console.log('parse: ' + parsedValue)
+            console.log('balance: ' + props.token.balance)
+            const isValid = isNaN(parsedValue) ? false : parsedValue < parseFloat(props.token.balance)
+            if (props.token.valid.value != isValid)
+                props.token.valid.set(isValid)
+        }
+    }
 
-    return <div><input value={props.token.value.value} onChange={(event)=>setFormattedInput(event.target.value)} className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
+    return <div><input key={props.token.address} value={props.token.value.value} onChange={(event) => setFormattedInput(event.target.value)} className={props.mobile ? classes.inputNarrow : classes.inputWide} /></div>
 }
 
 function BalanceContainer(props: { estimate: string, balance: string, token: string }) {
@@ -231,7 +267,7 @@ function Balance(props: { token: string, balance: string }) {
 
     >
         <PaddedGridItem  ><div className={classes.BalanceLabel}>Balance</div></PaddedGridItem>
-        <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance} {props.token}</div></PaddedGridItem>
+        <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance}</div></PaddedGridItem>
         <PaddedGridItem ><Link className={classes.Max}>(MAX)</Link></PaddedGridItem>
     </Grid>
 }

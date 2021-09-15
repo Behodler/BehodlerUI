@@ -130,11 +130,13 @@ class ethereumAPI {
         return this.web3.utils.fromAscii(input)
     }
 
-   public addBlockWatcher (watcher:(b:string) => void) {
-        this.web3.eth.subscribe('newBlockHeaders', (err, result) => {watcher(result.number.toString())})
-   }
+    public addBlockWatcher(watcher: (b: string) => void) {
+        this.web3.eth.subscribe('newBlockHeaders', (err, result) => {
+            watcher(result.number.toString())
+        })
+    }
 
-    public async getTransactionReceipt(hash:string) {
+    public async getTransactionReceipt(hash: string) {
         return await this.web3.eth.getTransactionReceipt(hash)
     }
 
@@ -171,13 +173,12 @@ class ethereumAPI {
         return this.web3.utils.hexToNumberString(value['_hex'])
     }
 
-    public async enableToken(tokenAddress: string, owner: string, spender: string, callBack?: () => void): Promise<void> {
+    public async enableToken(tokenAddress: string, owner: string, spender: string, callBack?: (err: any, hash: string) => void): Promise<void> {
         const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
-        await token.approve(spender, API.UINTMAX).send({ from: owner }, () => {
-            if (callBack) {
-                callBack()
-            }
-        })
+        await token
+            .approve(spender, API.UINTMAX)
+            .send({ from: owner }, callBack)
+            .catch((err) => console.log('user rejected'))
     }
 
     public isEth(token: string, network: string): boolean {
