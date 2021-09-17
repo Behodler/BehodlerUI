@@ -191,8 +191,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     moreInfo: {
         position: "relative"
     },
-    impliedExchangeRate:{
-        minHeight:"30px"
+    impliedExchangeRate: {
+        minHeight: "30px"
     }
 }))
 
@@ -582,15 +582,21 @@ export default function (props: {}) {
         if (!swapEnabled)
             return;
         setExpectedFee((parseFloat(inputValue) * 0.005).toString())
-        const parsedInputSpotPrice = parseFloat(inputSpotDaiPrice)
-        const parsedOutputspotPrice = parseFloat(outputSpotDaiPrice)
+        console.log(inputSpotDaiPrice + outputSpotDaiPrice)
+        const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+        const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
+        const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
+        const scxFromMinInput = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '1000','1000000000','15').call({ from: account })).toString())
 
-        const spotExchangeRate = parsedInputSpotPrice > parsedOutputspotPrice ?
-            parsedInputSpotPrice / parsedOutputspotPrice : (parsedOutputspotPrice) / parsedInputSpotPrice;
+        const scxFromMinOutput = BigInt((await behodler.withdrawLiquidityFindSCX(outputAddressToUse, '1000','1000000000','15').call({ from: account })).toString())
+        console.log('minInput: ' + scxFromMinInput + ' minOutput ' + scxFromMinOutput)
+        const big100 = BigInt(100)
+        const spot: number = Number(scxFromMinInput > scxFromMinOutput ? (scxFromMinInput * big100) / scxFromMinOutput : (scxFromMinOutput * big100) / scxFromMinInput)/100
+        console.log('spot: '+spot)
+    
 
-
-        const bigger = Math.max(spotExchangeRate, exchangeRate)
-        const smaller = Math.min(spotExchangeRate, exchangeRate)
+        const bigger = Math.max(exchangeRate, spot)
+        const smaller = Math.min(exchangeRate, spot)
 
         const impact = 100 * ((bigger - smaller) / bigger)
 
