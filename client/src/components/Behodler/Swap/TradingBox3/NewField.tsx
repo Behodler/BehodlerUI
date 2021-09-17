@@ -129,6 +129,7 @@ export default function NewField(props: props) {
             return
         if (props.isEth ||props.isSCX ) {
             props.token.approved?.set(true)
+            return
         }
 
         const effect = currentTokenEffects.allowance(account, behodlerAddress)

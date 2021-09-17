@@ -13,6 +13,7 @@ import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
 import { formatSignificantDecimalPlaces } from 'src/util/jsHelpers'
+import MoreInfo, { InputType } from './MoreInfo'
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
 
@@ -186,6 +187,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     }, transactionFeedbackState: {
         fontSize: 30,
         color: "white"
+    },
+    moreInfo: {
+        position: "relative"
+    },
+    impliedExchangeRate:{
+        minHeight:"30px"
     }
 }))
 
@@ -357,19 +364,34 @@ export default function (props: {}) {
     const [outputDecimals, setOutputDecimals] = useState<number>(18)
     const [swapText, setSwapText] = useState<string>("SWAP")
     const [impliedExchangeRate, setImpliedExchangeRate] = useState<string>("")
+
     const [inputSpotDaiPrice, setInputSpotDaiPrice] = useState<string>("")
     const [outputSpotDaiPrice, setOutputSpotDaiPrice] = useState<string>("")
+    const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useState<string>("")
+    const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useState<string>("")
+
+    const [exchangeRate, setExchangeRate] = useState<number>(0)
+    const [inputBurnable, setInputBurnable] = useState<boolean>(false)
+    const [expectedFee, setExpectedFee] = useState<string>("")
+    const [priceImpact, setPriceImpact] = useState<string>("")
+
+
 
     useEffect(() => {
         if (inputValue.length > 0 && outputValue.length > 0 && !isNaN(parseFloat(outputValue)) && parseFloat(outputValue) > 0 && inputValid && parseFloat(inputValue) > 0) {
             const parsedInput = parseFloat(inputValue)
             const parsedOutput = parseFloat(outputValue)
             if (parsedInput > parsedOutput) {
-                const exchangeRate = formatSignificantDecimalPlaces((parsedInput / parsedOutput).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRate} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
+                const e = parsedInput / parsedOutput
+                setExchangeRate(e)
+
+                const exchangeRateString = formatSignificantDecimalPlaces((e).toString(), 6)
+                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
             } else {
-                const exchangeRate = formatSignificantDecimalPlaces((parsedOutput / parsedInput).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRate} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
+                const e = parsedOutput / parsedInput
+                setExchangeRate(e)
+                const exchangeRateString = formatSignificantDecimalPlaces((e).toString(), 6)
+                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
             }
         }
         else {
@@ -378,36 +400,42 @@ export default function (props: {}) {
     }, [inputValue, outputValue])
 
     const spotPriceCallback = useCallback(async () => {
+        setInputValue("")
+        setOutputValue("")
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account }))
 
 
         if (isScarcityPredicate(inputAddress)) {
-            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "16").call({ from: account })).toString()
+            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "15").call({ from: account })).toString()
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
-            setInputSpotDaiPrice(formatSignificantDecimalPlaces(scxSpotPrice, 2))
+            setInputSpotDaiPrice(scxSpotPrice)
+            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
         } else {
             const inputToken = await API.getToken(inputAddress, walletContextProps.networkName)
             const inputBalanceOnBehodler = await inputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
             const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
-            setInputSpotDaiPrice(formatSignificantDecimalPlaces(inputSpot, 2))
+            setInputSpotDaiPrice(inputSpot)
+            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot, 2))
         }
 
         if (isScarcityPredicate(outputAddress)) {
-            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "16").call({ from: account })).toString()
+            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "15").call({ from: account })).toString()
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
-            setOutputSpotDaiPrice(formatSignificantDecimalPlaces(scxSpotPrice, 2))
+            setOutputSpotDaiPrice(scxSpotPrice)
+            setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
         }
         else {
             const outputToken = await API.getToken(outputAddress, walletContextProps.networkName)
             const outputBalanceOnBehodler = await outputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
             const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
-            setOutputSpotDaiPrice(formatSignificantDecimalPlaces(outputSpot, 2))
+            setOutputSpotDaiPrice(outputSpot)
+            setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
         }
     }, [inputAddress, outputAddress])
 
@@ -457,6 +485,17 @@ export default function (props: {}) {
     const isEthPredicate = isTokenPredicateFactory('Eth')
     const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+
+    const inputBurnableCallback = useCallback(async () => {
+        if (isScarcityPredicate(inputAddress)) {
+            setInputBurnable(false)
+            return;
+        }
+        const addressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
+        setInputBurnable((await walletContextProps.contracts.behodler.Behodler2.Lachesis.cut(addressToUse).call({ from: account }))[1])
+    }, [inputAddress, swapEnabled])
+
+    useEffect(() => { inputBurnableCallback() }, [inputAddress, swapEnabled])
 
     useEffect(() => {
 
@@ -537,6 +576,31 @@ export default function (props: {}) {
             swap2Callback()
         }
     }, [swapClicked])
+
+
+    const priceImpactCallback = useCallback(async () => {
+        if (!swapEnabled)
+            return;
+        setExpectedFee((parseFloat(inputValue) * 0.005).toString())
+        const parsedInputSpotPrice = parseFloat(inputSpotDaiPrice)
+        const parsedOutputspotPrice = parseFloat(outputSpotDaiPrice)
+
+        const spotExchangeRate = parsedInputSpotPrice > parsedOutputspotPrice ?
+            parsedInputSpotPrice / parsedOutputspotPrice : (parsedOutputspotPrice) / parsedInputSpotPrice;
+
+
+        const bigger = Math.max(spotExchangeRate, exchangeRate)
+        const smaller = Math.min(spotExchangeRate, exchangeRate)
+
+        const impact = 100 * ((bigger - smaller) / bigger)
+
+        //TODO: SCX fix price impact
+        setPriceImpact(formatSignificantDecimalPlaces(impact.toString(), 4))
+    }, [exchangeRate])
+
+    useEffect(() => {
+        priceImpactCallback()
+    }, [exchangeRate])
 
     const validateLiquidityExit = async (tokensToWithdraw: any) => {
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
@@ -628,15 +692,15 @@ export default function (props: {}) {
         address: inputAddress,
         value: { value: inputValue, set: setInputValue },
         balance: formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4),
-        estimate: inputSpotDaiPrice,
-        valid: { value: inputValid, set: setInputValid },
+        estimate: inputSpotDaiPriceView,
+        valid: { value: inputValid, set: (v: boolean) => { setInputValid(v) } },
         approved: { value: inputEnabled, set: setInputEnabled }
     }
     const ToProps: tokenProps = {
         address: inputAddress,
         value: { value: outputValue, set: setOutputValue },
         balance: formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4),
-        estimate: outputSpotDaiPrice,
+        estimate: outputSpotDaiPriceView,
         valid: { value: outputValid, set: setOutputValid }
 
     }
@@ -669,6 +733,36 @@ export default function (props: {}) {
         }
     }
     const greySwap = inputEnabled && !swapEnabled
+    const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false)
+    const [showMobileInfo, setShowMobileInfo] = useState<boolean>(false)
+    const [reserves, setReserves] = useState<string[]>(['', ''])
+
+    const setReservesCallback = useCallback(async () => {
+        const inputTokenToload = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
+        const outputTokenToLoad = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
+        const inputToken = await API.getToken(inputTokenToload, walletContextProps.networkName)
+        const outputToken = await API.getToken(outputTokenToLoad, walletContextProps.networkName)
+
+        const inputReserve = isScarcityPredicate(inputAddress) ? "" : API.fromWei((await inputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })).toString())
+        const outputReserve = isScarcityPredicate(outputAddress) ? "" : API.fromWei((await outputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })).toString())
+        setReserves([formatSignificantDecimalPlaces(inputReserve, 2), formatSignificantDecimalPlaces(outputReserve, 2)])
+    }, [swapEnabled])
+    useEffect(() => {
+        setReservesCallback()
+    }, [swapEnabled])
+    const toggleMobileInfo = () => swapEnabled ? setShowMobileInfo(!showMobileInfo) : setShowMobileInfo(false)
+
+    const MoreInfoOverlay = (props: { mobile?: boolean }) => (swapEnabled && (showMoreInfo || showMobileInfo) ? <MoreInfo
+        burnFee={formatSignificantDecimalPlaces(expectedFee, 4)}
+        inputType={isScarcityPredicate(inputAddress) ? InputType.scx : (inputBurnable ? InputType.burnable : InputType.pyro)}
+        priceImpact={`${formatSignificantDecimalPlaces(priceImpact, 2)}%`}
+        inputTokenName={nameOfSelectedAddress(inputAddress)}
+        outputTokenName={nameOfSelectedAddress(outputAddress)}
+        mobile={props.mobile || false}
+        inputReserve={reserves[0]}
+        outputReserve={reserves[1]}
+    /> :
+        <div></div>)
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
@@ -730,11 +824,16 @@ export default function (props: {}) {
                                 spacing={2}
                                 className={classes.Info}
                             >
-                                <Grid item>
+                                <Grid item className={classes.impliedExchangeRate}>
                                     {impliedExchangeRate}
                                 </Grid>
                                 <Grid item>
-                                    <Button color="secondary" variant="outlined">
+                                    <MoreInfoOverlay mobile />
+                                    <Button
+                                        color="secondary" variant="outlined"
+                                        onClick={() => toggleMobileInfo()}
+                                        disabled={!swapEnabled}
+                                    >
                                         More info
                                     </Button>
                                 </Grid>
@@ -753,8 +852,6 @@ export default function (props: {}) {
                 </div>
             </Hidden>
             <Notification type={notificationType} hash={currentTxHash} open={showNotification} setOpen={setShowNotification} />
-            <Box>
-            </Box>
             <Hidden mdDown>
 
                 <Grid container
@@ -827,12 +924,18 @@ export default function (props: {}) {
                             spacing={2}
                             className={classes.Info}
                         >
-                            <Grid item>
+                            <Grid item className={classes.impliedExchangeRate}>
                                 {impliedExchangeRate}
                             </Grid>
-                            <Grid item>
-                                <Button color="secondary" variant="outlined">
+                            <Grid item className={classes.moreInfo}>
+                                <MoreInfoOverlay />
+                                <Button color="secondary" variant="outlined"
+                                    onMouseOver={() => setShowMoreInfo(true)}
+                                    onMouseLeave={() => setShowMoreInfo(false)}
+                                    disabled={!swapEnabled}
+                                >
                                     More info
+
                                 </Button>
                             </Grid>
                             <Grid item>

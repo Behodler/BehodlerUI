@@ -137,7 +137,6 @@ export function StyledInput(props: { mobile?: boolean, token: tokenProps, focus:
                 props.token.valid.set(isValid)
         }
     }
-    console.log("re-render " + Date.now())
     const FocusElement = props.focus ? (props: { children?: any }) => <MoveFocusInside>{props.children}</MoveFocusInside> : (props: { children?: any }) => <div>{props.children}</div>
     return <div>
         <FormControl>
