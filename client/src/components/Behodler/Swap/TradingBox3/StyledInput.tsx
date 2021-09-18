@@ -49,9 +49,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "#FFFFFF",
         outline: 0,
         borderRadius: 5,
-        placeholder:{
+        placeholder: {
             direction: "rtl"
-        }    
+        }
     },
     inputNarrow: {
         width: scale(270),
@@ -65,10 +65,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: scale(20),
         color: "#FFFFFF",
         outline: 0,
-        placeHolder:{
+        placeHolder: {
             direction: "rtl"
-        }    
-        
+        }
+
     },
     BalanceContainer: {
 
@@ -144,7 +144,7 @@ export function StyledInput(props: { mobile?: boolean, token: tokenProps, focus:
                 props.token.valid.set(isValid)
         }
     }
-    const FocusElement = props.focus ? (props: { children?: any }) => <MoveFocusInside>{props.children}</MoveFocusInside> : (props: { children?: any }) => <div>{props.children}</div>
+    const FocusElement = props.focus? (props: { children?: any }) => <MoveFocusInside>{props.children}</MoveFocusInside> : (props: { children?: any }) => <div>{props.children}</div>
     return <div>
         <FormControl>
             <FocusElement>
@@ -152,7 +152,7 @@ export function StyledInput(props: { mobile?: boolean, token: tokenProps, focus:
                     id={props.token.address}
                     key={props.token.address}
                     placeholder={props.token.name}
-                    
+
                     //  inputRef={input => input && input.focus()}
                     value={props.token.value.value} onChange={(event) => { props.setFocus(); setFormattedInput(event.target.value) }} className={props.mobile ? classes.inputNarrow : classes.inputWide} />
             </FocusElement>

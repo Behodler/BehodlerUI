@@ -25,7 +25,7 @@
         "rxjs": "^6.5.1",
         "truffle-core": "^5.0.14",
         "typeface-roboto": "0.0.75",
-        "web3": "1.2.11"
+        "web3": "^1.5.2"
     },
     "scripts": {
         "docker:start": "react-scripts start",

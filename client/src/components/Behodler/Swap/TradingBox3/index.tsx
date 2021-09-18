@@ -726,7 +726,7 @@ export default function (props: {}) {
             await API.enableToken(
                 inputAddress,
                 uiContainerContextProps.walletContext.account || "",
-                walletContextProps.contracts.behodler.Behodler.address, (err, hash: string) => {
+                walletContextProps.contracts.behodler.Behodler2.Behodler2.address, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {
                             hash,

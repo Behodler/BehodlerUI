@@ -1,8 +1,8 @@
 import { Grid, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import Menu from './Menu'
-import {TokenBalanceMapping} from '../index'
-const useStyles =(scale)=> makeStyles((theme: Theme) => ({
+import { TokenBalanceMapping } from '../index'
+const useStyles = (scale) => makeStyles((theme: Theme) => ({
     root: {
     },
     outerCircle: {
@@ -13,12 +13,12 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
         borderRadius: "50%",
         background: "rgba(54,12,87,0.9)",
         transitionProperty: "box-shadow",
-        transitionDuration:"0.25s",
+        transitionDuration: "0.25s",
         "&:hover": {
             cursor: "pointer",
             background: "rgba(54,12,87,0.7)",
-            boxShadow:"0 0 10px 1px #fff", 
-           
+            boxShadow: "0 0 10px 1px #fff",
+
         }
     },
     innerCircle: {
@@ -30,11 +30,11 @@ const useStyles =(scale)=> makeStyles((theme: Theme) => ({
 
 interface props {
     tokenImage: string,
-    balances:TokenBalanceMapping[]
-    scale:number,
-    setAddress:(a:string)=>void
-    network:string
-    mobile?:boolean
+    balances: TokenBalanceMapping[]
+    scale: number,
+    setAddress: (a: string) => void
+    network: string
+    mobile?: boolean
 }
 
 export default function TokenSelector(props: props) {
@@ -48,7 +48,7 @@ export default function TokenSelector(props: props) {
             direction="row"
             justify="center"
             alignItems="center"
-            onClick={()=>setShowMenu(true)}
+            onClick={() => setShowMenu(true)}
         >
             <Grid item>
                 <div className={classes.innerCircle}>
@@ -57,13 +57,13 @@ export default function TokenSelector(props: props) {
             </Grid>
 
         </Grid>
-        <Menu show={showMenu} weth10Address="0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F" 
-        scarcityAddress="0x1b8568fbb47708e9e9d31ff303254f748805bf21"
-        networkName={props.network} 
-        setShow={setShowMenu}
-        mobile = {props.mobile || false}
-        setAddress={props.setAddress}
-        balances = {props.balances}
+        <Menu show={showMenu} weth10Address="0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F"
+            scarcityAddress="0x1b8568fbb47708e9e9d31ff303254f748805bf21"
+            networkName={props.network}
+            setShow={setShowMenu}
+            mobile={props.mobile || false}
+            setAddress={props.setAddress}
+            balances={props.balances}
         />
     </div>
 }

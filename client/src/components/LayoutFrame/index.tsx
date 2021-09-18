@@ -71,7 +71,13 @@ export default function LayoutFrame(props: {}) {
     const connector = uiContainerContextProps.walletContext.connector
     return (
         <div>
-            {notConnected ? <Button onClick={async () => !!connector ? await uiContainerContextProps.walletContext.activate(connector) : alert("Could not connect")}>Connect</Button> : <div></div>}
+            {notConnected ? <Button onClick={async () => {
+                if (!!connector) {
+                    await uiContainerContextProps.walletContext.activate(connector)
+                }
+                else alert("Could not connect")
+            }}>Connect</Button> : <div></div>
+            }
             <Box className={notConnected ? classes.layoutFramerRotNotConnected : classes.layoutFrameroot}>
                 <Box className={classes.content}>
                     <Box className={classes.mainContent} flexGrow={1}>
@@ -79,6 +85,6 @@ export default function LayoutFrame(props: {}) {
                     </Box>
                 </Box>
             </Box>
-        </div>
+        </div >
     )
 }

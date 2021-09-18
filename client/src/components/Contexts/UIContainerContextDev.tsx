@@ -197,7 +197,7 @@ class MetamaskConnector extends AbstractConnector {
 
     async activate(): Promise<ConnectorUpdate> {
         let update: ConnectorUpdate = {}
-        const connectResponse = await this.window.ethereum.request({ method: 'eth_accounts' })
+        const connectResponse = await this.window.ethereum.request({ method: 'eth_requestAccounts' })
 
         if (this.accountChangeListener) {
             if (connectResponse && connectResponse.length > 0) {

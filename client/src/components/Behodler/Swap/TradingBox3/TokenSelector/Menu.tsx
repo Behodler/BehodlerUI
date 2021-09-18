@@ -16,17 +16,17 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
 
         background: "#1B1A2D",
         borderRadius: 10,
-
     },
     grid: {
         color: "white",
         height: "100%",
-        margin: 15
+        margin:0,
+        width:"100% !important"
     },
     search: {
         /* Rectangle 3172 */
 
-        width: isMobile ? 200 : 345,
+        width: isMobile ? 225 : 345,
         height: isMobile ? 40 : 57,
         background: "#292743",
         border: "1px solid #795ECA",
@@ -41,20 +41,21 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
         fontSize: 20
     },
     listGridItem: {
-        width: 370
+        width: "100%"
     },
     list: {
         width: '100%',
-        maxWidth: isMobile ? 200 : 370,
+        maxWidth: isMobile ? 250 : 370,
         // backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',
-        maxHeight: isMobile ? 300 : 500,
+        maxHeight: isMobile ? 320 : 500,
 
         /* Rectangle 3173 */
 
         background: '#181728',
         borderRadius: 8
+
     },
     noResults: {
         textAlign: "center",
@@ -67,7 +68,10 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
         width: "100%"
     },
     regular: {
-        width: "100%",
+        width: "100%"
+    },
+    modal:{
+ 
     }
 
 }))
@@ -171,7 +175,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
         onClose={close}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
-
+    className={classes.modal}
     >
         <div className={classes.root}>
             <Grid
