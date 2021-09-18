@@ -3,9 +3,9 @@ import { Grid, Link, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import { useEffect } from 'react'
 import API from 'src/blockchain/ethereumAPI'
-import { ContainerContext  } from 'src/components/Contexts/UIContainerContextDev'
+import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
-import {StyledInput as InputBox} from './StyledInput'
+import { StyledInput as InputBox } from './StyledInput'
 // import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
 // import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
@@ -86,6 +86,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: scale(16),
         color: "white"
     },
+    dollarSign: {
+        color: "grey",
+        marginRight: 5,
+        display:"inline"
+    }
 }))
 
 interface Hook<T> {
@@ -100,16 +105,17 @@ export interface tokenProps {
     estimate: string
     valid: Hook<boolean>
     approved?: Hook<boolean>
+    name: string
 }
 
 interface props {
     isEth: boolean
-    isSCX:boolean
+    isSCX: boolean
     direction: 'FROM' | 'TO',
     token: tokenProps,
     mobile?: boolean,
-    inputKey:string
-    focus:boolean
+    inputKey: string
+    focus: boolean
     setFocus: () => void
 }
 
@@ -127,7 +133,7 @@ export default function NewField(props: props) {
     useEffect(() => {
         if (props.direction === 'TO')
             return
-        if (props.isEth ||props.isSCX ) {
+        if (props.isEth || props.isSCX) {
             props.token.approved?.set(true)
             return
         }
@@ -161,11 +167,11 @@ export default function NewField(props: props) {
         {props.mobile ?
             <BorderedGridItem>
                 <Grid container direction="row" spacing={2} justify="space-between" alignItems="center"><Grid item><DirectionLabel direction={props.direction} /></Grid><Grid item>
-                    <InputBox setFocus ={props.setFocus}  focus={props.focus} mobile token={props.token} /></Grid></Grid>
+                    <InputBox setFocus={props.setFocus} focus={props.focus} mobile token={props.token} /></Grid></Grid>
             </BorderedGridItem>
             :
             <BorderedGridItem>
-                <InputBox focus = {props.focus} setFocus ={props.setFocus} token={props.token} />
+                <InputBox focus={props.focus} setFocus={props.setFocus} token={props.token} />
             </BorderedGridItem>
         }
 
@@ -219,12 +225,12 @@ function Balance(props: { token: string, balance: string, setValue: (v: string) 
     >
         <PaddedGridItem  ><div className={classes.BalanceLabel}>Balance</div></PaddedGridItem>
         <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance}</div></PaddedGridItem>
-        <PaddedGridItem ><Link onClick={()=>props.setValue(props.balance)} className={classes.Max}>(MAX)</Link></PaddedGridItem>
+        <PaddedGridItem ><Link onClick={() => props.setValue(props.balance)} className={classes.Max}>(MAX)</Link></PaddedGridItem>
     </Grid>
 }
 
 function Estimate(props: { estimate: string }) {
     const classes = useStyles()
-    return <div className={classes.estimate}>${props.estimate}</div>
+    return <div className={classes.estimate}><div className={classes.dollarSign}>~$</div>{props.estimate}</div>
 }
 

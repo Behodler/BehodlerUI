@@ -365,8 +365,6 @@ export default function (props: {}) {
     const [swapText, setSwapText] = useState<string>("SWAP")
     const [impliedExchangeRate, setImpliedExchangeRate] = useState<string>("")
 
-    const [inputSpotDaiPrice, setInputSpotDaiPrice] = useState<string>("")
-    const [outputSpotDaiPrice, setOutputSpotDaiPrice] = useState<string>("")
     const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useState<string>("")
     const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useState<string>("")
 
@@ -412,13 +410,11 @@ export default function (props: {}) {
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
-            setInputSpotDaiPrice(scxSpotPrice)
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
         } else {
             const inputToken = await API.getToken(inputAddress, walletContextProps.networkName)
             const inputBalanceOnBehodler = await inputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
             const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
-            setInputSpotDaiPrice(inputSpot)
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot, 2))
         }
 
@@ -427,14 +423,12 @@ export default function (props: {}) {
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
-            setOutputSpotDaiPrice(scxSpotPrice)
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
         }
         else {
             const outputToken = await API.getToken(outputAddress, walletContextProps.networkName)
             const outputBalanceOnBehodler = await outputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
             const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
-            setOutputSpotDaiPrice(outputSpot)
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
         }
     }, [inputAddress, outputAddress])
@@ -576,32 +570,44 @@ export default function (props: {}) {
             swap2Callback()
         }
     }, [swapClicked])
-
+    //TODO: fix approve
+    //TODO: balance not updating
 
     const priceImpactCallback = useCallback(async () => {
-        if (!swapEnabled)
-            return;
-        setExpectedFee((parseFloat(inputValue) * 0.005).toString())
-        console.log(inputSpotDaiPrice + outputSpotDaiPrice)
-        const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
-        const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
-        const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-        const scxFromMinInput = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '1000','1000000000','15').call({ from: account })).toString())
+        let impact: number = 0
+        const factor = BigInt(10000)
+        let spot: number = 0
+        if (swapEnabled) {
 
-        const scxFromMinOutput = BigInt((await behodler.withdrawLiquidityFindSCX(outputAddressToUse, '1000','1000000000','15').call({ from: account })).toString())
-        console.log('minInput: ' + scxFromMinInput + ' minOutput ' + scxFromMinOutput)
-        const big100 = BigInt(100)
-        const spot: number = Number(scxFromMinInput > scxFromMinOutput ? (scxFromMinInput * big100) / scxFromMinOutput : (scxFromMinOutput * big100) / scxFromMinInput)/100
-        console.log('spot: '+spot)
-    
+            setExpectedFee((parseFloat(inputValue) * 0.005).toString())
+            const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+            const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
+            const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
+            if (isScarcityPredicate(inputAddress)) {
+                //  spot = scxFrom
+                const tokenSample = BigInt('10000000000')
+                const scx = BigInt((await behodler.withdrawLiquidity(outputAddressToUse.toString(), tokenSample.toString()).call(null, { from: account }).catch(err => console.log('impact estimation error ' + err))).toString())
+                spot = Number((scx > tokenSample ? (scx * factor) / tokenSample : (tokenSample * factor) / scx)) / 10000
+            }
+            else if (isScarcityPredicate(outputAddress)) {
+                const scxSample = BigInt('10000000000')
+                const inputFromScxSample = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '10000', scxSample.toString(), '35').call({ from: account }).catch(err => console.log('error in withdraw ' + JSON.stringify(err)))).toString())
+                spot = Number(scxSample > inputFromScxSample ? (scxSample * factor) / inputFromScxSample : (inputFromScxSample * factor) / scxSample) / 10000
+            }
+            else {
+                const scxFromMinInput = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '1000', '1000000000', '15').call({ from: account })).toString())
+                const scxFromMinOutput = BigInt((await behodler.withdrawLiquidityFindSCX(outputAddressToUse, '1000', '1000000000', '15').call({ from: account })).toString())
+                spot = Number(scxFromMinInput > scxFromMinOutput ? (scxFromMinInput * factor) / scxFromMinOutput : (scxFromMinOutput * factor) / scxFromMinInput) / 10000
 
-        const bigger = Math.max(exchangeRate, spot)
-        const smaller = Math.min(exchangeRate, spot)
+            }
+            let bigger = Math.max(exchangeRate, spot)
+            let smaller = Math.min(exchangeRate, spot)
+            impact = 100 * ((bigger - smaller) / bigger)
+            // impact = Math.max(0, impact - 0.5)
+        }
 
-        const impact = 100 * ((bigger - smaller) / bigger)
+        setPriceImpact(formatSignificantDecimalPlaces(impact.toString(), 6))
 
-        //TODO: SCX fix price impact
-        setPriceImpact(formatSignificantDecimalPlaces(impact.toString(), 4))
     }, [exchangeRate])
 
     useEffect(() => {
@@ -700,25 +706,23 @@ export default function (props: {}) {
         balance: formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4),
         estimate: inputSpotDaiPriceView,
         valid: { value: inputValid, set: (v: boolean) => { setInputValid(v) } },
-        approved: { value: inputEnabled, set: setInputEnabled }
+        approved: { value: inputEnabled, set: setInputEnabled },
+        name: nameOfSelectedAddress(inputAddress)
     }
     const ToProps: tokenProps = {
         address: inputAddress,
         value: { value: outputValue, set: setOutputValue },
         balance: formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4),
         estimate: outputSpotDaiPriceView,
-        valid: { value: outputValid, set: setOutputValid }
-
+        valid: { value: outputValid, set: setOutputValid },
+        name: nameOfSelectedAddress(outputAddress)
     }
 
     const swapAction = async () => {
-        if (!swapEnabled) {
-            console.log('no swap')
-            return
-        }
-        if (inputEnabled)
+        if (swapEnabled) {
             setSwapClicked(true)
-        else {
+            return;
+        } else if (!inputEnabled) {
             await API.enableToken(
                 inputAddress,
                 uiContainerContextProps.walletContext.account || "",
@@ -738,7 +742,7 @@ export default function (props: {}) {
                 })
         }
     }
-    const greySwap = inputEnabled && !swapEnabled
+    const greySwap = inputEnabled && !swapPossible
     const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false)
     const [showMobileInfo, setShowMobileInfo] = useState<boolean>(false)
     const [reserves, setReserves] = useState<string[]>(['', ''])
@@ -761,7 +765,7 @@ export default function (props: {}) {
     const MoreInfoOverlay = (props: { mobile?: boolean }) => (swapEnabled && (showMoreInfo || showMobileInfo) ? <MoreInfo
         burnFee={formatSignificantDecimalPlaces(expectedFee, 4)}
         inputType={isScarcityPredicate(inputAddress) ? InputType.scx : (inputBurnable ? InputType.burnable : InputType.pyro)}
-        priceImpact={`${formatSignificantDecimalPlaces(priceImpact, 2)}%`}
+        priceImpact={`${formatSignificantDecimalPlaces(priceImpact, 2)}`}
         inputTokenName={nameOfSelectedAddress(inputAddress)}
         outputTokenName={nameOfSelectedAddress(outputAddress)}
         mobile={props.mobile || false}
@@ -891,7 +895,7 @@ export default function (props: {}) {
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
-                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"}>
+                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
                                                 <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => {
                                                     const inputAddressTemp = inputAddress
                                                     setInputAddress(outputAddress)
@@ -916,7 +920,7 @@ export default function (props: {}) {
 
                         <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
 
-                            <Button className={greySwap ? classes.swapButtonDisabled : classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
+                            <Button className={greySwap ? classes.swapButtonDisabled : classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => { if (!greySwap) swapAction() }}>
                                 {swapText}
                             </Button>
 

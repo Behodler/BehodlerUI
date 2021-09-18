@@ -13,7 +13,7 @@ import eyedai from '../../../../images/behodler/eyedai.png'
 import scxeth from '../../../../images/behodler/scxeth.png'
 import scxeye from '../../../../images/behodler/scxeye.png'
 import eye from '../../../../images/behodler_b.png'
-import monster from '../../../../images/new/Monster.png'
+import monster from '../../../../images/new/MonsterInternalGlow2.png'
 import swapping from '../../../../images/new/swapping.gif'
 import flippyArrows from '../../../../images/new/flippyArrows.png'
 export const Images = [One, Two, Three, Four, Five, Six, Seven/* Eight*/, Nine, /*Ten*/  Dai, eye,eyedai, scxeth, scxeye,monster,flippyArrows,swapping]

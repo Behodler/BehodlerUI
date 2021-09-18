@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: 5,
         width: 300,
         position: "absolute",
-        bottom:52,
+        bottom: 52,
         left: -87,
         zIndex: 1,
         border: "1px solid white",
@@ -71,7 +71,7 @@ export default function MoreInfo(props: props) {
             </Grid>}
             <Grid item>
                 <Row label="Price impact">
-                    {props.priceImpact}
+                    {parseInt(props.priceImpact) < 0.5 ? 'negligible' : props.priceImpact + '%'}
                 </Row>
             </Grid>
             <Grid item>
