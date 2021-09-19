@@ -5,7 +5,6 @@ import React from 'react'
 const AmountFormat: React.FC<any> = ({ value, formatType }: { value: number, formatType: string }) => {
 
   let valueFormatted: any
-  console.log('value: ' + value)
   if (formatType === 'compact') {
     valueFormatted = new Intl.NumberFormat('en-US', {
       style: 'currency',

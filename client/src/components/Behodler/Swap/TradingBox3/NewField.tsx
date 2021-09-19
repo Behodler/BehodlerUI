@@ -6,7 +6,7 @@ import API from 'src/blockchain/ethereumAPI'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 import { StyledInput as InputBox } from './StyledInput'
-import AmountFormat from 'src/components/Common/AmountFormat'
+import AmountFormat from 'src/components/Behodler/Swap/TradingBox3/AmountFormat'
 const scaler = (scale) => num => Math.floor(num * scale)
 const scale = scaler(0.9)
 const useStyles = makeStyles((theme: Theme) => ({

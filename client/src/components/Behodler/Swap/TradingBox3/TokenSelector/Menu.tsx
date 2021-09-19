@@ -20,8 +20,8 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     grid: {
         color: "white",
         height: "100%",
-        margin:0,
-        width:"100% !important"
+        margin: 0,
+        width: "100% !important"
     },
     search: {
         /* Rectangle 3172 */
@@ -57,6 +57,12 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
         borderRadius: 8
 
     },
+    listItem: {
+        height: 50
+    },
+    listItemMobile: {
+        height: 40
+    },
     noResults: {
         textAlign: "center",
         marginTop: 50,
@@ -70,8 +76,8 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     regular: {
         width: "100%"
     },
-    modal:{
- 
+    modal: {
+
     }
 
 }))
@@ -175,7 +181,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
         onClose={close}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
-    className={classes.modal}
+        className={classes.modal}
     >
         <div className={classes.root}>
             <Grid
@@ -194,7 +200,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                 </Grid>
                 <Grid item className={classes.listGridItem}>
                     {filteredList.length === 0 ? <div className={classes.noResults}>No results found.</div> : <List className={classes.list}>
-                        {filteredList.map((t, i) => <ListItem button key={i} onClick={() => {
+                        {filteredList.map((t, i) => <ListItem className={props.mobile ? classes.listItemMobile : classes.listItem} button key={i} onClick={() => {
                             props.setShow(false)
                             props.setAddress(t.address)
                         }}>
