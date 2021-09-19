@@ -5,15 +5,19 @@ import { createStyles, makeStyles } from '@material-ui/core'
 const useStyles = makeStyles(() =>
     createStyles({
         '@global': {
-            '*::-webkit-scrollbar': {
-                width: '0.4em',
+            "*::-webkit-scrollbar-track":
+            {
+                backgroundColor: "#15102f !important"
             },
-            '*::-webkit-scrollbar-track': {
-                '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
+            "*::-webkit-scrollbar":
+            {
+                width: 8,
+                backgroundColor: "#F5F5F5 !important"
             },
-            '*::-webkit-scrollbar-thumb': {
-                backgroundColor: 'rgba(0,0,0,.1)',
-                outline: '1px solid slategrey',
+            "*::-webkit-scrollbar-thumb": {
+                borderRadius: 10,
+                background: "rgba(107,80,181,0.7) !important"
+    
             },
             '*': {
                 boxSizing: 'border-box',
