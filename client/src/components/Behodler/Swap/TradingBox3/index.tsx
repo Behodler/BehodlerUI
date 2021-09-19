@@ -104,12 +104,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     leftSelector: {
         position: "absolute",
         left: "37%",
-        top: "40%"
+        top: "40%",
+        zIndex: 10
     },
     rightSelector: {
         position: "absolute",
         right: "37%",
-        top: "40%"
+        top: "40%",
+        zIndex: 10
     },
     leftField: {
         position: "absolute",
@@ -123,25 +125,29 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     },
     monsterContainer: {
-        marginTop: 60,
         position: "relative",
-        zIndex: 100,
-        width: 220,
-        height: 220,
+        zIndex: 1,
+        width: 350,
         //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
-
+        margin: "60px -45px 0px -55px"
 
     },
     monster: {
         display: "block",
         margin: "auto",
-        borderRadius: "50%",
+        '&:hover': {
+            cursor: "pointer"
+        },
+        filter:"brightness(1.3)"
+    },
+    monsterMobile: {
+        display: "block",
+        margin: "0 -30px 0 -35px",
         '&:hover': {
             cursor: "pointer"
         }
     },
-
     fieldGrid: {
         display: 'flex',
         justifyContent: 'center',
@@ -581,11 +587,11 @@ export default function (props: {}) {
 
             setInputAddress(outputAddress)
             setOutputAddress(inputAddressTemp)
-            
-            setTimeout(()=>{
+
+            setTimeout(() => {
                 setInputValue(tempOutputValue)
-            },500)
-        
+            }, 500)
+
             setFlipClicked(false)
         }
     }, [flipClicked])
@@ -815,7 +821,7 @@ export default function (props: {}) {
                                         scale={0.65} mobile balances={tokenBalances} />
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={swapping ? Images[15] : Images[13]} className={classes.monster} />
+                                    <img width={180} src={swapping ? Images[15] : Images[13]} className={classes.monsterMobile} />
                                 </Grid>
                                 <Grid item>
                                     <TokenSelector network={networkName} balances={tokenBalances} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
@@ -909,7 +915,7 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                <img width={350} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
                                             </Tooltip>
                                         </div>
                                     </Grid>

@@ -4,6 +4,8 @@ import Menu from './Menu'
 import { TokenBalanceMapping } from '../index'
 const useStyles = (scale) => makeStyles((theme: Theme) => ({
     root: {
+        position: 'relative',
+        zIndex: 10
     },
     outerCircle: {
         alignContent: "center",
