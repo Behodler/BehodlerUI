@@ -570,8 +570,25 @@ export default function (props: {}) {
             swap2Callback()
         }
     }, [swapClicked])
-    //TODO: fix approve
-    //TODO: balance not updating
+
+
+    const [flipClicked, setFlipClicked] = useState<boolean>(false)
+    //TODO: change after broad estimation
+    useEffect(() => {
+        if (flipClicked) {
+            const inputAddressTemp = inputAddress
+            const tempOutputValue = outputValue
+
+            setInputAddress(outputAddress)
+            setOutputAddress(inputAddressTemp)
+            
+            setTimeout(()=>{
+                setInputValue(tempOutputValue)
+            },500)
+        
+            setFlipClicked(false)
+        }
+    }, [flipClicked])
 
     const priceImpactCallback = useCallback(async () => {
         let impact: number = 0
@@ -820,11 +837,7 @@ export default function (props: {}) {
                             </Box>
                         </Grid>
                         <Grid item>
-                            <div className={classes.flippySwitch} onClick={() => {
-                                const inputAddressTemp = inputAddress
-                                setInputAddress(outputAddress)
-                                setOutputAddress(inputAddressTemp)
-                            }} />
+                            <div className={classes.flippySwitch} onClick={() => setFlipClicked(true)} />
                         </Grid>
                         <Grid item>
                             <Grid container
@@ -896,11 +909,7 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => {
-                                                    const inputAddressTemp = inputAddress
-                                                    setInputAddress(outputAddress)
-                                                    setOutputAddress(inputAddressTemp)
-                                                }} />
+                                                <img width={220} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
                                             </Tooltip>
                                         </div>
                                     </Grid>
