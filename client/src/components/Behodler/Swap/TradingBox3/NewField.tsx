@@ -6,9 +6,7 @@ import API from 'src/blockchain/ethereumAPI'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 import { StyledInput as InputBox } from './StyledInput'
-// import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
-// import { useEffect, useCallback, useState, useContext } from 'react'
-// import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
+import AmountFormat from 'src/components/Common/AmountFormat'
 const scaler = (scale) => num => Math.floor(num * scale)
 const scale = scaler(0.9)
 const useStyles = makeStyles((theme: Theme) => ({
@@ -89,7 +87,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     dollarSign: {
         color: "grey",
         marginRight: 5,
-        display:"inline"
+        display: "inline"
     }
 }))
 
@@ -231,6 +229,8 @@ function Balance(props: { token: string, balance: string, setValue: (v: string) 
 
 function Estimate(props: { estimate: string }) {
     const classes = useStyles()
-    return <div className={classes.estimate}><div className={classes.dollarSign}>~$</div>{props.estimate}</div>
+    const estimateNum = parseFloat(props.estimate)
+    return isNaN(estimateNum) ? <div></div> :
+        <div className={classes.estimate}><div className={classes.dollarSign}>~$</div><AmountFormat value={estimateNum} formatType="standard"/></div>
 }
 

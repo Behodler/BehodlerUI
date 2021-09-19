@@ -1,27 +1,30 @@
 @import url('http://fonts.cdnfonts.com/css/gilroy-bold');
 html {
-  margin: 0px;
-  height: 100% !important;
-  width: 100%;
+    margin: 0px;
+    height: 100% !important;
+    width: 100%;
 }
 
 body {
-  margin: 0px;
-  min-height: 100% !important;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
+    margin: 0px;
+    min-height: 100% !important;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    background-color: #15102f;
 }
 
-ul{
-  padding:0 !important;
-  margin:0 !important;
+ul {
+    padding: 0 !important;
+    margin: 0 !important;
 }
-li{
-
-  margin:0 !important;
+li {
+    margin: 0 !important;
 }
 
-html, body, #root, #root>div {
-  /* height: 100vh; 
+html,
+body,
+#root,
+#root > div {
+    /* height: 100vh; 
   width:100vh; */
 }

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useContext } from 'react'
 import { Box, makeStyles, createStyles, Button } from '@material-ui/core';
 import Swap from '../Behodler/Swap/index'
-import backImage from "../../images/new/background2.png";
+import backImage from "../../images/new/behodler-swap-bg.jpg";
 import { UIContainerContextProps } from '@behodler/sdk/dist/types';
 import { ContainerContext } from '../Contexts/UIContainerContextDev';
 
