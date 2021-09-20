@@ -146,7 +146,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: "0 -30px 0 -35px",
         '&:hover': {
             cursor: "pointer"
-        }
+        },
+        filter: "brightness(1.3)"
     },
     fieldGrid: {
         display: 'flex',

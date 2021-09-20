@@ -25,8 +25,7 @@ interface props {
 export function Notification(props: props) {
 
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-        if (reason === 'clickaway') return;
-        props.setOpen(false);
+        setTimeout(() => { props.setOpen(false); }, 3000)
     };
 
     let severity: Color = "info"
@@ -53,7 +52,7 @@ export function Notification(props: props) {
     }
 
     return (
-        <Snackbar open={props.open} autoHideDuration={15000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} >
+        <Snackbar open={props.open} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} >
             <Alert onClose={handleClose} severity={severity} action={
                 props.type === NotificationType.rejected ? <div></div> :
                     <a href={`https://etherscan.io/tx/${props.hash}`} target="_blank" rel="noopener noreferrer">

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useContext } from 'react'
 import TradingBox3 from './TradingBox3'
-import {  makeStyles, createStyles } from '@material-ui/core'
+import { makeStyles, createStyles } from '@material-ui/core'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext, WalletContextProvider } from 'src/components/Contexts/WalletStatusContext'
