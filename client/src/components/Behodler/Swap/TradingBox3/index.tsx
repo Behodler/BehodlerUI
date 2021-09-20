@@ -1,19 +1,19 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
-import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip } from '@material-ui/core'
+import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip, Link } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Images } from './ImageLoader'
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
-import NewField, { tokenProps } from './NewField'
 import TokenSelector from './TokenSelector'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { formatSignificantDecimalPlaces } from 'src/util/jsHelpers'
+import { formatNumberText, formatSignificantDecimalPlaces } from 'src/util/jsHelpers'
 import MoreInfo, { InputType } from './MoreInfo'
+import AmountFormat from './AmountFormat'
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 
 
@@ -139,7 +139,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             cursor: "pointer"
         },
-        filter:"brightness(1.3)"
+        filter: "brightness(1.3)"
     },
     monsterMobile: {
         display: "block",
@@ -202,6 +202,130 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
+
+const textScaler = (scale) => num => Math.floor(num * scale)
+const scale = textScaler(0.9)
+const inputStyles = makeStyles((theme: Theme) => ({
+    root: {
+        width: scale(310),
+    },
+    mobileRoot: {
+        width: scale(400),
+        background: "#360C57",
+        borderRadius: 10,
+        padding: 10
+    },
+    Direction: {
+
+        // height: 17,
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        // lineHeight: 17,
+        /* identical to box height */
+        color: "darkGrey",
+        textAlign: "center",
+        verticalAlign: " middle",
+    },
+    BalanceContainer: {
+
+    },
+    BalanceLabel: {
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        /* identical to box height */
+
+        color: "darkGrey"
+    },
+    BalanceValue: {
+
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        color: "white"
+    },
+    Max: {
+        /* (MAX) */
+
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        /* identical to box height */
+
+        color: "#80C2FF",
+        cursor: 'pointer'
+
+    },
+    PaddedGridItem: {
+        marginRight: '5px',
+        padding: 0
+    },
+    estimate: {
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        color: "white"
+    },
+    dollarSign: {
+        color: "grey",
+        marginRight: 5,
+        display: "inline"
+    },
+
+    inputWide: {
+        /* Vector */
+        width: scale(300),
+        height: scale(57),
+        background: "#360C57",
+        border: "1px solid rgba(70, 57, 130, 0.5)",
+        boxSizing: "border-box",
+        /* 2.00073731114506 */
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: scale(24),
+        padding: "10px 20px 10px 20px",
+        color: "#FFFFFF",
+        outline: 0,
+        borderRadius: 5,
+        placeholder: {
+            direction: "rtl"
+        }
+    },
+    inputNarrow: {
+        width: scale(270),
+        background: "transparent",
+        border: "none",
+        /* 2.00073731114506 */
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: scale(20),
+        color: "#FFFFFF",
+        outline: 0,
+        placeHolder: {
+            direction: "rtl"
+        }
+
+    },
+}))
+
 enum TXType {
     approval,
     swap,
@@ -230,6 +354,7 @@ export interface TokenBalanceMapping {
 }
 export default function (props: {}) {
     const classes = useStyles();
+    const inputClasses = inputStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
@@ -272,7 +397,6 @@ export default function (props: {}) {
     const [outstandingTXCount, setOutstandingTXCount] = useState<number>(0)
     const [tokenBalances, setTokenBalances] = useState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useState<boolean>(false)
-    const [textFocus, setTextFocus] = useState<'Left-d' | 'Right-d' | 'Left-m' | 'Right-m'>('Left-d')
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -310,8 +434,8 @@ export default function (props: {}) {
 
     useEffect(() => {
         const bigBlock = BigInt(block)
-        const three = BigInt(1)
-        if (bigBlock % three === BigInt(0)) {
+        const two = BigInt(2)
+        if (bigBlock % two === BigInt(0)) {
             balanceCallback(block)
         }
     }, [block])
@@ -379,8 +503,18 @@ export default function (props: {}) {
     const [expectedFee, setExpectedFee] = useState<string>("")
     const [priceImpact, setPriceImpact] = useState<string>("")
 
+    const setFormattedInputFactory = (setValue: (v: string) => void, setValid: (v: boolean) => void) => (value: string, valid: boolean, balance: string) => {
+        const formattedText = formatNumberText(value)
+        setValue(value)
+        const parsedValue = parseFloat(formattedText)
+        const isValid = isNaN(parsedValue) ? false : parsedValue < parseFloat(balance)
+        if (valid != isValid)
+            setValid(isValid)
 
+    }
 
+    const setFormattingFrom = setFormattedInputFactory(setInputValue, setInputValid)
+    const setFormattingTo = setFormattedInputFactory(setOutputValue, setOutputValid)
     useEffect(() => {
         if (inputValue.length > 0 && outputValue.length > 0 && !isNaN(parseFloat(outputValue)) && parseFloat(outputValue) > 0 && inputValid && parseFloat(inputValue) > 0) {
             const parsedInput = parseFloat(inputValue)
@@ -443,10 +577,6 @@ export default function (props: {}) {
         spotPriceCallback()
     }, [inputAddress, outputAddress])
 
-    useEffect(() => {
-        API.getTokenDecimals(inputAddress).then(setInputDecimals)
-        setImpliedExchangeRate("")
-    }, [inputAddress])
 
     useEffect(() => {
         API.getTokenDecimals(outputAddress).then(setOutputDecimals)
@@ -511,6 +641,33 @@ export default function (props: {}) {
             setSwapText('SWAP')
         }
     }, [inputEnabled, isEthPredicate(inputAddress), inputAddress, outputAddress])
+
+    const currentTokenEffects = API.generateNewEffects(inputAddress, account, isEthPredicate(inputAddress))
+    const behodlerAddress = walletContextProps.contracts.behodler.Behodler2.Behodler2.address
+
+    useEffect(() => {
+        const balance = formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)
+        API.getTokenDecimals(inputAddress).then(setInputDecimals)
+        setImpliedExchangeRate("")
+
+        if (isEthPredicate(inputAddress) || isScarcityPredicate(inputAddress)) {
+            setInputEnabled(true)
+            return
+        }
+        const effect = currentTokenEffects.allowance(account, behodlerAddress)
+        const subscription = effect.Observable.subscribe((allowance) => {
+            const scaledAllowance = API.fromWei(allowance)
+            const allowanceFloat = parseFloat(scaledAllowance)
+            const balanceFloat = parseFloat(balance)
+            const en = !(isNaN(allowanceFloat) || isNaN(balanceFloat) || allowanceFloat < balanceFloat)
+            setInputEnabled(en)
+        })
+
+        return () => {
+            subscription.unsubscribe()
+        }
+
+    }, [inputAddress])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
@@ -688,6 +845,7 @@ export default function (props: {}) {
                         .addLiquidity(inputAddress, inputValWei)
                         .call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions);
                     const scxString = scx.toString();
+
                     setOutputValueWei(scxString);
                     setOutputValue(API.fromWei(scxString))
                 } catch {
@@ -723,23 +881,6 @@ export default function (props: {}) {
     }, [inputReadyToSwap, inputValue])
     const fromBalance = tokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
     const toBalance = tokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
-    const FromProps: tokenProps = {
-        address: inputAddress,
-        value: { value: inputValue, set: setInputValue },
-        balance: formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4),
-        estimate: inputSpotDaiPriceView,
-        valid: { value: inputValid, set: (v: boolean) => { setInputValid(v) } },
-        approved: { value: inputEnabled, set: setInputEnabled },
-        name: nameOfSelectedAddress(inputAddress)
-    }
-    const ToProps: tokenProps = {
-        address: inputAddress,
-        value: { value: outputValue, set: setOutputValue },
-        balance: formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4),
-        estimate: outputSpotDaiPriceView,
-        valid: { value: outputValid, set: setOutputValid },
-        name: nameOfSelectedAddress(outputAddress)
-    }
 
     const swapAction = async () => {
         if (swapEnabled) {
@@ -830,10 +971,70 @@ export default function (props: {}) {
 
                         </Grid>
                         <Grid item key="mobileGridInput">
-                            <NewField focus={textFocus == 'Left-m'} setFocus={() => setTextFocus('Left-m')} inputKey="mobileFrom" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="MobilFrom" direction="FROM" token={FromProps} mobile />
+                            <Grid
+                                container
+                                direction="column"
+                                justify="flex-start"
+                                alignItems="stretch"
+                                spacing={2}
+                                key={'MobilFrom' + "_grid"}
+                                className={inputClasses.mobileRoot}
+                            >
+                                <Grid item>
+                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                        <Grid item>
+                                            <DirectionLabel direction={"FROM"} /></Grid>
+                                        <Grid item>
+                                            <div key={"MobileFrom"}>
+                                                <input
+                                                    id={inputAddress}
+                                                    placeholder={nameOfSelectedAddress(inputAddress)}
+                                                    value={inputValue}
+                                                    onChange={(event) => { setFormattingFrom(event.target.value, inputValid, fromBalance[0].balance) }}
+                                                    className={inputClasses.inputNarrow} />
+                                            </div>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item>
+                                    <BalanceContainer setValue={setInputValue} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                </Grid>
+                            </Grid>
                         </Grid>
                         <Grid item key="mobileGridOutput">
-                            <NewField focus={textFocus == 'Right-m'} setFocus={() => setTextFocus('Right-m')} inputKey="mobileTo" isSCX={false} isEth={false} key="MobilTo" direction="TO" token={ToProps} mobile />
+                            <Grid
+                                container
+                                direction="column"
+                                justify="flex-start"
+                                alignItems="stretch"
+                                spacing={2}
+                                key={'MobilTo' + "_grid"}
+                                className={inputClasses.mobileRoot}
+                            >
+                                <Grid item>
+                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                        <Grid item>
+                                            <DirectionLabel direction={"TO"} /></Grid>
+                                        <Grid item>
+                                            <div key={"MobileTO"}>
+                                                <input
+                                                    id={outputAddress}
+                                                    placeholder={nameOfSelectedAddress(outputAddress)}
+                                                    value={outputValue}
+                                                    onChange={(event) => { setFormattingTo(event.target.value, outputValid, toBalance[0].balance) }}
+                                                    className={inputClasses.inputNarrow} />
+                                            </div>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item>
+                                    <BalanceContainer
+                                        setValue={setOutputValue}
+                                        balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
+                                        token={outputAddress}
+                                        estimate={outputSpotDaiPriceView} />
+                                </Grid>
+                            </Grid>
                         </Grid>
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
@@ -899,7 +1100,30 @@ export default function (props: {}) {
                             spacing={3}
                         >
                             <Grid item key="dekstopGridInput">
-                                <NewField focus={textFocus == 'Left-d'} setFocus={() => setTextFocus('Left-d')} inputKey="desktopFromIn" isSCX={isScarcityPredicate(inputAddress)} isEth={isEthPredicate(inputAddress)} key="DesktopFrom" direction="FROM" token={FromProps} />
+                                <Grid
+                                    container
+                                    direction="column"
+                                    justify="flex-start"
+                                    alignItems="stretch"
+                                    spacing={2}
+                                    key={"dekstopGridInput_grid"}
+                                    className={inputClasses.root}
+                                >
+                                    <Grid item>
+                                        <div key={"desktopInput"}>
+                                            <input
+                                                id={inputAddress}
+                                                key={"desktopInputInput"}
+                                                placeholder={nameOfSelectedAddress(inputAddress)}
+                                                value={inputValue}
+                                                onChange={(event) => { setFormattingFrom(event.target.value, inputValid, fromBalance[0].balance) }}
+                                                className={inputClasses.inputWide} />
+                                        </div>
+                                    </Grid>
+                                    <Grid item>
+                                        <BalanceContainer setValue={setInputValue} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item>
                                 <Grid
@@ -926,7 +1150,36 @@ export default function (props: {}) {
                             </Grid>
 
                             <Grid item key="dekstopGridOuput">
-                                <NewField focus={textFocus == 'Right-d'} setFocus={() => setTextFocus('Right-d')} inputKey="desktopToIn" isSCX={false} isEth={false} key="DesktopTo" direction="TO" token={ToProps} />
+                                <Grid
+                                    container
+                                    direction="column"
+                                    justify="flex-start"
+                                    alignItems="stretch"
+                                    spacing={2}
+                                    key={"dekstopGridOutput_grid"}
+                                    className={inputClasses.root}
+                                >
+                                    <Grid item>
+                                        <div key={"desktopOutput"}>
+                                            <input
+                                                id={outputAddress}
+                                                key={"desktopInputOutput"}
+                                                placeholder={nameOfSelectedAddress(outputAddress)}
+                                                value={outputValue}
+                                                onChange={(event) => { setFormattingTo(event.target.value, outputValid, toBalance[0].balance) }}
+                                                className={inputClasses.inputWide} />
+                                        </div>
+                                    </Grid>
+                                    <Grid item>
+                                        <BalanceContainer
+                                            setValue={setOutputValue}
+                                            balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
+                                            token={outputAddress}
+                                            estimate={outputSpotDaiPriceView} />
+                                    </Grid>
+                                </Grid>
+
+
                             </Grid>
                         </Grid>
 
@@ -979,3 +1232,59 @@ export default function (props: {}) {
     )
 }
 
+
+
+function DirectionLabel(props: { direction: string }) {
+    const classes = inputStyles()
+    return <div className={classes.Direction}>
+        {props.direction}
+    </div>
+}
+
+
+function BalanceContainer(props: { estimate: string, balance: string, token: string, setValue: (v: string) => void }) {
+    const classes = inputStyles()
+    return <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center"
+        spacing={1}
+        className={classes.BalanceContainer}
+    >
+        <Grid item>
+            <Balance setValue={props.setValue} balance={props.balance} token={props.token} />
+        </Grid>
+        <Grid item>
+            <Estimate estimate={props.estimate} />
+        </Grid>
+    </Grid>
+}
+
+const PaddedGridItem = (props: { children?: any }) => {
+    const classes = inputStyles()
+    return <Grid item className={classes.PaddedGridItem}>
+        {props.children}
+    </Grid>
+}
+function Balance(props: { token: string, balance: string, setValue: (v: string) => void }) {
+    const classes = inputStyles()
+    return <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="center"
+
+    >
+        <PaddedGridItem  ><div className={classes.BalanceLabel}>Balance</div></PaddedGridItem>
+        <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance}</div></PaddedGridItem>
+        <PaddedGridItem ><Link onClick={() => props.setValue(props.balance)} className={classes.Max}>(MAX)</Link></PaddedGridItem>
+    </Grid>
+}
+
+function Estimate(props: { estimate: string }) {
+    const classes = inputStyles()
+    const estimateNum = parseFloat(props.estimate)
+    return isNaN(estimateNum) ? <div></div> :
+        <div className={classes.estimate}><div className={classes.dollarSign}>~$</div><AmountFormat value={estimateNum} formatType="standard" /></div>
+}

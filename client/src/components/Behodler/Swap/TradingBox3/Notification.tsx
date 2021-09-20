@@ -11,7 +11,8 @@ export enum NotificationType {
     rejected,
     pending,
     success,
-    fail
+    fail,
+    newBlock
 }
 
 interface props {
@@ -27,7 +28,7 @@ export function Notification(props: props) {
         if (reason === 'clickaway') return;
         props.setOpen(false);
     };
-    
+
     let severity: Color = "info"
     let message: string = "Transaction submitted"
 
@@ -46,6 +47,9 @@ export function Notification(props: props) {
             message = "User rejected transaction"
             severity = "warning"
             break;
+        case NotificationType.newBlock:
+            message = "New Block mined"
+            severity = "info"
     }
 
     return (

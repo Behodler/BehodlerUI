@@ -21,7 +21,7 @@ const defaultWeb3ContextProps: Web3ReactContextInterface = {
     active: false
 }
 
-const defaultUIContainerContextProps = {
+export const defaultUIContainerContextProps = {
     walletContext: defaultWeb3ContextProps,
     networkContext: defaultWeb3ContextProps,
     walletState: getWalletState(() => { }),
