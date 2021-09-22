@@ -3,113 +3,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-
-
-contract Ownable {
-    address private _owner;
-
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    constructor () {
-        _owner = msg.sender;
-        emit OwnershipTransferred(address(0), msg.sender);
-    }
-
-    
-    function owner() public view returns (address) {
-        return _owner;
-    }
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(_owner == msg.sender, "Ownable: caller is not the owner");
-        _;
-    }
-
-    /**
-     * @dev Leaves the contract without owner. It will not be possible to call
-     * `onlyOwner` functions anymore. Can only be called by the current owner.
-     *
-     * NOTE: Renouncing ownership will leave the contract without an owner,
-     * thereby removing any functionality that is only available to the owner.
-     */
-    function renounceOwnership() public virtual onlyOwner {
-        emit OwnershipTransferred(_owner, address(0));
-        _owner = address(0);
-    }
-
-    /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
-     * Can only be called by the current owner.
-     */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
-        emit OwnershipTransferred(_owner, newOwner);
-        _owner = newOwner;
-    }
-}
-
-// File: contracts/openzeppelin/IERC20.sol
-
-
-pragma solidity ^0.7.6;
-
-interface IERC20 {
-    function name() external view returns (string memory);
-    function symbol() external view returns (string memory);
-    
-    function totalSupply() external view returns (uint256);
-
-    function balanceOf(address account) external view returns (uint256);
-
-    function decimals() external returns (uint8);
-
-    function transfer(address recipient, uint256 amount)
-        external
-        returns (bool);
-
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
-
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-}
-
-// File: contracts/openzeppelin/SafeMath.sol
-
-
-
-pragma solidity ^0.7.6;
-
-/**
- * @dev Wrappers over Solidity's arithmetic operations with added overflow
- * checks.
- *
- * Arithmetic operations in Solidity wrap on overflow. This can easily result
- * in bugs, because programmers usually assume that an overflow raises an
- * error, which is the standard behavior in high level programming languages.
- * `SafeMath` restores this intuition by reverting the transaction when an
- * operation overflows.
- *
- * Using this library instead of the unchecked operations eliminates an entire
- * class of bugs, so it's recommended to use it always.
- */
 library SafeMath {
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
@@ -253,41 +146,6 @@ library SafeMath {
     }
 }
 
-
-
-
-
-
-library AddressBalanceCheck {
-    function tokenBalance(address token) public view returns (uint256) {
-        return IERC20(token).balanceOf(address(this));
-    }
-
-    function shiftedBalance(address token, uint256 factor)
-        public
-        view
-        returns (uint256)
-    {
-        return IERC20(token).balanceOf(address(this)) / factor;
-    }
-
-    function transferIn(
-        address token,
-        address sender,
-        uint256 value
-    ) public {
-        IERC20(token).transferFrom(sender, address(this), value);
-    }
-
-    function transferOut(
-        address token,
-        address recipient,
-        uint256 value
-    ) public {
-        IERC20(token).transfer(recipient, value);
-    }
-}
-
 /*To following code is sourced from the ABDK library for assistance in dealing with precision logarithms in Ethereum.
  * ABDK Math 64.64 Smart Contract Library.  Copyright © 2019 by ABDK Consulting.
  * Author: Mikhail Vladimirov <mikhail.vladimirov@gmail.com>
@@ -402,7 +260,6 @@ contract BehodlerStateless  {
     using SafeMath for uint256;
     using ABDK for int128;
     using ABDK for uint256;
-    using AddressBalanceCheck for address;
 
     struct PrecisionFactors {
         uint8 swapPrecisionFactor;
