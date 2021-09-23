@@ -1,11 +1,12 @@
 import * as React from 'react'
 import './App.css'
 import LayoutFrame from './components/LayoutFrame/index'
-import { createMuiTheme, makeStyles } from '@material-ui/core'
+import {  makeStyles } from '@material-ui/core'
+import { createTheme } from '@material-ui/core/styles'
 import { ThemeProvider, createStyles } from '@material-ui/styles'
 import GlobalStyles from './styles/GlobalStyles'
 import { UIContainerContextDevProvider } from './components/Contexts/UIContainerContextDev'
-const theme = createMuiTheme({
+const theme = createTheme({
     palette: {
         type: 'light',
     },

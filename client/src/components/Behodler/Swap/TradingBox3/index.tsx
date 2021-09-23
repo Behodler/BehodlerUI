@@ -14,9 +14,10 @@ import FetchBalances from './FetchBalances'
 import { formatNumberText, formatSignificantDecimalPlaces } from 'src/util/jsHelpers'
 import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
+import { OutputGivenInput, TradeStatus } from './SwapCalculator'
+import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
+
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
-
-
 const scaler = sideScaler(0.8)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -360,6 +361,7 @@ export default function (props: {}) {
 
     const walletContextProps = useContext(WalletContext);
     const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
+    const statelessBehodler = useContext<StatelessBehodlerContextProps>(StatelessBehodlerContext)
 
     const account = uiContainerContextProps.walletContext.account || "0x0"
     const networkName = API.networkMapping[(uiContainerContextProps.walletContext.chainId || 0).toString()]
@@ -408,6 +410,12 @@ export default function (props: {}) {
             setSwapping(true)
         else setSwapping(false)
     }
+
+    const getReserveFactory = (behodler: string) => async (tokenAddress: string) => {
+        const token = await API.getToken(tokenAddress, networkName)
+        return await token.balanceOf(behodler).call({ from: account })
+    }
+    const getReserve = getReserveFactory(walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
 
     const balanceCheck = async (menu: string) => {
         const balanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", contracts)
@@ -547,7 +555,7 @@ export default function (props: {}) {
 
 
         if (isScarcityPredicate(inputAddress)) {
-            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "15").call({ from: account })).toString()
+            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
@@ -560,7 +568,7 @@ export default function (props: {}) {
         }
 
         if (isScarcityPredicate(outputAddress)) {
-            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "15").call({ from: account })).toString()
+            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
@@ -766,16 +774,35 @@ export default function (props: {}) {
             const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
             if (isScarcityPredicate(inputAddress)) {
                 //  spot = scxFrom
+                const outputReserve = await getReserve(outputAddressToUse)
+                const scxBalance = tokenBalances.filter(t => isScarcityPredicate(t.address))[0].balance
+                const estimatedOutputToRelease = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, outputValueWei, inputValWei, 25)
+
+
+                const scxFromEstimate = await statelessBehodler.withdrawLiquidity(estimatedOutputToRelease, outputReserve, scxBalance)
+                console.log(`estimate tokens released from ${inputValue} scx. Releasing ${estimatedOutputToRelease} requires ${scxFromEstimate} scx`)
                 const tokenSample = BigInt('10000000000')
                 const scx = BigInt((await behodler.withdrawLiquidity(outputAddressToUse.toString(), tokenSample.toString()).call(null, { from: account }).catch(err => console.log('impact estimation error ' + err))).toString())
                 spot = Number((scx > tokenSample ? (scx * factor) / tokenSample : (tokenSample * factor) / scx)) / 10000
             }
             else if (isScarcityPredicate(outputAddress)) {
+
+                const reserve = await getReserve(inputAddressToUse)
+                const result = await statelessBehodler.addLiquidity(inputValWei, reserve, 5)
+                console.log('stateless behodler: ' + JSON.stringify(result))
+
                 const scxSample = BigInt('10000000000')
                 const inputFromScxSample = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '10000', scxSample.toString(), '35').call({ from: account }).catch(err => console.log('error in withdraw ' + JSON.stringify(err)))).toString())
                 spot = Number(scxSample > inputFromScxSample ? (scxSample * factor) / inputFromScxSample : (inputFromScxSample * factor) / scxSample) / 10000
             }
             else {
+                const inputReserve = await getReserve(inputAddressToUse)
+                const outputReserve = await getReserve(outputAddressToUse)
+
+                const swapResult = await OutputGivenInput(inputReserve, outputReserve, inputValue)
+                if (swapResult.status === TradeStatus.clean) {
+                    console.log('output ' + swapResult.amountOut.toString())
+                }
                 const scxFromMinInput = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '1000', '1000000000', '15').call({ from: account })).toString())
                 const scxFromMinOutput = BigInt((await behodler.withdrawLiquidityFindSCX(outputAddressToUse, '1000', '1000000000', '15').call({ from: account })).toString())
                 spot = Number(scxFromMinInput > scxFromMinOutput ? (scxFromMinInput * factor) / scxFromMinOutput : (scxFromMinOutput * factor) / scxFromMinInput) / 10000
@@ -915,11 +942,9 @@ export default function (props: {}) {
     const setReservesCallback = useCallback(async () => {
         const inputTokenToload = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
         const outputTokenToLoad = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-        const inputToken = await API.getToken(inputTokenToload, walletContextProps.networkName)
-        const outputToken = await API.getToken(outputTokenToLoad, walletContextProps.networkName)
 
-        const inputReserve = isScarcityPredicate(inputAddress) ? "" : API.fromWei((await inputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })).toString())
-        const outputReserve = isScarcityPredicate(outputAddress) ? "" : API.fromWei((await outputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })).toString())
+        const inputReserve = isScarcityPredicate(inputAddress) ? "" : API.fromWei((await getReserve(inputTokenToload)).toString())
+        const outputReserve = isScarcityPredicate(outputAddress) ? "" : API.fromWei((await getReserve(outputTokenToLoad)).toString())
         setReserves([formatSignificantDecimalPlaces(inputReserve, 2), formatSignificantDecimalPlaces(outputReserve, 2)])
     }, [swapEnabled])
     useEffect(() => {

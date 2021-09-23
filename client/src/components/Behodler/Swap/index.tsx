@@ -5,7 +5,7 @@ import { makeStyles, createStyles } from '@material-ui/core'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext, WalletContextProvider } from 'src/components/Contexts/WalletStatusContext'
-
+import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
 const useStyles = makeStyles((theme) =>
@@ -88,12 +88,16 @@ export default function Swap(props: {}) {
         </WalletContextProvider>
     )
 }
-
+//TODO: replace not connected with a flag on TradingBox3
 
 function ConnectedDapp() {
     const walletContextProps = useContext(WalletContext);
     const classes = useStyles()
     return <div className={classes.root}>
-        {walletContextProps.initialized ? <TradingBox3 /> : "Not connected"}
+        {walletContextProps.initialized ?
+            <StatelessBehodlerContextProvider>
+                <TradingBox3 />
+            </StatelessBehodlerContextProvider>
+            : "Not connected"}
     </div>
 }

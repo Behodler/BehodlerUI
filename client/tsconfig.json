@@ -3,7 +3,7 @@
 		"baseUrl": ".",
 		"outDir": "build/dist",
 		"module": "esnext",
-		"target": "es2016",
+		"target": "es2020",
 		"lib": [
 			"es6",
 			"dom"
