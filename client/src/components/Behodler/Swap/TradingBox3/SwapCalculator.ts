@@ -39,7 +39,6 @@ class Trade {
         } else amountOut = '0'
 
         if (reserveIn !== '-') {
-            console.log('about to caste reserveIn ' + reserveIn)
             this.reserveIn = BigInt(reserveIn)
 
             if (this.reserveIn < MIN_LIQUIDITY) {

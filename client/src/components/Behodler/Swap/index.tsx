@@ -81,12 +81,17 @@ export default function Swap(props: {}) {
     const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
     const chainId = uiContainerContextProps.walletContext.chainId || 0;
     const account = uiContainerContextProps.walletContext.account || '0x0'
-
-    return (
-        <WalletContextProvider containerProps={uiContainerContextProps} chainId={chainId} accountId={account}>
-            <ConnectedDapp />
-        </WalletContextProvider>
-    )
+    var x = <div></div>
+    try {
+        x = (
+            <WalletContextProvider containerProps={uiContainerContextProps} chainId={chainId} accountId={account}>
+                <ConnectedDapp />
+            </WalletContextProvider>
+        )
+    } catch (e) {
+        x = <div>uncaught {e}</div>
+    }
+    return x
 }
 //TODO: replace not connected with a flag on TradingBox3
 

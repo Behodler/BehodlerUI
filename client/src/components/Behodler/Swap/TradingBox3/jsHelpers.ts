@@ -30,8 +30,8 @@ export const formatSignificantDecimalPlaces = (value: string, decimalPlaces: num
     const big = new BigNumber(value)
 
     if (big.isNaN()) {
-        console.log('nan')
-        return value}
+        return value
+    }
     if (big.isGreaterThan(0)) return big.decimalPlaces(decimalPlaces, 1).toString()
     return value
 }

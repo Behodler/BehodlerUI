@@ -16,6 +16,7 @@ import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
 import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
+import { DebounceInput } from 'react-debounce-input';
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -360,22 +361,30 @@ interface IndependentField {
     newValue: string
 }
 
-enum FieldState {
-    DORMANT,
-    UPDATING_DEPENDENT_FIELD,
-    VALIDATING_SWAP,
-    UPDATING_PRICE_IMPACT,
-    UPDATED
-}
+type FieldState = 'dormant' | 'updating dependent field' | 'validating swap' | 'updating price impact'
 
 enum TradeType {
     SWAP,
     ADD_LIQUIDITY,
     WITHDRAW_LIQUIDITY
 }
+
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
+const scarcitySwellFactor = 1000000000000
+const BigScarcitySwellFactor = BigInt(scarcitySwellFactor)
 const ZERO = BigInt(0)
+
+const loggingOn: boolean = false
+function useLoggedState<T>(initialState: T): [T, (newState: T) => void] {
+    const [state, setIndependentFieldState] = useState<T>(initialState)
+    useEffect(() => {
+        if (loggingOn)
+            console.log(`state update: ${JSON.stringify(state)}`)
+    }, [state])
+    return [state, setIndependentFieldState]
+}
+
 export default function (props: {}) {
     const classes = useStyles();
     const inputClasses = inputStyles();
@@ -417,14 +426,16 @@ export default function (props: {}) {
     const contracts = tokenDropDownList.map(t => ({ name: t.name, address: t.address }))
 
     //NEW HOOKS BEGIN
-    const [pendingTXQueue, setPendingTXQueue] = useState<PendingTX[]>([])
-    const [block, setBlock] = useState<string>("")
-    const [showNotification, setShowNotification] = useState<boolean>(false)
-    const [currentTxHash, setCurrentTxHash] = useState<string>("")
-    const [notificationType, setNotificationType] = useState<NotificationType>(NotificationType.pending)
-    const [outstandingTXCount, setOutstandingTXCount] = useState<number>(0)
-    const [tokenBalances, setTokenBalances] = useState<TokenBalanceMapping[]>([])
-    const [swapping, setSwapping] = useState<boolean>(false)
+    const [pendingTXQueue, setPendingTXQueue] = useLoggedState<PendingTX[]>([])
+    const [block, setBlock] = useLoggedState<string>("")
+    const [showNotification, setShowNotification] = useLoggedState<boolean>(false)
+    const [currentTxHash, setCurrentTxHash] = useLoggedState<string>("")
+    const [notificationType, setNotificationType] = useLoggedState<NotificationType>(NotificationType.pending)
+    const [outstandingTXCount, setOutstandingTXCount] = useLoggedState<number>(0)
+    const [tokenBalances, setTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
+    const [swapping, setSwapping] = useLoggedState<boolean>(false)
+
+
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -511,33 +522,35 @@ export default function (props: {}) {
 
     //NEW HOOKS END
 
-    const [inputValue, setInputValue] = useState<string>('')
-    const [inputValWei, setInputValWei] = useState<string>('')
-    const [outputValue, setOutputValue] = useState<string>('')
-    const [outputValWei, setOutputValWei] = useState<string>('')
-    const [swapEnabled, setSwapEnabled] = useState<boolean>(false)
-    const [tradeType, setTradeType] = useState<TradeType>(TradeType.ADD_LIQUIDITY)
-    const [independentField, setIndependentField] = useState<IndependentField>({
+    const [inputValue, setInputValue] = useLoggedState<string>('')
+    const [inputValWei, setInputValWei] = useLoggedState<string>('')
+    const [outputValue, setOutputValue] = useLoggedState<string>('')
+    const [outputValWei, setOutputValWei] = useLoggedState<string>('')
+    const [swapEnabled, setSwapEnabled] = useLoggedState<boolean>(false)
+    const [tradeType, setTradeType] = useLoggedState<TradeType>(TradeType.ADD_LIQUIDITY)
+    const [independentField, setIndependentField] = useLoggedState<IndependentField>({
         target: 'FROM',
         newValue: ''
     })
-    const [independentFieldState, setIndependentFieldState] = useState<FieldState>(FieldState.DORMANT)
+    const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
+    const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
+    const [inputAddress, setInputAddress] = useLoggedState<string>(tokenDropDownList[0].address.toLowerCase())
+    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
+    const [swapText, setSwapText] = useLoggedState<string>("SWAP")
+    const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
-    const [inputEnabled, setInputEnabled] = useState<boolean>(false)
-    const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address.toLowerCase())
-    const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
-    const [swapText, setSwapText] = useState<string>("SWAP")
-    const [impliedExchangeRate, setImpliedExchangeRate] = useState<string>("")
+    const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useLoggedState<string>("")
+    const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useLoggedState<string>("")
 
-    const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useState<string>("")
-    const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useState<string>("")
+    const [inputBurnable, setInputBurnable] = useLoggedState<boolean>(false)
+    const [expectedFee, setExpectedFee] = useLoggedState<string>("")
+    const [priceImpact, setPriceImpact] = useLoggedState<string>("")
 
-    const [inputBurnable, setInputBurnable] = useState<boolean>(false)
-    const [expectedFee, setExpectedFee] = useState<string>("")
-    const [priceImpact, setPriceImpact] = useState<string>("")
-
+    if (3 > 10) {
+        setExpectedFee('d')
+        setPriceImpact('3')
+    }
     const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
-
         if (target === 'FROM') {
             setInputValue(newValue)
             setOutputValue(update ? 'estimating...' : '')
@@ -546,18 +559,32 @@ export default function (props: {}) {
             setOutputValue(newValue)
         }
 
-
-        setSwapEnabled(false)
+        if (swapEnabled)
+            setSwapEnabled(false)
 
         setIndependentField({
             target,
             newValue
         })
-        const newState: FieldState = update ? FieldState.UPDATING_DEPENDENT_FIELD : FieldState.DORMANT
+        const newState: FieldState = update ? 'updating dependent field' : 'dormant'
         setIndependentFieldState(newState)
     }
 
-    useEffect(() => {
+
+    const updateIndependentFromField = updateIndependentField('FROM')
+    const updateIndependentToField = updateIndependentField('TO')
+
+    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
+        const formattedText = formatNumberText(value)
+        const parsedValue = parseFloat(formattedText)
+        const isValid = !isNaN(parsedValue) && parsedValue > 0
+        setValue(value, isValid)
+    }
+
+    const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
+    const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
+
+    const spotPriceCallback = useCallback(async () => {
         setSwapEnabled(false)
         if (isScarcityPredicate(inputAddress)) {
             setTradeType(TradeType.WITHDRAW_LIQUIDITY)
@@ -565,30 +592,11 @@ export default function (props: {}) {
             setTradeType(TradeType.ADD_LIQUIDITY)
         } else
             setTradeType(TradeType.SWAP)
-    }, [inputAddress, outputAddress])
-
-    const updateIndependentFromField = updateIndependentField('FROM')
-    const updateIndependentToField = updateIndependentField('TO')
-
-    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
-        const formattedText = formatNumberText(value)
-
-        const parsedValue = parseFloat(formattedText)
-        const isValid = !isNaN(parsedValue)
-        setValue(value, isValid)
-
-    }
-
-    const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
-    const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
-
-    const spotPriceCallback = useCallback(async () => {
         setInputValue("")
         setOutputValue("")
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
-
 
         if (isScarcityPredicate(inputAddress)) {
             const scxSpotString = (await behodler.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
@@ -622,11 +630,6 @@ export default function (props: {}) {
         spotPriceCallback()
     }, [inputAddress, outputAddress])
 
-
-    useEffect(() => {
-        setImpliedExchangeRate("")
-    }, [outputAddress])
-
     if (tokenDropDownList.filter((t) => t.address.toLowerCase() === outputAddress.toLowerCase()).length === 0) {
         setOutputAddress(tokenDropDownList[1].address.toLowerCase())
     }
@@ -634,7 +637,7 @@ export default function (props: {}) {
         setInputAddress(tokenDropDownList[0].address.toLowerCase())
     }
 
-    const [swapClicked, setSwapClicked] = useState<boolean>(false)
+    const [swapClicked, setSwapClicked] = useLoggedState<boolean>(false)
     const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address.toLowerCase() === address.toLowerCase())[0].name
 
     if (inputAddress === outputAddress) {
@@ -661,7 +664,6 @@ export default function (props: {}) {
     useEffect(() => { inputBurnableCallback() }, [inputAddress, swapEnabled])
 
     useEffect(() => {
-
         if (!inputEnabled && !isScarcityPredicate(inputAddress)) {
             setSwapText('APPROVE ' + nameOfSelectedAddress(inputAddress))
         }
@@ -673,7 +675,7 @@ export default function (props: {}) {
         else {
             setSwapText('SWAP')
         }
-    }, [inputEnabled, isEthPredicate(inputAddress), inputAddress, outputAddress])
+    }, [inputEnabled, inputAddress, outputAddress])
 
     const currentTokenEffects = API.generateNewEffects(inputAddress, account, isEthPredicate(inputAddress))
 
@@ -767,8 +769,7 @@ export default function (props: {}) {
     }, [swapClicked])
 
 
-    const [flipClicked, setFlipClicked] = useState<boolean>(false)
-    //TODO: change after broad estimation
+    const [flipClicked, setFlipClicked] = useLoggedState<boolean>(false)
     useEffect(() => {
         if (flipClicked) {
             const newValue = (independentField.target === 'FROM') ? inputValue : outputValue
@@ -783,7 +784,7 @@ export default function (props: {}) {
             setInputAddress(outputAddress)
             setOutputAddress(inputAddressTemp)
             setInputValue(tempOutputValue)
-            setIndependentFieldState(FieldState.UPDATING_DEPENDENT_FIELD)
+            setIndependentFieldState("updating dependent field")
             setFlipClicked(false)
         }
     }, [flipClicked])
@@ -799,10 +800,11 @@ export default function (props: {}) {
             case TradeType.ADD_LIQUIDITY:
                 inputReserve = await getReserve(inputAddressToUse)
                 let estimate = await statelessBehodler.addLiquidity(inputValToUse, inputReserve, 5)
-                assert(estimate[1].length === 0, 'error estimating output: ' + estimate[1])
+                assert(estimate[1].length === 0, estimate[1])
                 outputEstimate = estimate[0]
                 break;
             case TradeType.WITHDRAW_LIQUIDITY:
+                assert(inputValue.trim() !== '0', '')
                 outputReserve = await getReserve(outputAddressToUse)
                 outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
                 break;
@@ -811,12 +813,12 @@ export default function (props: {}) {
                 outputReserve = await getReserve(outputAddressToUse)
                 let trade = OutputGivenInput(inputReserve, outputReserve, inputValue, maxLiquidityExit)
                 if (trade.status === TradeStatus.ReserveOutLow) {
-                    setOutputValue('Insufficient liquidity')
+                    throw ('Insufficient liquidity')
                 }
                 else if (trade.status === TradeStatus.MaxExit) {
-                    setOutputValue("Trade too big")
+                    throw ("Trade too big")
                 }
-                assert(trade.status === TradeStatus.clean, 'error estimating output: ' + trade.status)
+                assert(trade.status === TradeStatus.clean, trade.status)
                 outputEstimate = API.fromWei(trade.amountOut.toString())
                 break;
         }
@@ -839,7 +841,7 @@ export default function (props: {}) {
                 outputReserve = await getReserve(outputAddressToUse)
                 const totalSCXSupply = (await behodler.totalSupply().call({ from: account })).toString()
                 let estimate = await statelessBehodler.withdrawLiquidity(outputValToUse, outputReserve, totalSCXSupply)
-                assert(inputEstimate[1].length === 0, 'error estimating input: ' + estimate[1])
+                assert(inputEstimate[1].length === 0, estimate[1])
                 inputEstimate = estimate[0]
                 break;
             case TradeType.SWAP:
@@ -847,12 +849,12 @@ export default function (props: {}) {
                 outputReserve = await getReserve(outputAddressToUse)
                 let trade = InputGivenOutput(inputReserve, outputReserve, outputValue, maxLiquidityExit)
                 if (trade.status === TradeStatus.ReserveOutLow) {
-                    setInputValue('Insufficient liquidity')
+                    throw ('Insufficient liquidity')
                 }
                 else if (trade.status === TradeStatus.MaxExit) {
-                    setInputValue("Trade too big")
+                    throw ("Trade too big")
                 }
-                assert(trade.status === TradeStatus.clean, 'error estimating output: ' + trade.status)
+                assert(trade.status === TradeStatus.clean, trade.status)
                 inputEstimate = API.fromWei(trade.amountIn.toString())
                 break;
         }
@@ -861,19 +863,27 @@ export default function (props: {}) {
 
     const independentFieldCallback = useCallback(async () => {
         try {
-            if (independentFieldState === FieldState.UPDATING_DEPENDENT_FIELD) {
+            if (independentFieldState === "updating dependent field") {
                 if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                    console.log('calculating output from input')
                     await calculateOutputFromInput()
                 } else {
+                    console.log('calculating input from output')
                     await calculateInputFromOutput()
                 }
-                setIndependentFieldState(FieldState.VALIDATING_SWAP)
+                setIndependentFieldState("validating swap")
             }
-        } catch {
+        } catch (e) {
+            const exception = e as string
+            if (independentField.target === 'FROM')
+                setOutputValue(exception)
+            else
+                setInputValue(exception)
+
             setSwapEnabled(false)
-            setIndependentFieldState(FieldState.DORMANT)
+            setIndependentFieldState("dormant")
         }
-    }, [independentFieldState, inputValue, outputValue, inputAddress, outputAddress])
+    }, [independentFieldState])
 
     useEffect(() => {
         independentFieldCallback()
@@ -881,10 +891,11 @@ export default function (props: {}) {
 
 
     const priceImpactCallback = useCallback(async () => {
-        if (independentFieldState === FieldState.UPDATING_PRICE_IMPACT) {
-            const parsedInput = parseFloat(inputValue) * 0.995
+        if (independentFieldState === "updating price impact") {
+            let parsedInput = parseFloat(inputValue)
             const parsedOutput = parseFloat(outputValue)
             setExpectedFee((parsedInput * 0.005).toString())
+            // parsedInput *= 0.995
             let exchangeRate = parsedInput / parsedOutput
             let direction: 'IO' | 'OI' = parsedInput > parsedOutput ? 'IO' : 'OI'
             let inputReserve, outputReserve
@@ -893,7 +904,8 @@ export default function (props: {}) {
                 setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
             } else {
                 exchangeRate = parsedOutput / parsedInput
-                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
+
+                const exchangeRateString = 4 < 2 ? formatSignificantDecimalPlaces((exchangeRate).toString(), 6) : ""
                 setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
             }
             const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
@@ -901,12 +913,17 @@ export default function (props: {}) {
             let spotRate = exchangeRate
             switch (tradeType) {
                 case TradeType.ADD_LIQUIDITY:
+                    console.log('entering add liquidity case')
                     inputReserve = await getReserve(inputAddressToUse)
-                    const minToken = BigInt("1000000000000")
+                    const minToken = BigInt("10000000000000000")
                     const spotSCXEstimate = await statelessBehodler.addLiquidity(minToken.toString(), inputReserve, 5)
                     assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
                     const scxEstimate = BigInt(spotSCXEstimate[0])
-                    spotRate = Number(direction === 'IO' ? (minToken * bigFactor) / scxEstimate : (scxEstimate * bigFactor) / minToken) / Factor
+                    if (scxEstimate < minToken) {
+                        console.log('scarcity less than input: ' + (minToken / scxEstimate))
+                    }
+                    spotRate = Number((scxEstimate * BigScarcitySwellFactor) / minToken) / scarcitySwellFactor
+                    console.log('spot rate ' + spotRate)
                     break;
                 case TradeType.WITHDRAW_LIQUIDITY:
                     outputReserve = await getReserve(outputAddressToUse)
@@ -923,11 +940,11 @@ export default function (props: {}) {
                     break;
             }
 
-            // const impact = 100 * (exchangeRate - spotRate) / spotRate
             const exactQuote = spotRate * parsedInput
             const impact = 100 * ((exactQuote - parsedOutput)) / exactQuote
+            console.log('impact ' + impact)
             setPriceImpact(formatSignificantDecimalPlaces(`${impact}`, 6))
-            setIndependentFieldState(FieldState.UPDATED)
+            setIndependentFieldState("dormant")
         }
     }, [independentFieldState])
 
@@ -936,11 +953,15 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const swapValidationCallback = useCallback(async () => {
-        if (independentFieldState === FieldState.VALIDATING_SWAP) {
+        if (independentFieldState === "validating swap") {
             try {
+
                 await validateLiquidityExit()
-            } catch {
-                setIndependentFieldState(FieldState.DORMANT)
+                setSwapEnabled(true)
+                setIndependentFieldState("updating price impact")
+            } catch (e) {
+                console.warn('validation failed ' + e)
+                setIndependentFieldState("dormant")
             }
         }
     }, [independentFieldState])
@@ -951,10 +972,15 @@ export default function (props: {}) {
 
 
     const validateLiquidityExit = async () => {
+        if (isScarcityPredicate(outputAddress)) {
+            return
+        }
+
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
         assert(parseFloat(inputValue) > 0 && parseFloat(outputValue) > 0, 'trade too small')
         const O_i = BigInt(await getReserve(outputAddress))
         const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
+
         if (O_i === ZERO && !isScarcityPredicate(outputAddress)) {// division by zero
             fieldSet('insufficient liquidity')
             throw 'exit liquidity zero'
@@ -966,8 +992,6 @@ export default function (props: {}) {
             fieldSet('liquidity impact too large')
             throw 'output too large relative to reserve'
         }
-        setSwapEnabled(true)
-        setIndependentFieldState(FieldState.UPDATING_PRICE_IMPACT)
     }
 
     const fromBalance = tokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
@@ -998,9 +1022,9 @@ export default function (props: {}) {
         }
     }
     const greySwap = !swapEnabled
-    const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false)
-    const [showMobileInfo, setShowMobileInfo] = useState<boolean>(false)
-    const [reserves, setReserves] = useState<string[]>(['', ''])
+    const [showMoreInfo, setShowMoreInfo] = useLoggedState<boolean>(false)
+    const [showMobileInfo, setShowMobileInfo] = useLoggedState<boolean>(false)
+    const [reserves, setReserves] = useLoggedState<string[]>(['', ''])
 
     const setReservesCallback = useCallback(async () => {
         const inputTokenToload = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
@@ -1076,8 +1100,9 @@ export default function (props: {}) {
                                             <DirectionLabel direction={"FROM"} /></Grid>
                                         <Grid item>
                                             <div key={"MobileFrom"}>
-                                                <input
+                                                <DebounceInput
                                                     id={inputAddress}
+                                                    debounceTimeout={300}
                                                     placeholder={nameOfSelectedAddress(inputAddress)}
                                                     value={inputValue}
                                                     onChange={(event) => { setFormattingFrom(event.target.value) }}
@@ -1107,7 +1132,8 @@ export default function (props: {}) {
                                             <DirectionLabel direction={"TO"} /></Grid>
                                         <Grid item>
                                             <div key={"MobileTO"}>
-                                                <input
+                                                <DebounceInput
+                                                    debounceTimeout={300}
                                                     id={outputAddress}
                                                     placeholder={nameOfSelectedAddress(outputAddress)}
                                                     value={outputValue}
@@ -1201,7 +1227,8 @@ export default function (props: {}) {
                                 >
                                     <Grid item>
                                         <div key={"desktopInput"}>
-                                            <input
+                                            <DebounceInput
+                                                debounceTimeout={300}
                                                 id={inputAddress}
                                                 key={"desktopInputInput"}
                                                 placeholder={nameOfSelectedAddress(inputAddress)}
@@ -1251,8 +1278,9 @@ export default function (props: {}) {
                                 >
                                     <Grid item>
                                         <div key={"desktopOutput"}>
-                                            <input
+                                            <DebounceInput
                                                 id={outputAddress}
+                                                debounceTimeout={300}
                                                 key={"desktopInputOutput"}
                                                 placeholder={nameOfSelectedAddress(outputAddress)}
                                                 value={outputValue}
@@ -1292,8 +1320,9 @@ export default function (props: {}) {
                             spacing={2}
                             className={classes.Info}
                         >
+
                             <Grid item className={classes.impliedExchangeRate}>
-                                {impliedExchangeRate}
+                                {swapEnabled ? impliedExchangeRate : ""}
                             </Grid>
                             <Grid item className={classes.moreInfo}>
                                 <MoreInfoOverlay />
