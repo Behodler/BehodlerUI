@@ -11,10 +11,10 @@ import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { formatNumberText, formatSignificantDecimalPlaces } from 'src/util/jsHelpers'
+import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
 import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
-import { OutputGivenInput, TradeStatus } from './SwapCalculator'
+import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
 import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
@@ -354,12 +354,37 @@ export interface TokenBalanceMapping {
     address: string
     balance: string
 }
+
+interface IndependentField {
+    target: 'TO' | 'FROM'
+    newValue: string
+}
+
+enum FieldState {
+    DORMANT,
+    UPDATING_DEPENDENT_FIELD,
+    VALIDATING_SWAP,
+    UPDATING_PRICE_IMPACT,
+    UPDATED
+}
+
+enum TradeType {
+    SWAP,
+    ADD_LIQUIDITY,
+    WITHDRAW_LIQUIDITY
+}
+const Factor = 1000000
+const bigFactor = BigInt(Factor)
+const ZERO = BigInt(0)
 export default function (props: {}) {
     const classes = useStyles();
     const inputClasses = inputStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
+
+    const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+    const behodlerAddress = behodler.address
     const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
     const statelessBehodler = useContext<StatelessBehodlerContextProps>(StatelessBehodlerContext)
 
@@ -380,7 +405,7 @@ export default function (props: {}) {
             item.address = behodler2Weth
         }
         if (i === indexOfScarcityAddress) {
-            item.address = walletContextProps.contracts.behodler.Behodler2.Behodler2.address
+            item.address = behodlerAddress
         }
         return item
     })
@@ -415,7 +440,7 @@ export default function (props: {}) {
         const token = await API.getToken(tokenAddress, networkName)
         return await token.balanceOf(behodler).call({ from: account })
     }
-    const getReserve = getReserveFactory(walletContextProps.contracts.behodler.Behodler2.Behodler2.address)
+    const getReserve = getReserveFactory(behodlerAddress)
 
     const balanceCheck = async (menu: string) => {
         const balanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", contracts)
@@ -435,9 +460,6 @@ export default function (props: {}) {
         if (JSON.stringify(ethUpdated) !== JSON.stringify(tokenBalances)) {
             setTokenBalances(ethUpdated)
         }
-        // console.log("balance retrieved: " + balanceResults.results["Link"].callsReturnContext[0].returnValues[0].hex.toString())
-        // // const multiBalance = balanceResults.results["LINK"].callsReturnContext[0].returnValues[0]
-        // // console.log(multiBalance.toString())
     }
     const balanceCallback = useCallback(async (menu: string) => await balanceCheck(menu), [block])
 
@@ -450,7 +472,6 @@ export default function (props: {}) {
     }, [block])
 
     const fetchToken = (address: string): TokenListItem => tokenDropDownList.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
-    // const [intervalTracker, setIntervalTracker] = useState<any>()
     const txQueuePush = (val: PendingTX) => {
 
         const newQueue = [...pendingTXQueue, val]
@@ -490,85 +511,100 @@ export default function (props: {}) {
 
     //NEW HOOKS END
 
-    const [inputValid, setInputValid] = useState<boolean>(true)
-    const [outputValid, setOutputValid] = useState<boolean>(true)
     const [inputValue, setInputValue] = useState<string>('')
+    const [inputValWei, setInputValWei] = useState<string>('')
     const [outputValue, setOutputValue] = useState<string>('')
-    const [outputValueWei, setOutputValueWei] = useState<string>('')
+    const [outputValWei, setOutputValWei] = useState<string>('')
+    const [swapEnabled, setSwapEnabled] = useState<boolean>(false)
+    const [tradeType, setTradeType] = useState<TradeType>(TradeType.ADD_LIQUIDITY)
+    const [independentField, setIndependentField] = useState<IndependentField>({
+        target: 'FROM',
+        newValue: ''
+    })
+    const [independentFieldState, setIndependentFieldState] = useState<FieldState>(FieldState.DORMANT)
 
     const [inputEnabled, setInputEnabled] = useState<boolean>(false)
     const [inputAddress, setInputAddress] = useState<string>(tokenDropDownList[0].address.toLowerCase())
     const [outputAddress, setOutputAddress] = useState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
-    const [inputDecimals, setInputDecimals] = useState<number>(18)
-    const [outputDecimals, setOutputDecimals] = useState<number>(18)
     const [swapText, setSwapText] = useState<string>("SWAP")
     const [impliedExchangeRate, setImpliedExchangeRate] = useState<string>("")
 
     const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useState<string>("")
     const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useState<string>("")
 
-    const [exchangeRate, setExchangeRate] = useState<number>(0)
     const [inputBurnable, setInputBurnable] = useState<boolean>(false)
     const [expectedFee, setExpectedFee] = useState<string>("")
     const [priceImpact, setPriceImpact] = useState<string>("")
 
-    const setFormattedInputFactory = (setValue: (v: string) => void, setValid: (v: boolean) => void) => (value: string, valid: boolean, balance: string) => {
+    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
+
+        if (target === 'FROM') {
+            setInputValue(newValue)
+            setOutputValue(update ? 'estimating...' : '')
+        } else {
+            setInputValue(update ? 'estimating...' : '')
+            setOutputValue(newValue)
+        }
+
+
+        setSwapEnabled(false)
+
+        setIndependentField({
+            target,
+            newValue
+        })
+        const newState: FieldState = update ? FieldState.UPDATING_DEPENDENT_FIELD : FieldState.DORMANT
+        setIndependentFieldState(newState)
+    }
+
+    useEffect(() => {
+        setSwapEnabled(false)
+        if (isScarcityPredicate(inputAddress)) {
+            setTradeType(TradeType.WITHDRAW_LIQUIDITY)
+        } else if (isScarcityPredicate(outputAddress)) {
+            setTradeType(TradeType.ADD_LIQUIDITY)
+        } else
+            setTradeType(TradeType.SWAP)
+    }, [inputAddress, outputAddress])
+
+    const updateIndependentFromField = updateIndependentField('FROM')
+    const updateIndependentToField = updateIndependentField('TO')
+
+    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
         const formattedText = formatNumberText(value)
-        setValue(value)
+
         const parsedValue = parseFloat(formattedText)
-        const isValid = isNaN(parsedValue) ? false : parsedValue < parseFloat(balance)
-        if (valid != isValid)
-            setValid(isValid)
+        const isValid = !isNaN(parsedValue)
+        setValue(value, isValid)
 
     }
 
-    const setFormattingFrom = setFormattedInputFactory(setInputValue, setInputValid)
-    const setFormattingTo = setFormattedInputFactory(setOutputValue, setOutputValid)
-    useEffect(() => {
-        if (inputValue.length > 0 && outputValue.length > 0 && !isNaN(parseFloat(outputValue)) && parseFloat(outputValue) > 0 && inputValid && parseFloat(inputValue) > 0) {
-            const parsedInput = parseFloat(inputValue)
-            const parsedOutput = parseFloat(outputValue)
-            if (parsedInput > parsedOutput) {
-                const e = parsedInput / parsedOutput
-                setExchangeRate(e)
-
-                const exchangeRateString = formatSignificantDecimalPlaces((e).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
-            } else {
-                const e = parsedOutput / parsedInput
-                setExchangeRate(e)
-                const exchangeRateString = formatSignificantDecimalPlaces((e).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
-            }
-        }
-        else {
-            setImpliedExchangeRate("")
-        }
-    }, [inputValue, outputValue])
+    const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
+    const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
 
     const spotPriceCallback = useCallback(async () => {
         setInputValue("")
         setOutputValue("")
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
-        const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account }))
+        const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
 
 
         if (isScarcityPredicate(inputAddress)) {
-            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
+            const scxSpotString = (await behodler.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
         } else {
             const inputToken = await API.getToken(inputAddress, walletContextProps.networkName)
-            const inputBalanceOnBehodler = await inputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
+            const inputBalanceOnBehodler = await inputToken.balanceOf(behodlerAddress).call({ from: account })
             const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot, 2))
         }
 
         if (isScarcityPredicate(outputAddress)) {
-            const scxSpotString = (await walletContextProps.contracts.behodler.Behodler2.Behodler2.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
+            const scxSpotString = (await behodler.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
             const scxSpotPrice = new BigNumber(scxSpotString)
                 .div(10)
                 .toString()
@@ -576,7 +612,7 @@ export default function (props: {}) {
         }
         else {
             const outputToken = await API.getToken(outputAddress, walletContextProps.networkName)
-            const outputBalanceOnBehodler = await outputToken.balanceOf(walletContextProps.contracts.behodler.Behodler2.Behodler2.address).call({ from: account })
+            const outputBalanceOnBehodler = await outputToken.balanceOf(behodlerAddress).call({ from: account })
             const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
         }
@@ -588,7 +624,6 @@ export default function (props: {}) {
 
 
     useEffect(() => {
-        API.getTokenDecimals(outputAddress).then(setOutputDecimals)
         setImpliedExchangeRate("")
     }, [outputAddress])
 
@@ -606,16 +641,6 @@ export default function (props: {}) {
         setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
     }
 
-    const bigInputValue = new BigNumber(inputValue)
-    const bigOutputValue = new BigNumber(outputValue)
-
-    const swapPossible = inputValid && outputValid && !bigInputValue.isNaN() && !bigOutputValue.isNaN()
-    const inputReadyToSwap = inputValid && !bigInputValue.isNaN()
-
-    const swapEnabled = swapPossible && inputEnabled
-
-    const inputValWei = inputValid && !bigInputValue.isNaN() && bigInputValue.isGreaterThanOrEqualTo('0') ? API.toWei(inputValue, inputDecimals) : '0'
-
     let primaryOptions = { from: account, gas: undefined };
     let ethOptions = { from: account, value: inputValWei, gas: undefined };
 
@@ -623,7 +648,6 @@ export default function (props: {}) {
         tokenDropDownList.filter((item) => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
     const isEthPredicate = isTokenPredicateFactory('Eth')
     const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
-    const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
 
     const inputBurnableCallback = useCallback(async () => {
         if (isScarcityPredicate(inputAddress)) {
@@ -652,11 +676,10 @@ export default function (props: {}) {
     }, [inputEnabled, isEthPredicate(inputAddress), inputAddress, outputAddress])
 
     const currentTokenEffects = API.generateNewEffects(inputAddress, account, isEthPredicate(inputAddress))
-    const behodlerAddress = walletContextProps.contracts.behodler.Behodler2.Behodler2.address
+
 
     useEffect(() => {
         const balance = formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)
-        API.getTokenDecimals(inputAddress).then(setInputDecimals)
         setImpliedExchangeRate("")
 
         if (isEthPredicate(inputAddress) || isScarcityPredicate(inputAddress)) {
@@ -701,11 +724,11 @@ export default function (props: {}) {
         if (swapClicked) {
             if (inputAddress.toLowerCase() === scarcityAddress) {
                 behodler
-                    .withdrawLiquidity(outputAddress, outputValueWei)
+                    .withdrawLiquidity(outputAddress, outputValWei)
                     .estimateGas(primaryOptions, function (error, gas) {
                         if (error) console.error("gas estimation error: " + error);
                         primaryOptions.gas = gas;
-                        behodler.withdrawLiquidity(outputAddress, outputValueWei)
+                        behodler.withdrawLiquidity(outputAddress, outputValWei)
                             .send(primaryOptions, withdrawLiquidityHashBack)
                             .catch(err => console.log('user rejection'))
                     });
@@ -723,12 +746,12 @@ export default function (props: {}) {
             } else {
                 let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
                 behodler
-                    .swap(inputAddress, outputAddress, inputValWei, outputValueWei)
+                    .swap(inputAddress, outputAddress, inputValWei, outputValWei)
                     .estimateGas(options, function (error, gas) {
                         if (error) console.error("gas estimation error: " + error);
                         options.gas = gas;
                         behodler
-                            .swap(inputAddress, outputAddress, inputValWei, outputValueWei)
+                            .swap(inputAddress, outputAddress, inputValWei, outputValWei)
                             .send(options, swapHashBack)
                             .catch(err => console.log('user rejection'))
                     });
@@ -748,165 +771,205 @@ export default function (props: {}) {
     //TODO: change after broad estimation
     useEffect(() => {
         if (flipClicked) {
+            const newValue = (independentField.target === 'FROM') ? inputValue : outputValue
+
+            setIndependentField({
+                newValue,
+                target: (independentField.target === 'FROM') ? 'TO' : 'FROM'
+            })
             const inputAddressTemp = inputAddress
             const tempOutputValue = outputValue
 
             setInputAddress(outputAddress)
             setOutputAddress(inputAddressTemp)
-
-            setTimeout(() => {
-                setInputValue(tempOutputValue)
-            }, 500)
-
+            setInputValue(tempOutputValue)
+            setIndependentFieldState(FieldState.UPDATING_DEPENDENT_FIELD)
             setFlipClicked(false)
         }
     }, [flipClicked])
 
-    const priceImpactCallback = useCallback(async () => {
-        let impact: number = 0
-        const factor = BigInt(10000)
-        let spot: number = 0
-        if (swapEnabled) {
+    const calculateOutputFromInput = async () => {
+        const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
+        const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
+        const inputValToUse = API.toWei(inputValue)
+        setInputValWei(inputValToUse)
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
+        let outputEstimate, inputReserve, outputReserve
+        switch (tradeType) {
+            case TradeType.ADD_LIQUIDITY:
+                inputReserve = await getReserve(inputAddressToUse)
+                let estimate = await statelessBehodler.addLiquidity(inputValToUse, inputReserve, 5)
+                assert(estimate[1].length === 0, 'error estimating output: ' + estimate[1])
+                outputEstimate = estimate[0]
+                break;
+            case TradeType.WITHDRAW_LIQUIDITY:
+                outputReserve = await getReserve(outputAddressToUse)
+                outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
+                break;
+            case TradeType.SWAP:
+                inputReserve = await getReserve(inputAddressToUse)
+                outputReserve = await getReserve(outputAddressToUse)
+                let trade = OutputGivenInput(inputReserve, outputReserve, inputValue, maxLiquidityExit)
+                if (trade.status === TradeStatus.ReserveOutLow) {
+                    setOutputValue('Insufficient liquidity')
+                }
+                else if (trade.status === TradeStatus.MaxExit) {
+                    setOutputValue("Trade too big")
+                }
+                assert(trade.status === TradeStatus.clean, 'error estimating output: ' + trade.status)
+                outputEstimate = API.fromWei(trade.amountOut.toString())
+                break;
+        }
+        setOutputValue(formatSignificantDecimalPlaces(API.fromWei(outputEstimate), 18))
+    }
 
-            setExpectedFee((parseFloat(inputValue) * 0.005).toString())
-            const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
+    const calculateInputFromOutput = async () => {
+        const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
+        const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
+        const outputValToUse = API.toWei(outputValue)
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
+        setOutputValWei(outputValToUse)
+        let inputEstimate, inputReserve, outputReserve
+        switch (tradeType) {
+            case TradeType.ADD_LIQUIDITY:
+                inputReserve = await getReserve(inputAddressToUse)
+                inputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(inputReserve, "100000", outputValToUse, 30)
+                break;
+            case TradeType.WITHDRAW_LIQUIDITY:
+                outputReserve = await getReserve(outputAddressToUse)
+                const totalSCXSupply = (await behodler.totalSupply().call({ from: account })).toString()
+                let estimate = await statelessBehodler.withdrawLiquidity(outputValToUse, outputReserve, totalSCXSupply)
+                assert(inputEstimate[1].length === 0, 'error estimating input: ' + estimate[1])
+                inputEstimate = estimate[0]
+                break;
+            case TradeType.SWAP:
+                inputReserve = await getReserve(inputAddressToUse)
+                outputReserve = await getReserve(outputAddressToUse)
+                let trade = InputGivenOutput(inputReserve, outputReserve, outputValue, maxLiquidityExit)
+                if (trade.status === TradeStatus.ReserveOutLow) {
+                    setInputValue('Insufficient liquidity')
+                }
+                else if (trade.status === TradeStatus.MaxExit) {
+                    setInputValue("Trade too big")
+                }
+                assert(trade.status === TradeStatus.clean, 'error estimating output: ' + trade.status)
+                inputEstimate = API.fromWei(trade.amountIn.toString())
+                break;
+        }
+        setInputValue(formatSignificantDecimalPlaces(API.fromWei(inputEstimate), 18))
+    }
+
+    const independentFieldCallback = useCallback(async () => {
+        try {
+            if (independentFieldState === FieldState.UPDATING_DEPENDENT_FIELD) {
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                    await calculateOutputFromInput()
+                } else {
+                    await calculateInputFromOutput()
+                }
+                setIndependentFieldState(FieldState.VALIDATING_SWAP)
+            }
+        } catch {
+            setSwapEnabled(false)
+            setIndependentFieldState(FieldState.DORMANT)
+        }
+    }, [independentFieldState, inputValue, outputValue, inputAddress, outputAddress])
+
+    useEffect(() => {
+        independentFieldCallback()
+    }, [independentFieldState])
+
+
+    const priceImpactCallback = useCallback(async () => {
+        if (independentFieldState === FieldState.UPDATING_PRICE_IMPACT) {
+            const parsedInput = parseFloat(inputValue) * 0.995
+            const parsedOutput = parseFloat(outputValue)
+            setExpectedFee((parsedInput * 0.005).toString())
+            let exchangeRate = parsedInput / parsedOutput
+            let direction: 'IO' | 'OI' = parsedInput > parsedOutput ? 'IO' : 'OI'
+            let inputReserve, outputReserve
+            if (direction === 'IO') {
+                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
+                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
+            } else {
+                exchangeRate = parsedOutput / parsedInput
+                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
+                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
+            }
             const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
             const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-            if (isScarcityPredicate(inputAddress)) {
-                //  spot = scxFrom
-                const outputReserve = await getReserve(outputAddressToUse)
-                const scxBalance = tokenBalances.filter(t => isScarcityPredicate(t.address))[0].balance
-                const estimatedOutputToRelease = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, outputValueWei, inputValWei, 25)
-
-
-                const scxFromEstimate = await statelessBehodler.withdrawLiquidity(estimatedOutputToRelease, outputReserve, scxBalance)
-                console.log(`estimate tokens released from ${inputValue} scx. Releasing ${estimatedOutputToRelease} requires ${scxFromEstimate} scx`)
-                const tokenSample = BigInt('10000000000')
-                const scx = BigInt((await behodler.withdrawLiquidity(outputAddressToUse.toString(), tokenSample.toString()).call(null, { from: account }).catch(err => console.log('impact estimation error ' + err))).toString())
-                spot = Number((scx > tokenSample ? (scx * factor) / tokenSample : (tokenSample * factor) / scx)) / 10000
+            let spotRate = exchangeRate
+            switch (tradeType) {
+                case TradeType.ADD_LIQUIDITY:
+                    inputReserve = await getReserve(inputAddressToUse)
+                    const minToken = BigInt("1000000000000")
+                    const spotSCXEstimate = await statelessBehodler.addLiquidity(minToken.toString(), inputReserve, 5)
+                    assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
+                    const scxEstimate = BigInt(spotSCXEstimate[0])
+                    spotRate = Number(direction === 'IO' ? (minToken * bigFactor) / scxEstimate : (scxEstimate * bigFactor) / minToken) / Factor
+                    break;
+                case TradeType.WITHDRAW_LIQUIDITY:
+                    outputReserve = await getReserve(outputAddressToUse)
+                    const minSCX = BigInt("10000000")
+                    const spotTokenEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "10000", minSCX.toString(), 25)
+                    assert(spotTokenEstimate[1].length === 0, 'error estimating price impact: ' + spotTokenEstimate[1])
+                    const tokenEstimate = BigInt(spotTokenEstimate[0])
+                    spotRate = Number(direction === 'IO' ? (minSCX * bigFactor) / tokenEstimate : (tokenEstimate * bigFactor) / minSCX) / Factor
+                    break;
+                case TradeType.SWAP:
+                    inputReserve = BigInt((await getReserve(inputAddressToUse)).toString())
+                    outputReserve = BigInt((await getReserve(outputAddressToUse)).toString())
+                    spotRate = Number((outputReserve * bigFactor) / inputReserve) / Factor
+                    break;
             }
-            else if (isScarcityPredicate(outputAddress)) {
 
-                const reserve = await getReserve(inputAddressToUse)
-                const result = await statelessBehodler.addLiquidity(inputValWei, reserve, 5)
-                console.log('stateless behodler: ' + JSON.stringify(result))
-
-                const scxSample = BigInt('10000000000')
-                const inputFromScxSample = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '10000', scxSample.toString(), '35').call({ from: account }).catch(err => console.log('error in withdraw ' + JSON.stringify(err)))).toString())
-                spot = Number(scxSample > inputFromScxSample ? (scxSample * factor) / inputFromScxSample : (inputFromScxSample * factor) / scxSample) / 10000
-            }
-            else {
-                const inputReserve = await getReserve(inputAddressToUse)
-                const outputReserve = await getReserve(outputAddressToUse)
-
-                const swapResult = await OutputGivenInput(inputReserve, outputReserve, inputValue)
-                if (swapResult.status === TradeStatus.clean) {
-                    console.log('output ' + swapResult.amountOut.toString())
-                }
-                const scxFromMinInput = BigInt((await behodler.withdrawLiquidityFindSCX(inputAddressToUse, '1000', '1000000000', '15').call({ from: account })).toString())
-                const scxFromMinOutput = BigInt((await behodler.withdrawLiquidityFindSCX(outputAddressToUse, '1000', '1000000000', '15').call({ from: account })).toString())
-                spot = Number(scxFromMinInput > scxFromMinOutput ? (scxFromMinInput * factor) / scxFromMinOutput : (scxFromMinOutput * factor) / scxFromMinInput) / 10000
-
-            }
-            let bigger = Math.max(exchangeRate, spot)
-            let smaller = Math.min(exchangeRate, spot)
-            impact = 100 * ((bigger - smaller) / bigger)
-            // impact = Math.max(0, impact - 0.5)
+            // const impact = 100 * (exchangeRate - spotRate) / spotRate
+            const exactQuote = spotRate * parsedInput
+            const impact = 100 * ((exactQuote - parsedOutput)) / exactQuote
+            setPriceImpact(formatSignificantDecimalPlaces(`${impact}`, 6))
+            setIndependentFieldState(FieldState.UPDATED)
         }
-
-        setPriceImpact(formatSignificantDecimalPlaces(impact.toString(), 6))
-
-    }, [exchangeRate])
+    }, [independentFieldState])
 
     useEffect(() => {
         priceImpactCallback()
-    }, [exchangeRate])
+    }, [independentFieldState])
 
-    const validateLiquidityExit = async (tokensToWithdraw: any) => {
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
-        const O_i = await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals);
-        if (O_i === '0') {// division by zero
-            setInputValid(false)
-            return;
-        }
-        const hundred: any = BigInt(100);
-        const exitRatio = (tokensToWithdraw * hundred) / (BigInt(O_i.toString()) as any);
-        if (exitRatio > maxLiquidityExit) {
-            setInputValid(false);
-        }
-    }
-    const swapPreparationCallback = useCallback(async () => {
-        if (inputReadyToSwap) {
-            //if input is scx, figure out tokensToRelease
-            //if output is scx, nothing to figure out
-            //if swap, set output Val
-            if (isScarcityPredicate(inputAddress)) {
-                //withdraw liquidity
-                //ΔSCX = log(Initial) - log(Final)
-                //log(FinalBalance) =  log(InitialBalance) - ΔSCX
-                //let X = log(InitialBalance) - ΔSCX
-                //FinalBalance = 2^X
-
-                const O_i = new BigNumber(
-                    await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals)
-                );
-                const guess = O_i.div(2).toFixed(0);
-                const actual = BigInt(
-                    (
-                        await behodler
-                            .withdrawLiquidityFindSCX(outputAddress, guess.toString(), inputValWei, "15")
-                            .call(primaryOptions)
-                    ).toString()
-                );
-                await validateLiquidityExit(actual);
-
-                const actualString = actual.toString()
-                setOutputValueWei(actualString)
-                setOutputValue(API.fromWei(actualString))
-
-            } else if (isScarcityPredicate(outputAddress)) {
-                //add liquidity
-
-                let scx;
-                try {
-                    scx = await behodler
-                        .addLiquidity(inputAddress, inputValWei)
-                        .call(isEthPredicate(inputAddress) ? ethOptions : primaryOptions);
-                    const scxString = scx.toString();
-
-                    setOutputValueWei(scxString);
-                    setOutputValue(API.fromWei(scxString))
-                } catch {
-                    setInputValid(false);
-                }
-            } else {
-                // I_f/I_i = O_i/O_f
-                const I_i = BigInt(await API.getTokenBalance(inputAddress, behodler.address, false, inputDecimals));
-                const burnFee = BigInt((await behodler.getConfiguration().call(primaryOptions))[1].toString());
-                const bigInputValWei = BigInt(inputValWei);
-                const netAmount = bigInputValWei - (burnFee * bigInputValWei) / BigInt(1000);
-                // const netAmount = new BigNumber(inputValWei).minus(burnFee.mul(inputValWei).div(1000))
-                const I_f = I_i + netAmount;
-
-                const O_i = BigInt(await API.getTokenBalance(outputAddress, behodler.address, false, outputDecimals));
-
-                const O_f = (O_i * I_i) / I_f;
-                let outputWei = (O_i - O_f).toString();
-                const indexOfPoint = outputWei.indexOf(".");
-                outputWei = indexOfPoint === -1 ? outputWei : outputWei.substring(0, indexOfPoint);
-                await validateLiquidityExit(BigInt(outputWei));
-                setOutputValueWei(outputWei);
-                setOutputValue(API.fromWei(outputWei));
-
+    const swapValidationCallback = useCallback(async () => {
+        if (independentFieldState === FieldState.VALIDATING_SWAP) {
+            try {
+                await validateLiquidityExit()
+            } catch {
+                setIndependentFieldState(FieldState.DORMANT)
             }
         }
-    }, [inputReadyToSwap, inputValue])
+    }, [independentFieldState])
 
     useEffect(() => {
-        if (inputReadyToSwap) {
-            swapPreparationCallback()
+        swapValidationCallback()
+    }, [independentFieldState])
+
+
+    const validateLiquidityExit = async () => {
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
+        assert(parseFloat(inputValue) > 0 && parseFloat(outputValue) > 0, 'trade too small')
+        const O_i = BigInt(await getReserve(outputAddress))
+        const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
+        if (O_i === ZERO && !isScarcityPredicate(outputAddress)) {// division by zero
+            fieldSet('insufficient liquidity')
+            throw 'exit liquidity zero'
         }
-    }, [inputReadyToSwap, inputValue])
+
+        const bigOutput = BigInt(outputValWei)
+        const exitRatio = (bigOutput * bigFactor) / (O_i * bigFactor);
+        if (exitRatio > maxLiquidityExit) {
+            fieldSet('liquidity impact too large')
+            throw 'output too large relative to reserve'
+        }
+        setSwapEnabled(true)
+        setIndependentFieldState(FieldState.UPDATING_PRICE_IMPACT)
+    }
+
     const fromBalance = tokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
     const toBalance = tokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
@@ -918,7 +981,7 @@ export default function (props: {}) {
             await API.enableToken(
                 inputAddress,
                 uiContainerContextProps.walletContext.account || "",
-                walletContextProps.contracts.behodler.Behodler2.Behodler2.address, (err, hash: string) => {
+                behodler.address, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {
                             hash,
@@ -934,7 +997,7 @@ export default function (props: {}) {
                 })
         }
     }
-    const greySwap = inputEnabled && !swapPossible
+    const greySwap = !swapEnabled
     const [showMoreInfo, setShowMoreInfo] = useState<boolean>(false)
     const [showMobileInfo, setShowMobileInfo] = useState<boolean>(false)
     const [reserves, setReserves] = useState<string[]>(['', ''])
@@ -953,7 +1016,7 @@ export default function (props: {}) {
     const toggleMobileInfo = () => swapEnabled ? setShowMobileInfo(!showMobileInfo) : setShowMobileInfo(false)
 
     const MoreInfoOverlay = (props: { mobile?: boolean }) => (swapEnabled && (showMoreInfo || showMobileInfo) ? <MoreInfo
-        burnFee={formatSignificantDecimalPlaces(expectedFee, 4)}
+        burnFee={formatSignificantDecimalPlaces(expectedFee, 8)}
         inputType={isScarcityPredicate(inputAddress) ? InputType.scx : (inputBurnable ? InputType.burnable : InputType.pyro)}
         priceImpact={`${formatSignificantDecimalPlaces(priceImpact, 2)}`}
         inputTokenName={nameOfSelectedAddress(inputAddress)}
@@ -963,6 +1026,7 @@ export default function (props: {}) {
         outputReserve={reserves[1]}
     /> :
         <div></div>)
+
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
@@ -1016,7 +1080,7 @@ export default function (props: {}) {
                                                     id={inputAddress}
                                                     placeholder={nameOfSelectedAddress(inputAddress)}
                                                     value={inputValue}
-                                                    onChange={(event) => { setFormattingFrom(event.target.value, inputValid, fromBalance[0].balance) }}
+                                                    onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
                                             </div>
                                         </Grid>
@@ -1047,7 +1111,7 @@ export default function (props: {}) {
                                                     id={outputAddress}
                                                     placeholder={nameOfSelectedAddress(outputAddress)}
                                                     value={outputValue}
-                                                    onChange={(event) => { setFormattingTo(event.target.value, outputValid, toBalance[0].balance) }}
+                                                    onChange={(event) => { setFormattingTo(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
                                             </div>
                                         </Grid>
@@ -1142,7 +1206,7 @@ export default function (props: {}) {
                                                 key={"desktopInputInput"}
                                                 placeholder={nameOfSelectedAddress(inputAddress)}
                                                 value={inputValue}
-                                                onChange={(event) => { setFormattingFrom(event.target.value, inputValid, fromBalance[0].balance) }}
+                                                onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                 className={inputClasses.inputWide} />
                                         </div>
                                     </Grid>
@@ -1192,7 +1256,7 @@ export default function (props: {}) {
                                                 key={"desktopInputOutput"}
                                                 placeholder={nameOfSelectedAddress(outputAddress)}
                                                 value={outputValue}
-                                                onChange={(event) => { setFormattingTo(event.target.value, outputValid, toBalance[0].balance) }}
+                                                onChange={(event) => { setFormattingTo(event.target.value) }}
                                                 className={inputClasses.inputWide} />
                                         </div>
                                     </Grid>

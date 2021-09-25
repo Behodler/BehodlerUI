@@ -71,7 +71,7 @@ export default function MoreInfo(props: props) {
             </Grid>}
             <Grid item>
                 <Row label="Price impact">
-                    {parseInt(props.priceImpact) < 0.5 ? 'negligible' : props.priceImpact + '%'}
+                    {parseFloat(props.priceImpact) < 0.1 ? 'negligible '+ parseFloat(props.priceImpact): props.priceImpact + '%'}
                 </Row>
             </Grid>
             <Grid item>

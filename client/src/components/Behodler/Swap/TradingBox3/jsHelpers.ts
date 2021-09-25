@@ -26,14 +26,14 @@ export const formatNumberText = (text: string): string => {
 }
 
 export const formatSignificantDecimalPlaces = (value: string, decimalPlaces: number = 18): string => {
-	BigNumber.set({ EXPONENTIAL_AT: 18 });
-	const big = new BigNumber(value)
+    BigNumber.set({ EXPONENTIAL_AT: 18 })
+    const big = new BigNumber(value)
 
-	if (big.isNaN())
-		return ""
-	if (big.isGreaterThan(0))
-		return big.decimalPlaces(decimalPlaces, 1).toString()
-	return value
+    if (big.isNaN()) {
+        console.log('nan')
+        return value}
+    if (big.isGreaterThan(0)) return big.decimalPlaces(decimalPlaces, 1).toString()
+    return value
 }
 
 export function isLoaded(stateParams: any[]): boolean {
@@ -43,4 +43,10 @@ export function isLoaded(stateParams: any[]): boolean {
         }
     }
     return true
+}
+
+export function assert(condition: boolean, message: string) {
+    if (!condition) {
+        throw new Error(message)
+    }
 }

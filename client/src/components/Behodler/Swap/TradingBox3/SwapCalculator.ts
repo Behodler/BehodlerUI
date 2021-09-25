@@ -1,13 +1,14 @@
 import API from '../../../../blockchain/ethereumAPI'
 
 enum TradeStatus {
-    clean,
-    InputNaN,
-    OutputNaN,
-    BothNaN,
-    ReserveInLow,
-    ReserveOutLow,
-    BothReservesLow,
+    clean = 'clean',
+    InputNaN = 'InputNaN',
+    OutputNaN = 'OutputNaN',
+    BothNaN = 'BothNaN',
+    ReserveInLow = 'ReserveInLow',
+    ReserveOutLow = 'ReserveOutLow',
+    BothReservesLow = 'BothReservesLow',
+    MaxExit = 'MaxExit',
 }
 const MIN_LIQUIDITY: bigint = BigInt(1000000000000)
 type relevantParam = string | '-'
@@ -38,6 +39,7 @@ class Trade {
         } else amountOut = '0'
 
         if (reserveIn !== '-') {
+            console.log('about to caste reserveIn ' + reserveIn)
             this.reserveIn = BigInt(reserveIn)
 
             if (this.reserveIn < MIN_LIQUIDITY) {
@@ -66,32 +68,44 @@ class Trade {
         )
     }
 }
-
-function OutputGivenInput(reserveIn: string, reserveOut: string, amountIn: string): Trade {
+const bigFactor = BigInt(1000000)
+const bigPercentageFactor = BigInt(10000)
+function OutputGivenInput(reserveIn: string, reserveOut: string, amountIn: string, maxLiquidityExit: bigint): Trade {
     let trade: Trade = new Trade(reserveIn, reserveOut, amountIn, '-')
     if (trade.status !== TradeStatus.clean) return trade
     const numerator: bigint = trade.amountInWithfee() * trade.reserveOut
     const denominator: bigint = trade.reserveIn * BigInt(1000) + trade.amountInWithfee()
     const amountOut: bigint = numerator / denominator
+    if (trade.reserveOut - amountOut < MIN_LIQUIDITY) {
+        trade.status = TradeStatus.ReserveOutLow
+        return trade
+    }
+    if ((amountOut * bigFactor) / trade.reserveOut > maxLiquidityExit * bigPercentageFactor) {
+        trade.status = TradeStatus.MaxExit
+        return trade
+    }
+
     return Trade.newTrade(trade.reserveIn, trade.reserveOut, trade.amountIn, amountOut)
 }
 
-function InputGivenOutput(reserveIn: string, reserveOut: string, amountOut: string): Trade {
+function InputGivenOutput(reserveIn: string, reserveOut: string, amountOut: string, maxLiquidityExit: bigint): Trade {
     let trade: Trade = new Trade(reserveIn, reserveOut, '-', amountOut)
     if (trade.status !== TradeStatus.clean) return trade
 
     const numerator = trade.reserveIn * trade.amountOut * BigInt(1000)
+    const bigAmountOut = BigInt(API.toWei(amountOut))
+
+    if (trade.reserveOut - bigAmountOut < MIN_LIQUIDITY) {
+        trade.status = TradeStatus.ReserveOutLow
+        return trade
+    }
+    if ((bigAmountOut * bigFactor) / trade.reserveOut > maxLiquidityExit * bigPercentageFactor) {
+        trade.status = TradeStatus.MaxExit
+        return trade
+    }
     const denominator = (trade.reserveOut - trade.amountOut) * BigInt(995)
     const amountIn: bigint = numerator / denominator
     return Trade.newTrade(trade.reserveIn, trade.reserveOut, amountIn, trade.amountOut)
 }
 
-function PriceImpactSwap(reserveIn: string, reserveOut: string, actualAmountIn: string, actualAmountOut: string): Trade {
-    let trade: Trade = new Trade(reserveIn, reserveOut, actualAmountIn, actualAmountOut)
-    if (trade.status !== TradeStatus.clean) return trade
-
-    //TODO: complete implemenation
-    return trade
-}
-
-export { OutputGivenInput, InputGivenOutput, PriceImpactSwap, Trade, TradeStatus }
+export { OutputGivenInput, InputGivenOutput, Trade, TradeStatus }
