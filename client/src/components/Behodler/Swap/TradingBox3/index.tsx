@@ -461,7 +461,7 @@ export default function (props: {}) {
     const [outstandingTXCount, setOutstandingTXCount] = useLoggedState<number>(0)
     const [tokenBalances, setTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
-    type scxEstimationWarningMesssage = '' | 'Warning: your browser cannot accurately estimate the tokens required to produce an SCX output.' | 'Warning: your browser cannot accurately estimate the tokens released by an SCX input.'
+    type scxEstimationWarningMesssage = '' | 'Warning: your browser cannot accurately estimate the number of tokens required to produce an SCX output.' | 'Warning: your browser cannot accurately estimate the tokens released by an SCX input.'
     const [scxEstimationWarning, setScxEstimationWarning] = useLoggedState<scxEstimationWarningMesssage>('')
 
 
@@ -868,7 +868,7 @@ export default function (props: {}) {
         switch (tradeType) {
             case TradeType.ADD_LIQUIDITY:
                 inputReserve = await getReserve(inputAddressToUse)
-                setScxEstimationWarning("Warning: your browser cannot accurately estimate the tokens required to produce an SCX output.")
+                setScxEstimationWarning("Warning: your browser cannot accurately estimate the number of tokens required to produce an SCX output.")
                 const tokensToRelease = BigInt(inputReserve) / BigInt(2)
                 inputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(inputReserve, tokensToRelease.toString(), ((BigInt(outputValToUse) * BigInt(102) / BigInt(100))).toString(), 25)
                 break;

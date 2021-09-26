@@ -107,47 +107,6 @@ function StatelessBehodlerContextProvider(props: any) {
     return <StatelessBehodlerContext.Provider value={contextProps}>{props.children}</StatelessBehodlerContext.Provider>
 }
 
-// function compileContracts() {
-//     const input = getSolcInput()
-//     try {
-//         return JSON.parse(solc.compile(JSON.stringify(input)))
-//     } catch (e) {
-
-//         console.log('compilation failed ' + e)
-
-//         return undefined
-//     }
-
-// }
-
-
-// function getSolcInput() {
-//     return {
-//         language: 'Solidity',
-//         sources: {
-//             'contracts/BehodlerStateless.sol': {
-//                 content: readFileSync(join(__dirname, '../', 'BehodlerStateless.sol'), 'utf8'),
-//             },
-//             // If more contracts were to be compiled, they should have their own entries here
-//         },
-//         settings: {
-//             optimizer: {
-//                 enabled: true,
-//                 runs: 200,
-//             },
-//             evmVersion: 'petersburg',
-//             outputSelection: {
-//                 '*': {
-//                     '*': ['abi', 'evm.bytecode'],
-//                 },
-//             },
-//         },
-//     }
-// }
-
-// function getBehodlerBytecode(solcOutput: any): any {
-//     return solcOutput.contracts['contracts/BehodlerStateless.sol'].Behodler.evm.bytecode.object
-// }
 
 async function deployContract(
     vm: VM,
