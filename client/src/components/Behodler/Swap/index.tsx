@@ -103,6 +103,6 @@ function ConnectedDapp() {
             <StatelessBehodlerContextProvider>
                 <TradingBox3 />
             </StatelessBehodlerContextProvider>
-            : "Not connected"}
+            : ""}
     </div>
 }
