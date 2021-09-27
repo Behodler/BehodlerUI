@@ -225,11 +225,18 @@ const useStyles = makeStyles((theme: Theme) => ({
         minHeight: "30px"
     },
     scxEstimationWarning: {
-        color: "red",
-        fontSize: scale(20),
+
         width: 400,
         textAlign: "center"
+    },
+    scxEstimationWarningText: {
+        color: "red",
+        textShadow: "rgb(200, 200, 200) 1px 1px 30px !important",
+        fontSize: scale(20),
+        textAlign: "center",
+        width: "100%"
     }
+
 }))
 
 
@@ -461,9 +468,10 @@ export default function (props: {}) {
     const [outstandingTXCount, setOutstandingTXCount] = useLoggedState<number>(0)
     const [tokenBalances, setTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
-    type scxEstimationWarningMesssage = '' | 'Warning: your browser cannot accurately estimate the number of tokens required to produce an SCX output.' | 'Warning: your browser cannot accurately estimate the tokens released by an SCX input.'
+    type scxEstimationWarningMesssage = '' | 'Warning: estimating tokens released from an SCX input can be inaccurate.'
+        | 'Warning: estimating tokens required to produce an SCX output can be inaccurate.'
     const [scxEstimationWarning, setScxEstimationWarning] = useLoggedState<scxEstimationWarningMesssage>('')
-
+    //Estimating SCX from a given number of input tokens is 
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -555,7 +563,6 @@ export default function (props: {}) {
     const [outputValue, setOutputValue] = useLoggedState<string>('')
     const [outputValWei, setOutputValWei] = useLoggedState<string>('')
     const [swapEnabled, setSwapEnabled] = useLoggedState<boolean>(false)
-    const [tradeType, setTradeType] = useLoggedState<TradeType>(TradeType.ADD_LIQUIDITY)
     const [independentField, setIndependentField] = useLoggedState<IndependentField>({
         target: 'FROM',
         newValue: ''
@@ -612,16 +619,23 @@ export default function (props: {}) {
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
     const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
 
-    const spotPriceCallback = useCallback(async () => {
-        setSwapEnabled(false)
+    const getTradeType = () => {
+        let type: TradeType
         if (isScarcityPredicate(inputAddress)) {
-            setTradeType(TradeType.WITHDRAW_LIQUIDITY)
+            type = TradeType.WITHDRAW_LIQUIDITY
         } else if (isScarcityPredicate(outputAddress)) {
-            setTradeType(TradeType.ADD_LIQUIDITY)
-        } else
-            setTradeType(TradeType.SWAP)
-        setInputValue("")
-        setOutputValue("")
+            type = TradeType.ADD_LIQUIDITY
+        } else {
+            type = TradeType.SWAP
+        }
+        return type;
+    }
+
+    const spotPriceCallback = useCallback(async () => {
+        setScxEstimationWarning('')
+        setSwapEnabled(false)
+        // setInputValue("")
+        // setOutputValue("")
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
@@ -803,22 +817,24 @@ export default function (props: {}) {
     const [flipClicked, setFlipClicked] = useLoggedState<boolean>(false)
     useEffect(() => {
         if (flipClicked) {
-            const newValue = (independentField.target === 'FROM') ? inputValue : outputValue
-
-            setIndependentField({
-                newValue,
-                target: (independentField.target === 'FROM') ? 'TO' : 'FROM'
-            })
             const inputAddressTemp = inputAddress
-
-
+            const oldValues = [inputValue, outputValue]
+            const tradeType = getTradeType()
             setInputAddress(outputAddress)
             setOutputAddress(inputAddressTemp)
-            setInputValue('')
-            setOutputValue('')
-            setIndependentFieldState("dormant")
-            setFlipClicked(false)
+            if (swapEnabled) {
+                if (tradeType === TradeType.SWAP || tradeType === TradeType.WITHDRAW_LIQUIDITY) {
+                    updateIndependentField('FROM')(oldValues[1], true)
+                } else {
+                    updateIndependentField('TO')(oldValues[0], true)
+                }
+            } else {
+                setInputValue("")
+                setOutputValue("")
+            }
         }
+        setFlipClicked(false)
+
     }, [flipClicked])
 
     const calculateOutputFromInput = async () => {
@@ -828,8 +844,9 @@ export default function (props: {}) {
         setInputValWei(inputValToUse)
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
         let outputEstimate, inputReserve, outputReserve
-        switch (tradeType) {
+        switch (getTradeType()) {
             case TradeType.ADD_LIQUIDITY:
+                setScxEstimationWarning("")
                 inputReserve = await getReserve(inputAddressToUse)
                 let estimate = await statelessBehodler.addLiquidity(inputValToUse, inputReserve, 5)
                 assert(estimate[1].length === 0, estimate[1])
@@ -838,10 +855,11 @@ export default function (props: {}) {
             case TradeType.WITHDRAW_LIQUIDITY:
                 assert(inputValue.trim() !== '0', '')
                 outputReserve = await getReserve(outputAddressToUse)
-                setScxEstimationWarning("Warning: your browser cannot accurately estimate the tokens released by an SCX input.")
+                setScxEstimationWarning("Warning: estimating tokens released from an SCX input can be inaccurate.")
                 outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
                 break;
             case TradeType.SWAP:
+                setScxEstimationWarning("")
                 inputReserve = await getReserve(inputAddressToUse)
                 outputReserve = await getReserve(outputAddressToUse)
                 let trade = OutputGivenInput(inputReserve, outputReserve, inputValue, maxLiquidityExit)
@@ -865,25 +883,28 @@ export default function (props: {}) {
         const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
         setOutputValWei(outputValToUse)
         let inputEstimate, inputReserve, outputReserve
-        switch (tradeType) {
+        switch (getTradeType()) {
             case TradeType.ADD_LIQUIDITY:
                 inputReserve = await getReserve(inputAddressToUse)
-                setScxEstimationWarning("Warning: your browser cannot accurately estimate the number of tokens required to produce an SCX output.")
+                setScxEstimationWarning("Warning: estimating tokens required to produce an SCX output can be inaccurate.")
                 const tokensToRelease = BigInt(inputReserve) / BigInt(2)
                 inputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(inputReserve, tokensToRelease.toString(), ((BigInt(outputValToUse) * BigInt(102) / BigInt(100))).toString(), 25)
                 break;
             case TradeType.WITHDRAW_LIQUIDITY:
-                console.log('WITHDRAWAL')
+                setScxEstimationWarning("")
                 outputReserve = await getReserve(outputAddressToUse)
                 const totalSCXSupply = (await behodler.totalSupply().call({ from: account })).toString()
-                console.log({ outputReserve, totalSCXSupply })
-                let estimate = await statelessBehodler.withdrawLiquidity(outputValToUse, outputReserve, totalSCXSupply)
-                console.log('length: ' + estimate[1].length)
-                assert(estimate[1].length === 0, estimate[1])
-                inputEstimate = estimate[0]
-                console.log('estimate in withdrawal ' + inputEstimate)
+                try {
+                    let estimate = await statelessBehodler.withdrawLiquidity(outputValToUse, outputReserve, totalSCXSupply)
+                    assert(estimate[1].length === 0, estimate[1])
+                    inputEstimate = estimate[0]
+                } catch (e) {
+                    if ((e as any).reason == "overflow")
+                        throw 'BEHODLER: liquidity withdrawal too large.'
+                }
                 break;
             case TradeType.SWAP:
+                setScxEstimationWarning("")
                 inputReserve = await getReserve(inputAddressToUse)
                 outputReserve = await getReserve(outputAddressToUse)
                 let trade = InputGivenOutput(inputReserve, outputReserve, outputValue, maxLiquidityExit)
@@ -904,10 +925,8 @@ export default function (props: {}) {
         try {
             if (independentFieldState === "updating dependent field") {
                 if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
-                    console.log('calculating output from input')
                     await calculateOutputFromInput()
                 } else {
-                    console.log('calculating input from output')
                     await calculateInputFromOutput()
                 }
                 setIndependentFieldState("validating swap")
@@ -944,33 +963,41 @@ export default function (props: {}) {
             } else {
                 exchangeRate = parsedOutput / parsedInput
 
-                const exchangeRateString = 4 < 2 ? formatSignificantDecimalPlaces((exchangeRate).toString(), 6) : ""
+                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
                 setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
             }
             const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
             const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
             let spotRate = exchangeRate
-            switch (tradeType) {
+            switch (getTradeType()) {
                 case TradeType.ADD_LIQUIDITY:
-                    console.log('entering add liquidity case')
-                    inputReserve = await getReserve(inputAddressToUse)
-                    const minToken = BigInt("10000000000000000")
-                    const spotSCXEstimate = await statelessBehodler.addLiquidity(minToken.toString(), inputReserve, 5)
-                    assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
-                    const scxEstimate = BigInt(spotSCXEstimate[0])
-                    if (scxEstimate < minToken) {
-                        console.log('scarcity less than input: ' + (minToken / scxEstimate))
+                    {
+                        inputReserve = await getReserve(inputAddressToUse)
+                        const minToken = BigInt("1000000000000000")
+                        const spotSCXEstimate = await statelessBehodler.addLiquidity(minToken.toString(), inputReserve, 5)
+                        assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
+                        const scxEstimate = BigInt(spotSCXEstimate[0])
+                        spotRate = Number((scxEstimate * BigScarcitySwellFactor) / minToken) / scarcitySwellFactor
                     }
-                    spotRate = Number((scxEstimate * BigScarcitySwellFactor) / minToken) / scarcitySwellFactor
-                    console.log('spot rate ' + spotRate)
                     break;
                 case TradeType.WITHDRAW_LIQUIDITY:
-                    outputReserve = await getReserve(outputAddressToUse)
-                    const minSCX = BigInt("10000000")
-                    const spotTokenEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "10000", minSCX.toString(), 25)
-                    const tokenEstimate = BigInt(spotTokenEstimate)
-                    spotRate = Number(direction === 'IO' ? (minSCX * bigFactor) / tokenEstimate : (tokenEstimate * bigFactor) / minSCX) / Factor
+                    {
+                        outputReserve = await getReserve(outputAddressToUse)
+                        const minToken = BigInt("1000000000000000")
+                        const scxbalance = tokenBalances.filter(t => isScarcityPredicate(t.address))[0].balance
+                        try {
+                            const spotSCXEstimate = await statelessBehodler.withdrawLiquidity(minToken.toString(), outputReserve, scxbalance)
+                            assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
+                            const scxEstimate = BigInt(spotSCXEstimate[0])
+                            spotRate = Number((minToken * bigFactor) / scxEstimate) / Factor
+                        } catch (e) {
+                            if ((e as any).reason === "overflow") {
+                                throw "BEHODLER: liquidity withdrawal too large."
+                            }
+                        }
+                    }
                     break;
+
                 case TradeType.SWAP:
                     inputReserve = BigInt((await getReserve(inputAddressToUse)).toString())
                     outputReserve = BigInt((await getReserve(outputAddressToUse)).toString())
@@ -980,7 +1007,6 @@ export default function (props: {}) {
 
             const exactQuote = spotRate * parsedInput
             const impact = 100 * ((exactQuote - parsedOutput)) / exactQuote
-            console.log({ parsedInput, exactQuote, parsedOutput, impact, spotRate })
             setPriceImpact(formatSignificantDecimalPlaces(`${impact}`, 6))
             setIndependentFieldState("dormant")
         }
@@ -1088,7 +1114,16 @@ export default function (props: {}) {
         outputReserve={reserves[1]}
     /> :
         <div></div>)
-
+    const setNewMenuInputAddress = (address: string) => {
+        setInputValue("")
+        setOutputValue("")
+        setInputAddress(address)
+    }
+    const setNewMenuOutputAddress = (address: string) => {
+        setInputValue("")
+        setOutputValue("")
+        setOutputAddress(address)
+    }
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
@@ -1110,14 +1145,14 @@ export default function (props: {}) {
                                 className={classes.mobileSelectorGrid}
                             >
                                 <Grid item>
-                                    <TokenSelector network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image}
+                                    <TokenSelector network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image}
                                         scale={0.65} mobile balances={tokenBalances} />
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={swapping ? Images[13] : Images[13]} className={classes.monsterMobile} />
+                                    <img width={180} src={swapping ? Images[15] : Images[13]} className={classes.monsterMobile} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector network={networkName} balances={tokenBalances} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
+                                    <TokenSelector network={networkName} balances={tokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
@@ -1150,7 +1185,7 @@ export default function (props: {}) {
                                     </Grid>
                                 </Grid>
                                 <Grid item>
-                                    <BalanceContainer setValue={setInputValue} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                    <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -1183,7 +1218,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     <BalanceContainer
-                                        setValue={setOutputValue}
+                                        setValue={setFormattingTo}
                                         balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
                                         token={outputAddress}
                                         estimate={outputSpotDaiPriceView} />
@@ -1191,9 +1226,10 @@ export default function (props: {}) {
                             </Grid>
                         </Grid>
                         {scxEstimationWarning.length > 0 ?
-
                             <Grid item className={classes.scxEstimationWarning}>
-                                {scxEstimationWarning}
+                                <div className={classes.scxEstimationWarningText}>
+                                    {scxEstimationWarning}
+                                </div>
                             </Grid>
                             : <div></div>}
                         <Grid item>
@@ -1282,7 +1318,7 @@ export default function (props: {}) {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <BalanceContainer setValue={setInputValue} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                        <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1295,17 +1331,17 @@ export default function (props: {}) {
                                     id="central-selector-monster-grid"
                                 >
                                     <Grid item>
-                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
+                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={350} src={swapping ? Images[13] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                <img width={350} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
                                             </Tooltip>
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
+                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1334,7 +1370,7 @@ export default function (props: {}) {
                                     </Grid>
                                     <Grid item>
                                         <BalanceContainer
-                                            setValue={setOutputValue}
+                                            setValue={setFormattingTo}
                                             balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
                                             token={outputAddress}
                                             estimate={outputSpotDaiPriceView} />
@@ -1349,7 +1385,9 @@ export default function (props: {}) {
                     {scxEstimationWarning.length > 0 ?
                         <Tooltip title="For an accurate estimate, edit the other token amount">
                             <Grid item className={classes.scxEstimationWarning}>
-                                {scxEstimationWarning}
+                                <div className={classes.scxEstimationWarningText}>
+                                    {scxEstimationWarning}
+                                </div>
                             </Grid>
                         </Tooltip> : <div></div>}
                     <Grid item>

@@ -19,7 +19,7 @@ const useStyles = (scale) => makeStyles((theme: Theme) => ({
         "&:hover": {
             cursor: "pointer",
             background: "rgba(54,12,87,0.7)",
-            boxShadow: "0 0 10px 1px #fff",
+            boxShadow: "0 0 15px 2px #FFF",
 
         }
     },

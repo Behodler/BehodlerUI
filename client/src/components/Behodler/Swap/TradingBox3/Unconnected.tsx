@@ -8,6 +8,131 @@ import BigNumber from 'bignumber.js'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
+
+const textScaler = (scale) => num => Math.floor(num * scale)
+const scale = textScaler(0.9)
+const inputStyles = makeStyles((theme: Theme) => ({
+    root: {
+        width: scale(310),
+        marginTop:170
+    },
+    mobileRoot: {
+        width: scale(400),
+        background: "#360C57",
+        borderRadius: 10,
+        padding: 10
+    },
+    Direction: {
+
+        // height: 17,
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        // lineHeight: 17,
+        /* identical to box height */
+        color: "darkGrey",
+        textAlign: "center",
+        verticalAlign: " middle",
+    },
+    BalanceContainer: {
+
+    },
+    BalanceLabel: {
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        /* identical to box height */
+
+        color: "darkGrey"
+    },
+    BalanceValue: {
+
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        color: "white"
+    },
+    Max: {
+        /* (MAX) */
+
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        /* identical to box height */
+
+        color: "#80C2FF",
+        cursor: 'pointer'
+
+    },
+    PaddedGridItem: {
+        marginRight: '5px',
+        padding: 0
+    },
+    estimate: {
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        color: "white"
+    },
+    dollarSign: {
+        color: "grey",
+        marginRight: 5,
+        display: "inline"
+    },
+
+    inputWide: {
+        /* Vector */
+        width: scale(300),
+        height: scale(57),
+        background: "#360C57",
+        border: "1px solid rgba(70, 57, 130, 0.5)",
+        boxSizing: "border-box",
+        /* 2.00073731114506 */
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: scale(24),
+        padding: "10px 20px 10px 20px",
+        color: "#FFFFFF",
+        outline: 0,
+        borderRadius: 5,
+        placeholder: {
+            direction: "rtl"
+        }
+    },
+    inputNarrow: {
+        width: scale(270),
+        background: "transparent",
+        border: "none",
+        /* 2.00073731114506 */
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: scale(20),
+        color: "#FFFFFF",
+        outline: 0,
+        placeHolder: {
+            direction: "rtl"
+        }
+
+    }
+}))
+
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
 
@@ -143,7 +268,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: "100%"
+        height: "100%",
+        position: "absolute",
+        top: -15,
+        left:-5
 
     },
     Info: {
@@ -160,6 +288,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
+ 
     },
     flippySwitch: {
         /* Ellipse 18 */
@@ -217,12 +346,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: scale(20),
         width: 400,
         textAlign: "center"
+    },
+    connectionWarning: {
+        textAlign: 'center',
+        color: 'white !important'
     }
 }))
 
-
-const textScaler = (scale) => num => Math.floor(num * scale)
-const scale = textScaler(0.9)
 
 export interface TokenListItem {
     address: string
@@ -240,6 +370,7 @@ export interface TokenBalanceMapping {
 
 export default function (props: {}) {
     const classes = useStyles();
+    const inputClasses = inputStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
 
@@ -263,21 +394,53 @@ export default function (props: {}) {
                                 alignItems="center"
                                 className={classes.mobileSelectorGrid}
                             >
-
+                                <Grid item>
+                                </Grid>
                                 <Grid item>
                                     <img width={180} src={Images[13]} className={classes.monsterMobile} />
                                 </Grid>
-                                <Grid item>
-                                    Connect your Ethereum wallet in order to begin swapping tokens.
+                                <Grid item className={classes.connectionWarning}>
+                                    Connect your wallet to use the Behodler AMM
                                 </Grid>
                             </Grid>
 
                         </Grid>
-                    </Grid>
+                        <Grid item key="mobileGridInput">
+                          
+                        </Grid>
+                        <Grid item key="mobileGridOutput">
+                           
+                        </Grid>
 
+                        <Grid item>
+
+                        </Grid>
+                        <Grid item>
+
+                        </Grid>
+                        <Grid item>
+                            <Grid container
+                                direction="column"
+                                justify="center"
+                                alignItems="center"
+                                spacing={2}
+                                className={classes.Info}
+                            >
+                                <Grid item className={classes.impliedExchangeRate}>
+
+                                </Grid>
+                                <Grid item>
+
+                                </Grid>
+                                <Grid item>
+
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
                 </div>
             </Hidden>
-
             <Hidden mdDown>
 
                 <Grid container
@@ -295,6 +458,24 @@ export default function (props: {}) {
                             alignItems="center"
                             spacing={3}
                         >
+                            <Grid item key="dekstopGridInput">
+                                <Grid
+                                    container
+                                    direction="column"
+                                    justify="flex-start"
+                                    alignItems="stretch"
+                                    spacing={2}
+                                    key={"dekstopGridInput_grid"}
+                                    className={inputClasses.root}
+                                >
+                                    <Grid item>
+
+                                    </Grid>
+                                    <Grid item>
+
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                             <Grid item>
                                 <Grid
                                     container
@@ -304,28 +485,71 @@ export default function (props: {}) {
                                     id="central-selector-monster-grid"
                                 >
                                     <Grid item>
+
+                                    </Grid>
+                                    <Grid item>
                                         <div className={classes.monsterContainer} >
-
                                             <img width={350} src={Images[13]} className={classes.monster} />
-
                                         </div>
                                     </Grid>
+                                    <Grid item>
 
+                                    </Grid>
                                 </Grid>
                             </Grid>
 
+                            <Grid item key="dekstopGridOuput">
+                                <Grid
+                                    container
+                                    direction="column"
+                                    justify="flex-start"
+                                    alignItems="stretch"
+                                    spacing={2}
+                                    key={"dekstopGridOutput_grid"}
+                                    className={inputClasses.root}
+                                >
+                                    <Grid item>
+                                        <div key={"desktopOutput"}>
+
+                                        </div>
+                                    </Grid>
+                                    <Grid item>
+
+                                    </Grid>
+                                </Grid>
+
+
+                            </Grid>
                         </Grid>
 
                     </Grid>
+                    <Grid item className={classes.connectionWarning}>
+                                    Connect your wallet to use the Behodler AMM
+                                </Grid>
                     <Grid item>
-                        Connect your Ethereum wallet in order to begin swapping tokens.
+
                     </Grid>
+                    <Grid item>
+                        <Grid container
+                            direction="column"
+                            justify="center"
+                            alignItems="center"
+                            spacing={2}
+                            className={classes.Info}
+                        >
 
+                            <Grid item className={classes.impliedExchangeRate}>
+
+                            </Grid>
+                            <Grid item className={classes.moreInfo}>
+
+                            </Grid>
+                            <Grid item>
+                             
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 </Grid>
-
-
-
             </Hidden>
-        </Box >
-    )
+        </Box >)
 }
