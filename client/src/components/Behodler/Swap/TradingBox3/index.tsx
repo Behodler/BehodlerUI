@@ -1020,7 +1020,6 @@ export default function (props: {}) {
     const swapValidationCallback = useCallback(async () => {
         if (independentFieldState === "validating swap") {
             try {
-
                 await validateLiquidityExit()
                 if (validateBalances())
                     setSwapState(SwapState.POSSIBLE)
