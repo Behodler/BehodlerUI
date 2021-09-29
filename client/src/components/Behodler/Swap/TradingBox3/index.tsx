@@ -403,6 +403,11 @@ enum TradeType {
     WITHDRAW_LIQUIDITY
 }
 
+enum SwapState {
+    IMPOSSIBLE,
+    DISABLED,
+    POSSIBLE
+}
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const scarcitySwellFactor = 1000000000000
@@ -559,10 +564,8 @@ export default function (props: {}) {
     //NEW HOOKS END
 
     const [inputValue, setInputValue] = useLoggedState<string>('')
-    const [inputValWei, setInputValWei] = useLoggedState<string>('')
     const [outputValue, setOutputValue] = useLoggedState<string>('')
-    const [outputValWei, setOutputValWei] = useLoggedState<string>('')
-    const [swapEnabled, setSwapEnabled] = useLoggedState<boolean>(false)
+    const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
     const [independentField, setIndependentField] = useLoggedState<IndependentField>({
         target: 'FROM',
         newValue: ''
@@ -581,10 +584,6 @@ export default function (props: {}) {
     const [expectedFee, setExpectedFee] = useLoggedState<string>("")
     const [priceImpact, setPriceImpact] = useLoggedState<string>("")
 
-    if (3 > 10) {
-        setExpectedFee('d')
-        setPriceImpact('3')
-    }
     const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
         if (target === 'FROM') {
             setInputValue(newValue)
@@ -594,8 +593,8 @@ export default function (props: {}) {
             setOutputValue(newValue)
         }
 
-        if (swapEnabled)
-            setSwapEnabled(false)
+        if (swapState !== SwapState.IMPOSSIBLE)
+            setSwapState(SwapState.IMPOSSIBLE)
 
         setIndependentField({
             target,
@@ -633,7 +632,7 @@ export default function (props: {}) {
 
     const spotPriceCallback = useCallback(async () => {
         setScxEstimationWarning('')
-        setSwapEnabled(false)
+        setSwapState(SwapState.IMPOSSIBLE)
         // setInputValue("")
         // setOutputValue("")
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
@@ -686,8 +685,7 @@ export default function (props: {}) {
         setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
     }
 
-    let primaryOptions = { from: account, gas: undefined };
-    let ethOptions = { from: account, value: inputValWei, gas: undefined };
+
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean =>
         tokenDropDownList.filter((item) => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
@@ -704,9 +702,9 @@ export default function (props: {}) {
         }
         const addressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
         setInputBurnable((await walletContextProps.contracts.behodler.Behodler2.Lachesis.cut(addressToUse).call({ from: account }))[1])
-    }, [inputAddress, swapEnabled])
+    }, [inputAddress, swapState])
 
-    useEffect(() => { inputBurnableCallback() }, [inputAddress, swapEnabled])
+    useEffect(() => { inputBurnableCallback() }, [inputAddress, swapState])
 
     useEffect(() => {
         if (!inputEnabled && !isScarcityPredicate(inputAddress)) {
@@ -768,6 +766,11 @@ export default function (props: {}) {
     const swapHashBack = hashBack(TXType.swap)
 
     const swap2Callback = useCallback(async () => {
+        const inputValWei = API.toWei(inputValue)
+        const outputValWei = API.toWei(outputValue)
+        const primaryOptions = { from: account, gas: undefined };
+        const ethOptions = { from: account, value: inputValWei, gas: undefined };
+
         if (swapClicked) {
             if (inputAddress.toLowerCase() === scarcityAddress) {
                 behodler
@@ -822,7 +825,7 @@ export default function (props: {}) {
             const tradeType = getTradeType()
             setInputAddress(outputAddress)
             setOutputAddress(inputAddressTemp)
-            if (swapEnabled) {
+            if (swapState !== SwapState.IMPOSSIBLE) {
                 if (tradeType === TradeType.SWAP || tradeType === TradeType.WITHDRAW_LIQUIDITY) {
                     updateIndependentField('FROM')(oldValues[1], true)
                 } else {
@@ -841,8 +844,7 @@ export default function (props: {}) {
         const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
         const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
         const inputValToUse = API.toWei(inputValue)
-        setInputValWei(inputValToUse)
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call({ from: account })).toString());
         let outputEstimate, inputReserve, outputReserve
         switch (getTradeType()) {
             case TradeType.ADD_LIQUIDITY:
@@ -855,7 +857,7 @@ export default function (props: {}) {
             case TradeType.WITHDRAW_LIQUIDITY:
                 assert(inputValue.trim() !== '0', '')
                 outputReserve = await getReserve(outputAddressToUse)
-                setScxEstimationWarning("Warning: estimating tokens released from an SCX input can be inaccurate.")
+                setScxEstimationWarning("")
                 outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
                 break;
             case TradeType.SWAP:
@@ -880,13 +882,12 @@ export default function (props: {}) {
         const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
         const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
         const outputValToUse = API.toWei(outputValue)
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
-        setOutputValWei(outputValToUse)
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call({ from: account })).toString());
         let inputEstimate, inputReserve, outputReserve
         switch (getTradeType()) {
             case TradeType.ADD_LIQUIDITY:
                 inputReserve = await getReserve(inputAddressToUse)
-                setScxEstimationWarning("Warning: estimating tokens required to produce an SCX output can be inaccurate.")
+                setScxEstimationWarning("")
                 const tokensToRelease = BigInt(inputReserve) / BigInt(2)
                 inputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(inputReserve, tokensToRelease.toString(), ((BigInt(outputValToUse) * BigInt(102) / BigInt(100))).toString(), 25)
                 break;
@@ -938,7 +939,7 @@ export default function (props: {}) {
             else
                 setInputValue(exception)
 
-            setSwapEnabled(false)
+            setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
         }
     }, [independentFieldState])
@@ -1021,9 +1022,13 @@ export default function (props: {}) {
             try {
 
                 await validateLiquidityExit()
-                setSwapEnabled(true)
+                if (validateBalances())
+                    setSwapState(SwapState.POSSIBLE)
+                else
+                    setSwapState(SwapState.DISABLED)
                 setIndependentFieldState("updating price impact")
             } catch (e) {
+                setSwapState(SwapState.IMPOSSIBLE)
                 console.warn('validation failed ' + e)
                 setIndependentFieldState("dormant")
             }
@@ -1034,13 +1039,17 @@ export default function (props: {}) {
         swapValidationCallback()
     }, [independentFieldState])
 
+    const validateBalances = (): boolean => {
+        const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address === inputAddress)[0].balance))
+        return (balanceOfInput >= parseFloat(inputValue))
+    }
 
     const validateLiquidityExit = async () => {
         if (isScarcityPredicate(outputAddress)) {
             return
         }
 
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call(primaryOptions)).toString());
+        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call({ from: account })).toString());
         assert(parseFloat(inputValue) > 0 && parseFloat(outputValue) > 0, 'trade too small')
         const O_i = BigInt(await getReserve(outputAddress))
         const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
@@ -1050,7 +1059,7 @@ export default function (props: {}) {
             throw 'exit liquidity zero'
         }
 
-        const bigOutput = BigInt(outputValWei)
+        const bigOutput = BigInt(API.toWei(outputValue))
         const exitRatio = (bigOutput * bigFactor) / (O_i * bigFactor);
         if (exitRatio > maxLiquidityExit) {
             fieldSet('liquidity impact too large')
@@ -1062,7 +1071,7 @@ export default function (props: {}) {
     const toBalance = tokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
     const swapAction = async () => {
-        if (swapEnabled) {
+        if (swapState === SwapState.POSSIBLE) {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
@@ -1085,7 +1094,8 @@ export default function (props: {}) {
                 })
         }
     }
-    const greySwap = !swapEnabled
+
+    const greySwap = swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE
     const [showMoreInfo, setShowMoreInfo] = useLoggedState<boolean>(false)
     const [showMobileInfo, setShowMobileInfo] = useLoggedState<boolean>(false)
     const [reserves, setReserves] = useLoggedState<string[]>(['', ''])
@@ -1097,13 +1107,13 @@ export default function (props: {}) {
         const inputReserve = isScarcityPredicate(inputAddress) ? "" : API.fromWei((await getReserve(inputTokenToload)).toString())
         const outputReserve = isScarcityPredicate(outputAddress) ? "" : API.fromWei((await getReserve(outputTokenToLoad)).toString())
         setReserves([formatSignificantDecimalPlaces(inputReserve, 2), formatSignificantDecimalPlaces(outputReserve, 2)])
-    }, [swapEnabled])
+    }, [swapState])
     useEffect(() => {
         setReservesCallback()
-    }, [swapEnabled])
-    const toggleMobileInfo = () => swapEnabled ? setShowMobileInfo(!showMobileInfo) : setShowMobileInfo(false)
+    }, [swapState])
+    const toggleMobileInfo = () => swapState !== SwapState.IMPOSSIBLE ? setShowMobileInfo(!showMobileInfo) : setShowMobileInfo(false)
 
-    const MoreInfoOverlay = (props: { mobile?: boolean }) => (swapEnabled && (showMoreInfo || showMobileInfo) ? <MoreInfo
+    const MoreInfoOverlay = (props: { mobile?: boolean }) => (swapState !== SwapState.IMPOSSIBLE && (showMoreInfo || showMobileInfo) ? <MoreInfo
         burnFee={formatSignificantDecimalPlaces(expectedFee, 8)}
         inputType={isScarcityPredicate(inputAddress) ? InputType.scx : (inputBurnable ? InputType.burnable : InputType.pyro)}
         priceImpact={`${formatSignificantDecimalPlaces(priceImpact, 2)}`}
@@ -1124,6 +1134,7 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
+
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
@@ -1149,7 +1160,7 @@ export default function (props: {}) {
                                         scale={0.65} mobile balances={tokenBalances} />
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={swapping ? Images[15] : Images[13]} className={classes.monsterMobile} />
+                                    <img width={180} src={swapping ? Images[13] : Images[13]} className={classes.monsterMobile} />
                                 </Grid>
                                 <Grid item>
                                     <TokenSelector network={networkName} balances={tokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
@@ -1234,7 +1245,7 @@ export default function (props: {}) {
                             : <div></div>}
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
-                                <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={swapAction}>
+                                <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={swapState === SwapState.IMPOSSIBLE && false} variant="contained" color="primary" size="large" onClick={swapAction}>
                                     {swapText}
                                 </Button>
                             </Box>
@@ -1258,7 +1269,7 @@ export default function (props: {}) {
                                     <Button
                                         color="secondary" variant="outlined"
                                         onClick={() => toggleMobileInfo()}
-                                        disabled={!swapEnabled}
+                                        disabled={swapState === SwapState.IMPOSSIBLE}
                                     >
                                         More info
                                     </Button>
@@ -1336,7 +1347,7 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={350} src={swapping ? Images[15] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                <img width={350} src={swapping ? Images[13] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
                                             </Tooltip>
                                         </div>
                                     </Grid>
@@ -1394,7 +1405,7 @@ export default function (props: {}) {
 
                         <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
 
-                            <Button className={greySwap ? classes.swapButtonDisabled : classes.swapButton} disabled={!swapEnabled && false} variant="contained" color="primary" size="large" onClick={() => { if (!greySwap) swapAction() }}>
+                            <Button className={greySwap ? classes.swapButtonDisabled : classes.swapButton} disabled={swapState === SwapState.IMPOSSIBLE && false} variant="contained" color="primary" size="large" onClick={() => { if (!greySwap) swapAction() }}>
                                 {swapText}
                             </Button>
 
@@ -1410,14 +1421,14 @@ export default function (props: {}) {
                         >
 
                             <Grid item className={classes.impliedExchangeRate}>
-                                {swapEnabled ? impliedExchangeRate : ""}
+                                {swapState !== SwapState.IMPOSSIBLE ? impliedExchangeRate : ""}
                             </Grid>
                             <Grid item className={classes.moreInfo}>
                                 <MoreInfoOverlay />
                                 <Button color="secondary" variant="outlined"
                                     onMouseOver={() => setShowMoreInfo(true)}
                                     onMouseLeave={() => setShowMoreInfo(false)}
-                                    disabled={!swapEnabled}
+                                    disabled={swapState === SwapState.IMPOSSIBLE}
                                 >
                                     More info
 
