@@ -8,7 +8,7 @@ import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
-import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
+import { ContainerContext } from '../../../Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
 import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
@@ -476,7 +476,7 @@ export default function (props: {}) {
     type scxEstimationWarningMesssage = '' | 'Warning: estimating tokens released from an SCX input can be inaccurate.'
         | 'Warning: estimating tokens required to produce an SCX output can be inaccurate.'
     const [scxEstimationWarning, setScxEstimationWarning] = useLoggedState<scxEstimationWarningMesssage>('')
-    //Estimating SCX from a given number of input tokens is 
+    //Estimating SCX from a given number of input tokens is
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -925,7 +925,7 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()

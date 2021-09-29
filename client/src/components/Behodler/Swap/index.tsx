@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { useContext } from 'react'
-import TradingBox3 from './TradingBox3'
 import { makeStyles, createStyles, Box } from '@material-ui/core'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
-import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
-import { WalletContext, WalletContextProvider } from 'src/components/Contexts/WalletStatusContext'
+
+import TradingBox3 from './TradingBox3'
+import { ContainerContext } from '../../Contexts/UIContainerContextDev'
+import { WalletContext, WalletContextProvider } from '../../Contexts/WalletStatusContext'
 import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
 import backImage from "../../../images/new/behodler-swap-bg.jpg";
