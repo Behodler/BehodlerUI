@@ -633,8 +633,7 @@ export default function (props: {}) {
     const spotPriceCallback = useCallback(async () => {
         setScxEstimationWarning('')
         setSwapState(SwapState.IMPOSSIBLE)
-        // setInputValue("")
-        // setOutputValue("")
+
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
