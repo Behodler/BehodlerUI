@@ -92,5 +92,8 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "resolutions": {
+        "jest": "24.9.0"
     }
 }
