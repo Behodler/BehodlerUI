@@ -2,7 +2,7 @@ const postcss = require('rollup-plugin-postcss');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 // const image = require('@rollup/plugin-image');
-const images = require('rollup-plugin-image-files');
+const images = require('./src/util/rollup-plugin-image-files');
 const url = require('@rollup/plugin-url');
 const svgr = require('@svgr/rollup').default;
 

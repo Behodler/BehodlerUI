@@ -1,6 +1,6 @@
 {
     "name": "behodler-ui",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "main": "dist/index.js",
     "typings": "dist/components/BehodlerUISwap/index.d.ts",
     "files": [
@@ -41,6 +41,7 @@
         "react-scripts": "^3.1.0",
         "react-swipeable-views": "^0.13.9",
         "rollup-plugin-image-files": "^1.4.2",
+        "rollup-pluginutils": "^2.8.2",
         "rxjs": "^6.5.1",
         "truffle-core": "^5.0.14",
         "typeface-roboto": "0.0.75",
