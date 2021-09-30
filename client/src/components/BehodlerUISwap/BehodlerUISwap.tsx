@@ -10,6 +10,8 @@ import { StatelessBehodlerContextProvider } from '../Behodler/Swap/EVM_js/contex
 import Unconnected from './TradingBox3/Unconnected'
 import backImage from "../../images/new/behodler-swap-bg.jpg";
 
+export const swapBackgroundImage = backImage;
+
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {},
@@ -78,8 +80,8 @@ const useStyles = makeStyles((theme) =>
             backdropFilter: "blur(4px)",
             height: "100%",
             width: "100%",
-            backgroundImage: `url(${backImage})`,
-            background: '#C4C4C4',
+            // backgroundImage: `url(${backImage})`,
+            background: '#181334',
             backgroundRepeat: "repeat-y",
             backgroundSize: "100% 100%",
             overflowY: "scroll",
