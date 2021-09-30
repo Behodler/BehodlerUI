@@ -25,5 +25,5 @@
         "sourceMap": true,
         "declaration": true
     },
-    "include": ["./src/components/Behodler/Swap/index.ts", "./src/**/*d.ts"]
+    "include": ["./src/components/BehodlerUISwap/index.ts", "./src/**/*d.ts"]
 }

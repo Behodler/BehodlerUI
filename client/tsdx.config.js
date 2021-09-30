@@ -8,9 +8,9 @@ const svgr = require('@svgr/rollup').default;
 module.exports = {
     rollup(config, options) {
         config.plugins = [
-            url(),
-            svgr(),
             image(),
+            url({include: ['**/*.webp', '**/*.otf']}),
+            svgr(),
             postcss({
                 plugins: [
                     autoprefixer(),
