@@ -4,11 +4,11 @@ import { makeStyles, createStyles, Box } from '@material-ui/core'
 import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 
 import TradingBox3 from './TradingBox3'
-import { ContainerContext } from '../../Contexts/UIContainerContextDev'
-import { WalletContext, WalletContextProvider } from '../../Contexts/WalletStatusContext'
-import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
+import { ContainerContext } from '../Contexts/UIContainerContextDev'
+import { WalletContext, WalletContextProvider } from '../Contexts/WalletStatusContext'
+import { StatelessBehodlerContextProvider } from '../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
-import backImage from "../../../images/new/behodler-swap-bg.jpg";
+import backImage from "../../images/new/behodler-swap-bg.jpg";
 
 const useStyles = makeStyles((theme) =>
     createStyles({

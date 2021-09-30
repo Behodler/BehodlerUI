@@ -2,7 +2,7 @@
     "name": "behodler-ui",
     "version": "0.1.0",
     "main": "dist/index.js",
-    "typings": "dist/components/Behodler/Swap/index.d.ts",
+    "typings": "dist/components/BehodlerUISwap/index.d.ts",
     "files": [
         "dist"
     ],
@@ -57,7 +57,7 @@
         "devserver": "docker-compose up --remove-orphans dev",
         "ganache": "docker-compose up --remove-orphans -d ganache",
         "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start",
-        "build:package": "tsdx build --entry src/components/Behodler/Swap/index.ts --tsconfig package.tsconfig.json --transpileOnly",
+        "build:package": "tsdx build --entry src/components/BehodlerUISwap/index.ts --tsconfig package.tsconfig.json --transpileOnly",
         "prepare": "yarn build:package"
     },
     "devDependencies": {
