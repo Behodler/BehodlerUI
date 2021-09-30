@@ -1,7 +1,6 @@
 {
     "name": "behodler-ui",
     "version": "0.1.0",
-    "private": true,
     "main": "dist/index.js",
     "typings": "dist/components/Behodler/Swap/index.d.ts",
     "files": [
@@ -11,7 +10,7 @@
         "node": ">=14.17.0"
     },
     "publishConfig": {
-        "registry": "https://npm.pkg.github.com/"
+        "registry": "http://localhost:4873/"
     },
     "repository": "git@github.com:Behodler/BehodlerUI.git",
     "module": "dist/behodler-ui.esm.js",
