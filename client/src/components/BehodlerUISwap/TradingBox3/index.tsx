@@ -1039,7 +1039,7 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const validateBalances = (): boolean => {
-        const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address === inputAddress)[0].balance))
+        const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address.toLowerCase() === inputAddress.toLowerCase())[0].balance))
         return (balanceOfInput >= parseFloat(inputValue))
     }
 
