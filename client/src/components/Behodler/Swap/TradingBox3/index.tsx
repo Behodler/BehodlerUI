@@ -633,8 +633,7 @@ export default function (props: {}) {
     const spotPriceCallback = useCallback(async () => {
         setScxEstimationWarning('')
         setSwapState(SwapState.IMPOSSIBLE)
-        // setInputValue("")
-        // setOutputValue("")
+
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
@@ -859,6 +858,7 @@ export default function (props: {}) {
                 outputReserve = await getReserve(outputAddressToUse)
                 setScxEstimationWarning("")
                 outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
+                console.log('no excpetion')
                 break;
             case TradeType.SWAP:
                 setScxEstimationWarning("")
@@ -1039,7 +1039,7 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const validateBalances = (): boolean => {
-        const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address === inputAddress)[0].balance))
+        const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address.toLowerCase() === inputAddress.toLowerCase())[0].balance))
         return (balanceOfInput >= parseFloat(inputValue))
     }
 
