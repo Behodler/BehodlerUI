@@ -19,6 +19,7 @@ import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
+import PyroWeth10ProxyJson from '../blockchain/behodler2UI/PyroWeth10Proxy.json' 
 
 import BigNumber from 'bignumber.js'
 
@@ -39,6 +40,7 @@ import UniswapV2FactoryJSON from './liquidQueue/UniswapV2Factory.json'
 import LiquidQueueAddresses from './liquidQueue/Addresses.json'
 import UniswapV2Factory from './contractInterfaces/liquidQueue/UniswapV2Factory'
 import { UniswapV2Effects } from './observables/UniswapEffects'
+import { PyroWeth10Proxy } from './contractInterfaces/behodler2/PyroWeth10Proxy'
 
 interface AccountObservable {
     account: string
@@ -392,7 +394,11 @@ class ethereumAPI {
         let liquidityReceiver: LiquidityReceiver = liquidityDeployment.methods
         liquidityReceiver.address = addresses.liquidityReceiver
 
-        return { Behodler2: behodler2, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10 }
+        const pyroWeth10ProxyDeployment = await this.deployBehodlerContract(PyroWeth10ProxyJson.abi, addresses.pyroWeth10Proxy)
+        let pyroWeth10Proxy: PyroWeth10Proxy = pyroWeth10ProxyDeployment.methods
+        pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
+
+        return { Behodler2: behodler2, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10,PyroWeth10Proxy:pyroWeth10Proxy }
     }
 }
 

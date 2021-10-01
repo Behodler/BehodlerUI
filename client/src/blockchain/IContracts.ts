@@ -14,12 +14,14 @@ import { Lachesis } from './contractInterfaces/behodler/hephaestus/Lachesis'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
 import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
+import {PyroWeth10Proxy} from './contractInterfaces/behodler2/PyroWeth10Proxy'
 
 export interface Behodler2Contracts {
 	Behodler2: Behodler2,
 	Lachesis: Lachesis2,
 	LiquidityReceiver: LiquidityReceiver
 	Weth10: Weth,
+	PyroWeth10Proxy: PyroWeth10Proxy
 }
 
 export interface BehodlerContracts {
@@ -186,14 +188,22 @@ const defaultLachesis: Lachesis = {
 	cut: (token: address) => { }
 }
 
-
-
+const defaultPyroTokenRegistry: PyroWeth10Proxy = {
+	...defaultOwnable,
+	baseToken: () => {},
+    redeem: (amount: {},) => {},
+    mint: (baseTokenAmount: {},) => {},
+    calculateMintedPyroWeth: (baseTokenAmount: {},) => {},
+    calculateRedeemedWeth: (amount: {},) => {},
+    redeemRate: () => {}
+}
 
 const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
 	Lachesis: defaultLachesis2,
 	LiquidityReceiver: defaultLiquidityReceiver,
-	Weth10: defaultWeth
+	Weth10: defaultWeth,
+	PyroWeth10Proxy: defaultPyroTokenRegistry
 }
 
 

@@ -1,64 +1,55 @@
 {
     "main": [
         {
-            "name": "OXT",
-            "address": "0x4575f41308ec1483f3d399aa9a2826d74da13deb"
-        },
-        {
-            "name": "PNK",
-            "address": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d"
-        },
-        {
-            "name": "Weth",
-            "address": "0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F"
-        },
-        {
-            "name": "Link",
-            "address": "0x514910771af9ca656af840dff83e8264ecf986ca"
-        },
-        {
-            "name": "WeiDai",
-            "address": "0xaFEf0965576070D1608F374cb14049EefaD218Ec"
-        },
-        {
-            "name": "Loom",
-            "address": "0x42476F744292107e34519F9c357927074Ea3F75D"
-        },
-        {
             "name": "Scarcity",
-            "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21"
-        },
-        {
-            "name": "WBTC",
-            "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-        },
-        {
-            "name": "Maker",
-            "address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
-        },
-        {
-            "name": "BAT",
-            "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef"
+            "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
+            "pyro": ""
         },
         {
             "name": "Dai",
-            "address": "0x6b175474e89094c44da98b954eedeac495271d0f"
+            "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "pyro": ""
+        },
+
+        {
+            "name": "OXT",
+            "address": "0x4575f41308ec1483f3d399aa9a2826d74da13deb",
+            "pyro": "0x0c4b748DB1F78A679401608C27B5637Cd0a31eCf"
         },
         {
-            "name": "EYE",
-            "address": "0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
+            "name": "PNK",
+            "address": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d",
+            "pyro": "0xBe210a9573d2654AFe04488C2556554466862367"
+        },
+        {
+            "name": "Weth",
+            "address": "0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F",
+            "pyro": "0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12"
+        },
+        {
+            "name": "Link",
+            "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+            "pyro": "0x0B30de2a2aDA5fc5cA43C2320f68FEfb1D72d8Cb"
+        },
+        {
+            "name": "Loom",
+            "address": "0x42476F744292107e34519F9c357927074Ea3F75D",
+            "pyro": "0x9e5655054fE7698F108A76Ca221aD6F0A1358C33"
         },
         {
             "name": "EYE/DAI UniV2LP",
-            "address": "0x890ff7533ca0c44f33167fdeeeab1ca7e690634f"
+            "address": "0x890ff7533ca0c44f33167fdeeeab1ca7e690634f",
+            "pyro": "0x53c21C48F77df17b158c5A146ABCCaFc9a7CE9F2"
         },
         {
             "name": "SCX/ETH UniV2LP",
-            "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb"
+            "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
+            "pyro": "0x74C4ef0ef4C96DdFb3128CA8DcB8C77a00139Cb3"
         },
         {
             "name": "SCX/EYE UniV2LP",
-            "address": "0xf047ee812b21050186f86106f6cabdfec35366c6"
+            "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
+            "pyro": "0xf929e448618A455513108976E3439C523D0f7f53"
         }
     ],
     "morden": [],
