@@ -8,9 +8,11 @@ import { ContainerContext } from '../Contexts/UIContainerContextDev'
 import { WalletContext, WalletContextProvider } from '../Contexts/WalletStatusContext'
 import { StatelessBehodlerContextProvider } from '../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
-import backImage from "../../images/new/behodler-swap-bg.jpg";
+import backImage from "../../images/new/behodler-swap-bg.jpg"
 
-export const swapBackgroundImage = backImage;
+import './fonts/gilroy-font.css'
+
+export const swapBackgroundImage = backImage
 
 const useStyles = makeStyles((theme) =>
     createStyles({

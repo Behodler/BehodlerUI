@@ -1,0 +1,17 @@
+@font-face {
+  src: url('./SVN-Gilroy-Regular.otf');
+  font-family: Gilroy;
+  font-weight: 400;
+}
+
+@font-face {
+  src: url('./SVN-Gilroy-Medium.otf');
+  font-family: Gilroy;
+  font-weight: 600;
+}
+
+@font-face {
+  src: url('./SVN-Gilroy-Bold.otf');
+  font-family: Gilroy;
+  font-weight: 700;
+}
