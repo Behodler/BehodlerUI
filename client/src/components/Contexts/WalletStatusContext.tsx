@@ -34,32 +34,31 @@ function WalletContextProvider(props: { children: any }) {
     const [web3, setWeb3] = useState<Web3>()
     const [networkName, setNetworkName] = useState<string>("")
     const [initialized, setInitialized] = useState<boolean>(false)
-    const { active, chainId, account } = useActiveWeb3React()
+    const { active, chainId, account,  connector } = useActiveWeb3React()
+
+    console.info('connector', connector);
 
     const initializeWeb3Callback = useCallback(async () => {
-        if (chainId) {
-            console.info('setWeb3');
+        if (chainId && connector) {
+            const web3Provider = await connector.getProvider()
+            API.web3 = new Web3(web3Provider)
             setWeb3(API.web3)
         }
-    }, [chainId])
+    }, [chainId, connector])
 
     useEffect(() => {
         initializeWeb3Callback()
     }, [active, chainId, account])
 
     const initializeContractsCallback = useCallback(async () => {
-        console.info('initializeContractsCallback');
+        console.info('initializeContractsCallback', web3);
         if (web3 && chainId && account) {
             const c = await API.initialize(chainId, account)
             setContracts(c)
-            console.info('contracts', c);
             const owner = await c.behodler.Behodler.primary().call({ from: account })
-            console.info('owner', owner);
             setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
             setNetworkName(networkNameMapper(chainId))
-            console.info('NetworkName', networkNameMapper(chainId));
             setInitialized(true)
-            console.info('initialized');
         }
     }, [web3, chainId, account])
 
