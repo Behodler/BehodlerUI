@@ -36,8 +36,6 @@ function WalletContextProvider(props: { children: any }) {
     const [initialized, setInitialized] = useState<boolean>(false)
     const { active, chainId, account,  connector } = useActiveWeb3React()
 
-    console.info('connector', connector);
-
     const initializeWeb3Callback = useCallback(async () => {
         if (chainId && connector) {
             const web3Provider = await connector.getProvider()
@@ -51,7 +49,6 @@ function WalletContextProvider(props: { children: any }) {
     }, [active, chainId, account])
 
     const initializeContractsCallback = useCallback(async () => {
-        console.info('initializeContractsCallback', web3);
         if (web3 && chainId && account) {
             const c = await API.initialize(chainId, account)
             setContracts(c)

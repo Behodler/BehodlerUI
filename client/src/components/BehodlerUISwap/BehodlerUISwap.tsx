@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { makeStyles, createStyles, Box } from '@material-ui/core'
 
 import TradingBox3 from './TradingBox3'
-import { WalletContext } from '../Contexts/WalletStatusContext'
+import { WalletContext, WalletContextProvider } from '../Contexts/WalletStatusContext'
 import { StatelessBehodlerContextProvider } from '../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
 import backImage from "../../images/new/behodler-swap-bg.jpg"
@@ -101,8 +101,6 @@ function Swap() {
     const { active, chainId, account } = useActiveWeb3React()
     const classes = useStyles();
 
-    console.info('Swap', { active, chainId, account, initialized });
-
     try {
         return (
             <Box className={classes.layoutFrameroot}>
@@ -124,4 +122,8 @@ function Swap() {
     }
 }
 
-export const BehodlerUISwap = Swap
+export const BehodlerUISwap = (props: any) => (
+    <WalletContextProvider>
+        <Swap {...props} />
+    </WalletContextProvider>
+)
