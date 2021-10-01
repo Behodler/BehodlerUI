@@ -1,16 +1,15 @@
 import * as React from 'react'
 import { useContext } from 'react'
 import { makeStyles, createStyles, Box } from '@material-ui/core'
-import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 
 import TradingBox3 from './TradingBox3'
-import { ContainerContext } from '../Contexts/UIContainerContextDev'
 import { WalletContext, WalletContextProvider } from '../Contexts/WalletStatusContext'
 import { StatelessBehodlerContextProvider } from '../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
 import backImage from "../../images/new/behodler-swap-bg.jpg"
 
 import './fonts/gilroy-font.css'
+import useActiveWeb3React from "./hooks/useActiveWeb3React";
 
 export const swapBackgroundImage = backImage
 
@@ -82,11 +81,6 @@ const useStyles = makeStyles((theme) =>
             // backdropFilter: "blur(4px)",
             height: "100%",
             width: "100%",
-            // backgroundImage: `url(${backImage})`,
-            // background: '#181334',
-            // backgroundRepeat: "repeat-y",
-            // backgroundSize: "100% 100%",
-            // overflowY: "scroll",
         }, content: {
             width: "100%",
             margin: 0,
@@ -103,9 +97,8 @@ const useStyles = makeStyles((theme) =>
 )
 
 function Swap() {
-    const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
-    const chainId = uiContainerContextProps.walletContext.chainId || 0;
-    const account = uiContainerContextProps.walletContext.account || '0x0'
+    const { initialized } = useContext(WalletContext);
+    const { active, chainId, account } = useActiveWeb3React()
     const classes = useStyles();
 
     try {
@@ -113,9 +106,13 @@ function Swap() {
             <Box className={classes.layoutFrameroot}>
                 <Box className={classes.content}>
                     <Box className={classes.mainContent} flexGrow={1}>
-                        <WalletContextProvider containerProps={uiContainerContextProps} chainId={chainId} accountId={account}>
-                            <ConnectedDapp />
-                        </WalletContextProvider>
+                        <div className={classes.root}>
+                            {active && chainId && account && initialized ? (
+                                <StatelessBehodlerContextProvider>
+                                    <TradingBox3 />
+                                </StatelessBehodlerContextProvider>
+                            ) : <Unconnected />}
+                        </div>
                     </Box>
                 </Box>
             </Box>
@@ -125,16 +122,8 @@ function Swap() {
     }
 }
 
-function ConnectedDapp() {
-    const walletContextProps = useContext(WalletContext);
-    const classes = useStyles()
-    return <div className={classes.root}>
-        {walletContextProps.initialized ?
-            <StatelessBehodlerContextProvider>
-                <TradingBox3 />
-            </StatelessBehodlerContextProvider>
-            : <Unconnected />}
-    </div>
-}
-
-export const BehodlerUISwap = Swap
+export const BehodlerUISwap = props => (
+    <WalletContextProvider>
+        <Swap {...props} />
+    </WalletContextProvider>
+)
