@@ -34,7 +34,7 @@ function WalletContextProvider(props: { children: any }) {
     const [networkName, setNetworkName] = useState<string>("")
     const [initialized, setInitialized] = useState<boolean>(false)
     const { active, chainId, account } = useActiveWeb3React()
-    
+
     const initializeWeb3Callback = useCallback(async () => {
         if (chainId && chainId > 0) {
             console.info('setWeb3');
