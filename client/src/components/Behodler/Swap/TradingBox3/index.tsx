@@ -255,7 +255,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     Direction: {
 
         // height: 17,
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -271,7 +271,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     BalanceLabel: {
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -283,7 +283,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -294,7 +294,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -311,7 +311,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     estimate: {
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -332,7 +332,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
         boxSizing: "border-box",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(24),
@@ -350,7 +350,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
         border: "none",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(20),

@@ -31,7 +31,7 @@ const useStyles = makeStyles(() =>
             body: {
                 height: '100%',
                 width: '100%',
-                fontFamily: 'Gilroy-medium',
+                fontFamily: 'Gilroy',
             },
             '#root': {
                 height: '100%',

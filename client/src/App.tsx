@@ -11,7 +11,7 @@ const theme = createTheme({
         type: 'light',
     },
     typography: {
-        fontFamily: 'Gilroy-medium',
+        fontFamily: 'Gilroy',
         //fontSize:11
     },
 })

@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         boxSizing: "border-box",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(24),
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         border: "none",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(20),
