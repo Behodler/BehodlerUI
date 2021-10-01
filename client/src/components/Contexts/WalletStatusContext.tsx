@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Web3 from 'web3'
 import { useState, useEffect, useCallback } from 'react'
+
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import useActiveWeb3React from "../BehodlerUISwap/hooks/useActiveWeb3React";
@@ -36,7 +37,7 @@ function WalletContextProvider(props: { children: any }) {
     const { active, chainId, account } = useActiveWeb3React()
 
     const initializeWeb3Callback = useCallback(async () => {
-        if (chainId && chainId > 0) {
+        if (chainId) {
             console.info('setWeb3');
             setWeb3(API.web3)
         }
@@ -47,13 +48,18 @@ function WalletContextProvider(props: { children: any }) {
     }, [active, chainId, account])
 
     const initializeContractsCallback = useCallback(async () => {
-        if (web3 && chainId && chainId > 0 && account) {
+        console.info('initializeContractsCallback');
+        if (web3 && chainId && account) {
             const c = await API.initialize(chainId, account)
             setContracts(c)
+            console.info('contracts', c);
             const owner = await c.behodler.Behodler.primary().call({ from: account })
+            console.info('owner', owner);
             setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
             setNetworkName(networkNameMapper(chainId))
+            console.info('NetworkName', networkNameMapper(chainId));
             setInitialized(true)
+            console.info('initialized');
         }
     }, [web3, chainId, account])
 

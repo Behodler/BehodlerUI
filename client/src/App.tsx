@@ -11,6 +11,7 @@ import GlobalStyles from './styles/GlobalStyles'
 import { Web3ContextProvider, NetworkContextName } from './components/Contexts/Web3ContextProvider'
 import { Web3ReactManager } from './components/Web3ReactManager'
 import { UIContainerContextDevProvider } from './components/Contexts/UIContainerContextDev'
+import { WalletContextProvider } from './components/Contexts/WalletStatusContext'
 
 const theme = createTheme({
     palette: {
@@ -52,7 +53,9 @@ export default function App() {
                     <Web3ContextProvider>
                         <Web3ReactManager>
                             <UIContainerContextDevProvider>
-                                <LayoutFrame />
+                                <WalletContextProvider>
+                                    <LayoutFrame />
+                                </WalletContextProvider>
                             </UIContainerContextDevProvider>
                         </Web3ReactManager>
                     </Web3ContextProvider>

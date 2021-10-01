@@ -7,8 +7,6 @@ import { Images } from './ImageLoader'
 import BigNumber from 'bignumber.js'
 import API from '../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
-import { UIContainerContextProps } from '@behodler/sdk/dist/types'
-import { ContainerContext } from '../../Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
 import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
@@ -17,6 +15,7 @@ import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
 import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
 import { DebounceInput } from 'react-debounce-input';
+import useActiveWeb3React from "../hooks/useActiveWeb3React";
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -430,14 +429,13 @@ export default function (props: {}) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
+    const { chainId, account } = useActiveWeb3React()
 
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
-    const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
     const statelessBehodler = useContext<StatelessBehodlerContextProps>(StatelessBehodlerContext)
 
-    const account = uiContainerContextProps.walletContext.account || "0x0"
-    const networkName = API.networkMapping[(uiContainerContextProps.walletContext.chainId || 0).toString()]
+    const networkName = API.networkMapping[(chainId || 0).toString()]
     const tokenList: any[] = tokenListJSON[networkName].filter(
         (t) => t.name !== "WBTC" && t.name !== "BAT"
     );
@@ -495,14 +493,14 @@ export default function (props: {}) {
     const getReserve = getReserveFactory(behodlerAddress)
 
     const balanceCheck = async (menu: string) => {
-        const balanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", contracts)
+        const balanceResults = await FetchBalances(account || "0x0", contracts)
         let balances: TokenBalanceMapping[] = tokenDropDownList.map(t => {
             let hexBalance = balanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
             return { address, balance: decimalBalance }
         })
-        const ethBalance = await API.getEthBalance(uiContainerContextProps.walletContext.account || "0x0")
+        const ethBalance = await API.getEthBalance(account || "0x0")
         let ethUpdated = balances.map(b => {
             if (b.address === behodler2Weth) {
                 return { ...b, balance: ethBalance }
@@ -720,7 +718,7 @@ export default function (props: {}) {
         }
     }, [inputEnabled, inputAddress, outputAddress])
 
-    const currentTokenEffects = API.generateNewEffects(inputAddress, account, isEthPredicate(inputAddress))
+    const currentTokenEffects = API.generateNewEffects(inputAddress, account || "0x0", isEthPredicate(inputAddress))
 
 
     useEffect(() => {
@@ -731,7 +729,7 @@ export default function (props: {}) {
             setInputEnabled(true)
             return
         }
-        const effect = currentTokenEffects.allowance(account, behodlerAddress)
+        const effect = currentTokenEffects.allowance(account || '0x0', behodlerAddress)
         const subscription = effect.Observable.subscribe((allowance) => {
             const scaledAllowance = API.fromWei(allowance)
             const allowanceFloat = parseFloat(scaledAllowance)
@@ -1076,7 +1074,7 @@ export default function (props: {}) {
         } else if (!inputEnabled) {
             await API.enableToken(
                 inputAddress,
-                uiContainerContextProps.walletContext.account || "",
+                account || "",
                 behodler.address, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {
