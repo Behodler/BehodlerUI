@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
 import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip, Link } from '@material-ui/core'
-import tokenListJSON from '../../../blockchain/behodlerUI/baseTokens.json'
-import { WalletContext } from '../../Contexts/WalletStatusContext'
+import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
+import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Images } from './ImageLoader'
 import BigNumber from 'bignumber.js'
-import API from '../../../blockchain/ethereumAPI'
+import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
@@ -13,7 +13,7 @@ import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHe
 import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
-import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
+import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
 import { DebounceInput } from 'react-debounce-input';
 import useActiveWeb3React from "../hooks/useActiveWeb3React";
 

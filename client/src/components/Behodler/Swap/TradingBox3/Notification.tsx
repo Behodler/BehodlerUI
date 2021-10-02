@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps, Color } from '@material-ui/lab/Alert';
-import link from "../../../images/new/externalLink.png"
+import link from "../../../../images/new/externalLink.png"
 
 function Alert(props: AlertProps) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;

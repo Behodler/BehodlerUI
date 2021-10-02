@@ -1,8 +1,7 @@
 import * as React from 'react'
-// import Swap from '../Behodler/Swap/index'
-import {BehodlerUISwap, swapBackgroundImage} from '../BehodlerUISwap'
+import {BehodlerUISwap, swapBackgroundImage} from '../Behodler/Swap'
 
-export default function LayoutFrame(props: {}) {
+export default function LayoutFrame() {
     return (
         <div style={{ background: `url(${swapBackgroundImage})` }}>
             <BehodlerUISwap />

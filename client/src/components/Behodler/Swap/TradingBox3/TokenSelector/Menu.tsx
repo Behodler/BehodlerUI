@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
+import tokenListJSON from '../../../../../blockchain/behodlerUI/baseTokens.json'
 import { Images } from '../ImageLoader'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 import { TokenBalanceMapping } from '../index'
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
-import API from "../../../../blockchain/ethereumAPI"
+import API from "../../../../../blockchain/ethereumAPI"
 const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     root: {
         position: "absolute",

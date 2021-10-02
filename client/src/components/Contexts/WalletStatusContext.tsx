@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
-import useActiveWeb3React from "../BehodlerUISwap/hooks/useActiveWeb3React";
+import useActiveWeb3React from "../Behodler/Swap/hooks/useActiveWeb3React";
 
 export enum MetamaskStatus {
     disabled,

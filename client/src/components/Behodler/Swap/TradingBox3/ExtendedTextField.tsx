@@ -22,8 +22,8 @@ import {
     Box,
 } from '@material-ui/core'
 import { isNullOrWhiteSpace, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
-import { WalletContext } from '../../Contexts/WalletStatusContext'
-import API from '../../../blockchain/ethereumAPI'
+import { WalletContext } from '../../../Contexts/WalletStatusContext'
+import API from '../../../../blockchain/ethereumAPI'
 
 interface DropDownField {
     name: string

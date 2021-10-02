@@ -3,10 +3,10 @@ import { useContext } from 'react'
 import { makeStyles, createStyles, Box } from '@material-ui/core'
 
 import TradingBox3 from './TradingBox3'
-import { WalletContext, WalletContextProvider } from '../Contexts/WalletStatusContext'
-import { StatelessBehodlerContextProvider } from '../Behodler/Swap/EVM_js/context/StatelessBehodlerContext'
+import { WalletContext, WalletContextProvider } from '../../Contexts/WalletStatusContext'
+import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
-import backImage from "../../images/new/behodler-swap-bg.jpg"
+import backImage from "../../../images/new/behodler-swap-bg.jpg"
 
 import './fonts/gilroy-font.css'
 import useActiveWeb3React from "./hooks/useActiveWeb3React";

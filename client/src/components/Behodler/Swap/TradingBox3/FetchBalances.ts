@@ -1,6 +1,6 @@
 import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall'
-import API from '../../../blockchain/ethereumAPI'
-import ERC20JSON from '../../../blockchain/behodlerUI/ERC20.json'
+import API from '../../../../blockchain/ethereumAPI'
+import ERC20JSON from '../../../../blockchain/behodlerUI/ERC20.json'
 
 interface contract {
     address: string

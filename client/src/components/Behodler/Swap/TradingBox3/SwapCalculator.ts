@@ -1,4 +1,4 @@
-import API from '../../../blockchain/ethereumAPI'
+import API from '../../../../blockchain/ethereumAPI'
 
 enum TradeStatus {
     clean = 'clean',
