@@ -132,7 +132,9 @@ class ethereumAPI {
 
     public addBlockWatcher(watcher: (b: string) => void) {
         this.web3.eth.subscribe('newBlockHeaders', (err, result) => {
-            watcher(result.number.toString())
+            if (result?.number) {
+                watcher(result.number.toString())
+            }
         })
     }
 
