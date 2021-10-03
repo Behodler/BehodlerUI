@@ -1,6 +1,6 @@
 {
-    "name": "behodler-ui",
-    "version": "0.10.0",
+    "name": "@behodler/swap-legacy",
+    "version": "0.1.0",
     "main": "dist/index.js",
     "typings": "dist/components/BehodlerUISwap/index.d.ts",
     "files": [
@@ -10,10 +10,10 @@
         "node": ">=14.17.0"
     },
     "publishConfig": {
-        "registry": "http://localhost:4873/"
+        "registry": "https://npm.pkg.github.com/"
     },
     "repository": "git@github.com:Behodler/BehodlerUI.git",
-    "module": "dist/behodler-ui.esm.js",
+    "module": "dist/swap-legacy.esm.js",
     "dependencies": {
         "@ethereumjs/vm": "^5.5.2",
         "@ethersproject/abi": "^5.4.1",
