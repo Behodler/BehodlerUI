@@ -12,6 +12,9 @@ on:
 jobs:
   publish-package:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -20,7 +23,6 @@ jobs:
           registry-url: 'https://npm.pkg.github.com/'
           always-auth: true
           scope: '@behodler'
-      - run: cd client
       - run: yarn install
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
