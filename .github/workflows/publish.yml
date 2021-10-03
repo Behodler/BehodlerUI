@@ -20,7 +20,8 @@ jobs:
           registry-url: 'https://npm.pkg.github.com/'
           always-auth: true
           scope: '@behodler'
-      - run: yarn install --ignore-scripts
+      - run: cd client
+      - run: yarn install
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       - run: npm publish
