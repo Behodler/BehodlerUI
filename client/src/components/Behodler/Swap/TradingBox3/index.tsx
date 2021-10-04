@@ -1094,7 +1094,7 @@ export default function (props: {}) {
         }
     }
 
-    const greySwap = swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE
+    const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE)
     const [showMoreInfo, setShowMoreInfo] = useLoggedState<boolean>(false)
     const [showMobileInfo, setShowMobileInfo] = useLoggedState<boolean>(false)
     const [reserves, setReserves] = useLoggedState<string[]>(['', ''])
