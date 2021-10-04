@@ -129,7 +129,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: 350,
         //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
-        margin: "60px -45px 0px -55px"
+        margin: "0 -45px 0 -55px"
 
     },
     monster: {
@@ -142,7 +142,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     monsterMobile: {
         display: "block",
-        margin: "0 -30px 0 -35px",
+        margin: "0 30px 0 30px",
+        '&:hover': {
+            cursor: "pointer"
+        },
+        filter: "brightness(1.3)"
+    },
+    monsterMobileAnimated: {
+        display: "block",
+        margin: "0 25px 0 25px",
         '&:hover': {
             cursor: "pointer"
         },
@@ -435,6 +443,8 @@ const imageLoader = (network: string) => {
     return [base, pyro, dai]
 }
 
+const desktopImageScale = 0.8
+const mobileImageScale = 0.8
 export default function (props: {}) {
     const classes = useStyles();
     const inputClasses = inputStyles();
@@ -637,15 +647,15 @@ export default function (props: {}) {
         if (minting) {
             const inputToken = await API.getToken(inputAddressToUse, walletContextProps.networkName)
             const inputBalanceOnBehodler = await inputToken.balanceOf(behodlerAddress).call({ from: account })
-            const inputSpot = parseInt(daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString())
-            console.log('inputSpot ' + inputSpot)
+            const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
 
+            const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
             const pyroToken = await API.getPyroToken(outputAddress, networkName)
             const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
             console.log('pyro redeem rate: ' + redeemRate)
-            const bigSpot = BigInt(inputSpot)
-            const spotForPyro = (redeemRate * bigSpot * bigFactor) / ONE
+            const bigSpot = BigInt(intSpot)
+            const spotForPyro = (redeemRate * bigSpot) / (ONE)
             const outputSpot = parseFloat(spotForPyro.toString()) / Factor
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
         } else {
@@ -654,10 +664,11 @@ export default function (props: {}) {
             const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
 
+            const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
             const pyroToken = await API.getPyroToken(inputAddress, networkName)
             const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            const bigSpot = BigInt(outputSpot)
-            const spotForPyro = (redeemRate * bigSpot * bigFactor) / ONE
+            const bigSpot = BigInt(intSpot)
+            const spotForPyro = (redeemRate * bigSpot) / ONE
             const inputSpot = parseFloat(spotForPyro.toString()) / Factor
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
         }
@@ -832,10 +843,12 @@ export default function (props: {}) {
 
     const [flipClicked, setFlipClicked] = useLoggedState<boolean>(false)
     const flipClickedCallback = useCallback(async () => {
+        let newInputAddress = inputAddress
         if (flipClicked) {
             const inputAddressTemp = inputAddress
             const oldValues = [inputValue, outputValue]
             setInputAddress(outputAddress)
+            newInputAddress = outputAddress
             setOutputAddress(inputAddressTemp)
             if (swapState !== SwapState.IMPOSSIBLE) {
                 updateIndependentField('FROM')(oldValues[1], true)
@@ -844,8 +857,8 @@ export default function (props: {}) {
                 setOutputValue("")
             }
         }
-        const baseToken = (await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(inputAddress).call({ from: account })).toString()
-        setMinting(baseToken !== "0x0000000000000000000000000000000000000000")
+        const inputIsBase = tokenListJSON[networkName].filter(t => t.address.toLowerCase() === newInputAddress.toLowerCase()).length > 0
+        setMinting(inputIsBase)
 
         setFlipClicked(false)
     }, [flipClicked])
@@ -1010,6 +1023,8 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
+    const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
+    const animatedLogo = Logos.filter(l => l.name === 'PyroAnimated')[0]
 
     return (
         <Box className={classes.root}>
@@ -1035,8 +1050,9 @@ export default function (props: {}) {
                                     <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}
                                         scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
-                                <Grid item>
-                                    <img width={180} src={swapping ? Logos["PyroAnimated"] : Logos["Pyrotoken"]} className={classes.monsterMobile} />
+                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={105 * mobileImageScale} src={animatedLogo.image} className={classes.monsterMobileAnimated} />
+                                    : <img width={90 * mobileImageScale} src={staticLogo.image} className={classes.monsterMobile} />
+                                }
                                 </Grid>
                                 <Grid item>
                                     <TokenSelector pyro={minting} network={networkName} balances={minting ? pyroTokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={!minting ? fetchBaseToken(outputAddress).image : fetchPyroToken(outputAddress).image} scale={0.65} mobile />
@@ -1206,7 +1222,8 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={350} src={swapping ? Logos["PyroAnimated"] : Logos["Pyrotoken"]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                {swapping ? <img width={180 * desktopImageScale} src={animatedLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} /> :
+                                                    <img width={150 * desktopImageScale} src={staticLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} />}
                                             </Tooltip>
                                         </div>
                                     </Grid>
