@@ -3,7 +3,7 @@ import { useEffect, useCallback, useState, useContext } from 'react'
 import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip, Link } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
-import { Images } from './ImageLoader'
+import { TokenList, Logos } from './ImageLoader'
 import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
@@ -11,12 +11,9 @@ import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
-import MoreInfo, { InputType } from './MoreInfo'
-import AmountFormat from './AmountFormat'
-import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
-import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
+import { formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
 import { DebounceInput } from 'react-debounce-input';
+import AmountFormat from './AmountFormat'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -184,13 +181,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         // top: 500,
         // left: 450,
         borderRadius: "50%",
-        backgroundImage: `url(${Images[14]})`,
+        backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image})`,
         backgroundSize: "cover",
         '&:hover': {
             cursor: "pointer",
             boxShadow: "0 0 4px 1px #AAf",
             background: "#473D6E",
-            backgroundImage: `url(${Images[14]})`,
+            backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
             backgroundSize: "cover",
         }
     }, flippySwitchSCXWarning: {
@@ -203,13 +200,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         // top: 500,
         // left: 450,
         borderRadius: "50%",
-        backgroundImage: `url(${Images[14]})`,
+        backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
         backgroundSize: "cover",
         '&:hover': {
             cursor: "pointer",
             boxShadow: "0 0 4px 1px #AAf",
             background: "#473D6E",
-            backgroundImage: `url(${Images[14]})`,
+            backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
             backgroundSize: "cover",
         }
     },
@@ -217,9 +214,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     transactionFeedbackState: {
         fontSize: 30,
         color: "white"
-    },
-    moreInfo: {
-        position: "relative"
     },
     impliedExchangeRate: {
         minHeight: "30px"
@@ -365,9 +359,6 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
 enum TXType {
     approval,
-    swap,
-    addLiquidity,
-    withdrawLiquidity,
     mintPyro,
     redeemPyro
 }
@@ -388,6 +379,7 @@ export interface TokenListItem {
 export interface TokenBalanceMapping {
     address: string
     balance: string
+    name: string
 }
 
 interface IndependentField {
@@ -395,13 +387,7 @@ interface IndependentField {
     newValue: string
 }
 
-type FieldState = 'dormant' | 'updating dependent field' | 'validating swap' | 'updating price impact'
-
-enum TradeType {
-    SWAP,
-    ADD_LIQUIDITY,
-    WITHDRAW_LIQUIDITY
-}
+type FieldState = 'dormant' | 'updating dependent field' | 'validating swap'
 
 enum SwapState {
     IMPOSSIBLE,
@@ -410,10 +396,7 @@ enum SwapState {
 }
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
-const scarcitySwellFactor = 1000000000000
-const BigScarcitySwellFactor = BigInt(scarcitySwellFactor)
-const ZERO = BigInt(0)
-
+const ONE = BigInt(1000000000000000000)
 const loggingOn: boolean = false
 function useLoggedState<T>(initialState: T): [T, (newState: T) => void] {
     const [state, setIndependentFieldState] = useState<T>(initialState)
@@ -423,6 +406,34 @@ function useLoggedState<T>(initialState: T): [T, (newState: T) => void] {
     }, [state])
     return [state, setIndependentFieldState]
 }
+const imageLoader = (network: string) => {
+    let base: TokenListItem[] = []
+    let pyro: TokenListItem[] = []
+    let dai: string = ''
+    tokenListJSON[network].forEach(i => {
+        let name = i.name
+        const LPposition = i.name.toLowerCase().indexOf('UniV2LP')
+        if (LPposition !== -1) {
+            name = i.name.substring(0, LPposition)
+        }
+        if (name.toLowerCase() === 'weth')
+            name = 'Eth'
+
+        if (name.toLowerCase() === 'scarcity') {
+            return
+        }
+        if (name.toLowerCase() === 'dai') {
+            dai = i.address
+            return;
+        }
+        let imagePair = TokenList.filter(pair => pair.baseToken.name.toLowerCase() === i.name.toLowerCase())[0]
+
+        base.push({ name, address: i.address, image: imagePair.baseToken.image })
+        const pyroName = name.toLowerCase() === 'eth' ? 'PyroWeth' : 'Pyro' + name
+        pyro.push({ name: pyroName, address: i.pyro, image: imagePair.pyroToken.image })
+    })
+    return [base, pyro, dai]
+}
 
 export default function (props: {}) {
     const classes = useStyles();
@@ -430,53 +441,38 @@ export default function (props: {}) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
-
+    const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
     const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
-    const statelessBehodler = useContext<StatelessBehodlerContextProps>(StatelessBehodlerContext)
 
     const account = uiContainerContextProps.walletContext.account || "0x0"
     const networkName = API.networkMapping[(uiContainerContextProps.walletContext.chainId || 0).toString()]
-    const tokenList: any[] = tokenListJSON[networkName].filter(
-        (t) => t.name !== "WBTC" && t.name !== "BAT"
-    );
-
-    const indexOfWeth = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("weth") !== -1);
-    const indexOfScarcityAddress = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("scarcity") !== -1);
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
-    let tokenDropDownList: TokenListItem[] = tokenList.map((t, i) => {
-        let item = { ...t, image: Images[i] }
-        if (i === indexOfWeth) {
-            item.name = 'Eth'
-            item.address = behodler2Weth
-        }
-        if (i === indexOfScarcityAddress) {
-            item.address = behodlerAddress
-        }
-        return item
-    })
-    const scarcityAddress = tokenDropDownList
-        .filter((t) => t.name === 'Scarcity')[0]
-        .address.toLowerCase()
-        .trim()
-
-    const contracts = tokenDropDownList.map(t => ({ name: t.name, address: t.address }))
-
     //NEW HOOKS BEGIN
+    const [baseTokenImages, setBaseTokenImages] = useState<TokenListItem[]>(imageLoader(networkName)[0] as TokenListItem[])
+    const [pyroTokenImages, setPyroTokenImages] = useState<TokenListItem[]>(imageLoader(networkName)[1] as TokenListItem[])
     const [pendingTXQueue, setPendingTXQueue] = useLoggedState<PendingTX[]>([])
     const [block, setBlock] = useLoggedState<string>("")
     const [showNotification, setShowNotification] = useLoggedState<boolean>(false)
     const [currentTxHash, setCurrentTxHash] = useLoggedState<string>("")
     const [notificationType, setNotificationType] = useLoggedState<NotificationType>(NotificationType.pending)
     const [outstandingTXCount, setOutstandingTXCount] = useLoggedState<number>(0)
-    const [tokenBalances, setTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
+    const [baseTokenBalances, setBaseTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
+    const [pyroTokenBalances, setPyroTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
-    type scxEstimationWarningMesssage = '' | 'Warning: estimating tokens released from an SCX input can be inaccurate.'
-        | 'Warning: estimating tokens required to produce an SCX output can be inaccurate.'
-    const [scxEstimationWarning, setScxEstimationWarning] = useLoggedState<scxEstimationWarningMesssage>('')
+    const [daiAddress, setDaiAddress] = useLoggedState<string>(imageLoader(networkName)[3] as string)
+    const [minting, setMinting] = useLoggedState<boolean>(true)
     //Estimating SCX from a given number of input tokens is 
+
+    useEffect(() => {
+        const results = imageLoader(networkName)
+        setBaseTokenImages(results[0] as TokenListItem[])
+        setPyroTokenImages(results[1] as TokenListItem[])
+        setDaiAddress(results[2] as string)
+    }, [walletContextProps.networkName])
+
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -488,29 +484,35 @@ export default function (props: {}) {
         else setSwapping(false)
     }
 
-    const getReserveFactory = (behodler: string) => async (tokenAddress: string) => {
-        const token = await API.getToken(tokenAddress, networkName)
-        return await token.balanceOf(behodler).call({ from: account })
-    }
-    const getReserve = getReserveFactory(behodlerAddress)
-
     const balanceCheck = async (menu: string) => {
-        const balanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", contracts)
-        let balances: TokenBalanceMapping[] = tokenDropDownList.map(t => {
-            let hexBalance = balanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+        const baseBalanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", baseTokenImages)
+        let baseBalances: TokenBalanceMapping[] = baseTokenImages.map(t => {
+            let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
-            return { address, balance: decimalBalance }
+            return { address, balance: decimalBalance, name: t.name }
         })
         const ethBalance = await API.getEthBalance(uiContainerContextProps.walletContext.account || "0x0")
-        let ethUpdated = balances.map(b => {
+        let ethUpdated = baseBalances.map(b => {
             if (b.address === behodler2Weth) {
                 return { ...b, balance: ethBalance }
             }
             return b
         })
-        if (JSON.stringify(ethUpdated) !== JSON.stringify(tokenBalances)) {
-            setTokenBalances(ethUpdated)
+        if (JSON.stringify(ethUpdated) !== JSON.stringify(baseTokenBalances)) {
+            setBaseTokenBalances(ethUpdated)
+        }
+
+        const pyroBalanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", pyroTokenImages)
+        let pyroBalances: TokenBalanceMapping[] = pyroTokenImages.map(t => {
+            let hexBalance = pyroBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+            let address = t.address
+            let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
+            return { address, balance: decimalBalance, name: t.name }
+        })
+        const stringified = JSON.stringify(pyroBalances)
+        if (stringified !== JSON.stringify(pyroTokenBalances)) {
+            setPyroTokenBalances(pyroBalances)
         }
     }
     const balanceCallback = useCallback(async (menu: string) => await balanceCheck(menu), [block])
@@ -523,7 +525,15 @@ export default function (props: {}) {
         }
     }, [block])
 
-    const fetchToken = (address: string): TokenListItem => tokenDropDownList.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
+    const fetchBaseToken = (address: string): TokenListItem => baseTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
+
+    const fetchPyroToken = (address: string): TokenListItem => {
+        const p = pyroTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
+        return p
+    }
+
+    console.log('minting ' + minting)
+
     const txQueuePush = (val: PendingTX) => {
 
         const newQueue = [...pendingTXQueue, val]
@@ -572,24 +582,21 @@ export default function (props: {}) {
     })
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
-    const [inputAddress, setInputAddress] = useLoggedState<string>(tokenDropDownList[0].address.toLowerCase())
-    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
-    const [swapText, setSwapText] = useLoggedState<string>("SWAP")
+    const [inputAddress, setInputAddress] = useLoggedState<string>('0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F')
+    const [outputAddress, setOutputAddress] = useLoggedState<string>('0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12')
+    const [swapText, setSwapText] = useLoggedState<string>("MINT")
     const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
     const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useLoggedState<string>("")
     const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useLoggedState<string>("")
 
-    const [inputBurnable, setInputBurnable] = useLoggedState<boolean>(false)
-    const [expectedFee, setExpectedFee] = useLoggedState<string>("")
-    const [priceImpact, setPriceImpact] = useLoggedState<string>("")
-
     const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
         if (target === 'FROM') {
+
             setInputValue(newValue)
-            setOutputValue(update ? 'estimating...' : '')
+            setOutputValue(update ? 'calculating...' : '')
         } else {
-            setInputValue(update ? 'estimating...' : '')
+            setInputValue(update ? 'calculating...' : '')
             setOutputValue(newValue)
         }
 
@@ -618,119 +625,118 @@ export default function (props: {}) {
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
     const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
 
-    const getTradeType = () => {
-        let type: TradeType
-        if (isScarcityPredicate(inputAddress)) {
-            type = TradeType.WITHDRAW_LIQUIDITY
-        } else if (isScarcityPredicate(outputAddress)) {
-            type = TradeType.ADD_LIQUIDITY
-        } else {
-            type = TradeType.SWAP
-        }
-        return type;
-    }
-
     const spotPriceCallback = useCallback(async () => {
-        setScxEstimationWarning('')
+        if (!daiAddress || daiAddress.length < 3)
+            return
         setSwapState(SwapState.IMPOSSIBLE)
 
-        const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
-
-        if (isScarcityPredicate(inputAddress)) {
-            const scxSpotString = (await behodler.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
-            const scxSpotPrice = new BigNumber(scxSpotString)
-                .div(10)
-                .toString()
-            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
-        } else {
-            const inputToken = await API.getToken(inputAddress, walletContextProps.networkName)
+        const inputAddressToUse = isInputEth ? behodler2Weth : inputAddress
+        const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
+        if (minting) {
+            const inputToken = await API.getToken(inputAddressToUse, walletContextProps.networkName)
             const inputBalanceOnBehodler = await inputToken.balanceOf(behodlerAddress).call({ from: account })
-            const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
-            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot, 2))
-        }
+            const inputSpot = parseInt(daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString())
+            console.log('inputSpot ' + inputSpot)
+            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
 
-        if (isScarcityPredicate(outputAddress)) {
-            const scxSpotString = (await behodler.withdrawLiquidityFindSCX(daiAddress, "10000", "10", "25").call({ from: account })).toString()
-            const scxSpotPrice = new BigNumber(scxSpotString)
-                .div(10)
-                .toString()
-            setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(scxSpotPrice, 2))
-        }
-        else {
-            const outputToken = await API.getToken(outputAddress, walletContextProps.networkName)
+            const pyroToken = await API.getPyroToken(outputAddress, networkName)
+            const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
+            console.log('pyro redeem rate: ' + redeemRate)
+            const bigSpot = BigInt(inputSpot)
+            const spotForPyro = (redeemRate * bigSpot * bigFactor) / ONE
+            const outputSpot = parseFloat(spotForPyro.toString()) / Factor
+            setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
+        } else {
+            const outputToken = await API.getToken(outputAddressToUse, walletContextProps.networkName)
             const outputBalanceOnBehodler = await outputToken.balanceOf(behodlerAddress).call({ from: account })
             const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
+
+            const pyroToken = await API.getPyroToken(inputAddress, networkName)
+            const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
+            const bigSpot = BigInt(outputSpot)
+            const spotForPyro = (redeemRate * bigSpot * bigFactor) / ONE
+            const inputSpot = parseFloat(spotForPyro.toString()) / Factor
+            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
         }
-    }, [inputAddress, outputAddress])
+    }, [inputAddress, outputAddress, daiAddress])
 
     useEffect(() => {
         spotPriceCallback()
-    }, [inputAddress, outputAddress])
+    }, [inputAddress, outputAddress, daiAddress])
 
-    if (tokenDropDownList.filter((t) => t.address.toLowerCase() === outputAddress.toLowerCase()).length === 0) {
-        setOutputAddress(tokenDropDownList[1].address.toLowerCase())
-    }
-    if (tokenDropDownList.filter((t) => t.address.toLowerCase() === inputAddress.toLowerCase()).length === 0) {
-        setInputAddress(tokenDropDownList[0].address.toLowerCase())
-    }
 
     const [swapClicked, setSwapClicked] = useLoggedState<boolean>(false)
-    const nameOfSelectedAddress = (address: string) => tokenDropDownList.filter((t) => t.address.toLowerCase() === address.toLowerCase())[0].name
+    const nameOfSelectedAddress = (input: boolean, minting: boolean) => (address: string) => {
+        const useBase = input && minting || !input && !minting
+        address = address.toLowerCase()
+        return (useBase ? baseTokenImages.find(i => i.address.toLowerCase() === address)?.name : pyroTokenImages.find(i => i.address.toLowerCase() === address)?.name) || ''
+    }
+    const nameOfSelectedInputAddress = nameOfSelectedAddress(true, minting)
+    const nameOfSelectedOutputAddress = nameOfSelectedAddress(false, minting)
 
-    if (inputAddress === outputAddress) {
-        setOutputAddress(tokenDropDownList.filter((t) => t.address !== inputAddress)[0].address)
+
+    const isTokenPredicateFactory = (tokenName: string) => (address: string) => {
+        return (input: boolean) => {
+            const name = input ? nameOfSelectedInputAddress(address) : nameOfSelectedOutputAddress(address)
+            return (name.toLowerCase() === tokenName.toLowerCase())
+        }
     }
 
+    const isInputEth = isTokenPredicateFactory("Eth")(inputAddress)(true)
+    const isOutputEth = isTokenPredicateFactory("Eth")(outputAddress)(false)
 
-
-    const isTokenPredicateFactory = (tokenName: string) => (address: string): boolean =>
-        tokenDropDownList.filter((item) => item.address.trim().toLowerCase() === address.trim().toLowerCase())[0].name === tokenName
-    const isEthPredicate = isTokenPredicateFactory('Eth')
-    const isScarcityPredicate = isTokenPredicateFactory('Scarcity')
-    useEffect(() => {
-        setScxEstimationWarning('')
+    const assignCorrectCorrespondingToken = useCallback(async (inputChanged: boolean) => {
+        if (inputChanged) {
+            if (minting) {
+                const tokenPair = tokenListJSON[networkName].filter(t => t.address === inputAddress)[0]
+                setOutputAddress(tokenPair.pyro)
+            } else {
+                const tokenPair = tokenListJSON[networkName].filter(t => t.pyro === inputAddress)[0]
+                setOutputAddress(tokenPair.address)
+            }
+        } else {
+            if (minting) {
+                const tokenPair = tokenListJSON[networkName].filter(t => t.pyro === outputAddress)[0]
+                setInputAddress(tokenPair.address)
+            } else {
+                const tokenPair = tokenListJSON[networkName].filter(t => t.address === outputAddress)[0]
+                setInputAddress(tokenPair.pyro)
+            }
+        }
     }, [inputAddress, outputAddress])
-
-    const inputBurnableCallback = useCallback(async () => {
-        if (isScarcityPredicate(inputAddress)) {
-            setInputBurnable(false)
-            return;
-        }
-        const addressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
-        setInputBurnable((await walletContextProps.contracts.behodler.Behodler2.Lachesis.cut(addressToUse).call({ from: account }))[1])
-    }, [inputAddress, swapState])
-
-    useEffect(() => { inputBurnableCallback() }, [inputAddress, swapState])
+    useEffect(() => {
+        assignCorrectCorrespondingToken(true)
+    }, [inputAddress])
 
     useEffect(() => {
-        if (!inputEnabled && !isScarcityPredicate(inputAddress)) {
-            setSwapText('APPROVE ' + nameOfSelectedAddress(inputAddress))
+        assignCorrectCorrespondingToken(false)
+    }, [outputAddress])
+
+    useEffect(() => {
+        if (!inputEnabled) {
+            setSwapText('APPROVE ' + nameOfSelectedInputAddress(inputAddress))
         }
-        else if (isScarcityPredicate(outputAddress)) {
-            setSwapText('ADD LIQUIDITY')
-        } else if (isScarcityPredicate(inputAddress)) {
-            setSwapText('WITHDRAW LIQUIDITY')
-        }
-        else {
-            setSwapText('SWAP')
+        else if (minting) {
+            setSwapText('MINT')
+        } else {
+            setSwapText('REDEEM')
         }
     }, [inputEnabled, inputAddress, outputAddress])
 
-    const currentTokenEffects = API.generateNewEffects(inputAddress, account, isEthPredicate(inputAddress))
+    const currentTokenEffects = API.generateNewEffects(inputAddress, account, isInputEth)
 
 
     useEffect(() => {
         const balance = formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)
         setImpliedExchangeRate("")
 
-        if (isEthPredicate(inputAddress) || isScarcityPredicate(inputAddress)) {
-            setInputEnabled(true)
-            return
-        }
-        const effect = currentTokenEffects.allowance(account, behodlerAddress)
+        let addressToCheck = minting ? outputAddress : inputAddress
+        if (isOutputEth && !minting)
+            addressToCheck = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.address
+        const effect = currentTokenEffects.allowance(account, addressToCheck)
         const subscription = effect.Observable.subscribe((allowance) => {
             const scaledAllowance = API.fromWei(allowance)
             const allowanceFloat = parseFloat(scaledAllowance)
@@ -759,51 +765,59 @@ export default function (props: {}) {
             notify(hash, NotificationType.rejected)
         }
     }
-
-    const addLiquidityHashBack = hashBack(TXType.addLiquidity)
-    const withdrawLiquidityHashBack = hashBack(TXType.withdrawLiquidity)
-    const swapHashBack = hashBack(TXType.swap)
+    const mintHashBack = hashBack(TXType.mintPyro)
+    const redeemHashBack = hashBack(TXType.redeemPyro)
 
     const swap2Callback = useCallback(async () => {
         const inputValWei = API.toWei(inputValue)
-        const outputValWei = API.toWei(outputValue)
         const primaryOptions = { from: account, gas: undefined };
         const ethOptions = { from: account, value: inputValWei, gas: undefined };
 
+
         if (swapClicked) {
-            if (inputAddress.toLowerCase() === scarcityAddress) {
-                behodler
-                    .withdrawLiquidity(outputAddress, outputValWei)
-                    .estimateGas(primaryOptions, function (error, gas) {
-                        if (error) console.error("gas estimation error: " + error);
-                        primaryOptions.gas = gas;
-                        behodler.withdrawLiquidity(outputAddress, outputValWei)
-                            .send(primaryOptions, withdrawLiquidityHashBack)
-                            .catch(err => console.log('user rejection'))
-                    });
-            } else if (outputAddress.toLowerCase() === scarcityAddress) {
-                let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
-
-                behodler.addLiquidity(inputAddress, inputValWei).estimateGas(options, function (error, gas) {
-                    if (error) console.error("gas estimation error: " + error);
-                    options.gas = gas;
-                    behodler.addLiquidity(inputAddress, inputValWei)
-                        .send(options, addLiquidityHashBack)
-                        .catch(err => console.log('user rejection'))
-                })
-
+            const pyroTokenAddress = minting ? outputAddress : inputAddress
+            const pyroToken = await API.getPyroToken(pyroTokenAddress, networkName)
+            if (minting) {
+                if (isInputEth) {
+                    pyroWethProxy.mint(inputValWei)
+                        .estimateGas(ethOptions, function (error, gas) {
+                            if (error) console.error("gas estimation error: " + error);
+                            ethOptions.gas = gas;
+                            pyroWethProxy.mint(inputValWei)
+                                .send(ethOptions, mintHashBack)
+                                .catch(err => console.log('user rejection'))
+                        })
+                } else {
+                    pyroToken.mint(inputValWei)
+                        .estimateGas(ethOptions, function (error, gas) {
+                            if (error) console.error("gas estimation error: " + error);
+                            ethOptions.gas = gas;
+                            pyroToken.mint(inputValWei)
+                                .send(ethOptions, mintHashBack)
+                                .catch(err => console.log('user rejection'))
+                        })
+                }
             } else {
-                let options = isEthPredicate(inputAddress) ? ethOptions : primaryOptions;
-                behodler
-                    .swap(inputAddress, outputAddress, inputValWei, outputValWei)
-                    .estimateGas(options, function (error, gas) {
-                        if (error) console.error("gas estimation error: " + error);
-                        options.gas = gas;
-                        behodler
-                            .swap(inputAddress, outputAddress, inputValWei, outputValWei)
-                            .send(options, swapHashBack)
-                            .catch(err => console.log('user rejection'))
-                    });
+                if (isOutputEth) {
+                    pyroWethProxy.redeem(inputValWei)
+                        .estimateGas(primaryOptions, function (error, gas) {
+                            if (error) console.error("gas estimation error: " + error);
+                            primaryOptions.gas = gas;
+                            pyroWethProxy.redeem(inputValWei)
+                                .send(primaryOptions, redeemHashBack)
+                                .catch(err => console.log('user rejection'))
+                        })
+                }
+                else {
+                    pyroToken.redeem(inputValWei)
+                        .estimateGas(primaryOptions, function (error, gas) {
+                            if (error) console.error("gas estimation error: " + error);
+                            primaryOptions.gas = gas;
+                            pyroToken.redeem(inputValWei)
+                                .send(primaryOptions, redeemHashBack)
+                                .catch(err => console.log('user rejection'))
+                        })
+                }
             }
         }
         setSwapClicked(false)
@@ -817,107 +831,81 @@ export default function (props: {}) {
 
 
     const [flipClicked, setFlipClicked] = useLoggedState<boolean>(false)
-    useEffect(() => {
+    const flipClickedCallback = useCallback(async () => {
         if (flipClicked) {
             const inputAddressTemp = inputAddress
             const oldValues = [inputValue, outputValue]
-            const tradeType = getTradeType()
             setInputAddress(outputAddress)
             setOutputAddress(inputAddressTemp)
             if (swapState !== SwapState.IMPOSSIBLE) {
-                if (tradeType === TradeType.SWAP || tradeType === TradeType.WITHDRAW_LIQUIDITY) {
-                    updateIndependentField('FROM')(oldValues[1], true)
-                } else {
-                    updateIndependentField('TO')(oldValues[0], true)
-                }
+                updateIndependentField('FROM')(oldValues[1], true)
             } else {
                 setInputValue("")
                 setOutputValue("")
             }
         }
-        setFlipClicked(false)
+        const baseToken = (await walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver.baseTokenMapping(inputAddress).call({ from: account })).toString()
+        setMinting(baseToken !== "0x0000000000000000000000000000000000000000")
 
+        setFlipClicked(false)
     }, [flipClicked])
 
+    useEffect(() => {
+        flipClickedCallback()
+    }, [flipClicked])
     const calculateOutputFromInput = async () => {
-        const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
-        const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-        const inputValToUse = API.toWei(inputValue)
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call({ from: account })).toString());
-        let outputEstimate, inputReserve, outputReserve
-        switch (getTradeType()) {
-            case TradeType.ADD_LIQUIDITY:
-                setScxEstimationWarning("")
-                inputReserve = await getReserve(inputAddressToUse)
-                let estimate = await statelessBehodler.addLiquidity(inputValToUse, inputReserve, 5)
-                assert(estimate[1].length === 0, estimate[1])
-                outputEstimate = estimate[0]
-                break;
-            case TradeType.WITHDRAW_LIQUIDITY:
-                assert(inputValue.trim() !== '0', '')
-                outputReserve = await getReserve(outputAddressToUse)
-                setScxEstimationWarning("")
-                outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
-                break;
-            case TradeType.SWAP:
-                setScxEstimationWarning("")
-                inputReserve = await getReserve(inputAddressToUse)
-                outputReserve = await getReserve(outputAddressToUse)
-                let trade = OutputGivenInput(inputReserve, outputReserve, inputValue, maxLiquidityExit)
-                if (trade.status === TradeStatus.ReserveOutLow) {
-                    throw ('Insufficient liquidity')
-                }
-                else if (trade.status === TradeStatus.MaxExit) {
-                    throw ("Trade too big")
-                }
-                assert(trade.status === TradeStatus.clean, trade.status)
-                outputEstimate = API.fromWei(trade.amountOut.toString())
-                break;
+        const inputValToUse = BigInt(API.toWei(inputValue))
+        let outputEstimate, redeemRate
+        if (minting) {
+            let pyrotokensGeneratedWei
+            if (isOutputEth) {
+                pyrotokensGeneratedWei = bigFactor * BigInt(await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateMintedPyroWeth(inputValToUse).call({ account }))
+            } else {
+                const pyroToken = await API.getPyroToken(outputAddress, networkName)
+                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                pyrotokensGeneratedWei = (inputValToUse * bigFactor) / redeemRate
+            }
+            outputEstimate = parseFloat(API.fromWei(pyrotokensGeneratedWei.toString())) / Factor
+        } else {
+            let baseTokensGeneratedWei
+            if (isInputEth) {
+                baseTokensGeneratedWei = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(inputValToUse).call({ account })
+            } else {
+                const pyroToken = await API.getPyroToken(inputAddress, networkName)
+                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                baseTokensGeneratedWei = (inputValToUse * redeemRate) / ONE
+            }
+            outputEstimate = parseFloat(API.fromWei(baseTokensGeneratedWei.toString()))
         }
+
         setOutputValue(formatSignificantDecimalPlaces(API.fromWei(outputEstimate), 18))
     }
 
     const calculateInputFromOutput = async () => {
-        const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
-        const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-        const outputValToUse = API.toWei(outputValue)
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call({ from: account })).toString());
-        let inputEstimate, inputReserve, outputReserve
-        switch (getTradeType()) {
-            case TradeType.ADD_LIQUIDITY:
-                inputReserve = await getReserve(inputAddressToUse)
-                setScxEstimationWarning("")
-                const tokensToRelease = BigInt(inputReserve) / BigInt(2)
-                inputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(inputReserve, tokensToRelease.toString(), ((BigInt(outputValToUse) * BigInt(102) / BigInt(100))).toString(), 25)
-                break;
-            case TradeType.WITHDRAW_LIQUIDITY:
-                setScxEstimationWarning("")
-                outputReserve = await getReserve(outputAddressToUse)
-                const totalSCXSupply = (await behodler.totalSupply().call({ from: account })).toString()
-                try {
-                    let estimate = await statelessBehodler.withdrawLiquidity(outputValToUse, outputReserve, totalSCXSupply)
-                    assert(estimate[1].length === 0, estimate[1])
-                    inputEstimate = estimate[0]
-                } catch (e) {
-                    if ((e as any).reason == "overflow")
-                        throw 'BEHODLER: liquidity withdrawal too large.'
-                }
-                break;
-            case TradeType.SWAP:
-                setScxEstimationWarning("")
-                inputReserve = await getReserve(inputAddressToUse)
-                outputReserve = await getReserve(outputAddressToUse)
-                let trade = InputGivenOutput(inputReserve, outputReserve, outputValue, maxLiquidityExit)
-                if (trade.status === TradeStatus.ReserveOutLow) {
-                    throw ('Insufficient liquidity')
-                }
-                else if (trade.status === TradeStatus.MaxExit) {
-                    throw ("Trade too big")
-                }
-                assert(trade.status === TradeStatus.clean, trade.status)
-                inputEstimate = API.fromWei(trade.amountIn.toString())
-                break;
+        const outputValToUse = BigInt(API.toWei(outputValue))
+        let inputEstimate, redeemRate
+        if (minting) {
+            let baseTokensRequired
+            if (isInputEth) {
+                baseTokensRequired = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(outputValToUse).call({ account })
+            } else {
+                const pyroToken = await API.getPyroToken(outputAddress, networkName)
+                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                baseTokensRequired = (outputValToUse * redeemRate) / ONE
+            }
+            inputEstimate = parseFloat(API.fromWei(baseTokensRequired.toString()))
+        } else {
+            let pyroTokensRequired
+            if (isOutputEth) {
+                pyroTokensRequired = bigFactor * BigInt(await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateMintedPyroWeth(outputValToUse).call({ account }))
+            } else {
+                const pyroToken = await API.getPyroToken(inputAddress, networkName)
+                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                pyroTokensRequired = (outputValToUse * bigFactor) / redeemRate
+            }
+            inputEstimate = parseFloat(API.fromWei(pyroTokensRequired.toString())) / Factor
         }
+
         setInputValue(formatSignificantDecimalPlaces(API.fromWei(inputEstimate), 18))
     }
 
@@ -947,75 +935,6 @@ export default function (props: {}) {
         independentFieldCallback()
     }, [independentFieldState])
 
-
-    const priceImpactCallback = useCallback(async () => {
-        if (independentFieldState === "updating price impact") {
-            let parsedInput = parseFloat(inputValue)
-            const parsedOutput = parseFloat(outputValue)
-            setExpectedFee((parsedInput * 0.005).toString())
-            // parsedInput *= 0.995
-            let exchangeRate = parsedInput / parsedOutput
-            let direction: 'IO' | 'OI' = parsedInput > parsedOutput ? 'IO' : 'OI'
-            let inputReserve, outputReserve
-            if (direction === 'IO') {
-                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
-            } else {
-                exchangeRate = parsedOutput / parsedInput
-
-                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
-            }
-            const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
-            const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-            let spotRate = exchangeRate
-            switch (getTradeType()) {
-                case TradeType.ADD_LIQUIDITY:
-                    {
-                        inputReserve = await getReserve(inputAddressToUse)
-                        const minToken = BigInt("1000000000000000")
-                        const spotSCXEstimate = await statelessBehodler.addLiquidity(minToken.toString(), inputReserve, 5)
-                        assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
-                        const scxEstimate = BigInt(spotSCXEstimate[0])
-                        spotRate = Number((scxEstimate * BigScarcitySwellFactor) / minToken) / scarcitySwellFactor
-                    }
-                    break;
-                case TradeType.WITHDRAW_LIQUIDITY:
-                    {
-                        outputReserve = await getReserve(outputAddressToUse)
-                        const minToken = BigInt("1000000000000000")
-                        const scxbalance = tokenBalances.filter(t => isScarcityPredicate(t.address))[0].balance
-                        try {
-                            const spotSCXEstimate = await statelessBehodler.withdrawLiquidity(minToken.toString(), outputReserve, scxbalance)
-                            assert(spotSCXEstimate[1].length === 0, 'error estimating price impact: ' + spotSCXEstimate[1])
-                            const scxEstimate = BigInt(spotSCXEstimate[0])
-                            spotRate = Number((minToken * bigFactor) / scxEstimate) / Factor
-                        } catch (e) {
-                            if ((e as any).reason === "overflow") {
-                                throw "BEHODLER: liquidity withdrawal too large."
-                            }
-                        }
-                    }
-                    break;
-
-                case TradeType.SWAP:
-                    inputReserve = BigInt((await getReserve(inputAddressToUse)).toString())
-                    outputReserve = BigInt((await getReserve(outputAddressToUse)).toString())
-                    spotRate = Number((outputReserve * bigFactor) / inputReserve) / Factor
-                    break;
-            }
-
-            const exactQuote = spotRate * parsedInput
-            const impact = 100 * ((exactQuote - parsedOutput)) / exactQuote
-            setPriceImpact(formatSignificantDecimalPlaces(`${impact}`, 6))
-            setIndependentFieldState("dormant")
-        }
-    }, [independentFieldState])
-
-    useEffect(() => {
-        priceImpactCallback()
-    }, [independentFieldState])
-
     const swapValidationCallback = useCallback(async () => {
         if (independentFieldState === "validating swap") {
             try {
@@ -1024,12 +943,11 @@ export default function (props: {}) {
                     setSwapState(SwapState.POSSIBLE)
                 else
                     setSwapState(SwapState.DISABLED)
-                setIndependentFieldState("updating price impact")
             } catch (e) {
                 setSwapState(SwapState.IMPOSSIBLE)
                 console.warn('validation failed ' + e)
-                setIndependentFieldState("dormant")
             }
+            setIndependentFieldState("dormant")
         }
     }, [independentFieldState])
 
@@ -1038,35 +956,22 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const validateBalances = (): boolean => {
-        const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address === inputAddress)[0].balance))
+        const balanceOfInput = parseFloat(API.fromWei(baseTokenBalances.filter(b => b.address === inputAddress)[0].balance))
         return (balanceOfInput >= parseFloat(inputValue))
     }
 
     const validateLiquidityExit = async () => {
-        if (isScarcityPredicate(outputAddress)) {
-            return
-        }
+        if (!minting) {
+            const token = await API.getToken(outputAddress, networkName)
+            const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress)).toString()))
 
-        const maxLiquidityExit = BigInt((await behodler.getMaxLiquidityExit().call({ from: account })).toString());
-        assert(parseFloat(inputValue) > 0 && parseFloat(outputValue) > 0, 'trade too small')
-        const O_i = BigInt(await getReserve(outputAddress))
-        const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
-
-        if (O_i === ZERO && !isScarcityPredicate(outputAddress)) {// division by zero
-            fieldSet('insufficient liquidity')
-            throw 'exit liquidity zero'
-        }
-
-        const bigOutput = BigInt(API.toWei(outputValue))
-        const exitRatio = (bigOutput * bigFactor) / (O_i * bigFactor);
-        if (exitRatio > maxLiquidityExit) {
-            fieldSet('liquidity impact too large')
-            throw 'output too large relative to reserve'
+            if (reserveBalance < parseFloat(inputValue)) {
+                throw "Reserve Insufficient"
+            }
         }
     }
-
-    const fromBalance = tokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
-    const toBalance = tokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
+    const fromBalance = minting ? baseTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase()) : pyroTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
+    const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
     const swapAction = async () => {
         if (swapState === SwapState.POSSIBLE) {
@@ -1094,34 +999,7 @@ export default function (props: {}) {
     }
 
     const greySwap = swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE
-    const [showMoreInfo, setShowMoreInfo] = useLoggedState<boolean>(false)
-    const [showMobileInfo, setShowMobileInfo] = useLoggedState<boolean>(false)
-    const [reserves, setReserves] = useLoggedState<string[]>(['', ''])
 
-    const setReservesCallback = useCallback(async () => {
-        const inputTokenToload = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
-        const outputTokenToLoad = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
-
-        const inputReserve = isScarcityPredicate(inputAddress) ? "" : API.fromWei((await getReserve(inputTokenToload)).toString())
-        const outputReserve = isScarcityPredicate(outputAddress) ? "" : API.fromWei((await getReserve(outputTokenToLoad)).toString())
-        setReserves([formatSignificantDecimalPlaces(inputReserve, 2), formatSignificantDecimalPlaces(outputReserve, 2)])
-    }, [swapState])
-    useEffect(() => {
-        setReservesCallback()
-    }, [swapState])
-    const toggleMobileInfo = () => swapState !== SwapState.IMPOSSIBLE ? setShowMobileInfo(!showMobileInfo) : setShowMobileInfo(false)
-
-    const MoreInfoOverlay = (props: { mobile?: boolean }) => (swapState !== SwapState.IMPOSSIBLE && (showMoreInfo || showMobileInfo) ? <MoreInfo
-        burnFee={formatSignificantDecimalPlaces(expectedFee, 8)}
-        inputType={isScarcityPredicate(inputAddress) ? InputType.scx : (inputBurnable ? InputType.burnable : InputType.pyro)}
-        priceImpact={`${formatSignificantDecimalPlaces(priceImpact, 2)}`}
-        inputTokenName={nameOfSelectedAddress(inputAddress)}
-        outputTokenName={nameOfSelectedAddress(outputAddress)}
-        mobile={props.mobile || false}
-        inputReserve={reserves[0]}
-        outputReserve={reserves[1]}
-    /> :
-        <div></div>)
     const setNewMenuInputAddress = (address: string) => {
         setInputValue("")
         setOutputValue("")
@@ -1154,14 +1032,14 @@ export default function (props: {}) {
                                 className={classes.mobileSelectorGrid}
                             >
                                 <Grid item>
-                                    <TokenSelector network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image}
-                                        scale={0.65} mobile balances={tokenBalances} />
+                                    <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}
+                                        scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={swapping ? Images[13] : Images[13]} className={classes.monsterMobile} />
+                                    <img width={180} src={swapping ? Logos["PyroAnimated"] : Logos["Pyrotoken"]} className={classes.monsterMobile} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector network={networkName} balances={tokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
+                                    <TokenSelector pyro={minting} network={networkName} balances={minting ? pyroTokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={!minting ? fetchBaseToken(outputAddress).image : fetchPyroToken(outputAddress).image} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
@@ -1185,7 +1063,7 @@ export default function (props: {}) {
                                                 <DebounceInput
                                                     id={inputAddress}
                                                     debounceTimeout={300}
-                                                    placeholder={nameOfSelectedAddress(inputAddress)}
+                                                    placeholder={nameOfSelectedInputAddress(inputAddress)}
                                                     value={inputValue}
                                                     onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
@@ -1217,7 +1095,7 @@ export default function (props: {}) {
                                                 <DebounceInput
                                                     debounceTimeout={300}
                                                     id={outputAddress}
-                                                    placeholder={nameOfSelectedAddress(outputAddress)}
+                                                    placeholder={nameOfSelectedOutputAddress(outputAddress)}
                                                     value={outputValue}
                                                     onChange={(event) => { setFormattingTo(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
@@ -1234,13 +1112,6 @@ export default function (props: {}) {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        {scxEstimationWarning.length > 0 ?
-                            <Grid item className={classes.scxEstimationWarning}>
-                                <div className={classes.scxEstimationWarningText}>
-                                    {scxEstimationWarning}
-                                </div>
-                            </Grid>
-                            : <div></div>}
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
                                 <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={swapState === SwapState.IMPOSSIBLE && false} variant="contained" color="primary" size="large" onClick={swapAction}>
@@ -1249,7 +1120,7 @@ export default function (props: {}) {
                             </Box>
                         </Grid>
                         <Grid item>
-                            <div className={scxEstimationWarning.length > 1 ? classes.flippySwitchSCXWarning : classes.flippySwitch} onClick={() => setFlipClicked(true)} />
+                            <div className={classes.flippySwitch} onClick={() => setFlipClicked(true)} />
                         </Grid>
                         <Grid item>
                             <Grid container
@@ -1261,16 +1132,6 @@ export default function (props: {}) {
                             >
                                 <Grid item className={classes.impliedExchangeRate}>
                                     {impliedExchangeRate}
-                                </Grid>
-                                <Grid item>
-                                    <MoreInfoOverlay mobile />
-                                    <Button
-                                        color="secondary" variant="outlined"
-                                        onClick={() => toggleMobileInfo()}
-                                        disabled={swapState === SwapState.IMPOSSIBLE}
-                                    >
-                                        More info
-                                    </Button>
                                 </Grid>
                                 <Grid item>
                                     {outstandingTXCount > 0 ?
@@ -1320,7 +1181,7 @@ export default function (props: {}) {
                                                 debounceTimeout={300}
                                                 id={inputAddress}
                                                 key={"desktopInputInput"}
-                                                placeholder={nameOfSelectedAddress(inputAddress)}
+                                                placeholder={nameOfSelectedInputAddress(inputAddress)}
                                                 value={inputValue}
                                                 onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                 className={inputClasses.inputWide} />
@@ -1340,17 +1201,17 @@ export default function (props: {}) {
                                     id="central-selector-monster-grid"
                                 >
                                     <Grid item>
-                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
+                                        <TokenSelector pyro={!minting} balances={minting ? baseTokenBalances : pyroTokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={350} src={swapping ? Images[13] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                <img width={350} src={swapping ? Logos["PyroAnimated"] : Logos["Pyrotoken"]} className={classes.monster} onClick={() => setFlipClicked(true)} />
                                             </Tooltip>
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
+                                        <TokenSelector pyro={minting} balances={minting ? pyroTokenBalances : baseTokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={minting ? fetchPyroToken(outputAddress).image : fetchBaseToken(outputAddress).image} scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1371,7 +1232,7 @@ export default function (props: {}) {
                                                 id={outputAddress}
                                                 debounceTimeout={300}
                                                 key={"desktopInputOutput"}
-                                                placeholder={nameOfSelectedAddress(outputAddress)}
+                                                placeholder={nameOfSelectedOutputAddress(outputAddress)}
                                                 value={outputValue}
                                                 onChange={(event) => { setFormattingTo(event.target.value) }}
                                                 className={inputClasses.inputWide} />
@@ -1391,14 +1252,6 @@ export default function (props: {}) {
                         </Grid>
 
                     </Grid>
-                    {scxEstimationWarning.length > 0 ?
-                        <Tooltip title="For an accurate estimate, edit the other token amount">
-                            <Grid item className={classes.scxEstimationWarning}>
-                                <div className={classes.scxEstimationWarningText}>
-                                    {scxEstimationWarning}
-                                </div>
-                            </Grid>
-                        </Tooltip> : <div></div>}
                     <Grid item>
 
                         <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
@@ -1420,17 +1273,6 @@ export default function (props: {}) {
 
                             <Grid item className={classes.impliedExchangeRate}>
                                 {swapState !== SwapState.IMPOSSIBLE ? impliedExchangeRate : ""}
-                            </Grid>
-                            <Grid item className={classes.moreInfo}>
-                                <MoreInfoOverlay />
-                                <Button color="secondary" variant="outlined"
-                                    onMouseOver={() => setShowMoreInfo(true)}
-                                    onMouseLeave={() => setShowMoreInfo(false)}
-                                    disabled={swapState === SwapState.IMPOSSIBLE}
-                                >
-                                    More info
-
-                                </Button>
                             </Grid>
                             <Grid item>
                                 {outstandingTXCount > 0 ?

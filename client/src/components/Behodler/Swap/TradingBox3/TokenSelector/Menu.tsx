@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import tokenListJSON from '../../../../../blockchain/behodlerUI/baseTokens.json'
-import { Images } from '../ImageLoader'
+import { TokenList } from '../ImageLoader'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 import { TokenBalanceMapping } from '../index'
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
@@ -91,6 +90,7 @@ interface props {
     mobile: boolean
     setAddress: (a: string) => void
     balances: TokenBalanceMapping[]
+    pyro: boolean
 }
 
 interface MenuToken {
@@ -98,13 +98,10 @@ interface MenuToken {
     address: string
     image: string,
     loading: boolean,
-    balance: string
+    balance: string,
+
 }
 
-interface TokenMetadata {
-    name: string
-    address: string
-}
 // const randomInt = (range: number) => Math.floor(Math.random() * range)
 const trunc = (str: string, max: number) => {
     if (str.length > max) {
@@ -113,42 +110,56 @@ const trunc = (str: string, max: number) => {
     return str;
 }
 export default function Menu(props: props) {
-    const tokenList: TokenMetadata[] = tokenListJSON[props.networkName].filter(
-        (t) => t.name !== "WBTC" && t.name !== "BAT"
-    );
-    const indexOfWeth = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("weth") !== -1);
-    const indexOfScarcityAddress = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("scarcity") !== -1);
-    const behodler2Weth = props.weth10Address;
-    const [menuItems, setMenuItems] = useState<MenuToken[]>(tokenList.map((t, i) => {
-        const token = props.balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
-        const showSwirly = token.length === 0
-        const balance = !showSwirly ? token[0].balance : "0"
-        let item: MenuToken = { ...t, image: Images[i], loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
-        if (i === indexOfWeth) {
-            item.name = 'Eth'
-            item.address = behodler2Weth
-        }
-        if (i === indexOfScarcityAddress) {
-            item.address = props.scarcityAddress
-        }
-        return item
-    }));
-
-    useEffect(() => {
-        const factory = (balances: TokenBalanceMapping[]) => tokenList.map((t, i) => {
-            const token = balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
+    const [menuItems, setMenuItems] = useState<MenuToken[]>(props.balances
+        .map((t, i) => {
+            const token = props.balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
             const showSwirly = token.length === 0
             const balance = !showSwirly ? token[0].balance : "0"
-            let item: MenuToken = { ...t, image: Images[i], loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
-            if (i === indexOfWeth) {
-                item.name = 'Eth'
-                item.address = behodler2Weth
-            }
-            if (i === indexOfScarcityAddress) {
-                item.address = props.scarcityAddress
-            }
+            const currentTokenListItem = TokenList
+                .map(t => {
+                    if (t.baseToken.name.toLowerCase() === 'Weth') {
+                        const baseToken = t.baseToken;
+                        const newBase = { ...baseToken, name: "ETH" }
+                        return { ...t, baseToken: newBase }
+                    }
+                    return t
+                })
+                .filter(token => {
+                    const pairItem = props.pyro ? token.pyroToken : token.baseToken
+                    const ethFound = pairItem.name.toLowerCase() === 'weth' && t.name.toLowerCase() === 'eth'
+                    return ethFound || pairItem.name.toLowerCase() === t.name.toLowerCase()
+                })[0]
+            let item: MenuToken = { ...t, image: props.pyro ? currentTokenListItem.pyroToken.image : currentTokenListItem.baseToken.image, loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
             return item
-        })
+        }));
+
+    useEffect(() => {
+        const factory = (balances: TokenBalanceMapping[]) => props.balances
+            .map((t, i) => {
+                const token = balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
+                const showSwirly = token.length === 0
+                const balance = !showSwirly ? token[0].balance : "0"
+                const currentTokenListItem = TokenList
+                    .map(t => {
+                        if (t.baseToken.name.toLowerCase() === 'Weth') {
+                            const baseToken = t.baseToken;
+                            const newBase = { ...baseToken, name: "ETH" }
+                            return { ...t, baseToken: newBase }
+                        }
+                        return t
+                    })
+                    .filter(token => {
+                        const pairItem = props.pyro ? token.pyroToken : token.baseToken
+                        const ethFound = pairItem.name.toLowerCase() === 'weth' && t.name.toLowerCase() === 'eth'
+                        return ethFound || pairItem.name.toLowerCase() === t.name.toLowerCase()
+                    })[0]
+
+                let item: MenuToken = { ...t, image: props.pyro ? currentTokenListItem.pyroToken.image : currentTokenListItem.baseToken.image, loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
+                const uni = item.name.toLowerCase().indexOf('univ2lp')
+                if (uni !== -1)
+                    item.name = item.name.substring(0, uni).trim()
+                return item
+            })
         let tokenDropDownList: MenuToken[] = factory(props.balances)
         setMenuItems(tokenDropDownList)
     }, [props.balances])
@@ -203,7 +214,6 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                         {filteredList.map((t, i) => <ListItem className={props.mobile ? classes.listItemMobile : classes.listItem} button key={i} onClick={() => {
                             props.setShow(false)
                             props.setAddress(t.address)
-                            console.log('selected token: ' + t.address)
                         }}>
                             <ListItemIcon>
                                 <img width={props.mobile ? 24 : 32} src={t.image} alt={t.name} />

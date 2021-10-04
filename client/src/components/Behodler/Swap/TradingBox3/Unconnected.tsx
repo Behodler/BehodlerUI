@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { Box, makeStyles, Theme, Grid, Hidden } from '@material-ui/core'
 
-import { Images } from './ImageLoader'
+import { Logos } from './ImageLoader'
 import BigNumber from 'bignumber.js'
 
 
@@ -14,7 +14,7 @@ const scale = textScaler(0.9)
 const inputStyles = makeStyles((theme: Theme) => ({
     root: {
         width: scale(310),
-        marginTop:170
+        marginTop: 170
     },
     mobileRoot: {
         width: scale(400),
@@ -271,7 +271,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         height: "100%",
         position: "absolute",
         top: -15,
-        left:-5
+        left: -5
 
     },
     Info: {
@@ -288,7 +288,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
- 
+
     },
     flippySwitch: {
         /* Ellipse 18 */
@@ -301,13 +301,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         // top: 500,
         // left: 450,
         borderRadius: "50%",
-        backgroundImage: `url(${Images[14]})`,
+        backgroundImage: `url(${Logos["background"]})`,
         backgroundSize: "cover",
         '&:hover': {
             cursor: "pointer",
             boxShadow: "0 0 4px 1px #AAf",
             background: "#473D6E",
-            backgroundImage: `url(${Images[14]})`,
+            backgroundImage: `url(${Logos["background"]})`,
             backgroundSize: "cover",
         }
     }, flippySwitchSCXWarning: {
@@ -320,13 +320,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         // top: 500,
         // left: 450,
         borderRadius: "50%",
-        backgroundImage: `url(${Images[14]})`,
+        backgroundImage: `url(${Logos["background"]})`,
         backgroundSize: "cover",
         '&:hover': {
             cursor: "pointer",
             boxShadow: "0 0 4px 1px #AAf",
             background: "#473D6E",
-            backgroundImage: `url(${Images[14]})`,
+            backgroundImage: `url(${Logos["background"]})`,
             backgroundSize: "cover",
         }
     },
@@ -397,7 +397,7 @@ export default function (props: {}) {
                                 <Grid item>
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={Images[13]} className={classes.monsterMobile} />
+                                    <img width={180} src={Logos["Pyrotoken"]} className={classes.monsterMobile} />
                                 </Grid>
                                 <Grid item className={classes.connectionWarning}>
                                     Connect your wallet to use the Behodler AMM
@@ -406,10 +406,10 @@ export default function (props: {}) {
 
                         </Grid>
                         <Grid item key="mobileGridInput">
-                          
+
                         </Grid>
                         <Grid item key="mobileGridOutput">
-                           
+
                         </Grid>
 
                         <Grid item>
@@ -489,7 +489,7 @@ export default function (props: {}) {
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
-                                            <img width={350} src={Images[13]} className={classes.monster} />
+                                            <img width={350} src={Logos["Pyrotoken"]} className={classes.monster} />
                                         </div>
                                     </Grid>
                                     <Grid item>
@@ -524,8 +524,8 @@ export default function (props: {}) {
 
                     </Grid>
                     <Grid item className={classes.connectionWarning}>
-                                    Connect your wallet to use the Behodler AMM
-                                </Grid>
+                        Connect your wallet to use the Behodler AMM
+                    </Grid>
                     <Grid item>
 
                     </Grid>
@@ -545,7 +545,7 @@ export default function (props: {}) {
 
                             </Grid>
                             <Grid item>
-                             
+
                             </Grid>
                         </Grid>
                     </Grid>

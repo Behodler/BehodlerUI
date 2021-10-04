@@ -36,6 +36,7 @@ interface props {
     scale: number,
     setAddress: (a: string) => void
     network: string
+    pyro:boolean
     mobile?: boolean
 }
 
@@ -66,6 +67,7 @@ export default function TokenSelector(props: props) {
             mobile={props.mobile || false}
             setAddress={props.setAddress}
             balances={props.balances}
+            pyro={props.pyro}
         />
     </div>
 }
