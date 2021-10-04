@@ -2,7 +2,8 @@
     "main": {
         "behodler": "0x1B8568FbB47708E9E9D31Ff303254f748805bF21",
         "lachesis": "0x99450D1475cb9DD1f34B991769780641A9A06572",
-        "liquidityReceiver": "0xE80F95Da4DB121989DF7c0451165a6998a4600Fb"
+        "liquidityReceiver": "0xE80F95Da4DB121989DF7c0451165a6998a4600Fb",
+        "pyroWeth10Proxy":"0xce3f93c1161655abfb67b24fd4bc63d469f97650"
     },
     "development": {
         "behodler": "0x91C7817988d0af2F652e37438b636b9e6799895e",

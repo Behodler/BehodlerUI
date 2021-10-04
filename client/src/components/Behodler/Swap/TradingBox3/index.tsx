@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
-import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip, Link } from '@material-ui/core'
+import { Button, Box, makeStyles, Theme, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { TokenList, Logos } from './ImageLoader'
@@ -406,10 +406,10 @@ const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
 const loggingOn: boolean = false
-function useLoggedState<T>(initialState: T): [T, (newState: T) => void] {
+function useLoggedState<T>(initialState: T, logthis?: boolean): [T, (newState: T) => void] {
     const [state, setIndependentFieldState] = useState<T>(initialState)
     useEffect(() => {
-        if (loggingOn)
+        if (loggingOn || logthis)
             console.log(`state update: ${JSON.stringify(state)}`)
     }, [state])
     return [state, setIndependentFieldState]
@@ -585,13 +585,13 @@ export default function (props: {}) {
 
     const [inputValue, setInputValue] = useLoggedState<string>('')
     const [outputValue, setOutputValue] = useLoggedState<string>('')
-    const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
+    const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE, true)
     const [independentField, setIndependentField] = useLoggedState<IndependentField>({
         target: 'FROM',
         newValue: ''
     })
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
-    const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
+    const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false, true)
     const [inputAddress, setInputAddress] = useLoggedState<string>('0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F')
     const [outputAddress, setOutputAddress] = useLoggedState<string>('0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12')
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
@@ -635,6 +635,7 @@ export default function (props: {}) {
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
     const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
 
+    //TODO: eth output bug
     const spotPriceCallback = useCallback(async () => {
         if (!daiAddress || daiAddress.length < 3)
             return
@@ -653,7 +654,6 @@ export default function (props: {}) {
             const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
             const pyroToken = await API.getPyroToken(outputAddress, networkName)
             const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            console.log('pyro redeem rate: ' + redeemRate)
             const bigSpot = BigInt(intSpot)
             const spotForPyro = (redeemRate * bigSpot) / (ONE)
             const outputSpot = parseFloat(spotForPyro.toString()) / Factor
@@ -745,10 +745,16 @@ export default function (props: {}) {
         setImpliedExchangeRate("")
 
         let addressToCheck = minting ? outputAddress : inputAddress
-        if (isOutputEth && !minting)
+        if (isOutputEth)
             addressToCheck = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.address
+        if (isInputEth) {
+            setInputEnabled(true)
+            return
+        }
+        console.log('addressToCheck: ' + addressToCheck)
         const effect = currentTokenEffects.allowance(account, addressToCheck)
         const subscription = effect.Observable.subscribe((allowance) => {
+
             const scaledAllowance = API.fromWei(allowance)
             const allowanceFloat = parseFloat(scaledAllowance)
             const balanceFloat = parseFloat(balance)
@@ -760,7 +766,7 @@ export default function (props: {}) {
             subscription.unsubscribe()
         }
 
-    }, [inputAddress])
+    }, [inputAddress, outputAddress])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
@@ -787,6 +793,7 @@ export default function (props: {}) {
 
         if (swapClicked) {
             const pyroTokenAddress = minting ? outputAddress : inputAddress
+            console.log('Pyrotoken address in use: ' + pyroTokenAddress)
             const pyroToken = await API.getPyroToken(pyroTokenAddress, networkName)
             if (minting) {
                 if (isInputEth) {
@@ -799,12 +806,13 @@ export default function (props: {}) {
                                 .catch(err => console.log('user rejection'))
                         })
                 } else {
+                    console.log('inputValWei: ' + inputValWei)
                     pyroToken.mint(inputValWei)
-                        .estimateGas(ethOptions, function (error, gas) {
+                        .estimateGas(primaryOptions, function (error, gas) {
                             if (error) console.error("gas estimation error: " + error);
                             ethOptions.gas = gas;
                             pyroToken.mint(inputValWei)
-                                .send(ethOptions, mintHashBack)
+                                .send(primaryOptions, mintHashBack)
                                 .catch(err => console.log('user rejection'))
                         })
                 }
@@ -871,17 +879,17 @@ export default function (props: {}) {
         let outputEstimate, redeemRate
         if (minting) {
             let pyrotokensGeneratedWei
-            if (isOutputEth) {
+            if (isInputEth) {
                 pyrotokensGeneratedWei = bigFactor * BigInt(await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateMintedPyroWeth(inputValToUse).call({ account }))
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
                 redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
-                pyrotokensGeneratedWei = (inputValToUse * bigFactor) / redeemRate
+                pyrotokensGeneratedWei = (inputValToUse * bigFactor * ONE) / redeemRate
             }
             outputEstimate = parseFloat(API.fromWei(pyrotokensGeneratedWei.toString())) / Factor
         } else {
             let baseTokensGeneratedWei
-            if (isInputEth) {
+            if (isOutputEth) {
                 baseTokensGeneratedWei = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(inputValToUse).call({ account })
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
@@ -891,7 +899,7 @@ export default function (props: {}) {
             outputEstimate = parseFloat(API.fromWei(baseTokensGeneratedWei.toString()))
         }
 
-        setOutputValue(formatSignificantDecimalPlaces(API.fromWei(outputEstimate), 18))
+        setOutputValue(formatSignificantDecimalPlaces(outputEstimate, 18))
     }
 
     const calculateInputFromOutput = async () => {
@@ -899,6 +907,7 @@ export default function (props: {}) {
         let inputEstimate, redeemRate
         if (minting) {
             let baseTokensRequired
+            //TODO: inputEstimate is being scaled twice
             if (isInputEth) {
                 baseTokensRequired = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(outputValToUse).call({ account })
             } else {
@@ -909,17 +918,17 @@ export default function (props: {}) {
             inputEstimate = parseFloat(API.fromWei(baseTokensRequired.toString()))
         } else {
             let pyroTokensRequired
-            if (isOutputEth) {
+            if (isInputEth) {
                 pyroTokensRequired = bigFactor * BigInt(await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateMintedPyroWeth(outputValToUse).call({ account }))
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
                 const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
-                pyroTokensRequired = (outputValToUse * bigFactor) / redeemRate
+                pyroTokensRequired = (outputValToUse * bigFactor * ONE) / redeemRate
             }
             inputEstimate = parseFloat(API.fromWei(pyroTokensRequired.toString())) / Factor
         }
 
-        setInputValue(formatSignificantDecimalPlaces(API.fromWei(inputEstimate), 18))
+        setInputValue(formatSignificantDecimalPlaces(inputEstimate, 18))
     }
 
     const independentFieldCallback = useCallback(async () => {
@@ -951,11 +960,18 @@ export default function (props: {}) {
     const swapValidationCallback = useCallback(async () => {
         if (independentFieldState === "validating swap") {
             try {
-                await validateLiquidityExit()
-                if (validateBalances())
-                    setSwapState(SwapState.POSSIBLE)
-                else
+                if (!inputEnabled) {
                     setSwapState(SwapState.DISABLED)
+                }
+                else {
+                    await validateLiquidityExit()
+                    if (validateBalances())
+                        setSwapState(SwapState.POSSIBLE)
+                    else {
+                        console.log('balance validation failed')
+                        setSwapState(SwapState.DISABLED)
+                    }
+                }
             } catch (e) {
                 setSwapState(SwapState.IMPOSSIBLE)
                 console.warn('validation failed ' + e)
@@ -969,15 +985,23 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const validateBalances = (): boolean => {
-        const balanceOfInput = parseFloat(API.fromWei(baseTokenBalances.filter(b => b.address === inputAddress)[0].balance))
+        //check pyrotokens balances 
+        const balanceOfInput = parseFloat(API.fromWei(
+            minting
+                ?
+                baseTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                :
+                pyroTokenBalances.filter(b => b.address === inputAddress)[0].balance
+        ))
         return (balanceOfInput >= parseFloat(inputValue))
     }
 
     const validateLiquidityExit = async () => {
         if (!minting) {
-            const token = await API.getToken(outputAddress, networkName)
-            const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress)).toString()))
-
+            const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
+            const token = await API.getToken(outputAddressToUse, networkName)
+            const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress).call({ from: account })).toString()))
+            console.log('reserve balance ' + reserveBalance)
             if (reserveBalance < parseFloat(inputValue)) {
                 throw "Reserve Insufficient"
             }
@@ -987,14 +1011,17 @@ export default function (props: {}) {
     const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
     const swapAction = async () => {
+        console.log('swapState: ' + swapState)
         if (swapState === SwapState.POSSIBLE) {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
+            const addressToUse = isOutputEth ? walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.address : (minting ? outputAddress : inputAddress)
+            console.log('pair ' + { inputAddress, addressToUse })
             await API.enableToken(
                 inputAddress,
                 uiContainerContextProps.walletContext.account || "",
-                behodler.address, (err, hash: string) => {
+                addressToUse, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {
                             hash,
@@ -1011,8 +1038,7 @@ export default function (props: {}) {
         }
     }
 
-    const greySwap = swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE
-
+    const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE)
     const setNewMenuInputAddress = (address: string) => {
         setInputValue("")
         setOutputValue("")
@@ -1149,14 +1175,6 @@ export default function (props: {}) {
                                 <Grid item className={classes.impliedExchangeRate}>
                                     {impliedExchangeRate}
                                 </Grid>
-                                <Grid item>
-                                    {outstandingTXCount > 0 ?
-                                        <Tooltip title={"awaiting transaction " + currentTxHash}>
-                                            <CircularProgress />
-                                        </Tooltip>
-                                        : <div></div>
-                                    }
-                                </Grid>
                             </Grid>
                         </Grid>
 
@@ -1290,14 +1308,6 @@ export default function (props: {}) {
 
                             <Grid item className={classes.impliedExchangeRate}>
                                 {swapState !== SwapState.IMPOSSIBLE ? impliedExchangeRate : ""}
-                            </Grid>
-                            <Grid item>
-                                {outstandingTXCount > 0 ?
-                                    <Tooltip title={"awaiting transaction " + currentTxHash}>
-                                        <CircularProgress />
-                                    </Tooltip>
-                                    : <div></div>
-                                }
                             </Grid>
                         </Grid>
                     </Grid>
