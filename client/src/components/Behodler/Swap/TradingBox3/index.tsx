@@ -764,7 +764,7 @@ export default function (props: {}) {
             subscription.unsubscribe()
         }
 
-    }, [inputAddress, outputAddress])
+    }, [inputAddress, outputAddress, swapState, independentFieldState])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
@@ -1001,6 +1001,9 @@ export default function (props: {}) {
         swapValidationCallback()
     }, [independentFieldState])
 
+    useEffect(() => {
+        setIndependentFieldState("validating swap")
+    }, [inputEnabled])
     const validateBalances = (): boolean => {
         //check pyrotokens balances 
         const balanceOfInput = parseFloat(API.fromWei(
