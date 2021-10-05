@@ -214,6 +214,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                         {filteredList.map((t, i) => <ListItem className={props.mobile ? classes.listItemMobile : classes.listItem} button key={i} onClick={() => {
                             props.setShow(false)
                             props.setAddress(t.address)
+                            console.log('selected token: ' + t.address)
                         }}>
                             <ListItemIcon>
                                 <img width={props.mobile ? 24 : 32} src={t.image} alt={t.name} />
