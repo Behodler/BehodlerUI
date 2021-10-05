@@ -14,6 +14,6 @@ import scxeth from '../../../../images/behodler/scxeth.png'
 import scxeye from '../../../../images/behodler/scxeye.png'
 import eye from '../../../../images/behodler_b.png'
 import monster from '../../../../images/new/MonsterGun5.png'
-import swapping from '../../../../images/new/animation.mp4'
+import swapping from '../../../../images/new/swapping3.gif'
 import flippyArrows from '../../../../images/new/flippyArrows.png'
 export const Images = [One, Two, Three, Four, Five, Six, Seven/* Eight*/, Nine, /*Ten*/  Dai, eye,eyedai, scxeth, scxeye,monster,flippyArrows,swapping]

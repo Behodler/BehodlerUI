@@ -141,7 +141,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             cursor: "pointer"
         },
-        filter: "brightness(1.3)"
+        filter: "brightness(0.3)"//default 1.3
     },
     monsterMobile: {
         display: "block",
@@ -1352,7 +1352,7 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={350} src={swapping ? Images[13] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                <img width={350} src={swapping ? Images[13] : Images[15]} className={classes.monster} onClick={() => setFlipClicked(true)} />
                                             </Tooltip>
                                         </div>
                                     </Grid>
