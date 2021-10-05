@@ -1041,6 +1041,10 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     useEffect(() => {
+        setIndependentFieldState("validating swap")
+    }, [inputEnabled])
+
+    useEffect(() => {
         swapValidationCallback()
     }, [independentFieldState])
 
