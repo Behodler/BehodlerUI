@@ -1,4 +1,4 @@
-import background from '../../../../images/new/behodler-swap-bg.jpg'
+import background from '../../../../images/new/pyrobackground.png'
 import OXT from '../../../../images/behodler/1.png'
 import PNK from '../../../../images/behodler/2.png'
 import Weth from '../../../../images/behodler/3.png'
@@ -22,7 +22,7 @@ import pyroLOOM from '../../../../images/pyroTokens/pyroLOOM.png'
 
 
 import pyroTokenLogo from '../../../../images/new/pyrotokens.png'
-import pyroAnimated from '../../../../images/new/pyroAnimated.gif'
+import pyroAnimated from '../../../../images/new/Fire-TransparentLow.gif'
 import flippyArrows from '../../../../images/new/flippyArrows.png'
 
 interface ImageNamePair {

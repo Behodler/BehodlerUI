@@ -36,7 +36,7 @@ interface props {
     scale: number,
     setAddress: (a: string) => void
     network: string
-    pyro:boolean
+    pyro: boolean
     mobile?: boolean
 }
 
@@ -55,7 +55,7 @@ export default function TokenSelector(props: props) {
         >
             <Grid item>
                 <div className={classes.innerCircle}>
-                    <img alt="token" src={props.tokenImage} width={70 * props.scale} />
+                    <img alt="token" src={props.tokenImage} width={(props.pyro?100:80) * props.scale} />
                 </div>
             </Grid>
 

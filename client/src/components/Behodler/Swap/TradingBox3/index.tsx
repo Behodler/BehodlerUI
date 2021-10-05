@@ -142,7 +142,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     monsterMobile: {
         display: "block",
-        margin: "0 30px 0 30px",
+        margin: "0 30px 3px 30px",
         '&:hover': {
             cursor: "pointer"
         },
@@ -150,7 +150,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     monsterMobileAnimated: {
         display: "block",
-        margin: "0 25px 0 25px",
+        margin: "0 16px 0 16px",
         '&:hover': {
             cursor: "pointer"
         },
@@ -224,7 +224,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white"
     },
     impliedExchangeRate: {
-        minHeight: "30px"
+        minHeight: "50px"
     },
     scxEstimationWarning: {
 
@@ -406,7 +406,7 @@ const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
 const loggingOn: boolean = false
-function useLoggedState<T>(initialState: T, logthis?:boolean): [T, (newState: T) => void] {
+function useLoggedState<T>(initialState: T, logthis?: boolean): [T, (newState: T) => void] {
     const [state, setIndependentFieldState] = useState<T>(initialState)
     useEffect(() => {
         if (loggingOn || logthis)
@@ -966,7 +966,7 @@ export default function (props: {}) {
             pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
 
-            e = parseFloat(inputValue) / parseFloat(outputValue)
+            e = parseFloat(outputValue) / parseFloat(inputValue)
             connectorPhrase = 'can redeem'
         }
 
@@ -1091,7 +1091,7 @@ export default function (props: {}) {
                                     <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}
                                         scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
-                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={105 * mobileImageScale} src={animatedLogo.image} className={classes.monsterMobileAnimated} />
+                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={125 * mobileImageScale} src={animatedLogo.image} className={classes.monsterMobileAnimated} />
                                     : <img width={90 * mobileImageScale} src={staticLogo.image} className={classes.monsterMobile} />
                                 }
                                 </Grid>
@@ -1255,7 +1255,7 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                {swapping ? <img width={180 * desktopImageScale} src={animatedLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} /> :
+                                                {swapping ? <img width={200 * desktopImageScale} src={animatedLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} /> :
                                                     <img width={150 * desktopImageScale} src={staticLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} />}
                                             </Tooltip>
                                         </div>

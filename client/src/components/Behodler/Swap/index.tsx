@@ -7,7 +7,7 @@ import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext, WalletContextProvider } from 'src/components/Contexts/WalletStatusContext'
 import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
-import backImage from "../../../images/new/behodler-swap-bg.jpg";
+import backImage from "../../../images/new/pyrobackground.png";
 
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
@@ -79,7 +79,8 @@ const useStyles = makeStyles((theme) =>
             backdropFilter: "blur(4px)",
             height: "100%",
             width: "100%",
-            backgroundImage: `url(${backImage})`,
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),url(${backImage})`,
+
             background: '#C4C4C4',
             backgroundRepeat: "repeat-y",
             backgroundSize: "100% 100%",
