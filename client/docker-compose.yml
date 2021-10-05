@@ -39,7 +39,7 @@ services:
     S3:
        image: amazon/aws-cli:latest
        tty: true
-       command:  s3 sync /app/build/ s3://pullrequest.staging
+       command:  s3 sync /app/build/ s3://staging2.behodler
        volumes:
         - ./:/app
         - ~/.aws:/root/.aws

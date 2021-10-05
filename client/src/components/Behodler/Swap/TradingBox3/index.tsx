@@ -138,7 +138,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             cursor: "pointer"
         },
-        filter: "brightness(1.3)"
+        filter: "brightness(1.1)"
     },
     monsterMobile: {
         display: "block",
@@ -146,7 +146,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             cursor: "pointer"
         },
-        filter: "brightness(1.3)"
+        filter: "brightness(1.1)"
     },
     monsterMobileAnimated: {
         display: "block",
