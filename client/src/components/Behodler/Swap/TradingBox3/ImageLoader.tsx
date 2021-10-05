@@ -1,4 +1,4 @@
-import background from '../../../../images/new/pyrobackground.png'
+import background from '../../../../images/new/behodler-swap-bg.jpg'
 import OXT from '../../../../images/behodler/1.png'
 import PNK from '../../../../images/behodler/2.png'
 import Weth from '../../../../images/behodler/3.png'

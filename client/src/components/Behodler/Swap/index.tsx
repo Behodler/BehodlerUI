@@ -7,7 +7,7 @@ import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { WalletContext, WalletContextProvider } from 'src/components/Contexts/WalletStatusContext'
 import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
-import backImage from "../../../images/new/pyrobackground.png";
+import backImage from "../../../images/new/behodler-swap-bg.jpg";
 
 export type permittedRoutes = 'swap' | 'liquidity' | 'sisyphus' | 'faucet' | 'behodler/admin' | 'governance' | 'swap2' | 'pyro'
 
