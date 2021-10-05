@@ -934,11 +934,10 @@ export default function (props: {}) {
                 setIndependentFieldState("validating swap")
             }
         } catch (e) {
-            const exception = e as string
             if (independentField.target === 'FROM')
-                setOutputValue(exception)
+                setOutputValue('invalid input')
             else
-                setInputValue(exception)
+                setInputValue('invalid input')
 
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
