@@ -14,8 +14,9 @@ import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
 import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
-import { DebounceInput } from 'react-debounce-input';
-import useActiveWeb3React from "../hooks/useActiveWeb3React";
+import { DebounceInput } from 'react-debounce-input'
+import useActiveWeb3React from "../hooks/useActiveWeb3React"
+import { useDebounce } from '@react-hook/debounce'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -140,6 +141,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             cursor: "pointer"
         },
+        // filter: "brightness(0.3)"
         filter: "brightness(1.3)"
     },
     monsterMobile: {
@@ -415,12 +417,12 @@ const ZERO = BigInt(0)
 
 const loggingOn: boolean = false
 function useLoggedState<T>(initialState: T): [T, (newState: T) => void] {
-    const [state, setIndependentFieldState] = useState<T>(initialState)
+    const [state, setState] = useState<T>(initialState)
     useEffect(() => {
         if (loggingOn)
             console.log(`state update: ${JSON.stringify(state)}`)
     }, [state])
-    return [state, setIndependentFieldState]
+    return [state, setState]
 }
 
 export default function (props: {}) {
@@ -561,14 +563,14 @@ export default function (props: {}) {
 
     //NEW HOOKS END
 
-    const [inputValue, setInputValue] = useLoggedState<string>('')
-    const [outputValue, setOutputValue] = useLoggedState<string>('')
+    const [inputValue, setInputValue] = useDebounce<string>('', 400)
+    const [outputValue, setOutputValue] = useDebounce<string>('', 400)
     const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
-    const [independentField, setIndependentField] = useLoggedState<IndependentField>({
+    const [independentField, setIndependentField] = useDebounce<IndependentField>({
         target: 'FROM',
         newValue: ''
-    })
-    const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
+    }, 600)
+    const [independentFieldState, setIndependentFieldState] = useDebounce<FieldState>('dormant', 600)
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
     const [inputAddress, setInputAddress] = useLoggedState<string>(tokenDropDownList[0].address.toLowerCase())
     const [outputAddress, setOutputAddress] = useLoggedState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
@@ -585,9 +587,9 @@ export default function (props: {}) {
     const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
         if (target === 'FROM') {
             setInputValue(newValue)
-            setOutputValue(update ? 'estimating...' : '')
+            setOutputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
         } else {
-            setInputValue(update ? 'estimating...' : '')
+            setInputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
             setOutputValue(newValue)
         }
 
@@ -931,11 +933,10 @@ export default function (props: {}) {
                 setIndependentFieldState("validating swap")
             }
         } catch (e) {
-            const exception = e as string
             if (independentField.target === 'FROM')
-                setOutputValue(exception)
+                setOutputValue('invalid input')
             else
-                setInputValue(exception)
+                setInputValue('invalid input')
 
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
@@ -1018,11 +1019,17 @@ export default function (props: {}) {
     const swapValidationCallback = useCallback(async () => {
         if (independentFieldState === "validating swap") {
             try {
-                await validateLiquidityExit()
-                if (validateBalances())
-                    setSwapState(SwapState.POSSIBLE)
-                else
+                if (!inputEnabled) {
                     setSwapState(SwapState.DISABLED)
+                }
+                else {
+                    await validateLiquidityExit()
+                    if (validateBalances())
+                        setSwapState(SwapState.POSSIBLE)
+                    else {
+                        setSwapState(SwapState.DISABLED)
+                    }
+                }
                 setIndependentFieldState("updating price impact")
             } catch (e) {
                 setSwapState(SwapState.IMPOSSIBLE)
@@ -1031,6 +1038,10 @@ export default function (props: {}) {
             }
         }
     }, [independentFieldState])
+
+    useEffect(() => {
+        setIndependentFieldState("validating swap")
+    }, [inputEnabled])
 
     useEffect(() => {
         swapValidationCallback()
@@ -1092,7 +1103,7 @@ export default function (props: {}) {
         }
     }
 
-    const greySwap = swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE
+    const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE)
     const [showMoreInfo, setShowMoreInfo] = useLoggedState<boolean>(false)
     const [showMobileInfo, setShowMobileInfo] = useLoggedState<boolean>(false)
     const [reserves, setReserves] = useLoggedState<string[]>(['', ''])
