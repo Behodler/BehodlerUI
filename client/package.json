@@ -85,6 +85,7 @@
         "postcss-preset-env": "^6.7.0",
         "redis": "^3.0.2",
         "rollup-plugin-postcss": "^4.0.1",
+        "tsdx": "^0.14.1",
         "types-web3-provider-engine": "0.0.2",
         "typescript": "^3.7.4"
     },
