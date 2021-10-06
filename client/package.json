@@ -1,6 +1,6 @@
 {
     "name": "@behodler/swap-legacy",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "main": "dist/index.js",
     "typings": "dist/components/BehodlerUISwap/index.d.ts",
     "files": [
