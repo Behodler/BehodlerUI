@@ -975,7 +975,7 @@ export default function (props: {}) {
     const swapValidationCallback = useCallback(async () => {
         if (independentFieldState === "validating swap") {
             try {
-                if (!inputEnabled) {
+                if (!inputEnabled && swapState === SwapState.POSSIBLE) {
                     setSwapState(SwapState.DISABLED)
                 }
                 else {
