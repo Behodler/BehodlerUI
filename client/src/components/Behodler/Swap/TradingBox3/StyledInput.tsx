@@ -1,7 +1,7 @@
 import { FormControl, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import { DebounceInput } from 'react-debounce-input';
-import { formatNumberText, isNullOrWhiteSpace } from 'src/components/Behodler/Swap/TradingBox3/jsHelpers'
+import { formatNumberText, isNullOrWhiteSpace } from './jsHelpers'
 // import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
 // import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         boxSizing: "border-box",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(24),
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         border: "none",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(20),

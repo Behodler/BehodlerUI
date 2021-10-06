@@ -52,7 +52,12 @@ export function Notification(props: props) {
     }
 
     return (
-        <Snackbar open={props.open} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} >
+        <Snackbar
+            open={props.open}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            autoHideDuration={3000}
+        >
             <Alert onClose={handleClose} severity={severity} action={
                 props.type === NotificationType.rejected ? <div></div> :
                     <a href={`https://etherscan.io/tx/${props.hash}`} target="_blank" rel="noopener noreferrer">

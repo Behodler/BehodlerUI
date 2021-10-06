@@ -19,7 +19,7 @@ import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
-import PyroWeth10ProxyJson from '../blockchain/behodler2UI/PyroWeth10Proxy.json' 
+import PyroWeth10ProxyJson from '../blockchain/behodler2UI/PyroWeth10Proxy.json'
 
 import BigNumber from 'bignumber.js'
 
@@ -134,7 +134,9 @@ class ethereumAPI {
 
     public addBlockWatcher(watcher: (b: string) => void) {
         this.web3.eth.subscribe('newBlockHeaders', (err, result) => {
-            watcher(result.number.toString())
+            if (result?.number) {
+                watcher(result.number.toString())
+            }
         })
     }
 

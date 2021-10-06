@@ -1,20 +1,20 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
 import { Button, Box, makeStyles, Theme, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
+import BigNumber from 'bignumber.js'
+import { DebounceInput } from 'react-debounce-input';
+import {useDebounce} from '@react-hook/debounce'
+
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { TokenList, Logos } from './ImageLoader'
-import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
-import { UIContainerContextProps } from '@behodler/sdk/dist/types'
-import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
 import { formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
-import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
-import {useDebounce} from '@react-hook/debounce'
+import useActiveWeb3React from '../hooks/useActiveWeb3React'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -258,7 +258,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     Direction: {
 
         // height: 17,
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -274,7 +274,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     BalanceLabel: {
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -286,7 +286,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -297,7 +297,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -314,7 +314,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     estimate: {
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -335,7 +335,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
         boxSizing: "border-box",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(24),
@@ -353,7 +353,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
         border: "none",
         /* 2.00073731114506 */
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: scale(20),
@@ -452,13 +452,14 @@ export default function (props: {}) {
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
+    const { chainId, account: acountAddress } = useActiveWeb3React()
+
     const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
-    const uiContainerContextProps = useContext<UIContainerContextProps>(ContainerContext)
 
-    const account = uiContainerContextProps.walletContext.account || "0x0"
-    const networkName = API.networkMapping[(uiContainerContextProps.walletContext.chainId || 0).toString()]
+    const account = acountAddress || "0x0"
+    const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
     //NEW HOOKS BEGIN
@@ -475,7 +476,7 @@ export default function (props: {}) {
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
     const [daiAddress, setDaiAddress] = useLoggedState<string>(imageLoader(networkName)[3] as string)
     const [minting, setMinting] = useLoggedState<boolean>(true)
-    //Estimating SCX from a given number of input tokens is 
+    //Estimating SCX from a given number of input tokens is
 
     useEffect(() => {
         const results = imageLoader(networkName)
@@ -496,14 +497,14 @@ export default function (props: {}) {
     }
 
     const balanceCheck = async (menu: string) => {
-        const baseBalanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", baseTokenImages)
+        const baseBalanceResults = await FetchBalances(account || "0x0", baseTokenImages)
         let baseBalances: TokenBalanceMapping[] = baseTokenImages.map(t => {
             let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
             return { address, balance: decimalBalance, name: t.name }
         })
-        const ethBalance = await API.getEthBalance(uiContainerContextProps.walletContext.account || "0x0")
+        const ethBalance = await API.getEthBalance(account || "0x0")
         let ethUpdated = baseBalances.map(b => {
             if (b.address === behodler2Weth) {
                 return { ...b, balance: ethBalance }
@@ -514,7 +515,7 @@ export default function (props: {}) {
             setBaseTokenBalances(ethUpdated)
         }
 
-        const pyroBalanceResults = await FetchBalances(uiContainerContextProps.walletContext.account || "0x0", pyroTokenImages)
+        const pyroBalanceResults = await FetchBalances(account || "0x0", pyroTokenImages)
         let pyroBalances: TokenBalanceMapping[] = pyroTokenImages.map(t => {
             let hexBalance = pyroBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
@@ -929,7 +930,7 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()
@@ -1003,7 +1004,7 @@ export default function (props: {}) {
         setIndependentFieldState("validating swap")
     }, [inputEnabled])
     const validateBalances = (): boolean => {
-        //check pyrotokens balances 
+        //check pyrotokens balances
         const balanceOfInput = parseFloat(API.fromWei(
             minting
                 ?
@@ -1036,7 +1037,7 @@ export default function (props: {}) {
             const addressToUse = isOutputEth ? walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.address : (minting ? outputAddress : inputAddress)
             await API.enableToken(
                 inputAddress,
-                uiContainerContextProps.walletContext.account || "",
+                account || "",
                 addressToUse, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {

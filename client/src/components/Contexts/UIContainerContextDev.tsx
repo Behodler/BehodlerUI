@@ -7,7 +7,7 @@ import { AbstractConnectorArguments, ConnectorUpdate } from '@web3-react/types';
 import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
 import { WalletState } from '@behodler/sdk/dist/types/wallet';
 import { TransactionResponse } from '@ethersproject/providers';
-import Web3 from 'web3';
+// import Web3 from 'web3';
 
 
 const defaultWeb3ContextProps: Web3ReactContextInterface = {
@@ -201,7 +201,7 @@ class MetamaskConnector extends AbstractConnector {
 
         if (this.accountChangeListener) {
             if (connectResponse && connectResponse.length > 0) {
-                API.web3 = new Web3(this.window.ethereum)
+                // API.web3 = new Web3(this.window.ethereum)
                 const chainResponse = await this.window.ethereum.request({ method: 'eth_chainId' })
 
                 update.chainId = API.pureHexToNumber(chainResponse)

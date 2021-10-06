@@ -1,13 +1,10 @@
 import * as React from 'react'
-import Swap from '../Behodler/Swap/index'
+import { BehodlerUIPyrotokens, pyrotokensBackgroundImage } from '../Behodler/Swap'
 
-
-export default function LayoutFrame(props: {}) {
-
-
+export default function LayoutFrame() {
     return (
-        <div>
-            <Swap />
+        <div style={{ background: `url(${pyrotokensBackgroundImage})` }}>
+            <BehodlerUIPyrotokens />
         </div >
     )
 }
