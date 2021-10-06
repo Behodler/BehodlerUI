@@ -1,0 +1,32 @@
+name: Publish package
+
+on:
+  push:
+    branches:
+      - master
+      - packaging-pyrotokens
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          registry-url: 'https://npm.pkg.github.com/'
+          always-auth: true
+          scope: '@behodler'
+      - run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - run: yarn build:package
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

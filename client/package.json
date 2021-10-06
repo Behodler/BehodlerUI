@@ -1,7 +1,19 @@
 {
-    "name": "client",
+    "name": "@behodler/pyrotokens-legacy",
     "version": "0.1.0",
-    "private": true,
+    "main": "dist/index.js",
+    "typings": "dist/components/BehodlerUIPyrotokens/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "engines": {
+        "node": ">=14.17.0"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
+    "repository": "git@github.com:Behodler/BehodlerUI.git",
+    "module": "dist/pyrotokens-legacy.esm.js",
     "dependencies": {
         "@ethereumjs/vm": "^5.5.2",
         "@ethersproject/abi": "^5.4.1",
@@ -43,7 +55,9 @@
         "deploy": "docker-compose up build && docker-compose up S3",
         "devserver": "docker-compose up --remove-orphans dev",
         "ganache": "docker-compose up --remove-orphans -d ganache",
-        "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start"
+        "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start",
+        "build:package": "tsdx build --entry src/components/BehodlerUIPyrotokens/index.ts --tsconfig package.tsconfig.json --transpileOnly",
+        "prepare": "yarn build:package"
     },
     "devDependencies": {
         "@behodler/sdk": "0.1.1",
@@ -70,5 +84,8 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "resolutions": {
+        "jest": "24.9.0"
     }
 }
