@@ -860,7 +860,6 @@ export default function (props: {}) {
                 outputReserve = await getReserve(outputAddressToUse)
                 setScxEstimationWarning("")
                 outputEstimate = await statelessBehodler.withdrawLiquidityFindSCX(outputReserve, "100000000", inputValToUse, 25)
-                console.log('no excpetion')
                 break;
             case TradeType.SWAP:
                 setScxEstimationWarning("")
@@ -1021,7 +1020,7 @@ export default function (props: {}) {
     const swapValidationCallback = useCallback(async () => {
         if (independentFieldState === "validating swap") {
             try {
-                if (!inputEnabled) {
+                if (!inputEnabled && swapState == SwapState.POSSIBLE) {
                     setSwapState(SwapState.DISABLED)
                 }
                 else {
@@ -1109,7 +1108,6 @@ export default function (props: {}) {
     const [showMoreInfo, setShowMoreInfo] = useLoggedState<boolean>(false)
     const [showMobileInfo, setShowMobileInfo] = useLoggedState<boolean>(false)
     const [reserves, setReserves] = useLoggedState<string[]>(['', ''])
-
     const setReservesCallback = useCallback(async () => {
         const inputTokenToload = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
         const outputTokenToLoad = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
