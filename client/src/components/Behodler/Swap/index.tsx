@@ -107,11 +107,11 @@ function Swap() {
                 <Box className={classes.content}>
                     <Box className={classes.mainContent} flexGrow={1}>
                         <div className={classes.root}>
-                            {active && chainId && account && initialized ? (
+                            {(active && chainId && account && initialized) ? (
                                 <StatelessBehodlerContextProvider>
                                     <TradingBox3 />
                                 </StatelessBehodlerContextProvider>
-                            ) : <Unconnected />}
+                            ): <Unconnected />}
                         </div>
                     </Box>
                 </Box>
