@@ -1017,6 +1017,12 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const swapValidationCallback = useCallback(async () => {
+        console.info('swapValidationCallback', {
+            inputValue,
+            outputValue,
+            swapState,
+        });
+
         if (independentFieldState === "validating swap") {
             try {
                 if (!inputEnabled && swapState == SwapState.POSSIBLE) {
@@ -1024,7 +1030,10 @@ export default function (props: {}) {
                 }
                 else {
                     await validateLiquidityExit()
-                    if (validateBalances())
+
+                    if (!inputValue || !outputValue)
+                        setSwapState(SwapState.IMPOSSIBLE)
+                    else if (validateBalances())
                         setSwapState(SwapState.POSSIBLE)
                     else {
                         setSwapState(SwapState.DISABLED)
@@ -1037,6 +1046,11 @@ export default function (props: {}) {
                 setIndependentFieldState("dormant")
             }
         }
+        setTimeout(() => {
+            console.info('swapState', {
+                swapState,
+            });
+        })
     }, [independentFieldState])
 
     useEffect(() => {
