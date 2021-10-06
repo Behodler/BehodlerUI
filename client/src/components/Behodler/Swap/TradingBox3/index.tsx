@@ -17,7 +17,7 @@ import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
 import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
 import { DebounceInput } from 'react-debounce-input';
-import {useDebounce} from '@react-hook/debounce'
+import { useDebounce } from '@react-hook/debounce'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -418,12 +418,12 @@ const ZERO = BigInt(0)
 
 const loggingOn: boolean = false
 function useLoggedState<T>(initialState: T): [T, (newState: T) => void] {
-    const [state, setIndependentFieldState] = useState<T>(initialState)
+    const [state, setState] = useState<T>(initialState)
     useEffect(() => {
         if (loggingOn)
             console.log(`state update: ${JSON.stringify(state)}`)
     }, [state])
-    return [state, setIndependentFieldState]
+    return [state, setState]
 }
 
 export default function (props: {}) {
@@ -565,14 +565,14 @@ export default function (props: {}) {
 
     //NEW HOOKS END
 
-    const [inputValue, setInputValue] = useLoggedState<string>('')
-    const [outputValue, setOutputValue] = useLoggedState<string>('')
+    const [inputValue, setInputValue] = useDebounce<string>('', 400)
+    const [outputValue, setOutputValue] = useDebounce<string>('', 400)
     const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
     const [independentField, setIndependentField] = useDebounce<IndependentField>({
         target: 'FROM',
         newValue: ''
-    })
-    const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
+    }, 600)
+    const [independentFieldState, setIndependentFieldState] = useDebounce<FieldState>('dormant', 600)
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
     const [inputAddress, setInputAddress] = useLoggedState<string>(tokenDropDownList[0].address.toLowerCase())
     const [outputAddress, setOutputAddress] = useLoggedState<string>(tokenDropDownList[indexOfScarcityAddress].address.toLowerCase())
@@ -589,9 +589,9 @@ export default function (props: {}) {
     const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
         if (target === 'FROM') {
             setInputValue(newValue)
-            setOutputValue(update ? 'estimating...' : '')
+            setOutputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
         } else {
-            setInputValue(update ? 'estimating...' : '')
+            setInputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
             setOutputValue(newValue)
         }
 
