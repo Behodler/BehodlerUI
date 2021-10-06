@@ -136,7 +136,6 @@ export default function Swap(props: {}) {
     }
     return x
 }
-//TODO: replace not connected with a flag on TradingBox3
 
 function ConnectedDapp() {
     const walletContextProps = useContext(WalletContext);

@@ -14,6 +14,7 @@ import FetchBalances from './FetchBalances'
 import { formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
 import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
+import {useDebounce} from '@react-hook/debounce'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -407,12 +408,12 @@ const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
 const loggingOn: boolean = false
 function useLoggedState<T>(initialState: T, logthis?: boolean): [T, (newState: T) => void] {
-    const [state, setIndependentFieldState] = useState<T>(initialState)
+    const [state, setState] = useState<T>(initialState)
     useEffect(() => {
         if (loggingOn || logthis)
             console.log(`state update: ${JSON.stringify(state)}`)
     }, [state])
-    return [state, setIndependentFieldState]
+    return [state, setState]
 }
 const imageLoader = (network: string) => {
     let base: TokenListItem[] = []
@@ -584,10 +585,10 @@ export default function (props: {}) {
     const [inputValue, setInputValue] = useLoggedState<string>('')
     const [outputValue, setOutputValue] = useLoggedState<string>('')
     const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
-    const [independentField, setIndependentField] = useLoggedState<IndependentField>({
+    const [independentField, setIndependentField] = useDebounce<IndependentField>({
         target: 'FROM',
         newValue: ''
-    })
+    },600)
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
     const [inputAddress, setInputAddress] = useLoggedState<string>('0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F')
@@ -633,7 +634,6 @@ export default function (props: {}) {
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
     const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
 
-    //TODO: eth output bug
     const spotPriceCallback = useCallback(async () => {
         if (!daiAddress || daiAddress.length < 3)
             return
@@ -903,7 +903,6 @@ export default function (props: {}) {
         let inputEstimate, redeemRate
         if (minting) {
             let baseTokensRequired
-            //TODO: inputEstimate is being scaled twice
             if (isInputEth) {
                 baseTokensRequired = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(outputValToUse).call({ account })
             } else {
