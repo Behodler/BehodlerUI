@@ -17,6 +17,7 @@ import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
 import { StatelessBehodlerContext, StatelessBehodlerContextProps } from '../EVM_js/context/StatelessBehodlerContext'
 import { DebounceInput } from 'react-debounce-input';
+import {useDebounce} from '@react-hook/debounce'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -567,7 +568,7 @@ export default function (props: {}) {
     const [inputValue, setInputValue] = useLoggedState<string>('')
     const [outputValue, setOutputValue] = useLoggedState<string>('')
     const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
-    const [independentField, setIndependentField] = useLoggedState<IndependentField>({
+    const [independentField, setIndependentField] = useDebounce<IndependentField>({
         target: 'FROM',
         newValue: ''
     })
