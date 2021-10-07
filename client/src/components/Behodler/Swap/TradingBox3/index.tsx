@@ -146,7 +146,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     monsterMobile: {
         display: "block",
-        margin: "0 -30px 0 -35px",
         '&:hover': {
             cursor: "pointer"
         },
@@ -172,7 +171,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         height: "100vh",
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingTop: '60px',
     },
     flippySwitch: {
         /* Ellipse 18 */
