@@ -278,16 +278,16 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginTop: 30
     }, mobileGrid: {
+        maxWidth: 'calc(100vw - 20px)',
         width: 400,
     },
     mobileSelectorGrid: {
     },
     mobileContainer: {
-        height: "100vh",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: '60px',
+        paddingTop: '20px',
     },
     flippySwitch: {
         /* Ellipse 18 */

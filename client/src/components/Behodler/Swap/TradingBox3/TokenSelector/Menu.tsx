@@ -11,8 +11,9 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
         position: "absolute",
         width: isMobile ? 250 : 400,
         height: isMobile ? 500 : 671,
-        left: "40%",
+        left: isMobile ? 'calc(50% - 125px)' : 'calc(50% - 200px)',
         top: "10%",
+        maxHeight: 'calc(100vh - 20%)',
 
         background: "#1B1A2D",
         borderRadius: 10,
@@ -41,15 +42,16 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
         fontSize: 20
     },
     listGridItem: {
-        width: "100%"
+        width: "100%",
+        maxHeight: 'calc(100% - 135px)',
     },
     list: {
         width: '100%',
+        height: '100%',
         maxWidth: isMobile ? 250 : 350,
         // backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',
-        maxHeight: isMobile ? 320 : 500,
 
         /* Rectangle 3173 */
 

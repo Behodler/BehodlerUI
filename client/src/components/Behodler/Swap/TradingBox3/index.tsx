@@ -22,7 +22,6 @@ const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-
         margin: '0px auto',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
@@ -172,16 +171,16 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginTop: 30
     }, mobileGrid: {
+        maxWidth: 'calc(100vw - 20px)',
         width: 400,
     },
     mobileSelectorGrid: {
     },
     mobileContainer: {
-        height: "100vh",
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: '60px',
+        paddingTop: '20px',
     },
     flippySwitch: {
         /* Ellipse 18 */
@@ -971,7 +970,7 @@ export default function (props: {}) {
                 setImpliedExchangeRate("")
                 else{
 
-          
+
                 const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
                 setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
             }
@@ -983,7 +982,7 @@ export default function (props: {}) {
                     const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
                     setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
                 }
-              
+
             }
             const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
             const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
