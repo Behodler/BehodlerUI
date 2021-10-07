@@ -136,7 +136,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
 
-        margin: '0 auto',
+        margin: '50px auto',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         alignContent: "center",

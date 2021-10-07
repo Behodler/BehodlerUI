@@ -151,8 +151,10 @@ export default function Menu(props: props) {
         })
         let tokenDropDownList: MenuToken[] = factory(props.balances)
         setMenuItems(tokenDropDownList)
-    }, [props.balances])
-
+    }, [props.balances, behodler2Weth, indexOfScarcityAddress, indexOfWeth, props.scarcityAddress, tokenList])
+    /*
+    behodler2Weth', 'indexOfScarcityAddress', 'indexOfWeth', 'props.scarcityAddress', and 'tokenList
+    */
 
     return <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
 }
