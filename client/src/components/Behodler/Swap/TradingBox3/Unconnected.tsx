@@ -239,7 +239,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: "40%"
 
     },
-    monsterContainer: {
+    pyroFlipContainer: {
         position: "relative",
         zIndex: 1,
         width: 350,
@@ -488,7 +488,7 @@ export default function (props: {}) {
 
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.monsterContainer} >
+                                        <div className={classes.pyroFlipContainer} >
                                             <img width={350} src={Logos["Pyrotoken"]} className={classes.monster} />
                                         </div>
                                     </Grid>

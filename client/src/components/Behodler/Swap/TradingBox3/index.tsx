@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: "40%"
 
     },
-    monsterContainer: {
+    pyroFlipContainer: {
         position: "relative",
         zIndex: 1,
         width: 350,
@@ -1256,7 +1256,7 @@ export default function (props: {}) {
                                         <TokenSelector pyro={!minting} balances={minting ? baseTokenBalances : pyroTokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.monsterContainer} >
+                                        <div className={classes.pyroFlipContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
                                                 {swapping ? <img width={200 * desktopImageScale} src={animatedLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} /> :
                                                     <img width={150 * desktopImageScale} src={staticLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} />}
