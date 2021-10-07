@@ -239,7 +239,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: "40%"
 
     },
-    pyroFlipContainer: {
+    pyroShieldContainer: {
         position: "relative",
         zIndex: 1,
         width: 350,
@@ -248,7 +248,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: "60px -45px 0px -55px"
 
     },
-    monster: {
+    pyroShield: {
         display: "block",
         margin: "auto",
         '&:hover': {
@@ -256,7 +256,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         filter: "brightness(1.3)"
     },
-    monsterMobile: {
+    pyroShieldMobile: {
         display: "block",
         margin: "0 -30px 0 -35px",
         '&:hover': {
@@ -397,7 +397,7 @@ export default function (props: {}) {
                                 <Grid item>
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={Logos["Pyrotoken"]} className={classes.monsterMobile} />
+                                    <img width={180} src={Logos["Pyrotoken"]} className={classes.pyroShieldMobile} />
                                 </Grid>
                                 <Grid item className={classes.connectionWarning}>
                                     Connect your wallet to use the Behodler AMM
@@ -488,8 +488,8 @@ export default function (props: {}) {
 
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.pyroFlipContainer} >
-                                            <img width={350} src={Logos["Pyrotoken"]} className={classes.monster} />
+                                        <div className={classes.pyroShieldContainer} >
+                                            <img width={350} src={Logos["Pyrotoken"]} className={classes.pyroShield} />
                                         </div>
                                     </Grid>
                                     <Grid item>

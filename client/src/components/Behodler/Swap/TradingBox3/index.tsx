@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: "40%"
 
     },
-    pyroFlipContainer: {
+    pyroShieldContainer: {
         position: "relative",
         zIndex: 1,
         width: 350,
@@ -133,7 +133,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         margin: "0 -45px 0 -55px"
 
     },
-    monster: {
+    pyroShield: {
         display: "block",
         margin: "auto",
         '&:hover': {
@@ -141,7 +141,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         filter: "brightness(1.1)"
     },
-    monsterMobile: {
+    pyroShieldMobile: {
         display: "block",
         margin: "0 30px 3px 30px",
         '&:hover': {
@@ -149,7 +149,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         filter: "brightness(1.1)"
     },
-    monsterMobileAnimated: {
+    pyroShieldMobileAnimated: {
         display: "block",
         margin: "0 16px 0 16px",
         '&:hover': {
@@ -1094,8 +1094,8 @@ export default function (props: {}) {
                                     <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}
                                         scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
-                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={125 * mobileImageScale} src={animatedLogo.image} className={classes.monsterMobileAnimated} />
-                                    : <img width={90 * mobileImageScale} src={staticLogo.image} className={classes.monsterMobile} />
+                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={125 * mobileImageScale} src={animatedLogo.image} className={classes.pyroShieldMobileAnimated} />
+                                    : <img width={90 * mobileImageScale} src={staticLogo.image} className={classes.pyroShieldMobile} />
                                 }
                                 </Grid>
                                 <Grid item>
@@ -1256,10 +1256,10 @@ export default function (props: {}) {
                                         <TokenSelector pyro={!minting} balances={minting ? baseTokenBalances : pyroTokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.pyroFlipContainer} >
+                                        <div className={classes.pyroShieldContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                {swapping ? <img width={200 * desktopImageScale} src={animatedLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} /> :
-                                                    <img width={150 * desktopImageScale} src={staticLogo.image} className={classes.monster} onClick={() => setFlipClicked(true)} />}
+                                                {swapping ? <img width={200 * desktopImageScale} src={animatedLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} /> :
+                                                    <img width={150 * desktopImageScale} src={staticLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} />}
                                             </Tooltip>
                                         </div>
                                     </Grid>
