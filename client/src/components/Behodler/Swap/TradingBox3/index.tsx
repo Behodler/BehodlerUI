@@ -132,8 +132,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: 350,
         //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
-        margin: "60px -45px 0px -55px"
-
+        margin: "60px -45px 0px -55px",
     },
     monster: {
         display: "block",
@@ -143,6 +142,16 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         // filter: "brightness(0.3)"
         filter: "brightness(1.3)"
+
+
+    },
+    monsterAnimated: {
+        display: "block",
+        margin: "auto",
+        '&:hover': {
+            cursor: "pointer"
+        },
+        filter: "brightness(1.3)",
     },
     monsterMobile: {
         display: "block",
@@ -958,13 +967,23 @@ export default function (props: {}) {
             let direction: 'IO' | 'OI' = parsedInput > parsedOutput ? 'IO' : 'OI'
             let inputReserve, outputReserve
             if (direction === 'IO') {
+                if(isNaN(exchangeRate))
+                setImpliedExchangeRate("")
+                else{
+
+          
                 const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
                 setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
+            }
             } else {
                 exchangeRate = parsedOutput / parsedInput
-
-                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
+                if(isNaN(exchangeRate)){
+                    setImpliedExchangeRate("")
+                }else {
+                    const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
+                    setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
+                }
+              
             }
             const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
             const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
@@ -1155,7 +1174,11 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
+    const animating = <img width={290} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+    const staticImage = <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
 
+    const animatingMobile = <img width={160} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+    const staticImageMobile = <img width={180} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
     return (
         <Box className={classes.root}>
             <Hidden lgUp>
@@ -1181,7 +1204,12 @@ export default function (props: {}) {
                                         scale={0.65} mobile balances={tokenBalances} />
                                 </Grid>
                                 <Grid item>
-                                    <img width={180} src={swapping ? Images[13] : Images[13]} className={classes.monsterMobile} />
+                                    {
+                                        swapping ?
+                                            animatingMobile
+                                            :
+                                            staticImageMobile
+                                    }
                                 </Grid>
                                 <Grid item>
                                     <TokenSelector network={networkName} balances={tokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.65} mobile />
@@ -1368,7 +1396,12 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.monsterContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={350} src={swapping ? Images[13] : Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+                                                {swapping ?
+                                                    animating
+                                                    :
+                                                    staticImage
+                                                }
+
                                             </Tooltip>
                                         </div>
                                     </Grid>
