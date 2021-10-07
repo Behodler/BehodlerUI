@@ -14,14 +14,14 @@ import FetchBalances from './FetchBalances'
 import { formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
 import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
-import {useDebounce} from '@react-hook/debounce'
+import { useDebounce } from '@react-hook/debounce'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
 
-        margin: '50px auto',
+        margin: '0 auto',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         alignContent: "center",
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     iconWrapper: {
         display: 'flex',
         justifyContent: 'center',
-        margin: '24px 0',
+        margin: '0 0',
     },
     buttonWrapper: {
         display: "flex",
@@ -588,7 +588,7 @@ export default function (props: {}) {
     const [independentField, setIndependentField] = useDebounce<IndependentField>({
         target: 'FROM',
         newValue: ''
-    },600)
+    }, 600)
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
     const [inputAddress, setInputAddress] = useLoggedState<string>('0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F')
@@ -740,7 +740,8 @@ export default function (props: {}) {
 
     useEffect(() => {
         const balance = formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)
-        setImpliedExchangeRate("")
+        if (swapState === SwapState.IMPOSSIBLE)
+            setImpliedExchangeRate("")
 
         let addressToCheck = minting ? outputAddress : inputAddress
         if (isOutputEth)
