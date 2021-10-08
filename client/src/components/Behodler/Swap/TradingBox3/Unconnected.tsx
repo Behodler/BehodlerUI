@@ -140,7 +140,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         alignContent: "center",
-        height: "100vh",
+        height: "100%",
     },
     iconWrapper: {
         display: 'flex',
@@ -279,7 +279,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginTop: 30
     }, mobileGrid: {
-        maxWidth: 'calc(100vw - 20px)',
+        maxWidth: '100%',
         width: 400,
     },
     mobileSelectorGrid: {

@@ -20,12 +20,11 @@ const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-
         margin: '0 auto',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         alignContent: "center",
-        height: "100vh",
+        height: "100%",
     },
     iconWrapper: {
         display: 'flex',
@@ -169,7 +168,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginTop: 30
     }, mobileGrid: {
-        maxWidth: 'calc(100vw - 20px)',
+        maxWidth: '100%',
         width: 400,
     },
     mobileSelectorGrid: {
@@ -182,9 +181,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     flippySwitch: {
         /* Ellipse 18 */
-        width: 22,
-        height: 22,
-        marginTop: -260,
+        width: 26,
+        height: 26,
+        marginTop: -266,
         background: "#2E2455",
         border: "1px solid #3C3682",
         boxSizing: "border-box",
@@ -1089,7 +1088,7 @@ export default function (props: {}) {
                                 direction="row"
                                 justify="center"
                                 alignItems="center"
-                                className={classes.mobileSelectorGrid}
+                                className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
                                 <Grid item>
                                     <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}

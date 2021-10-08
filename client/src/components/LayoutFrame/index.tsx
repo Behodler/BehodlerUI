@@ -4,7 +4,26 @@ import { BehodlerUIPyrotokens, pyrotokensBackgroundImage } from '../Behodler/Swa
 export default function LayoutFrame() {
     return (
         <div style={{ background: `url(${pyrotokensBackgroundImage})` }}>
-            <BehodlerUIPyrotokens />
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+
+                <div style={{
+                    alignItems: 'center',
+                    color: '#fff',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '96px',
+                    borderBottom: '1px solid grey',
+                }}>
+                    Header
+                </div>
+
+                <BehodlerUIPyrotokens />
+
+            </div>
         </div >
     )
 }
