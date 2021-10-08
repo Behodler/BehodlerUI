@@ -1296,7 +1296,14 @@ export default function (props: {}) {
                             </Box>
                         </Grid>
                         <Grid item>
-                            <div className={scxEstimationWarning.length > 1 ? classes.flippySwitchSCXWarning : classes.flippySwitch} onClick={() => setFlipClicked(true)} />
+                            <div
+                                className={(
+                                    scxEstimationWarning.length > 1
+                                        ? classes.flippySwitchSCXWarning
+                                        : `${classes.flippySwitch} mobile-flippy-switch`
+                                )}
+                                onClick={() => setFlipClicked(true)}
+                            />
                         </Grid>
                         <Grid item>
                             <Grid container
