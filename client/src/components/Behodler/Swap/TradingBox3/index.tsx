@@ -1180,7 +1180,10 @@ export default function (props: {}) {
                             </Box>
                         </Grid>
                         <Grid item>
-                            <div className={classes.flippySwitch} onClick={() => setFlipClicked(true)} />
+                            <div
+                                className={`${classes.flippySwitch} mobile-flippy-switch`}
+                                onClick={() => setFlipClicked(true)}
+                            />
                         </Grid>
                         <Grid item>
                             <Grid container
