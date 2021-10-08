@@ -135,12 +135,11 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-
         margin: '50px auto',
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         alignContent: "center",
-        height: "100vh",
+        height: "100%",
     },
     iconWrapper: {
         display: 'flex',

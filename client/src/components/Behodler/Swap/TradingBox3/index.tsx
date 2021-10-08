@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         backgroundColor: 'rgba(255,255,255,0)',
         borderRadius: 20,
         alignContent: "center",
-        height: "100vh",
+        height: "100%",
     },
     iconWrapper: {
         display: 'flex',
@@ -164,7 +164,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
         height: "100%"
-
     },
     Info: {
         right: "1%",
@@ -184,9 +183,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     flippySwitch: {
         /* Ellipse 18 */
-        width: 22,
-        height: 22,
-        marginTop: -260,
+        width: 26,
+        height: 26,
+        marginTop: -266,
         background: "#2E2455",
         border: "1px solid #3C3682",
         boxSizing: "border-box",

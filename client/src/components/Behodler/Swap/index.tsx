@@ -15,7 +15,9 @@ export const swapBackgroundImage = backImage
 
 const useStyles = makeStyles((theme) =>
     createStyles({
-        root: {},
+        root: {
+            height: '100%',
+        },
         SwapRoot: {
             flexGrow: 1,
             margin: 0,
