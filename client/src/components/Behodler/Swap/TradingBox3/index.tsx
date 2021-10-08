@@ -141,8 +141,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         // filter: "brightness(0.3)"
         filter: "brightness(1.3)"
-
-
     },
     monsterAnimated: {
         display: "block",
@@ -170,7 +168,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginTop: 30
     }, mobileGrid: {
-        maxWidth: 'calc(100vw - 20px)',
+        maxWidth: '100%',
         width: 400,
     },
     mobileSelectorGrid: {
@@ -1195,7 +1193,7 @@ export default function (props: {}) {
                                 direction="row"
                                 justify="center"
                                 alignItems="center"
-                                className={classes.mobileSelectorGrid}
+                                className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
                                 <Grid item>
                                     <TokenSelector network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image}

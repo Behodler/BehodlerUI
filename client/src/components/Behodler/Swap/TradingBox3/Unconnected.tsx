@@ -277,7 +277,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginTop: 30
     }, mobileGrid: {
-        maxWidth: 'calc(100vw - 20px)',
+        maxWidth: '100%',
         width: 400,
     },
     mobileSelectorGrid: {
