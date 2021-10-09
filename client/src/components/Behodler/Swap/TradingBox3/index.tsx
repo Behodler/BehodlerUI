@@ -1099,7 +1099,7 @@ export default function (props: {}) {
     const toBalance = tokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
     const swapAction = async () => {
-        if (swapState === SwapState.POSSIBLE) {
+        if (swapState === SwapState.POSSIBLE && inputEnabled) {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
@@ -1281,7 +1281,7 @@ export default function (props: {}) {
                             : <div></div>}
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
-                                <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={swapState === SwapState.IMPOSSIBLE && false} variant="contained" color="primary" size="large" onClick={swapAction}>
+                                <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={swapState === SwapState.IMPOSSIBLE} variant="contained" color="primary" size="large" onClick={swapAction}>
                                     {swapText}
                                 </Button>
                             </Box>
