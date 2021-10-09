@@ -1030,7 +1030,7 @@ export default function (props: {}) {
     const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
     const swapAction = async () => {
-        if (swapState === SwapState.POSSIBLE) {
+        if (swapState === SwapState.POSSIBLE || inputEnabled) {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
