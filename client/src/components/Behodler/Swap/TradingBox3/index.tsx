@@ -135,6 +135,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         alignContent: "center",
         margin: "60px -45px 0px -55px",
     },
+    monsterContainerAnimated: {
+        position: "relative",
+        zIndex: 1,
+        width: 350,
+        //   background: "radial-gradient(circle 90px, #DDD, transparent)",
+        alignContent: "center",
+        margin: "70px 0px 0px -103px",
+    },
     monster: {
         display: "block",
         margin: "auto",
@@ -143,8 +151,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         // filter: "brightness(0.3)"
         filter: "brightness(1.3)"
-
-
     },
     monsterAnimated: {
         display: "block",
@@ -152,7 +158,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '&:hover': {
             cursor: "pointer"
         },
-        filter: "brightness(1.3)",
+        filter: "brightness(1.35)",
     },
     monsterMobile: {
         display: "block",
@@ -161,6 +167,14 @@ const useStyles = makeStyles((theme: Theme) => ({
             cursor: "pointer"
         },
         filter: "brightness(1.3)"
+    },
+    monsterAnimatedMobile: {
+        display: "block",
+        margin: "-45px -20px",
+        '&:hover': {
+            cursor: "pointer"
+        },
+        filter: "brightness(1.35)",
     },
     fieldGrid: {
         display: 'flex',
@@ -968,23 +982,23 @@ export default function (props: {}) {
             let direction: 'IO' | 'OI' = parsedInput > parsedOutput ? 'IO' : 'OI'
             let inputReserve, outputReserve
             if (direction === 'IO') {
-                if(isNaN(exchangeRate))
-                setImpliedExchangeRate("")
-                else{
+                if (isNaN(exchangeRate))
+                    setImpliedExchangeRate("")
+                else {
 
-          
-                const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
-                setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
-            }
+
+                    const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
+                    setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
+                }
             } else {
                 exchangeRate = parsedOutput / parsedInput
-                if(isNaN(exchangeRate)){
+                if (isNaN(exchangeRate)) {
                     setImpliedExchangeRate("")
-                }else {
+                } else {
                     const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
                     setImpliedExchangeRate(`1 ${nameOfSelectedAddress(inputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(outputAddress).toUpperCase()}`)
                 }
-              
+
             }
             const inputAddressToUse = isEthPredicate(inputAddress) ? behodler2Weth : inputAddress
             const outputAddressToUse = isEthPredicate(outputAddress) ? behodler2Weth : outputAddress
@@ -1161,10 +1175,21 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
-    const animating = <img width={290} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
-    const staticImage = <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+    const animating =
+        <div className={classes.monsterContainerAnimated} >
+            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
+                <img width={450} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+            </Tooltip>
+        </div>
 
-    const animatingMobile = <img width={160} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+    const staticImage =
+        <div className={classes.monsterContainer} >
+            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
+                <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+            </Tooltip>
+        </div>
+
+    const animatingMobile = <img width={220} src={Images[15]} className={classes.monsterAnimatedMobile} onClick={() => setFlipClicked(true)} />
     const staticImageMobile = <img width={180} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
     return (
         <Box className={classes.root}>
@@ -1192,7 +1217,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     {
-                                        swapping ?
+                                        swapState === SwapState.POSSIBLE ?
                                             animatingMobile
                                             :
                                             staticImageMobile
@@ -1381,16 +1406,11 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.monsterContainer} >
-                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                {swapping ?
-                                                    animating
-                                                    :
-                                                    staticImage
-                                                }
-
-                                            </Tooltip>
-                                        </div>
+                                        {swapState === SwapState.POSSIBLE ?
+                                            animating
+                                            :
+                                            staticImage
+                                        }
                                     </Grid>
                                     <Grid item>
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
