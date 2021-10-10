@@ -378,7 +378,7 @@ export default function (props: {}) {
                     <Grid
                         container
                         direction="column"
-                        justify="center"
+                        justifyContent="center"
                         alignItems="center"
                         className={classes.mobileGrid}
                         spacing={3}
@@ -387,7 +387,7 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="row"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 className={classes.mobileSelectorGrid}
                             >
@@ -418,7 +418,7 @@ export default function (props: {}) {
                         <Grid item>
                             <Grid container
                                 direction="column"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 spacing={2}
                                 className={classes.Info}
@@ -442,7 +442,7 @@ export default function (props: {}) {
 
                 <Grid container
                     direction="column"
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                     className={classes.fieldGrid}
                     key="desktopContainer"
@@ -451,7 +451,7 @@ export default function (props: {}) {
                         <Grid
                             container
                             direction="row"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={3}
                         >
@@ -459,7 +459,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridInput_grid"}
@@ -477,7 +477,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="space-between"
+                                    justifyContent="space-between"
                                     alignItems="center"
                                     id="central-selector-monster-grid"
                                 >
@@ -499,7 +499,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridOutput_grid"}
@@ -529,7 +529,7 @@ export default function (props: {}) {
                     <Grid item>
                         <Grid container
                             direction="column"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={2}
                             className={classes.Info}

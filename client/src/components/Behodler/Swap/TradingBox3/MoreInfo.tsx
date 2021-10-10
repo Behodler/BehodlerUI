@@ -60,7 +60,7 @@ export default function MoreInfo(props: props) {
         <Grid
             container
             direction="column"
-            justify="space-between"
+            justifyContent="space-between"
             alignItems="stretch"
             spacing={1}
         >
@@ -100,7 +100,7 @@ function Row(props: { label: string, children: any }) {
     return <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
     >
         <Grid item className={classes.left}>

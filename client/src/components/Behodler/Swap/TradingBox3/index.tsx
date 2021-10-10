@@ -1207,7 +1207,7 @@ export default function (props: {}) {
                     <Grid
                         container
                         direction="column"
-                        justify="center"
+                        justifyContent="center"
                         alignItems="center"
                         className={classes.mobileGrid}
                         spacing={3}
@@ -1216,7 +1216,7 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="row"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
@@ -1242,14 +1242,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justify="flex-start"
+                                justifyContent="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilFrom' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"FROM"} /></Grid>
                                         <Grid item>
@@ -1274,14 +1274,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justify="flex-start"
+                                justifyContent="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilTo' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"TO"} /></Grid>
                                         <Grid item>
@@ -1333,7 +1333,7 @@ export default function (props: {}) {
                         <Grid item>
                             <Grid container
                                 direction="column"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 spacing={2}
                                 className={classes.Info}
@@ -1370,7 +1370,7 @@ export default function (props: {}) {
 
                 <Grid container
                     direction="column"
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                     className={classes.fieldGrid}
                     key="desktopContainer"
@@ -1379,7 +1379,7 @@ export default function (props: {}) {
                         <Grid
                             container
                             direction="row"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={3}
                         >
@@ -1387,7 +1387,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridInput_grid"}
@@ -1414,7 +1414,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="space-between"
+                                    justifyContent="space-between"
                                     alignItems="center"
                                     id="central-selector-monster-grid"
                                 >
@@ -1438,7 +1438,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridOutput_grid"}
@@ -1491,7 +1491,7 @@ export default function (props: {}) {
                     <Grid item>
                         <Grid container
                             direction="column"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={2}
                             className={classes.Info}
@@ -1542,7 +1542,7 @@ function BalanceContainer(props: { estimate: string, balance: string, token: str
     return <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         spacing={1}
         className={classes.BalanceContainer}
@@ -1567,7 +1567,7 @@ function Balance(props: { token: string, balance: string, setValue: (v: string) 
     return <Grid
         container
         direction="row"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="center"
 
     >
