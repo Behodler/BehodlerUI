@@ -153,7 +153,7 @@ export default function Menu(props: props) {
         })
         let tokenDropDownList: MenuToken[] = factory(props.balances)
         setMenuItems(tokenDropDownList)
-    }, [props.balances, behodler2Weth, indexOfScarcityAddress, indexOfWeth, props.scarcityAddress, tokenList])
+    }, [props.balances])
     /*
     behodler2Weth', 'indexOfScarcityAddress', 'indexOfWeth', 'props.scarcityAddress', and 'tokenList
     */
