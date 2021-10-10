@@ -1180,21 +1180,10 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
-    const animating =
-        <div className={classes.monsterContainerAnimated} >
-            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                <img width={450} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
-            </Tooltip>
-        </div>
+    const animating = <img width={290} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+    const staticImage = <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
 
-    const staticImage =
-        <div className={classes.monsterContainer} >
-            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
-            </Tooltip>
-        </div>
-
-    const animatingMobile = <img width={220} src={Images[15]} className={classes.monsterAnimatedMobile} onClick={() => setFlipClicked(true)} />
+    const animatingMobile = <img width={160} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
     const staticImageMobile = <img width={180} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
     return (
         <Box className={classes.root}>
@@ -1411,11 +1400,16 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        {swapping ?
-                                            animating
-                                            :
-                                            staticImage
-                                        }
+                                        <div className={classes.monsterContainer} >
+                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
+                                                {swapping ?
+                                                    animating
+                                                    :
+                                                    staticImage
+                                                }
+
+                                            </Tooltip>
+                                        </div>
                                     </Grid>
                                     <Grid item>
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
