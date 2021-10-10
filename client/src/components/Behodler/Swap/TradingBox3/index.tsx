@@ -1217,7 +1217,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     {
-                                        swapState === SwapState.POSSIBLE ?
+                                        swapping?
                                             animatingMobile
                                             :
                                             staticImageMobile
@@ -1406,7 +1406,7 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        {swapState === SwapState.POSSIBLE ?
+                                        {swapping ?
                                             animating
                                             :
                                             staticImage
