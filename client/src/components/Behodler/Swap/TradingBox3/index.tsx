@@ -600,26 +600,33 @@ export default function (props: {}) {
     const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useLoggedState<string>("")
 
     const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
-        if (target === 'FROM') {
-
-            setInputValue(newValue)
-            setOutputValue(update ? 'calculating...' : '')
-        } else {
-            setInputValue(update ? 'calculating...' : '')
-            setOutputValue(newValue)
-        }
-
-        if (swapState !== SwapState.IMPOSSIBLE)
-            setSwapState(SwapState.IMPOSSIBLE)
-
+        console.log('expected target ' + target)
         setIndependentField({
             target,
             newValue
         })
-        const newState: FieldState = update ? 'updating dependent field' : 'dormant'
-        setIndependentFieldState(newState)
     }
 
+    useEffect(() => {
+        if (independentFieldState === 'dormant') {
+            let updating = !isNaN(parseFloat(independentField.newValue))
+            if (independentField.target === 'FROM') {
+                updating = updating && independentField.newValue !== inputValue
+                setInputValue(independentField.newValue)
+                setOutputValue(updating ? 'calculating...' : '')
+            } else {
+                updating = updating && independentField.newValue !== outputValue
+                setInputValue(updating ? 'calculating...' : '')
+                setOutputValue(independentField.newValue)
+            }
+
+            if (swapState !== SwapState.IMPOSSIBLE)
+                setSwapState(SwapState.IMPOSSIBLE)
+
+            const newState: FieldState = updating ? 'updating dependent field' : 'dormant'
+            setIndependentFieldState(newState)
+        }
+    }, [independentField.target, independentField.newValue])
 
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
@@ -930,6 +937,7 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
+
                 if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
                     await calculateOutputFromInput()
                 } else {
@@ -938,15 +946,17 @@ export default function (props: {}) {
                 setIndependentFieldState("validating swap")
             }
         } catch (e) {
-            if (independentField.target === 'FROM')
-                setOutputValue('invalid input')
-            else
-                setInputValue('invalid input')
+            console.log('validation error: ' + e)
+            console.log('independent Field ' + independentField.target)
+            // if (independentField.target === 'FROM')
+            //     setOutputValue('invalid input')
+            // else
+            //     setInputValue('invalid input')
 
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
         }
-    }, [independentFieldState])
+    }, [independentFieldState, independentField.target, independentField.newValue])
 
     useEffect(() => {
         independentFieldCallback()
@@ -958,7 +968,7 @@ export default function (props: {}) {
             pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
 
-            e = parseFloat(outputValue) / parseFloat(inputValue)
+            e = parseFloat(inputValue) / parseFloat(outputValue)
             connectorPhrase = 'requires'
         }
         else {
