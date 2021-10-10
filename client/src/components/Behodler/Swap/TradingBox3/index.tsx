@@ -11,7 +11,7 @@ import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
+import { assert, formatSignificantDecimalPlaces } from './jsHelpers'
 import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
@@ -609,35 +609,40 @@ export default function (props: {}) {
     const [expectedFee, setExpectedFee] = useLoggedState<string>("")
     const [priceImpact, setPriceImpact] = useLoggedState<string>("")
 
-    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
-        if (target === 'FROM') {
-            setInputValue(newValue)
-            setOutputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
-        } else {
-            setInputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
-            setOutputValue(newValue)
-        }
-
-        if (swapState !== SwapState.IMPOSSIBLE)
-            setSwapState(SwapState.IMPOSSIBLE)
-
+    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string) => {
         setIndependentField({
             target,
-            newValue
+            newValue: newValue.trim()
         })
-        const newState: FieldState = update ? 'updating dependent field' : 'dormant'
-        setIndependentFieldState(newState)
     }
 
+    useEffect(() => {
+        if (independentFieldState === 'dormant') {
+            let updating = !isNaN(parseFloat(independentField.newValue))
+            if (independentField.target === 'FROM') {
+                updating = updating && independentField.newValue !== inputValue
+                setInputValue(independentField.newValue)
+                setOutputValue(updating ? 'calculating...' : '')
+            } else {
+                updating = updating && independentField.newValue !== outputValue
+                setInputValue(updating ? 'calculating...' : '')
+                setOutputValue(independentField.newValue)
+            }
+
+            if (swapState !== SwapState.IMPOSSIBLE)
+                setSwapState(SwapState.IMPOSSIBLE)
+
+            const newState: FieldState = updating ? 'updating dependent field' : 'dormant'
+            setIndependentFieldState(newState)
+        }
+    }, [independentField.target, independentField.newValue])
 
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
 
-    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
-        const formattedText = formatNumberText(value)
-        const parsedValue = parseFloat(formattedText)
-        const isValid = !isNaN(parsedValue) && parsedValue > 0
-        setValue(value, isValid)
+    const setFormattedInputFactory = (setValue: (v: string) => void) => (value: string) => {
+        // const formattedText = formatNumberText(value)
+        setValue(value)
     }
 
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
@@ -851,9 +856,9 @@ export default function (props: {}) {
             setOutputAddress(inputAddressTemp)
             if (swapState !== SwapState.IMPOSSIBLE) {
                 if (tradeType === TradeType.SWAP || tradeType === TradeType.WITHDRAW_LIQUIDITY) {
-                    updateIndependentField('FROM')(oldValues[1], true)
+                    updateIndependentField('FROM')(oldValues[1])
                 } else {
-                    updateIndependentField('TO')(oldValues[0], true)
+                    updateIndependentField('TO')(oldValues[0])
                 }
             } else {
                 setInputValue("")
@@ -958,9 +963,9 @@ export default function (props: {}) {
             }
         } catch (e) {
             if (independentField.target === 'FROM')
-                setOutputValue('invalid input')
+                setOutputValue('')
             else
-                setInputValue('invalid input')
+                setInputValue('')
 
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
@@ -1217,7 +1222,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     {
-                                        swapping?
+                                        swapping ?
                                             animatingMobile
                                             :
                                             staticImageMobile
