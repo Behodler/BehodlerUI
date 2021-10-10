@@ -11,7 +11,7 @@ import { UIContainerContextProps } from '@behodler/sdk/dist/types'
 import { ContainerContext } from 'src/components/Contexts/UIContainerContextDev'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
+import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
 import { useDebounce } from '@react-hook/debounce'
@@ -599,8 +599,7 @@ export default function (props: {}) {
     const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useLoggedState<string>("")
     const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useLoggedState<string>("")
 
-    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
-        console.log('expected target ' + target)
+    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string) => {
         setIndependentField({
             target,
             newValue
@@ -631,11 +630,8 @@ export default function (props: {}) {
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
 
-    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
-        const formattedText = formatNumberText(value)
-        const parsedValue = parseFloat(formattedText)
-        const isValid = !isNaN(parsedValue) && parsedValue > 0
-        setValue(value, isValid)
+    const setFormattedInputFactory = (setValue: (v: string) => void) => (value: string) => {
+        setValue(value)
     }
 
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
@@ -863,7 +859,7 @@ export default function (props: {}) {
             newInputAddress = outputAddress
             setOutputAddress(inputAddressTemp)
             if (swapState !== SwapState.IMPOSSIBLE) {
-                updateIndependentField('FROM')(oldValues[1], true)
+                updateIndependentField('FROM')(oldValues[1])
             } else {
                 setInputValue("")
                 setOutputValue("")
@@ -946,8 +942,7 @@ export default function (props: {}) {
                 setIndependentFieldState("validating swap")
             }
         } catch (e) {
-            console.log('validation error: ' + e)
-            console.log('independent Field ' + independentField.target)
+
             // if (independentField.target === 'FROM')
             //     setOutputValue('invalid input')
             // else
@@ -964,22 +959,45 @@ export default function (props: {}) {
 
     const setImpliedExchangeRateString = () => {
         let pyroName, baseName, e, connectorPhrase
+        let parsedInput = parseFloat(inputValue)
+        let parsedOutput = parseFloat(outputValue)
+        if (isNaN(parsedInput) || isNaN(parsedOutput)) {
+            setImpliedExchangeRate('')
+            return
+        }
         if (minting) {
             pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
 
-            e = parseFloat(inputValue) / parseFloat(outputValue)
-            connectorPhrase = 'requires'
+            if (independentField.target === 'FROM') {
+                e = parsedOutput / parsedInput
+                connectorPhrase = 'can mint'
+                setImpliedExchangeRate(`1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`)
+            }
+            else {
+                e = parsedInput / parsedOutput
+                connectorPhrase = 'requires'
+                setImpliedExchangeRate(`1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`)
+            }
         }
         else {
             pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
 
-            e = parseFloat(outputValue) / parseFloat(inputValue)
-            connectorPhrase = 'can redeem'
+            if (independentField.target === 'FROM') {
+                e = parsedOutput / parsedInput
+                connectorPhrase = 'can redeem'
+                setImpliedExchangeRate(`1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`)
+            }
+            else {
+                e = parsedInput / parsedOutput
+                connectorPhrase = 'can be redeemed for'
+                setImpliedExchangeRate(`1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`)
+            }
+
+
         }
 
-        setImpliedExchangeRate(`1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`)
     }
 
     const swapValidationCallback = useCallback(async () => {
@@ -993,7 +1011,6 @@ export default function (props: {}) {
                     if (validateBalances())
                         setSwapState(SwapState.POSSIBLE)
                     else {
-                        console.warn('balance validation failed')
                         setSwapState(SwapState.DISABLED)
                     }
                 }
@@ -1032,6 +1049,9 @@ export default function (props: {}) {
             const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress).call({ from: account })).toString()))
 
             if (reserveBalance < parseFloat(inputValue)) {
+                const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
+
+                fieldSet(` Insufficient ${nameOfSelectedOutputAddress(outputAddress)} reserves`)
                 throw "Reserve Insufficient"
             }
         }
