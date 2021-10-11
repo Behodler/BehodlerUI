@@ -141,7 +141,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: 350,
         //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
-        margin: "70px 0px 0px -103px",
+        margin: "70px -10px 0px -103px",
     },
     monster: {
         display: "block",
@@ -327,6 +327,22 @@ const inputStyles = makeStyles((theme: Theme) => ({
 
         color: "#80C2FF",
         cursor: 'pointer'
+
+    },
+    MaxDisabled: {
+        /* (MAX) */
+
+        height: scale(19),
+
+        fontFamily: "Gilroy-medium",
+        fontStyle: "normal",
+        fontWeight: 600,
+        fontSize: scale(16),
+        /* identical to box height */
+
+        color: "grey",
+        cursor: 'pointer',
+        textDecoration: "none"
 
     },
     PaddedGridItem: {
@@ -615,16 +631,15 @@ export default function (props: {}) {
             newValue: newValue.trim()
         })
     }
-
     useEffect(() => {
         if (independentFieldState === 'dormant') {
             let updating = !isNaN(parseFloat(independentField.newValue))
             if (independentField.target === 'FROM') {
-                updating = updating && independentField.newValue !== inputValue
+              //  updating = updating && independentField.newValue !== inputValue
                 setInputValue(independentField.newValue)
                 setOutputValue(updating ? 'calculating...' : '')
             } else {
-                updating = updating && independentField.newValue !== outputValue
+               // updating = updating && independentField.newValue !== outputValue
                 setInputValue(updating ? 'calculating...' : '')
                 setOutputValue(independentField.newValue)
             }
@@ -634,14 +649,15 @@ export default function (props: {}) {
 
             const newState: FieldState = updating ? 'updating dependent field' : 'dormant'
             setIndependentFieldState(newState)
+        } else {
+            setIndependentFieldState('dormant')
         }
-    }, [independentField.target, independentField.newValue])
+    }, [independentField.target, independentField.newValue, independentField])
 
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
 
     const setFormattedInputFactory = (setValue: (v: string) => void) => (value: string) => {
-        // const formattedText = formatNumberText(value)
         setValue(value)
     }
 
@@ -1060,6 +1076,7 @@ export default function (props: {}) {
             try {
                 if (!inputEnabled && swapState == SwapState.POSSIBLE) {
                     setSwapState(SwapState.DISABLED)
+                    setIndependentFieldState('dormant')
                 }
                 else {
                     await validateLiquidityExit()
@@ -1068,15 +1085,16 @@ export default function (props: {}) {
                     else {
                         setSwapState(SwapState.DISABLED)
                     }
+                    setIndependentFieldState("updating price impact")
                 }
-                setIndependentFieldState("updating price impact")
+
             } catch (e) {
                 setSwapState(SwapState.IMPOSSIBLE)
                 console.warn('validation failed ' + e)
                 setIndependentFieldState("dormant")
             }
         }
-    }, [independentFieldState])
+    }, [independentFieldState, inputEnabled])
 
     useEffect(() => {
         setIndependentFieldState("validating swap")
@@ -1084,7 +1102,7 @@ export default function (props: {}) {
 
     useEffect(() => {
         swapValidationCallback()
-    }, [independentFieldState])
+    }, [independentFieldState, inputEnabled])
 
     const validateBalances = (): boolean => {
         const balanceOfInput = parseFloat(API.fromWei(tokenBalances.filter(b => b.address.toLowerCase() === inputAddress.toLowerCase())[0].balance))
@@ -1180,10 +1198,20 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
-    const animating = <img width={290} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
-    const staticImage = <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+    const animating = <div className={classes.monsterContainerAnimated} >
+        <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
+            <img width={430} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+        </Tooltip>
+    </div>
 
-    const animatingMobile = <img width={160} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+
+    const staticImage = <div className={classes.monsterContainer} >
+        <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
+            <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
+        </Tooltip>
+    </div>
+
+    const animatingMobile = <img width={220} src={Images[15]} className={classes.monsterAnimatedMobile} onClick={() => setFlipClicked(true)} />
     const staticImageMobile = <img width={180} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
     return (
         <Box className={classes.root}>
@@ -1251,7 +1279,9 @@ export default function (props: {}) {
                                     </Grid>
                                 </Grid>
                                 <Grid item>
-                                    <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                    <BalanceContainer
+                                        disabled={independentFieldState !== 'dormant'}
+                                        setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -1287,7 +1317,9 @@ export default function (props: {}) {
                                         setValue={setFormattingTo}
                                         balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
                                         token={outputAddress}
-                                        estimate={outputSpotDaiPriceView} />
+                                        estimate={outputSpotDaiPriceView}
+                                        disabled={independentFieldState !== 'dormant'}
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -1328,14 +1360,6 @@ export default function (props: {}) {
                                     >
                                         More info
                                     </Button>
-                                </Grid>
-                                <Grid item>
-                                    {outstandingTXCount > 0 ?
-                                        <Tooltip title={"awaiting transaction " + currentTxHash}>
-                                            <CircularProgress />
-                                        </Tooltip>
-                                        : <div></div>
-                                    }
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -1384,7 +1408,9 @@ export default function (props: {}) {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                        <BalanceContainer
+                                            disabled={independentFieldState !== 'dormant'}
+                                            setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1400,16 +1426,11 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        <div className={classes.monsterContainer} >
-                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                {swapping ?
-                                                    animating
-                                                    :
-                                                    staticImage
-                                                }
-
-                                            </Tooltip>
-                                        </div>
+                                        {swapping ?
+                                            animating
+                                            :
+                                            staticImage
+                                        }
                                     </Grid>
                                     <Grid item>
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
@@ -1444,7 +1465,9 @@ export default function (props: {}) {
                                             setValue={setFormattingTo}
                                             balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
                                             token={outputAddress}
-                                            estimate={outputSpotDaiPriceView} />
+                                            estimate={outputSpotDaiPriceView}
+                                            disabled={independentFieldState !== 'dormant'}
+                                        />
                                     </Grid>
                                 </Grid>
 
@@ -1520,7 +1543,7 @@ function DirectionLabel(props: { direction: string }) {
 }
 
 
-function BalanceContainer(props: { estimate: string, balance: string, token: string, setValue: (v: string) => void }) {
+function BalanceContainer(props: { estimate: string, balance: string, token: string, setValue: (v: string) => void, disabled: boolean }) {
     const classes = inputStyles()
     return <Grid
         container
@@ -1531,7 +1554,7 @@ function BalanceContainer(props: { estimate: string, balance: string, token: str
         className={classes.BalanceContainer}
     >
         <Grid item>
-            <Balance setValue={props.setValue} balance={props.balance} token={props.token} />
+            <Balance setValue={props.setValue} balance={props.balance} token={props.token} disabled={props.disabled} />
         </Grid>
         <Grid item>
             <Estimate estimate={props.estimate} />
@@ -1545,7 +1568,7 @@ const PaddedGridItem = (props: { children?: any }) => {
         {props.children}
     </Grid>
 }
-function Balance(props: { token: string, balance: string, setValue: (v: string) => void }) {
+function Balance(props: { token: string, balance: string, setValue: (v: string) => void, disabled: boolean }) {
     const classes = inputStyles()
     return <Grid
         container
@@ -1556,7 +1579,11 @@ function Balance(props: { token: string, balance: string, setValue: (v: string) 
     >
         <PaddedGridItem  ><div className={classes.BalanceLabel}>Balance</div></PaddedGridItem>
         <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance}</div></PaddedGridItem>
-        <PaddedGridItem ><Link onClick={() => props.setValue(props.balance)} className={classes.Max}>(MAX)</Link></PaddedGridItem>
+        <PaddedGridItem >
+            {props.disabled ? <a href="#" className={classes.MaxDisabled}>MAX</a> :
+                <Link onClick={() => {props.setValue(props.balance) }} className={classes.Max}>(MAX)</Link>}
+
+        </PaddedGridItem>
     </Grid>
 }
 
