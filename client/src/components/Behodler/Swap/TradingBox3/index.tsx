@@ -139,7 +139,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: 350,
         //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
-        margin: "70px -10px 0px -103px",
+        margin: "15px -90px -50px -90px",
     },
     monster: {
         display: "block",
