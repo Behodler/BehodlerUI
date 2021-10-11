@@ -136,7 +136,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     monsterContainerAnimated: {
         position: "relative",
         zIndex: 1,
-        width: 350,
         //   background: "radial-gradient(circle 90px, #DDD, transparent)",
         alignContent: "center",
         margin: "15px -90px -50px -90px",
@@ -1430,7 +1429,7 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        {swapState===SwapState.POSSIBLE ?
+                                        {swapping?
                                             animating
                                             :
                                             staticImage
