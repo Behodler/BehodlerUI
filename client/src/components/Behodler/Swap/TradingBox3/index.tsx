@@ -1430,7 +1430,7 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        {swapping ?
+                                        {swapState===SwapState.POSSIBLE ?
                                             animating
                                             :
                                             staticImage
