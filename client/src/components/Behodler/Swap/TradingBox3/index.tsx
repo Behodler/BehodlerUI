@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
-import { Button, Box, makeStyles, Theme, Grid, Hidden, CircularProgress, Tooltip, Link } from '@material-ui/core'
+import { Button, Box, makeStyles, Theme, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Images } from './ImageLoader'
@@ -295,7 +295,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     BalanceLabel: {
         height: scale(19),
 
-        fontFamily: "Gilroy",
+        fontFamily: "Gilroy-medium",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
@@ -967,7 +967,7 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()
@@ -1286,14 +1286,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justifyContent="flex-start"
+                                justify="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilTo' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"TO"} /></Grid>
                                         <Grid item>
@@ -1520,14 +1520,6 @@ export default function (props: {}) {
                                     More info
 
                                 </Button>
-                            </Grid>
-                            <Grid item>
-                                {outstandingTXCount > 0 ?
-                                    <Tooltip title={"awaiting transaction " + currentTxHash}>
-                                        <CircularProgress />
-                                    </Tooltip>
-                                    : <div></div>
-                                }
                             </Grid>
                         </Grid>
                     </Grid>
