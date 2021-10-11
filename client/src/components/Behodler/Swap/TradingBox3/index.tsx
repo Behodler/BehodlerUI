@@ -1,19 +1,18 @@
 import * as React from 'react'
 import { useEffect, useCallback, useState, useContext } from 'react'
 import { Button, Box, makeStyles, Theme, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
-import BigNumber from 'bignumber.js'
-import { DebounceInput } from 'react-debounce-input';
-import {useDebounce} from '@react-hook/debounce'
-
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { TokenList, Logos } from './ImageLoader'
+import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
+import { formatSignificantDecimalPlaces } from './jsHelpers'
+import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
+import { useDebounce } from '@react-hook/debounce'
 import useActiveWeb3React from '../hooks/useActiveWeb3React'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
@@ -600,36 +599,39 @@ export default function (props: {}) {
     const [inputSpotDaiPriceView, setinputSpotDaiPriceView] = useLoggedState<string>("")
     const [outputSpotDaiPriceView, setoutputSpotDaiPriceView] = useLoggedState<string>("")
 
-    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
-        if (target === 'FROM') {
-
-            setInputValue(newValue)
-            setOutputValue(update ? 'calculating...' : '')
-        } else {
-            setInputValue(update ? 'calculating...' : '')
-            setOutputValue(newValue)
-        }
-
-        if (swapState !== SwapState.IMPOSSIBLE)
-            setSwapState(SwapState.IMPOSSIBLE)
-
+    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string) => {
         setIndependentField({
             target,
             newValue
         })
-        const newState: FieldState = update ? 'updating dependent field' : 'dormant'
-        setIndependentFieldState(newState)
     }
 
+    useEffect(() => {
+        if (independentFieldState === 'dormant') {
+            let updating = !isNaN(parseFloat(independentField.newValue))
+            if (independentField.target === 'FROM') {
+                updating = updating && independentField.newValue !== inputValue
+                setInputValue(independentField.newValue)
+                setOutputValue(updating ? 'calculating...' : '')
+            } else {
+                updating = updating && independentField.newValue !== outputValue
+                setInputValue(updating ? 'calculating...' : '')
+                setOutputValue(independentField.newValue)
+            }
+
+            if (swapState !== SwapState.IMPOSSIBLE)
+                setSwapState(SwapState.IMPOSSIBLE)
+
+            const newState: FieldState = updating ? 'updating dependent field' : 'dormant'
+            setIndependentFieldState(newState)
+        }
+    }, [independentField.target, independentField.newValue])
 
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
 
-    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
-        const formattedText = formatNumberText(value)
-        const parsedValue = parseFloat(formattedText)
-        const isValid = !isNaN(parsedValue) && parsedValue > 0
-        setValue(value, isValid)
+    const setFormattedInputFactory = (setValue: (v: string) => void) => (value: string) => {
+        setValue(value)
     }
 
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
@@ -857,7 +859,7 @@ export default function (props: {}) {
             newInputAddress = outputAddress
             setOutputAddress(inputAddressTemp)
             if (swapState !== SwapState.IMPOSSIBLE) {
-                updateIndependentField('FROM')(oldValues[1], true)
+                updateIndependentField('FROM')(oldValues[1])
             } else {
                 setInputValue("")
                 setOutputValue("")
@@ -931,7 +933,8 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
+
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()
@@ -939,15 +942,16 @@ export default function (props: {}) {
                 setIndependentFieldState("validating swap")
             }
         } catch (e) {
-            if (independentField.target === 'FROM')
-                setOutputValue('invalid input')
-            else
-                setInputValue('invalid input')
+
+            // if (independentField.target === 'FROM')
+            //     setOutputValue('invalid input')
+            // else
+            //     setInputValue('invalid input')
 
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
         }
-    }, [independentFieldState])
+    }, [independentFieldState, independentField.target, independentField.newValue])
 
     useEffect(() => {
         independentFieldCallback()
@@ -955,22 +959,45 @@ export default function (props: {}) {
 
     const setImpliedExchangeRateString = () => {
         let pyroName, baseName, e, connectorPhrase
+        let parsedInput = parseFloat(inputValue)
+        let parsedOutput = parseFloat(outputValue)
+        if (isNaN(parsedInput) || isNaN(parsedOutput)) {
+            setImpliedExchangeRate('')
+            return
+        }
         if (minting) {
             pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
 
-            e = parseFloat(outputValue) / parseFloat(inputValue)
-            connectorPhrase = 'requires'
+            if (independentField.target === 'FROM') {
+                e = parsedOutput / parsedInput
+                connectorPhrase = 'can mint'
+                setImpliedExchangeRate(`1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`)
+            }
+            else {
+                e = parsedInput / parsedOutput
+                connectorPhrase = 'requires'
+                setImpliedExchangeRate(`1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`)
+            }
         }
         else {
             pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
 
-            e = parseFloat(outputValue) / parseFloat(inputValue)
-            connectorPhrase = 'can redeem'
+            if (independentField.target === 'FROM') {
+                e = parsedOutput / parsedInput
+                connectorPhrase = 'can redeem'
+                setImpliedExchangeRate(`1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`)
+            }
+            else {
+                e = parsedInput / parsedOutput
+                connectorPhrase = 'can be redeemed for'
+                setImpliedExchangeRate(`1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`)
+            }
+
+
         }
 
-        setImpliedExchangeRate(`1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`)
     }
 
     const swapValidationCallback = useCallback(async () => {
@@ -984,7 +1011,6 @@ export default function (props: {}) {
                     if (validateBalances())
                         setSwapState(SwapState.POSSIBLE)
                     else {
-                        console.warn('balance validation failed')
                         setSwapState(SwapState.DISABLED)
                     }
                 }
@@ -1005,7 +1031,7 @@ export default function (props: {}) {
         setIndependentFieldState("validating swap")
     }, [inputEnabled])
     const validateBalances = (): boolean => {
-        //check pyrotokens balances
+        //check pyrotokens balances 
         const balanceOfInput = parseFloat(API.fromWei(
             minting
                 ?
@@ -1023,6 +1049,9 @@ export default function (props: {}) {
             const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress).call({ from: account })).toString()))
 
             if (reserveBalance < parseFloat(inputValue)) {
+                const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
+
+                fieldSet(` Insufficient ${nameOfSelectedOutputAddress(outputAddress)} reserves`)
                 throw "Reserve Insufficient"
             }
         }
@@ -1031,7 +1060,7 @@ export default function (props: {}) {
     const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
     const swapAction = async () => {
-        if (swapState === SwapState.POSSIBLE || inputEnabled) {
+        if (swapState === SwapState.POSSIBLE && inputEnabled) {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
