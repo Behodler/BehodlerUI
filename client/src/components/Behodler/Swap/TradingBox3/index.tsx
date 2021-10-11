@@ -9,7 +9,7 @@ import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
-import { assert, formatNumberText, formatSignificantDecimalPlaces } from './jsHelpers'
+import { assert, formatSignificantDecimalPlaces } from './jsHelpers'
 import MoreInfo, { InputType } from './MoreInfo'
 import AmountFormat from './AmountFormat'
 import { InputGivenOutput, OutputGivenInput, TradeStatus } from './SwapCalculator'
@@ -160,6 +160,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     monsterMobile: {
         display: "block",
+        margin: "0 -30px 0 -35px",
         '&:hover': {
             cursor: "pointer"
         },
@@ -178,6 +179,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
         height: "100%"
+
     },
     Info: {
         right: "1%",
@@ -497,7 +499,6 @@ export default function (props: {}) {
     type scxEstimationWarningMesssage = '' | 'Warning: estimating tokens released from an SCX input can be inaccurate.'
         | 'Warning: estimating tokens required to produce an SCX output can be inaccurate.'
     const [scxEstimationWarning, setScxEstimationWarning] = useLoggedState<scxEstimationWarningMesssage>('')
-    //Estimating SCX from a given number of input tokens is
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -605,35 +606,40 @@ export default function (props: {}) {
     const [expectedFee, setExpectedFee] = useLoggedState<string>("")
     const [priceImpact, setPriceImpact] = useLoggedState<string>("")
 
-    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string, update: boolean) => {
-        if (target === 'FROM') {
-            setInputValue(newValue)
-            setOutputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
-        } else {
-            setInputValue(update && newValue.trim().length > 0 ? 'estimating...' : '')
-            setOutputValue(newValue)
-        }
-
-        if (swapState !== SwapState.IMPOSSIBLE)
-            setSwapState(SwapState.IMPOSSIBLE)
-
+    const updateIndependentField = (target: 'FROM' | 'TO') => (newValue: string) => {
         setIndependentField({
             target,
-            newValue
+            newValue: newValue.trim()
         })
-        const newState: FieldState = update ? 'updating dependent field' : 'dormant'
-        setIndependentFieldState(newState)
     }
 
+    useEffect(() => {
+        if (independentFieldState === 'dormant') {
+            let updating = !isNaN(parseFloat(independentField.newValue))
+            if (independentField.target === 'FROM') {
+                updating = updating && independentField.newValue !== inputValue
+                setInputValue(independentField.newValue)
+                setOutputValue(updating ? 'calculating...' : '')
+            } else {
+                updating = updating && independentField.newValue !== outputValue
+                setInputValue(updating ? 'calculating...' : '')
+                setOutputValue(independentField.newValue)
+            }
+
+            if (swapState !== SwapState.IMPOSSIBLE)
+                setSwapState(SwapState.IMPOSSIBLE)
+
+            const newState: FieldState = updating ? 'updating dependent field' : 'dormant'
+            setIndependentFieldState(newState)
+        }
+    }, [independentField.target, independentField.newValue])
 
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
 
-    const setFormattedInputFactory = (setValue: (v: string, update: boolean) => void) => (value: string) => {
-        const formattedText = formatNumberText(value)
-        const parsedValue = parseFloat(formattedText)
-        const isValid = !isNaN(parsedValue) && parsedValue > 0
-        setValue(value, isValid)
+    const setFormattedInputFactory = (setValue: (v: string) => void) => (value: string) => {
+        // const formattedText = formatNumberText(value)
+        setValue(value)
     }
 
     const setFormattingFrom = setFormattedInputFactory(updateIndependentFromField)
@@ -654,8 +660,7 @@ export default function (props: {}) {
     const spotPriceCallback = useCallback(async () => {
         setScxEstimationWarning('')
         setSwapState(SwapState.IMPOSSIBLE)
-        // setInputValue("")
-        // setOutputValue("")
+
         const daiAddress = tokenDropDownList.filter(d => d.name.toUpperCase() === "DAI")[0].address
         const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
         const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
@@ -848,9 +853,9 @@ export default function (props: {}) {
             setOutputAddress(inputAddressTemp)
             if (swapState !== SwapState.IMPOSSIBLE) {
                 if (tradeType === TradeType.SWAP || tradeType === TradeType.WITHDRAW_LIQUIDITY) {
-                    updateIndependentField('FROM')(oldValues[1], true)
+                    updateIndependentField('FROM')(oldValues[1])
                 } else {
-                    updateIndependentField('TO')(oldValues[0], true)
+                    updateIndependentField('TO')(oldValues[0])
                 }
             } else {
                 setInputValue("")
@@ -955,9 +960,9 @@ export default function (props: {}) {
             }
         } catch (e) {
             if (independentField.target === 'FROM')
-                setOutputValue('invalid input')
+                setOutputValue('')
             else
-                setInputValue('invalid input')
+                setInputValue('')
 
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
@@ -982,6 +987,8 @@ export default function (props: {}) {
                 if (isNaN(exchangeRate))
                     setImpliedExchangeRate("")
                 else {
+
+
                     const exchangeRateString = formatSignificantDecimalPlaces((exchangeRate).toString(), 6)
                     setImpliedExchangeRate(`1 ${nameOfSelectedAddress(outputAddress).toUpperCase()} = ${exchangeRateString} ${nameOfSelectedAddress(inputAddress).toUpperCase()}`)
                 }
@@ -1046,12 +1053,6 @@ export default function (props: {}) {
     }, [independentFieldState])
 
     const swapValidationCallback = useCallback(async () => {
-        console.info('swapValidationCallback', {
-            inputValue,
-            outputValue,
-            swapState,
-        });
-
         if (independentFieldState === "validating swap") {
             try {
                 if (!inputEnabled && swapState == SwapState.POSSIBLE) {
@@ -1059,10 +1060,7 @@ export default function (props: {}) {
                 }
                 else {
                     await validateLiquidityExit()
-
-                    if (!inputValue || !outputValue)
-                        setSwapState(SwapState.IMPOSSIBLE)
-                    else if (validateBalances())
+                    if (validateBalances())
                         setSwapState(SwapState.POSSIBLE)
                     else {
                         setSwapState(SwapState.DISABLED)
@@ -1075,11 +1073,6 @@ export default function (props: {}) {
                 setIndependentFieldState("dormant")
             }
         }
-        setTimeout(() => {
-            console.info('swapState', {
-                swapState,
-            });
-        })
     }, [independentFieldState])
 
     useEffect(() => {
@@ -1184,21 +1177,10 @@ export default function (props: {}) {
         setOutputValue("")
         setOutputAddress(address)
     }
-    const animating =
-        <div className={classes.monsterContainerAnimated} >
-            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                <img width={450} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
-            </Tooltip>
-        </div>
+    const animating = <img width={290} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
+    const staticImage = <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
 
-    const staticImage =
-        <div className={classes.monsterContainer} >
-            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                <img width={350} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
-            </Tooltip>
-        </div>
-
-    const animatingMobile = <img width={220} src={Images[15]} className={classes.monsterAnimatedMobile} onClick={() => setFlipClicked(true)} />
+    const animatingMobile = <img width={160} src={Images[15]} className={classes.monsterAnimated} onClick={() => setFlipClicked(true)} />
     const staticImageMobile = <img width={180} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
     return (
         <Box className={classes.root}>
@@ -1226,7 +1208,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     {
-                                        swapping?
+                                        swapping ?
                                             animatingMobile
                                             :
                                             staticImageMobile
@@ -1422,11 +1404,16 @@ export default function (props: {}) {
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={fetchToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
-                                        {swapping ?
-                                            animating
-                                            :
-                                            staticImage
-                                        }
+                                        <div className={classes.monsterContainer} >
+                                            <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
+                                                {swapping ?
+                                                    animating
+                                                    :
+                                                    staticImage
+                                                }
+
+                                            </Tooltip>
+                                        </div>
                                     </Grid>
                                     <Grid item>
                                         <TokenSelector balances={tokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={fetchToken(outputAddress).image} scale={0.8} />
