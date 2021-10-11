@@ -13,7 +13,7 @@ import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
 import { useDebounce } from '@react-hook/debounce'
-import useActiveWeb3React from '../hooks/useActiveWeb3React'
+import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -934,7 +934,7 @@ export default function (props: {}) {
         try {
             if (independentFieldState === "updating dependent field") {
 
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()
@@ -1031,7 +1031,7 @@ export default function (props: {}) {
         setIndependentFieldState("validating swap")
     }, [inputEnabled])
     const validateBalances = (): boolean => {
-        //check pyrotokens balances 
+        //check pyrotokens balances
         const balanceOfInput = parseFloat(API.fromWei(
             minting
                 ?
