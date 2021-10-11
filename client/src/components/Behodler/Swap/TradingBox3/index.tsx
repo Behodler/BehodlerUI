@@ -967,7 +967,7 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()
