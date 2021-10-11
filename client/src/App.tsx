@@ -51,9 +51,6 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <GlobalStyles />
             <div className={classes.appRoot}>
-                <UIContainerContextDevProvider>
-                    <LayoutFrame />
-                </UIContainerContextDevProvider>
                 <Web3ReactProvider getLibrary={getLibrary}>
                     <Web3ProviderNetwork getLibrary={getLibrary}>
                         <Web3ContextProvider>
