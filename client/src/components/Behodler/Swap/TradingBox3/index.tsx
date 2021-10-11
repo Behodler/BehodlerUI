@@ -295,7 +295,7 @@ const inputStyles = makeStyles((theme: Theme) => ({
     BalanceLabel: {
         height: scale(19),
 
-        fontFamily: "Gilroy-medium",
+        fontFamily: "Gilroy",
         fontStyle: "normal",
         fontWeight: 600,
         fontSize: scale(16),
