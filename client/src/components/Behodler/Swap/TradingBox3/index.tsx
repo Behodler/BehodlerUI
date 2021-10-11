@@ -1085,7 +1085,7 @@ export default function (props: {}) {
         }
     }
 
-    const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE)
+    const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE) || swapping
     const setNewMenuInputAddress = (address: string) => {
         setInputValue("")
         setOutputValue("")
@@ -1203,7 +1203,12 @@ export default function (props: {}) {
                         </Grid>
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
-                                <Button className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile} disabled={swapState === SwapState.IMPOSSIBLE && false} variant="contained" color="primary" size="large" onClick={swapAction}>
+                                <Button
+                                    className={greySwap ? classes.swapButtonMobileDisabled : classes.swapButtonMobile}
+                                    disabled={swapState === SwapState.IMPOSSIBLE || swapping}
+                                    variant="contained" color="primary" size="large"
+                                    onClick={swapAction}
+                                >
                                     {swapText}
                                 </Button>
                             </Box>
@@ -1341,7 +1346,12 @@ export default function (props: {}) {
 
                         <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
 
-                            <Button className={greySwap ? classes.swapButtonDisabled : classes.swapButton} disabled={swapState === SwapState.IMPOSSIBLE && false} variant="contained" color="primary" size="large" onClick={() => { if (!greySwap) swapAction() }}>
+                            <Button
+                                className={greySwap ? classes.swapButtonDisabled : classes.swapButton}
+                                disabled={swapState === SwapState.IMPOSSIBLE || swapping}
+                                variant="contained" color="primary" size="large"
+                                onClick={() => { if (!greySwap) swapAction() }}
+                            >
                                 {swapText}
                             </Button>
 

@@ -7,9 +7,9 @@ import { WalletContext, WalletContextProvider } from '../../Contexts/WalletStatu
 import { StatelessBehodlerContextProvider } from './EVM_js/context/StatelessBehodlerContext'
 import Unconnected from './TradingBox3/Unconnected'
 import backImage from "../../../images/new/behodler-swap-bg.jpg"
+import useActiveWeb3React from './hooks/useActiveWeb3React'
 
 import './fonts/gilroy-font.css'
-import useActiveWeb3React from "./hooks/useActiveWeb3React";
 
 export const pyrotokensBackgroundImage = backImage
 
