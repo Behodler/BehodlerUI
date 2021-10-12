@@ -167,7 +167,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     monsterAnimatedMobile: {
         display: "block",
-        margin: "-45px -20px",
+        margin: "0 -140px 0px 0px",
         '&:hover': {
             cursor: "pointer"
         },
@@ -1207,7 +1207,7 @@ export default function (props: {}) {
         </Tooltip>
     </div>
 
-    const animatingMobile = <img width={220} src={Images[15]} className={classes.monsterAnimatedMobile} onClick={() => setFlipClicked(true)} />
+    const animatingMobile = <img width={330} src={Images[15]} className={classes.monsterAnimatedMobile} onClick={() => setFlipClicked(true)} />
     const staticImageMobile = <img width={180} src={Images[13]} className={classes.monster} onClick={() => setFlipClicked(true)} />
     return (
         <Box className={classes.root}>
@@ -1235,7 +1235,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     {
-                                        swapState == SwapState.POSSIBLE ?
+                                        swapping?
                                             animatingMobile
                                             :
                                             staticImageMobile
