@@ -21,7 +21,9 @@ export default function LayoutFrame() {
                     Header
                 </div>
 
-                <BehodlerUIPyrotokens />
+                <div style={{ height: 'calc(100vh - 96px)' }}>
+                    <BehodlerUIPyrotokens />
+                </div>
 
             </div>
         </div >
