@@ -1235,7 +1235,7 @@ export default function (props: {}) {
                                 </Grid>
                                 <Grid item>
                                     {
-                                        swapping ?
+                                        swapState == SwapState.POSSIBLE ?
                                             animatingMobile
                                             :
                                             staticImageMobile
