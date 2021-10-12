@@ -443,8 +443,6 @@ const imageLoader = (network: string) => {
     return [base, pyro, dai]
 }
 
-const desktopImageScale = 0.8
-const mobileImageScale = 0.8
 export default function (props: {}) {
     const classes = useStyles();
     const inputClasses = inputStyles();
@@ -1123,8 +1121,8 @@ export default function (props: {}) {
                                     <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}
                                         scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
-                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={125 * mobileImageScale} src={animatedLogo.image} className={classes.pyroShieldMobileAnimated} />
-                                    : <img width={90 * mobileImageScale} src={staticLogo.image} className={classes.pyroShieldMobile} />
+                                <Grid item onClick={() => setFlipClicked(true)} >{swapping ? <img width={100} src={animatedLogo.image} className={classes.pyroShieldMobileAnimated} />
+                                    : <img width={72} src={staticLogo.image} className={classes.pyroShieldMobile} />
                                 }
                                 </Grid>
                                 <Grid item>
@@ -1290,8 +1288,8 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.pyroShieldContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                {swapping ? <img width={200 * desktopImageScale} src={animatedLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} /> :
-                                                    <img width={150 * desktopImageScale} src={staticLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} />}
+                                                {swapping ? <img width={160} src={animatedLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} /> :
+                                                    <img width={120} src={staticLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} />}
                                             </Tooltip>
                                         </div>
                                     </Grid>
