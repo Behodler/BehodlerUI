@@ -790,7 +790,7 @@ export default function (props: {}) {
         const primaryOptions = { from: account, gas: undefined };
         const ethOptions = { from: account, value: inputValWei, gas: undefined };
 
-
+        console.info("tx invocation initiated.")
         if (swapClicked) {
             const pyroTokenAddress = minting ? outputAddress : inputAddress
             const pyroToken = await API.getPyroToken(pyroTokenAddress, networkName)
