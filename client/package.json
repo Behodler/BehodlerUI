@@ -1,6 +1,6 @@
 {
     "name": "@behodler/pyrotokens-legacy",
-    "version": "0.3.4",
+    "version": "0.4.0",
     "main": "dist/index.js",
     "typings": "dist/components/BehodlerUIPyrotokens/index.d.ts",
     "files": [
