@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: 20,
         alignContent: "center",
         height: "100%",
+        position: 'relative',
     },
     iconWrapper: {
         display: 'flex',

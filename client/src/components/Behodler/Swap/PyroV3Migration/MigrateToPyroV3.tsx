@@ -7,6 +7,9 @@ const StyledMigrateToPyroV3Wrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 20px;
+  position: absolute;
+  top: 0;
+  width: 100%;
 `
 
 const StyledMigrateToPyroV3Box = styled.div`
