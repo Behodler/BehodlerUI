@@ -1,63 +1,25 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useState } from 'react'
 
-import { ReactComponent as WarningIcon } from './warning.svg'
-
-const StyledMigrateToPyroV3Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  position: absolute;
-  top: 0;
-  width: 100%;
-`
-
-const StyledMigrateToPyroV3Box = styled.div`
-  align-items: center;
-  background-color: rgba(54, 12, 87, 0.24);
-  border: 1px solid #3e236c;
-  border-radius: 8px;
-  color: #9081d2;
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  padding: 12px 24px;
-`
-
-const StyledMigrateToPyroV3Button = styled.button`
-  align-items: center;
-  background-color: transparent;
-  border: 1px solid #9081d2;
-  border-radius: 4px;
-  color: #9081d2;
-  display: flex;
-  justify-content: center;
-  font-size: 12px;
-  padding: 6px 32px 4px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: #9081d2;
-    color: #25174f;
-    cursor: pointer;
-  }
-`
-
-const StyledMigrateToPyroV3Message = styled.span`
-  margin: 0 24px;
-`
-
-const StyledWarningIcon = styled(WarningIcon)`
-  width: 24px;
-`
-
-const Underlined = styled.span`
-  text-decoration: underline;
-`
+import Modal from '../../../Common/Modal'
+import {
+    Underlined,
+    StyledMigrateToPyroV3Box,
+    StyledMigrateToPyroV3Button,
+    StyledMigrateToPyroV3Message,
+    StyledMigrateToPyroV3Wrapper,
+    StyledWarningIcon,
+    StyledMigrateToPyroV3ModalContent,
+    StyledMigrateToPyroV3ModalP,
+    StyledMigrateToPyroV3ModalHeader,
+    StyledMigrateToPyroV3ModalButtons,
+} from './styled'
 
 export function MigrateToPyroV3() {
+    const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
+
     return (
         <StyledMigrateToPyroV3Wrapper>
+
             <StyledMigrateToPyroV3Box>
 
                 <StyledWarningIcon />
@@ -69,11 +31,57 @@ export function MigrateToPyroV3() {
                     migrate to V3.
                 </StyledMigrateToPyroV3Message>
 
-                <StyledMigrateToPyroV3Button>
+                <StyledMigrateToPyroV3Button
+                    onClick={() => setIsMigrateModalOpen(true)}
+                >
                     Migrate to V3
                 </StyledMigrateToPyroV3Button>
 
             </StyledMigrateToPyroV3Box>
+
+            <Modal
+                onDismiss={() => setIsMigrateModalOpen(false)}
+                isOpen={isMigrateModalOpen}
+            >
+                <StyledMigrateToPyroV3ModalContent>
+
+                    <StyledMigrateToPyroV3ModalHeader>
+                        Migrate to PyroTokens3
+                    </StyledMigrateToPyroV3ModalHeader>
+
+                    <StyledMigrateToPyroV3ModalP>
+                        PyroTokens3 brings the third phase in Behodler’s super deflationary token wrappers.
+                    </StyledMigrateToPyroV3ModalP>
+
+                    <StyledMigrateToPyroV3ModalP>
+                        <Underlined>Why PyroTokens3</Underlined>
+                    </StyledMigrateToPyroV3ModalP>
+
+                    <StyledMigrateToPyroV3ModalP>
+                        See <Underlined>this article</Underlined> for full details on why PyroTokens3 was a necessary upgrade.
+                        <br />
+                        In short, it offers reduced cost across the board, improved standards compliance and composability, the introduction of PyroLoans.
+                    </StyledMigrateToPyroV3ModalP>
+
+                    <StyledMigrateToPyroV3ModalP>
+                        NOTE: While PyroTokens2 will continue to work, all Behodler trade revenue will be redirected to the new version. So, migrating is highly recommended.
+                    </StyledMigrateToPyroV3ModalP>
+
+                    <StyledMigrateToPyroV3ModalButtons>
+
+                        <StyledMigrateToPyroV3Button>
+                            Redeem all Pyro
+                        </StyledMigrateToPyroV3Button>
+
+                        <StyledMigrateToPyroV3Button>
+                            Migrate all Pyro
+                        </StyledMigrateToPyroV3Button>
+
+                    </StyledMigrateToPyroV3ModalButtons>
+
+                </StyledMigrateToPyroV3ModalContent>
+            </Modal>
+
         </StyledMigrateToPyroV3Wrapper>
     )
 }
