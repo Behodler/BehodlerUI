@@ -7,6 +7,8 @@ import {animated, useSpring, useTransition} from 'react-spring'
 import {useGesture} from 'react-use-gesture'
 import styled, {css} from 'styled-components'
 
+import { ReactComponent as CloseIcon } from './close.svg'
+
 const AnimatedDialogOverlay = animated(DialogOverlay)
 
 const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
@@ -86,11 +88,13 @@ const StyledModalWrapper = styled.div`
 const StyledModalContent = styled.div`
   background-color: #000;
   border-radius: 8px;
+  color: #dedede;
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
   padding: 1.5rem 2rem;
+  position: relative;
   width: 100%;
   
   ${({ noPadding }) => (
@@ -98,6 +102,19 @@ const StyledModalContent = styled.div`
       padding: 0;
     `
   )}
+`
+
+const StyledModalCloseButton = styled(CloseIcon)`
+  color: #dedede;
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  width: 24px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.6;
+  }
 `
 
 interface ModalProps {
@@ -108,6 +125,7 @@ interface ModalProps {
     initialFocusRef?: React.RefObject<any>
     children?: React.ReactNode
     noPadding?: boolean
+    noCloseButton?: boolean
 }
 
 export default function Modal({
@@ -117,7 +135,8 @@ export default function Modal({
                                   maxHeight = 90,
                                   initialFocusRef,
                                   children,
-                                  noPadding = false
+                                  noPadding = false,
+                                  noCloseButton = false,
                               }: ModalProps) {
     const fadeTransition = useTransition(isOpen, null, {
         config: {duration: 200},
@@ -169,8 +188,8 @@ export default function Modal({
                                 <StyledModalWrapper>
                                     <StyledModalContent noPadding={noPadding}>
                                         {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
-                                        {!initialFocusRef && isMobile ?
-                                            <div tabIndex={1} /> : null}
+                                        {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
+                                        {!noCloseButton && <StyledModalCloseButton onClick={onDismiss} />}
                                         {children}
                                     </StyledModalContent>
                                 </StyledModalWrapper>
