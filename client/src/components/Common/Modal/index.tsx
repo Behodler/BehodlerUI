@@ -9,6 +9,12 @@ import styled, {css} from 'styled-components'
 
 import { ReactComponent as CloseIcon } from './close.svg'
 
+import {
+    StyledModalContent,
+    StyledModalP,
+    StyledModalHeader,
+} from './styled'
+
 const AnimatedDialogOverlay = animated(DialogOverlay)
 
 const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
@@ -85,7 +91,7 @@ const StyledModalWrapper = styled.div`
   width: 100%;
 `
 
-const StyledModalContent = styled.div`
+const StyledModalContentWrapper = styled.div`
   background-color: #000;
   border-radius: 8px;
   color: #dedede;
@@ -186,12 +192,12 @@ export default function Modal({
                                 mobile={isMobile}
                             >
                                 <StyledModalWrapper>
-                                    <StyledModalContent noPadding={noPadding}>
+                                    <StyledModalContentWrapper noPadding={noPadding}>
                                         {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
                                         {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
                                         {!noCloseButton && <StyledModalCloseButton onClick={onDismiss} />}
                                         {children}
-                                    </StyledModalContent>
+                                    </StyledModalContentWrapper>
                                 </StyledModalWrapper>
                             </StyledDialogContent>
                         </StyledDialogOverlay>
@@ -199,4 +205,10 @@ export default function Modal({
             )}
         </>
     )
+}
+
+export {
+    StyledModalContent,
+    StyledModalP,
+    StyledModalHeader,
 }
