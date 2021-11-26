@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-import Modal from '../../../Common/Modal'
+import Modal, {
+    StyledModalContent,
+    StyledModalHeader,
+    StyledModalP,
+} from '../../../Common/Modal'
 import {
     Underlined,
     StyledMigrateToPyroV3Box,
@@ -8,14 +12,19 @@ import {
     StyledMigrateToPyroV3Message,
     StyledMigrateToPyroV3Wrapper,
     StyledWarningIcon,
-    StyledMigrateToPyroV3ModalContent,
-    StyledMigrateToPyroV3ModalP,
-    StyledMigrateToPyroV3ModalHeader,
     StyledMigrateToPyroV3ModalButtons,
 } from './styled'
 
-export function MigrateToPyroV3() {
-    const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
+export function MigrateToPyroV3(props: {
+    isMigrationModalOpen: boolean,
+    openMigrationModal: () => void,
+    closeMigrationModal: () => void,
+}) {
+    const {
+        isMigrationModalOpen,
+        openMigrationModal,
+        closeMigrationModal,
+    } = props;
 
     return (
         <StyledMigrateToPyroV3Wrapper>
@@ -32,7 +41,7 @@ export function MigrateToPyroV3() {
                 </StyledMigrateToPyroV3Message>
 
                 <StyledMigrateToPyroV3Button
-                    onClick={() => setIsMigrateModalOpen(true)}
+                    onClick={openMigrationModal}
                 >
                     Migrate to V3
                 </StyledMigrateToPyroV3Button>
@@ -40,32 +49,32 @@ export function MigrateToPyroV3() {
             </StyledMigrateToPyroV3Box>
 
             <Modal
-                onDismiss={() => setIsMigrateModalOpen(false)}
-                isOpen={isMigrateModalOpen}
+                onDismiss={closeMigrationModal}
+                isOpen={isMigrationModalOpen}
             >
-                <StyledMigrateToPyroV3ModalContent>
+                <StyledModalContent>
 
-                    <StyledMigrateToPyroV3ModalHeader>
+                    <StyledModalHeader>
                         Migrate to PyroTokens3
-                    </StyledMigrateToPyroV3ModalHeader>
+                    </StyledModalHeader>
 
-                    <StyledMigrateToPyroV3ModalP>
+                    <StyledModalP>
                         PyroTokens3 brings the third phase in Behodler’s super deflationary token wrappers.
-                    </StyledMigrateToPyroV3ModalP>
+                    </StyledModalP>
 
-                    <StyledMigrateToPyroV3ModalP>
+                    <StyledModalP>
                         <Underlined>Why PyroTokens3</Underlined>
-                    </StyledMigrateToPyroV3ModalP>
+                    </StyledModalP>
 
-                    <StyledMigrateToPyroV3ModalP>
+                    <StyledModalP>
                         See <Underlined>this article</Underlined> for full details on why PyroTokens3 was a necessary upgrade.
                         <br />
                         In short, it offers reduced cost across the board, improved standards compliance and composability, the introduction of PyroLoans.
-                    </StyledMigrateToPyroV3ModalP>
+                    </StyledModalP>
 
-                    <StyledMigrateToPyroV3ModalP>
+                    <StyledModalP>
                         NOTE: While PyroTokens2 will continue to work, all Behodler trade revenue will be redirected to the new version. So, migrating is highly recommended.
-                    </StyledMigrateToPyroV3ModalP>
+                    </StyledModalP>
 
                     <StyledMigrateToPyroV3ModalButtons>
 
@@ -79,7 +88,7 @@ export function MigrateToPyroV3() {
 
                     </StyledMigrateToPyroV3ModalButtons>
 
-                </StyledMigrateToPyroV3ModalContent>
+                </StyledModalContent>
             </Modal>
 
         </StyledMigrateToPyroV3Wrapper>

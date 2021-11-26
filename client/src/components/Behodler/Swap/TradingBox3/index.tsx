@@ -15,6 +15,7 @@ import AmountFormat from './AmountFormat'
 import { useDebounce } from '@react-hook/debounce'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
+import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { PyroTokensInfo } from './PyroTokensInfo/PyroTokensInfo';
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
@@ -476,6 +477,7 @@ export default function (props: {}) {
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
     const [daiAddress, setDaiAddress] = useLoggedState<string>(imageLoader(networkName)[3] as string)
     const [minting, setMinting] = useLoggedState<boolean>(true)
+    const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
     //Estimating SCX from a given number of input tokens is
 
     useEffect(() => {
@@ -1103,7 +1105,11 @@ export default function (props: {}) {
     return (
         <Box className={classes.root}>
 
-            <MigrateToPyroV3 />
+            <MigrateToPyroV3
+                isMigrationModalOpen={isPyroV3MigrationModalOpen}
+                openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
+                closeMigrationModal={() => setIsPyroV3MigrationModalOpen(false)}
+            />
 
             <Hidden lgUp>
                 <div className={classes.mobileContainer} key="mobileContainer">
@@ -1380,6 +1386,8 @@ export default function (props: {}) {
                     </Grid>
                 </Grid>
             </Hidden>
+
+            <MigrateToPyroV3Link openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)} />
         </Box >
     )
 }

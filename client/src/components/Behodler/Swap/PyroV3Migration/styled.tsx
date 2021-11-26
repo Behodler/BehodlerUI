@@ -54,23 +54,6 @@ export const Underlined = styled.span`
   text-decoration: underline;
 `
 
-export const StyledMigrateToPyroV3ModalContent = styled.div`
-  color: #dedede;
-  font-size: 14px;
-`
-
-export const StyledMigrateToPyroV3ModalP = styled.p`
-  margin-bottom: 10px;
-  line-height: 20px;
-`
-
-export const StyledMigrateToPyroV3ModalHeader = styled.h2`
-  color: #ecc752;
-  font-size: 22px;
-  font-weight: 400;
-  margin-bottom: 10px;
-`
-
 export const StyledMigrateToPyroV3ModalButtons = styled.p`
   display: flex;
   margin-top: 24px;
