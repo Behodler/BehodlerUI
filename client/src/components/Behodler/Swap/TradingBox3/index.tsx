@@ -186,12 +186,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         /* Ellipse 18 */
         width: 26,
         height: 26,
-        marginTop: -266,
         background: "#2E2455",
         border: "1px solid #3C3682",
         boxSizing: "border-box",
-        // top: 500,
-        // left: 450,
         borderRadius: "50%",
         backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image})`,
         backgroundSize: "cover",
@@ -202,27 +199,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
             backgroundSize: "cover",
         }
-    }, flippySwitchSCXWarning: {
-        width: 22,
-        height: 22,
-        marginTop: -350,
-        background: "#2E2455",
-        border: "1px solid #3C3682",
-        boxSizing: "border-box",
-        // top: 500,
-        // left: 450,
-        borderRadius: "50%",
-        backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
-        backgroundSize: "cover",
-        '&:hover': {
-            cursor: "pointer",
-            boxShadow: "0 0 4px 1px #AAf",
-            background: "#473D6E",
-            backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
-            backgroundSize: "cover",
-        }
     },
-
     transactionFeedbackState: {
         fontSize: 30,
         color: "white"
@@ -1175,6 +1152,12 @@ export default function (props: {}) {
                                 </Grid>
                             </Grid>
                         </Grid>
+                        <Grid item>
+                            <div
+                                className={`${classes.flippySwitch} mobile-flippy-switch`}
+                                onClick={() => setFlipClicked(true)}
+                            />
+                        </Grid>
                         <Grid item key="mobileGridOutput">
                             <Grid
                                 container
@@ -1211,6 +1194,11 @@ export default function (props: {}) {
                                 </Grid>
                             </Grid>
                         </Grid>
+
+                        <Grid item style={{ marginTop: '20px' }}>
+                            <PyroTokensInfo />
+                        </Grid>
+
                         <Grid item>
                             <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
                                 <Button
@@ -1222,12 +1210,6 @@ export default function (props: {}) {
                                     {swapText}
                                 </Button>
                             </Box>
-                        </Grid>
-                        <Grid item>
-                            <div
-                                className={`${classes.flippySwitch} mobile-flippy-switch`}
-                                onClick={() => setFlipClicked(true)}
-                            />
                         </Grid>
                         <Grid item>
                             <Grid container
