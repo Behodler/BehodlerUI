@@ -14,7 +14,8 @@ import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
 import { useDebounce } from '@react-hook/debounce'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
-import { MigrateToPyroV3 } from "../PyroV3Migration/MigrateToPyroV3"
+import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
+import { PyroTokensInfo } from './PyroTokensInfo/PyroTokensInfo';
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -1345,6 +1346,9 @@ export default function (props: {}) {
                         </Grid>
 
                     </Grid>
+
+                    <PyroTokensInfo />
+
                     <Grid item>
 
                         <Box className={greySwap ? classes.buttonWrapperDisabled : classes.buttonWrapper}>
