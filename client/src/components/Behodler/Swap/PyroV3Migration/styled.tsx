@@ -6,9 +6,12 @@ export const StyledMigrateToPyroV3Wrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 20px;
-  position: absolute;
-  top: 0;
   width: 100%;
+
+  @media (min-width: 1280px) {
+    position: absolute;
+    top: 0;
+  }
 `
 
 export const StyledMigrateToPyroV3Box = styled.div`
@@ -21,6 +24,10 @@ export const StyledMigrateToPyroV3Box = styled.div`
   justify-content: space-between;
   font-size: 13px;
   padding: 12px 24px;
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+  }
 `
 
 export const StyledMigrateToPyroV3Button = styled.button`
@@ -35,6 +42,10 @@ export const StyledMigrateToPyroV3Button = styled.button`
   padding: 6px 32px 4px;
   transition: all 0.2s ease;
 
+  @media (max-width: 600px) {
+    margin: 10px auto 0;
+  }
+
   &:hover {
     background-color: #9081d2;
     color: #0d0523;
@@ -43,7 +54,13 @@ export const StyledMigrateToPyroV3Button = styled.button`
 `
 
 export const StyledMigrateToPyroV3Message = styled.span`
+  flex-grow: 1;
   margin: 0 24px;
+
+  @media (max-width: 600px) {
+    margin: 0 0 0 20px;
+    width: calc(100% - 20px - 24px);
+  }
 `
 
 export const StyledWarningIcon = styled(WarningIcon)`
@@ -64,4 +81,9 @@ export const StyledMigrateToPyroV3ModalButtons = styled.p`
     padding: 10px 0 8px;
     width: calc(50% - 10px);
   }
+`
+
+export const LineBreak = styled.span`
+  flex-basis: 100%;
+  height: 0;
 `

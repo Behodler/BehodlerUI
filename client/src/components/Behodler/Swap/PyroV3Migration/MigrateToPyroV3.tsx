@@ -1,4 +1,5 @@
 import React from 'react'
+import { Hidden } from '@material-ui/core'
 
 import Modal, {
     StyledModalContent,
@@ -12,7 +13,7 @@ import {
     StyledMigrateToPyroV3Message,
     StyledMigrateToPyroV3Wrapper,
     StyledWarningIcon,
-    StyledMigrateToPyroV3ModalButtons,
+    StyledMigrateToPyroV3ModalButtons, LineBreak,
 } from './styled'
 
 export function MigrateToPyroV3(props: {
@@ -34,11 +35,15 @@ export function MigrateToPyroV3(props: {
                 <StyledWarningIcon />
 
                 <StyledMigrateToPyroV3Message>
-                    A new improved version of PyroTokens has been released.
-                    <br/>
+                    A new improved version of PyroTokens has been released.&nbsp;
+                    <Hidden xsDown><br/></Hidden>
                     To <Underlined>continue earning</Underlined> Behodler trade revenue,
                     migrate to V3.
                 </StyledMigrateToPyroV3Message>
+
+                <Hidden xsUp>
+                    <LineBreak />
+                </Hidden>
 
                 <StyledMigrateToPyroV3Button
                     onClick={openMigrationModal}
