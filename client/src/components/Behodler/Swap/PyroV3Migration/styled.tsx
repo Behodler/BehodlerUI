@@ -46,10 +46,14 @@ export const StyledMigrateToPyroV3Button = styled.button`
     margin: 10px auto 0;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: #9081d2;
     color: #0d0523;
     cursor: pointer;
+  }
+
+  &:disabled {
+    opacity: 0.4;
   }
 `
 

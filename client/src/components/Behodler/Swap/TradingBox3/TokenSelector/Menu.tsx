@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useState, useEffect } from 'react'
 import { TokenList } from '../ImageLoader'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
-import { TokenBalanceMapping } from '../index'
+import { TokenBalanceMapping } from '../types'
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
 import API from "../../../../../blockchain/ethereumAPI"
 const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({

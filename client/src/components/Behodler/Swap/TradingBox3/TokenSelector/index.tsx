@@ -1,7 +1,7 @@
 import { Grid, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import Menu from './Menu'
-import { TokenBalanceMapping } from '../index'
+import { TokenBalanceMapping } from '../types'
 const useStyles = (scale) => makeStyles((theme: Theme) => ({
     root: {
         position: 'relative',

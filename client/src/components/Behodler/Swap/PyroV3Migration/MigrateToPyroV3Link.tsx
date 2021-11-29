@@ -2,6 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import { lighten } from 'polished'
 
+import {TokenBalanceMapping} from "../TradingBox3/types";
+import {areV2PyroTokensPresentInActiveWallet} from "./MigrateToPyroV3";
+
 const StyledMigrateToPyroV3Link = styled.button`
   background-color: transparent;
   border: 0 none;
@@ -20,12 +23,19 @@ const StyledMigrateToPyroV3Link = styled.button`
 
 export function MigrateToPyroV3Link(props: {
     openMigrationModal: () => void,
+    pyroTokenV2Balances: TokenBalanceMapping[],
 }) {
-    const { openMigrationModal } = props;
+    const { openMigrationModal, pyroTokenV2Balances } = props;
+
+    const walletContainsPyroV2 = areV2PyroTokensPresentInActiveWallet(pyroTokenV2Balances)
 
     return (
+        Array.isArray(pyroTokenV2Balances)
+        && !!pyroTokenV2Balances.length
+        && walletContainsPyroV2
+    ) ? (
         <StyledMigrateToPyroV3Link onClick={openMigrationModal}>
             Migrate to PyroTokens V3
         </StyledMigrateToPyroV3Link>
-    );
+    ) : null;
 }

@@ -17,6 +17,7 @@ import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
 import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { PyroTokensInfo } from './PyroTokensInfo/PyroTokensInfo';
+import { TokenBalanceMapping } from './types';
 
 const sideScaler = (scale) => (perc) => (perc / scale) + "%"
 const scaler = sideScaler(0.8)
@@ -363,12 +364,6 @@ export interface TokenListItem {
     address: string
     name: string
     image: string
-}
-
-export interface TokenBalanceMapping {
-    address: string
-    balance: string
-    name: string
 }
 
 interface IndependentField {
@@ -1086,6 +1081,7 @@ export default function (props: {}) {
                 isMigrationModalOpen={isPyroV3MigrationModalOpen}
                 openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
                 closeMigrationModal={() => setIsPyroV3MigrationModalOpen(false)}
+                pyroTokenV2Balances={pyroTokenBalances}
             />
 
             <Hidden lgUp>
@@ -1369,7 +1365,10 @@ export default function (props: {}) {
                 </Grid>
             </Hidden>
 
-            <MigrateToPyroV3Link openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)} />
+            <MigrateToPyroV3Link
+                openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
+                pyroTokenV2Balances={pyroTokenBalances}
+            />
         </Box >
     )
 }

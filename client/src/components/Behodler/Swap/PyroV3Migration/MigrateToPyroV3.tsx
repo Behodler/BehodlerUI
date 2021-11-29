@@ -1,6 +1,7 @@
-import React from 'react'
+import React  from 'react'
 import { Hidden } from '@material-ui/core'
 
+import { TokenBalanceMapping } from '../TradingBox3/types'
 import Modal, {
     StyledModalContent,
     StyledModalHeader,
@@ -13,21 +14,30 @@ import {
     StyledMigrateToPyroV3Message,
     StyledMigrateToPyroV3Wrapper,
     StyledWarningIcon,
-    StyledMigrateToPyroV3ModalButtons, LineBreak,
+    StyledMigrateToPyroV3ModalButtons,
+    LineBreak,
 } from './styled'
+
+export const areV2PyroTokensPresentInActiveWallet = (pyroTokenV2Balances: TokenBalanceMapping[]) => (
+    !!pyroTokenV2Balances.find(({ balance }) => balance !== '0')
+);
 
 export function MigrateToPyroV3(props: {
     isMigrationModalOpen: boolean,
     openMigrationModal: () => void,
     closeMigrationModal: () => void,
+    pyroTokenV2Balances: TokenBalanceMapping[],
 }) {
     const {
         isMigrationModalOpen,
         openMigrationModal,
         closeMigrationModal,
+        pyroTokenV2Balances,
     } = props;
 
-    return (
+    const walletContainsPyroV2 = areV2PyroTokensPresentInActiveWallet(pyroTokenV2Balances)
+
+    return Array.isArray(pyroTokenV2Balances) && !!pyroTokenV2Balances.length ? (
         <StyledMigrateToPyroV3Wrapper>
 
             <StyledMigrateToPyroV3Box>
@@ -37,8 +47,17 @@ export function MigrateToPyroV3(props: {
                 <StyledMigrateToPyroV3Message>
                     A new improved version of PyroTokens has been released.&nbsp;
                     <Hidden xsDown><br/></Hidden>
-                    To <Underlined>continue earning</Underlined> Behodler trade revenue,
-                    migrate to V3.
+                    {walletContainsPyroV2 ? (
+                        <>
+                            To <Underlined>continue earning</Underlined> Behodler trade revenue,
+                            migrate to V3.
+                        </>
+                    ) : (
+                        <>
+                            There are no PyroTokens V2 present in the connected wallet.
+                        </>
+                    )}
+
                 </StyledMigrateToPyroV3Message>
 
                 <Hidden xsUp>
@@ -47,6 +66,7 @@ export function MigrateToPyroV3(props: {
 
                 <StyledMigrateToPyroV3Button
                     onClick={openMigrationModal}
+                    disabled={!walletContainsPyroV2}
                 >
                     Migrate to V3
                 </StyledMigrateToPyroV3Button>
@@ -97,5 +117,5 @@ export function MigrateToPyroV3(props: {
             </Modal>
 
         </StyledMigrateToPyroV3Wrapper>
-    )
+    ): null
 }
