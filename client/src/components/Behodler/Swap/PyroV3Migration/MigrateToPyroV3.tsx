@@ -1,5 +1,7 @@
 import React  from 'react'
 import { Hidden } from '@material-ui/core'
+import styled from 'styled-components'
+import { lighten } from 'polished'
 
 import { TokenBalanceMapping } from '../TradingBox3/types'
 import Modal, {
@@ -17,6 +19,14 @@ import {
     StyledMigrateToPyroV3ModalButtons,
     LineBreak,
 } from './styled'
+
+const StyledPyroTokensReadmeLink = styled.a`
+  color: #9081d2;
+  
+  &:hover {
+    color: ${lighten(0.15, '#9081d2')};
+  }
+`
 
 export const areV2PyroTokensPresentInActiveWallet = (pyroTokenV2Balances: TokenBalanceMapping[]) => (
     !!pyroTokenV2Balances.find(({ balance }) => balance !== '0')
@@ -92,7 +102,14 @@ export function MigrateToPyroV3(props: {
                     </StyledModalP>
 
                     <StyledModalP>
-                        See <Underlined>this article</Underlined> for full details on why PyroTokens3 was a necessary upgrade.
+                        See&nbsp;
+                        <StyledPyroTokensReadmeLink
+                            href="https://github.com/Behodler/pyrotokens3/blob/main/README.md"
+                            target="_blank"
+                        >
+                            this article
+                        </StyledPyroTokensReadmeLink>
+                        &nbsp;for full details on why PyroTokens3 was a necessary upgrade.
                         <br />
                         In short, it offers reduced cost across the board, improved standards compliance and composability, the introduction of PyroLoans.
                     </StyledModalP>

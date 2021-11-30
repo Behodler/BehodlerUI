@@ -113,8 +113,8 @@ const StyledModalContentWrapper = styled.div`
 const StyledModalCloseButton = styled(CloseIcon)`
   color: #dedede;
   position: absolute;
-  right: 12px;
-  top: 10px;
+  right: 16px;
+  top: 12px;
   width: 24px;
 
   &:hover {

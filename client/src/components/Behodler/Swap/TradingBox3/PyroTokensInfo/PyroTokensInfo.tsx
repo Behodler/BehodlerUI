@@ -27,14 +27,19 @@ const StyledPyroTokensImg = styled.img`
   width: 48px;    
 `
 
-const StyledLearnMoreBtn = styled(StyledMigrateToPyroV3Button)`
+const StyledLearnMoreLink = styled.a`
+  align-items: center;
   border: 1px solid #c58d2c;
   background-color: transparent;
+  border-radius: 4px;
   color: #c58d2c;
+  display: inline-block;
+  justify-content: center;
   font-size: 14px;
   margin-top: 20px;
   padding: 12px 16px 10px;
-  
+  text-decoration: none;
+
   &:hover {
     background-color: #c58d2c;
     color: #fff;
@@ -88,9 +93,12 @@ export function PyroTokensInfo() {
                         4 PyroBAT, I will receive 40 BAT.
                     </StyledModalP>
 
-                    <StyledLearnMoreBtn>
+                    <StyledLearnMoreLink
+                        href="https://docs.behodler.io/dapps/pyrotokens"
+                        target="_blank"
+                    >
                         Learn more
-                    </StyledLearnMoreBtn>
+                    </StyledLearnMoreLink>
 
                 </StyledModalContent>
             </Modal>
