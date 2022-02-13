@@ -26,7 +26,8 @@ const RPC = {
     [ChainId.HARMONY]: 'https://explorer.harmony.one',
     [ChainId.HARMONY_TESTNET]: 'https://explorer.pops.one',
     [ChainId.OKEX]: 'https://exchainrpc.okex.org',
-    [ChainId.OKEX_TESTNET]: 'https://exchaintestrpc.okex.org'
+    [ChainId.OKEX_TESTNET]: 'https://exchaintestrpc.okex.org',
+    [ChainId.GANACHE]: 'http://localhost:8545',
 }
 
 export const network = new NetworkConnector({
@@ -61,7 +62,8 @@ export const injected = new InjectedConnector({
         1666600000, // harmony
         1666700000, // harmony testnet
         66, // okex testnet
-        65 // okex testnet
+        65, // okex testnet
+        1337, // ganache local testnet
     ]
 })
 
