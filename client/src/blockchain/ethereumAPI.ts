@@ -100,7 +100,7 @@ class ethereumAPI {
             '5': 'goerli',
             '42': 'kovan',
             '66': 'private',
-            '1337': 'private',
+            '1337': 'development'
         }
         // if we want to add more chains, add their ids and names in this.networkMapping and add their names to the array below
         this.contractsAvailable = ['main']
@@ -176,7 +176,7 @@ class ethereumAPI {
     }
 
     public async enableToken(tokenAddress: string, owner: string, spender: string, callBack?: (err: any, hash: string) => void): Promise<void> {
-        const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
+        const token: ERC20 = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
         await token
             .approve(spender, API.UINTMAX)
             .send({ from: owner }, callBack)
@@ -187,7 +187,7 @@ class ethereumAPI {
         return LiquidQueueAddresses[network].WETH === token
     }
     public async getToken(tokenAddress: string, network: string): Promise<ERC20> {
-        var token = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
+        var token = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
         token.address = tokenAddress
         return token
     }
@@ -198,11 +198,11 @@ class ethereumAPI {
     }
 
     public async getPyroToken(tokenAddress: string, network: string): Promise<Pyrotoken> {
-        return await (new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress).methods as unknown as Pyrotoken)
+        return await ((new this.web3.eth.Contract(PyrotokenJSON.abi as any, tokenAddress).methods as unknown) as Pyrotoken)
     }
 
     public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean, decimalPlaces: number = 18): Token {
-        const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
+        const token: ERC20 = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
         if (useEth) {
             return new EtherEffects(this.web3, token, currentAccount)
         }
@@ -243,7 +243,7 @@ class ethereumAPI {
             Dai: LiquidQueueAddresses[network].DAI,
             Eth: LiquidQueueAddresses[network].WETH,
             Scarcity: LiquidQueueAddresses[network].SCX,
-            Eye: LiquidQueueAddresses[network].EYE,
+            Eye: LiquidQueueAddresses[network].EYE
         }
     }
 
@@ -268,15 +268,15 @@ class ethereumAPI {
 
     public async getTokenBalanceBig(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<any> {
         if (isEth) {
-            return (await this.web3.eth.getBalance(currentAccount))
+            return await this.web3.eth.getBalance(currentAccount)
         }
-        const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
-        const balance = (await token.balanceOf(currentAccount).call({ from: currentAccount }))
+        const token: ERC20 = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
+        const balance = await token.balanceOf(currentAccount).call({ from: currentAccount })
         return balance
     }
 
     public async getTokenBalance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number): Promise<string> {
-        return await this.getTokenBalanceBig(tokenAddress,currentAccount,isEth,decimalPlaces)
+        return await this.getTokenBalanceBig(tokenAddress, currentAccount, isEth, decimalPlaces)
     }
 
     public async getTokenSymbol(tokenAddress: string): Promise<string> {
@@ -285,7 +285,7 @@ class ethereumAPI {
     }
 
     public async getTokenDecimals(tokenAddress: string): Promise<number> {
-        const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
+        const token: ERC20 = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
         try {
             return parseInt((await token.decimals().call()).toString())
         } catch {
@@ -294,7 +294,7 @@ class ethereumAPI {
     }
 
     public async getTokenTotalSupply(tokenAddress: string): Promise<string> {
-        const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
+        const token: ERC20 = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
         try {
             return (await token.totalSupply().call()).toString()
         } catch {
@@ -305,7 +305,7 @@ class ethereumAPI {
     public async getTokenAllowance(tokenAddress: string, currentAccount: string, isEth: boolean, decimalPlaces: number, behodlerAddress: string): Promise<BigNumber> {
         BigNumber.set({ POW_PRECISION: 100 })
         BigNumber.config({ EXPONENTIAL_AT: 100 })
-        const token: ERC20 = new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown as ERC20
+        const token: ERC20 = (new this.web3.eth.Contract(ERC20JSON.abi as any, tokenAddress).methods as unknown) as ERC20
         const allowance = await token.allowance(currentAccount, behodlerAddress).call({ from: currentAccount })
 
         return new BigNumber(allowance)
@@ -354,13 +354,15 @@ class ethereumAPI {
             return {
                 address: '0x0',
                 methods: {},
-                contractInstance: {},
+                contractInstance: {}
             }
         }
     }
 
     private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
         let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
+        console.info(`BehodlerContract mappings ${JSON.stringify(BehodlerContractMappings, null, 4)}`)
+
         let mappingsList = BehodlerContractMappings.filter((item) => item.name == network)[0].list
         const keys = Object.keys(behodlerContracts).filter((key) => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
         keys.forEach(async (key) => {

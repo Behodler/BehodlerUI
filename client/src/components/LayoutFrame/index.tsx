@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {BehodlerUISwap, swapBackgroundImage} from '../Behodler/Swap'
-
 export default function LayoutFrame() {
     return ( // simulate UI container layout
         <div style={{ background: `url(${swapBackgroundImage})` }}>

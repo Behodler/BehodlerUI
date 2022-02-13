@@ -9,7 +9,7 @@ The app can be run either in a `docker` container or using the local environment
 
 To start the app locally, run:
 ```
-yarn docker:start
+yarn start:dev
 ```
 
 To start up the app in a `docker` container, run:
@@ -21,10 +21,15 @@ To tear down the `docker` containers
 ```
 yarn stop
 ```
-
-Dependencies can also be installed using `docker` container (this can sometimes be useful if there are problems installing dependencies on the local dev env):
+One of the dependencies is a package on Behodler's github. You'll need to log in to github packages in order to install it. First, create an access token on github. The value in the access token is your password.
+Run 
 ```
-yarn install:docker
+ npm login --registry=https://npm.pkg.github.com --scope=@behodler
+```
+In the prompt, password refers to the password above. Unfortunately logging into gihub package manager as a local user doesn't extend to the context of docker so you'll need to install running outside of docker: 
+
+```
+yarn
 ```
 This will run the container in the specified version of node known to work with the dependencies. It will then populate your local node_modules.
 
