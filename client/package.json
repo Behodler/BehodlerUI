@@ -15,7 +15,7 @@
     "repository": "git@github.com:Behodler/BehodlerUI.git",
     "module": "dist/swap-legacy.esm.js",
     "dependencies": {
-        "@ethereumjs/vm": "^5.5.2",
+        "@ethereumjs/vm": "5.5.1",
         "@ethersproject/abi": "^5.4.1",
         "@material-ui/core": "^4.9.11",
         "@material-ui/icons": "^4.9.1",
@@ -40,7 +40,7 @@
         "react-focus-lock": "^2.5.2",
         "react-redux": "^6.0.1",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "^3.4.4",
+        "react-scripts": "3.4.4",
         "react-swipeable-views": "^0.13.9",
         "rollup-plugin-image-files": "^1.4.2",
         "rollup-pluginutils": "^2.8.2",
@@ -86,7 +86,7 @@
         "rollup-plugin-postcss": "^4.0.1",
         "tsdx": "^0.14.1",
         "types-web3-provider-engine": "0.0.2",
-        "typescript": "^3.9.10"
+        "typescript": "3.9.3"
     },
     "browserslist": {
         "production": [
@@ -101,6 +101,7 @@
         ]
     },
     "resolutions": {
-        "jest": "24.9.0"
+        "jest": "24.9.0",
+        "typescript": "3.9.3"
     }
 }
