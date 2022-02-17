@@ -15,7 +15,7 @@
     "repository": "git@github.com:Behodler/BehodlerUI.git",
     "module": "dist/swap-legacy.esm.js",
     "dependencies": {
-        "@ethereumjs/vm": "5.5.1",
+        "@ethereumjs/vm": "5.5.3",
         "@ethersproject/abi": "^5.4.1",
         "@material-ui/core": "^4.9.11",
         "@material-ui/icons": "^4.9.1",
