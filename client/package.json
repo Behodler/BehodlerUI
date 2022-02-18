@@ -102,6 +102,7 @@
     },
     "resolutions": {
         "jest": "24.9.0",
-        "typescript": "3.9.3"
+        "typescript": "3.9.3",
+        "react-error-overlay": "6.0.9"
     }
 }
