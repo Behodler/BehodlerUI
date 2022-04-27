@@ -1,14 +1,6 @@
 {
     "main": [
         {
-            "name": "Scarcity",
-            "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21"
-        },
-        {
-            "name": "EYE",
-            "address": "0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
-        },
-        {
             "name": "OXT",
             "address": "0x4575f41308ec1483f3d399aa9a2826d74da13deb"
         },
@@ -33,6 +25,10 @@
             "address": "0x42476F744292107e34519F9c357927074Ea3F75D"
         },
         {
+            "name": "Scarcity",
+            "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21"
+        },
+        {
             "name": "WBTC",
             "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
         },
@@ -47,6 +43,10 @@
         {
             "name": "Dai",
             "address": "0x6b175474e89094c44da98b954eedeac495271d0f"
+        },
+        {
+            "name": "EYE",
+            "address": "0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
         },
         {
             "name": "EYE/DAI UniV2LP",
@@ -72,16 +72,20 @@
             "address": "0x54e0db02c68015C0Ae98eEE90AB7a183D5B5C719"
         },
         {
+            "name": "Weth",
+            "address": "0xc538029196e03DEDEfe194A128759CcE6127114C"
+        },
+        {
+            "name": "Dai",
+            "address": "0xbD861870526CCB58370d32847c4Ef22FD205967e"
+        },
+        {
             "name": "OXT",
             "address": "0xAcAC7E65ccAd99B1873c2bF52EE6a49237FD7E10"
         },
         {
             "name": "PNK",
             "address": "0x5449e3f7d156Ecf609c915AC6b5B71E99C193927"
-        },
-        {
-            "name": "Weth",
-            "address": "0xc538029196e03DEDEfe194A128759CcE6127114C"
         },
         {
             "name": "Link",
@@ -100,20 +104,16 @@
             "address": "0xc42F9C628596257cdEDCf8B2e3F1b41af5030bba"
         },
         {
-            "name": "Dai",
-            "address": "0xbD861870526CCB58370d32847c4Ef22FD205967e"
-        },
-        {
             "name": "EYE/DAI UniV2LP",
             "address": "0x71DA6349b12E647C26dDF2dD31749c43E4165cfB"
         },
         {
             "name": "SCX/ETH UniV2LP",
-            "address": "0x71D1ce2269Ddf8E7fc7174F47a54dc3b7231e893"
+            "address": "0x83908D25a3C151263d107295DA76c410A63aE201"
         },
         {
             "name": "SCX/EYE UniV2LP",
-            "address": "0xf047ee812b21050186f86106f6cabdfec35366c6"
+            "address": "0x71D1ce2269Ddf8E7fc7174F47a54dc3b7231e893"
         },
         {
             "name": "FLAN/SCX UniV2LP",
