@@ -8981,7 +8981,7 @@
       },
       {
         "contract": "Scarcity",
-        "address": "0xff1614C6B220b24D140e64684aAe39067A0f1CD0",
+        "address": "0x561f042a3ff75cc7710dfd0f428bfdd2dd76bc98",
         "abi": [
           {
             "anonymous": false,
