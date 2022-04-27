@@ -86,8 +86,6 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
 
 interface props {
     networkName: string
-    weth10Address: string
-    scarcityAddress: string
     show: boolean
     setShow: (show: boolean) => void,
     mobile: boolean
@@ -120,7 +118,8 @@ export default function Menu(props: props) {
     );
     const indexOfWeth = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("weth") !== -1);
     const indexOfScarcityAddress = tokenList.findIndex((item) => item.name.toLowerCase().indexOf("scarcity") !== -1);
-    const behodler2Weth = props.weth10Address;
+    const weth10Address = tokenList[indexOfWeth].address;
+    const scxAddress = tokenList[indexOfScarcityAddress].address;
     const [menuItems, setMenuItems] = useState<MenuToken[]>(tokenList.map((t, i) => {
         const token = props.balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
         const showSwirly = token.length === 0
@@ -128,10 +127,10 @@ export default function Menu(props: props) {
         let item: MenuToken = { ...t, image: Images[i], loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
         if (i === indexOfWeth) {
             item.name = 'Eth'
-            item.address = behodler2Weth
+            item.address = weth10Address
         }
         if (i === indexOfScarcityAddress) {
-            item.address = props.scarcityAddress
+            item.address = scxAddress
         }
         return item
     }));
@@ -144,10 +143,10 @@ export default function Menu(props: props) {
             let item: MenuToken = { ...t, image: Images[i], loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
             if (i === indexOfWeth) {
                 item.name = 'Eth'
-                item.address = behodler2Weth
+                item.address = weth10Address
             }
             if (i === indexOfScarcityAddress) {
-                item.address = props.scarcityAddress
+                item.address = scxAddress
             }
             return item
         })
@@ -155,7 +154,7 @@ export default function Menu(props: props) {
         setMenuItems(tokenDropDownList)
     }, [props.balances])
     /*
-    behodler2Weth', 'indexOfScarcityAddress', 'indexOfWeth', 'props.scarcityAddress', and 'tokenList
+    weth10Address', 'indexOfScarcityAddress', 'indexOfWeth', 'scxAddress', and 'tokenList
     */
 
     return <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
@@ -181,7 +180,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
 
     return <Modal
 
-        open={props.open === true}
+        open={props.open}
         onClose={close}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"

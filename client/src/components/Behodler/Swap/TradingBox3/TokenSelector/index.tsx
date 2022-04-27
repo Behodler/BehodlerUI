@@ -59,8 +59,7 @@ export default function TokenSelector(props: props) {
             </Grid>
 
         </Grid>
-        <Menu show={showMenu} weth10Address="0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F"
-            scarcityAddress="0x1b8568fbb47708e9e9d31ff303254f748805bf21"
+        <Menu show={showMenu}
             networkName={props.network}
             setShow={setShowMenu}
             mobile={props.mobile || false}
