@@ -20,5 +20,16 @@
         "LiquidQueue": "0xb5d20efb19bfcda3184a6f606abfe203c83fc4a4",
         "MintingModule": "0x3ae5642BE1277e4CBdd45C82Db5710c234e7Eee5",
         "SluiceGate": "0xcbb60e99976eecf9b9cd31424fca43075a421991"
+    },
+    "ropsten": {
+        "UniswapV2Factory": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+        "EYE": "0x54e0db02c68015C0Ae98eEE90AB7a183D5B5C719",
+        "WETH": "0xc538029196e03DEDEfe194A128759CcE6127114C",
+        "SCX": "0xabCe679E367e3A5bA697eCf668C88c7E4Ec87272",
+        "DAI": "0xbD861870526CCB58370d32847c4Ef22FD205967e",
+        "Reward": "",
+        "LiquidQueue": "",
+        "MintingModule": "",
+        "SluiceGate": ""
     }
 }
