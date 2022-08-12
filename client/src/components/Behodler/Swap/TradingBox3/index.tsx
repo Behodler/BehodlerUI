@@ -534,7 +534,9 @@ export default function (props: {}) {
     const balanceCheck = async (menu: string) => {
         const balanceResults = await FetchBalances(account || "0x0", contracts)
         let balances: TokenBalanceMapping[] = tokenDropDownList.map(t => {
-            let hexBalance = balanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+            let hexBalance = balanceResults
+                ? balanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+                : "0x00"
             let address = t.address
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
             return { address, balance: decimalBalance }
@@ -966,7 +968,7 @@ export default function (props: {}) {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (independentFieldState === "updating dependent field") {
-                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox 
+                if (independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
                     await calculateInputFromOutput()

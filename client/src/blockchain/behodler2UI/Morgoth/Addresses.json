@@ -18,5 +18,15 @@
         "PowersRegistry": "0xF0858a8aFA8655BDfC97837962C719D814f8d95E",
         "ScarcityBridge": "0x71E472B7E0CE360b5d3D7890Ccd61B7120B8e37B",
         "SetSilmaril": "0x86a17d63Dee64fe9eff56C6E2221cd6da9e6Fc7d"
+    },
+    "ropsten": {
+        "AddTokenToBehodler": "",
+        "Angband": "0x2827b09243A88FA7590311eB5f6Adc7fBa665fb0",
+        "ConfigureScarcity": "",
+        "IronCrown": "",
+        "Migrator": "",
+        "PowersRegistry": "",
+        "ScarcityBridge": "",
+        "SetSilmaril": "0x86a17d63Dee64fe9eff56C6E2221cd6da9e6Fc7d"
     }
 }

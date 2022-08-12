@@ -62,7 +62,76 @@
         }
     ],
     "morden": [],
-    "ropsten": [],
+    "ropsten": [
+        {
+            "name": "Scarcity",
+            "address": "0xabCe679E367e3A5bA697eCf668C88c7E4Ec87272"
+        },
+        {
+            "name": "EYE",
+            "address": "0x54e0db02c68015C0Ae98eEE90AB7a183D5B5C719"
+        },
+        {
+            "name": "Weth",
+            "address": "0xc538029196e03DEDEfe194A128759CcE6127114C"
+        },
+        {
+            "name": "Dai",
+            "address": "0xbD861870526CCB58370d32847c4Ef22FD205967e"
+        },
+        {
+            "name": "OXT",
+            "address": "0xAcAC7E65ccAd99B1873c2bF52EE6a49237FD7E10"
+        },
+        {
+            "name": "PNK",
+            "address": "0x5449e3f7d156Ecf609c915AC6b5B71E99C193927"
+        },
+        {
+            "name": "Link",
+            "address": "0xb98300d08A10C234766f717221637A4a2ba79118"
+        },
+        {
+            "name": "WeiDai",
+            "address": "0xbc4aBD313aA8E3273399741Cc89D2Eb332060231"
+        },
+        {
+            "name": "Loom",
+            "address": "0xAE63953903847ec23D5132fE79F64072f486051e"
+        },
+        {
+            "name": "Maker",
+            "address": "0xc42F9C628596257cdEDCf8B2e3F1b41af5030bba"
+        },
+        {
+            "name": "EYE/DAI UniV2LP",
+            "address": "0x71DA6349b12E647C26dDF2dD31749c43E4165cfB"
+        },
+        {
+            "name": "SCX/ETH UniV2LP",
+            "address": "0x83908D25a3C151263d107295DA76c410A63aE201"
+        },
+        {
+            "name": "SCX/EYE UniV2LP",
+            "address": "0x71D1ce2269Ddf8E7fc7174F47a54dc3b7231e893"
+        },
+        {
+            "name": "FLAN/SCX UniV2LP",
+            "address": "0x019968F558225EDBcd4F7D50e9b9B58BB2c6b568"
+        },
+        {
+            "name": "EYE/DAI SushiLP",
+            "address": "0x83e618C2e4c660D9084245eABab303370767EaDe"
+        },
+        {
+            "name": "EYE/SCX SushiLP",
+            "address": "0x5011d2956B67fc2735BB5AAA44d9320273e44fA3"
+        },
+        {
+            "name": "EYE/WETH SushiLP",
+            "address": "0xCd62cc62D463A63382Fc1b934Bf047bEc76696fB"
+        }
+    ],
     "rinkeby": [],
     "goerli": [],
     "kovan": [],

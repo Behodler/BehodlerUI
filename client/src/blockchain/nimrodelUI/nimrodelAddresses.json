@@ -8,5 +8,10 @@
         "Rivulet": "0x4276950fd9cd0251ac947ca910b6c2F0874222dE",
         "Celeborn": "main",
         "Miruvor": "naughty"
+    },
+    "ropsten": {
+        "Rivulet": "",
+        "Celeborn": "",
+        "Miruvor": ""
     }
 }

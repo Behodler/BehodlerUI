@@ -15,7 +15,7 @@ import { BankEffects } from './observables/WeiDaiBank'
 import ERC20JSON from './behodlerUI/ERC20.json'
 import { PyrotokenEffects } from './observables/PyrotokenEffects'
 
-import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
+// import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
@@ -39,6 +39,7 @@ import UniswapV2FactoryJSON from './liquidQueue/UniswapV2Factory.json'
 import LiquidQueueAddresses from './liquidQueue/Addresses.json'
 import UniswapV2Factory from './contractInterfaces/liquidQueue/UniswapV2Factory'
 import { UniswapV2Effects } from './observables/UniswapEffects'
+import { getBehodlerABIAddressMapping } from "./abiAddressMapping";
 
 interface AccountObservable {
     account: string
@@ -103,7 +104,7 @@ class ethereumAPI {
             '1337': 'development'
         }
         // if we want to add more chains, add their ids and names in this.networkMapping and add their names to the array below
-        this.contractsAvailable = ['main']
+        this.contractsAvailable = ['main', 'ropsten']
         this.newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
     }
 
@@ -360,8 +361,9 @@ class ethereumAPI {
     }
 
     private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
+        const BehodlerContractMappings = getBehodlerABIAddressMapping(network)
         let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
-        console.info(`BehodlerContract mappings ${JSON.stringify(BehodlerContractMappings, null, 4)}`)
+        // console.info(`BehodlerContract mappings for ${network} ${JSON.stringify(BehodlerContractMappings, null, 4)}`)
 
         let mappingsList = BehodlerContractMappings.filter((item) => item.name == network)[0].list
         const keys = Object.keys(behodlerContracts).filter((key) => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
@@ -383,7 +385,7 @@ class ethereumAPI {
         behodler2 = deployment.methods
         behodler2.address = addresses.behodler
 
-        const wethAddress = await behodler2.Weth().call()
+        const wethAddress = network === 'ropsten' ? '0xc538029196e03DEDEfe194A128759CcE6127114C' : await behodler2.Weth().call()
         const wethDeployment = await this.deployBehodlerContract(Weth10JSON.abi, wethAddress)
         const Weth10: Weth = wethDeployment.methods
         Weth10.address = wethAddress
