@@ -431,6 +431,36 @@ export default function (props: {}) {
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
 
+    const getTokensInfo = useCallback(async () => {
+        const liquidityReceiver = walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver
+        const lachesis = walletContextProps.contracts.behodler.Behodler2.Lachesis
+
+        const tokensInfo = Promise.all(tokenListJSON[walletContextProps.networkName].map(async ({ address, name }) => {
+            const pyroAddress = await liquidityReceiver.baseTokenMapping(address).call()
+            const cut = await lachesis.cut(address).call()
+            const token = await API.getToken(address, walletContextProps.networkName)
+            const tokenBalanceOnBehodler = await token.balanceOf(behodlerAddress).call({ from: account })
+
+            return {
+                name,
+                address,
+                pyroAddress,
+                tradable: cut[0],
+                burnable: cut[1],
+                token,
+                tokenBalanceOnBehodler,
+            }
+        }))
+
+        console.info('tokensInfo', await tokensInfo);
+    }, [behodlerAddress])
+
+    useEffect(() => {
+        if (behodlerAddress) {
+            getTokensInfo()
+        }
+    }, [behodlerAddress])
+
     const account = acountAddress || "0x0"
     const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
@@ -566,8 +596,8 @@ export default function (props: {}) {
     }, 600)
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
-    const [inputAddress, setInputAddress] = useLoggedState<string>('0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F')
-    const [outputAddress, setOutputAddress] = useLoggedState<string>('0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12')
+    const [inputAddress, setInputAddress] = useLoggedState<string>(tokenListJSON[networkName][0].address)
+    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokenListJSON[networkName][0].pyro)
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
     const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
