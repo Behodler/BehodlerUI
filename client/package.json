@@ -67,7 +67,7 @@
         "deploy": "docker-compose up build && docker-compose up S3",
         "devserver": "docker-compose up --remove-orphans dev",
         "ganache": "docker-compose up --remove-orphans -d ganache",
-        "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans  -d ganache && npm start",
+        "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans -d ganache && npm start",
         "build:package": "tsdx build --entry src/components/BehodlerUIPyrotokens/index.ts --tsconfig package.tsconfig.json --transpileOnly",
         "prepare": "yarn build:package"
     },
