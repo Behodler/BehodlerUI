@@ -45,7 +45,12 @@ export const TokenList: ImagePair[] =
         { baseToken: { image: eyedai, name: "EYE/DAI UniV2LP" }, pyroToken: { image: pyroEYEDAI, name: 'PyroEYE/DAI UniV2LP' } },
         { baseToken: { image: scxeth, name: "SCX/ETH UniV2LP" }, pyroToken: { image: pyroScxeth, name: 'PyroSCX/ETH UniV2LP' } },
         { baseToken: { image: scxeye, name: "SCX/EYE UniV2LP" }, pyroToken: { image: pyroScxeye, name: 'PyroSCX/EYE UniV2LP' } },
-        { baseToken: { image: eye, name: "EYE" }, pyroToken: { image: pyroEYEDAI, name: 'pyroEYEDAI' } }
+        { baseToken: { image: Weth, name: "Weth" }, pyroToken: { image: pyroWETH, name: 'pyroWeth' } },
+        { baseToken: { image: Weth, name: "MockWeth" }, pyroToken: { image: pyroWETH, name: 'pyroMockWeth' } },
+        { baseToken: { image: eye, name: "MockToken1" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken1' } },
+        { baseToken: { image: eye, name: "MockToken2" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken2' } },
+        { baseToken: { image: eye, name: "MockToken3" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken3' } },
+        { baseToken: { image: eye, name: "MockToken4" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken4' } },
     ]
 
 export const Logos: ImageNamePair[] = [
