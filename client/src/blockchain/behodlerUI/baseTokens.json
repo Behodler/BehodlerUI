@@ -1,6 +1,11 @@
 {
     "main": [
         {
+            "name": "Weth",
+            "address": "0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F",
+            "pyro": "0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12"
+        },
+        {
             "name": "Scarcity",
             "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
             "pyro": ""
@@ -10,7 +15,6 @@
             "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
             "pyro": ""
         },
-
         {
             "name": "OXT",
             "address": "0x4575f41308ec1483f3d399aa9a2826d74da13deb",
@@ -20,11 +24,6 @@
             "name": "PNK",
             "address": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d",
             "pyro": "0xBe210a9573d2654AFe04488C2556554466862367"
-        },
-        {
-            "name": "Weth",
-            "address": "0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F",
-            "pyro": "0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12"
         },
         {
             "name": "Link",
@@ -59,44 +58,39 @@
     "kovan": [],
     "private": [
         {
-            "name": "MockToken1",
-            "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca"
-        },
-        {
-            "name": "MockToken2",
-            "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D"
-        },
-        {
-            "name": "dai",
-            "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE"
-        },
-        {
-            "name": "MockWeth",
-            "address": "0x47899884D24ac282606CB5600BF955e3Bccc9581"
-        },
-        {
-            "name": "MockToken3",
-            "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135"
-        },
-        {
-            "name": "weidai",
-            "address": "0x8a16E29CaC5e50c9aa2a497589a02004e83e10e2"
-        },
-        {
-            "name": "MockToken4",
-            "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06"
+            "name": "Weth",
+            "address": "0x57B370AA3F86F0F40125ed1574Ad2345D15146A4",
+            "pyro": "0x316cbf146A4cC506ebEb0FD323dE6f4CD722D44f"
         },
         {
             "name": "Scarcity",
-            "address": "0x1c0fFf2FEE9e686666d924305524c2A58709e77e"
+            "address": "0x1c0fFf2FEE9e686666d924305524c2A58709e77e",
+            "pyro": ""
         },
         {
-            "name": "FeeOnTransferToken",
-            "address": "0xC7A6abf7d8843453A6EDdf44CfD7Eb3A8A20d417"
+            "name": "Dai",
+            "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE",
+            "pyro": ""
         },
         {
-            "name": "WETH10",
-            "address": "0x57B370AA3F86F0F40125ed1574Ad2345D15146A4"
+            "name": "MockToken1",
+            "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca",
+            "pyro": "0x9c67378E00b97c454f5249E064D32F2a2D52301D"
+        },
+        {
+            "name": "MockToken2",
+            "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D",
+            "pyro": "0xd56d64baB1D9444881630373760C2D1c57E8204D"
+        },
+        {
+            "name": "MockToken3",
+            "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135",
+            "pyro": "0xA2aA6bF5D25c73c72b767d19903cBf626294766e"
+        },
+        {
+            "name": "MockToken4",
+            "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06",
+            "pyro": "0xDb5181Dbeb2BfB1176F78be05B7902998B99f462"
         }
     ]
 }
