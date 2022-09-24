@@ -57,8 +57,6 @@
         "web3": "^1.5.2"
     },
     "scripts": {
-        "docker:start": "react-scripts start",
-        "docker:build": "rm -rf build && npx react-scripts build",
         "install:docker": "sudo rm -rf node_modules/* && sudo rm -f yarn.lock && docker-compose up install",
         "start": "docker-compose up --remove-orphans  -d client",
         "restart": "npm run stop && npm start",
@@ -68,6 +66,9 @@
         "devserver": "docker-compose up --remove-orphans dev",
         "ganache": "docker-compose up --remove-orphans -d ganache",
         "start:dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans -d ganache && npm start",
+        "docker:ganache-dev": "rm -rf behodlerDB && cp -r behodlerDB_orig behodlerDB && cp src/temp/BehodlerABIAddressMappingDev.json src/temp/BehodlerABIAddressMapping.json && docker-compose up --remove-orphans -d ganache",
+        "docker:start": "react-scripts start",
+        "docker:build": "rm -rf build && npx react-scripts build",
         "build:package": "tsdx build --entry src/components/BehodlerUIPyrotokens/index.ts --tsconfig package.tsconfig.json --transpileOnly",
         "prepare": "yarn build:package"
     },
