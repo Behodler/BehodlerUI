@@ -1,7 +1,10 @@
-import { Grid, makeStyles, Theme } from '@material-ui/core'
-import * as React from 'react'
+import React, {useContext} from 'react'
+import {Grid, makeStyles, Theme} from '@material-ui/core'
+
 import Menu from './Menu'
-import { TokenBalanceMapping } from '../types'
+import {TokenBalanceMapping} from '../types'
+import {WalletContext} from "../../../../Contexts/WalletStatusContext";
+
 const useStyles = (scale) => makeStyles((theme: Theme) => ({
     root: {
         position: 'relative',
@@ -42,9 +45,13 @@ interface props {
 
 export default function TokenSelector(props: props) {
     const [showMenu, setShowMenu] = React.useState<boolean>(false)
+    const walletContextProps = useContext(WalletContext);
+
+    const weth10Address = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
+    const scarcityAddress = walletContextProps.contracts.behodler.Scarcity.address;
 
     const classes = useStyles(props.scale)()
-    return <div className={classes.root} >
+    return <div className={classes.root}>
         <Grid
             className={classes.outerCircle}
             container
@@ -55,13 +62,17 @@ export default function TokenSelector(props: props) {
         >
             <Grid item>
                 <div className={classes.innerCircle}>
-                    <img alt="token" src={props.tokenImage} width={(props.pyro?100:80) * props.scale} />
+                    <img alt="token"
+                         src={props.tokenImage}
+                         width={(props.pyro ? 100 : 80) * props.scale} />
                 </div>
             </Grid>
 
         </Grid>
-        <Menu show={showMenu} weth10Address="0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F"
-            scarcityAddress="0x1b8568fbb47708e9e9d31ff303254f748805bf21"
+        <Menu
+            show={showMenu}
+            weth10Address={weth10Address}
+            scarcityAddress={scarcityAddress}
             networkName={props.network}
             setShow={setShowMenu}
             mobile={props.mobile || false}
