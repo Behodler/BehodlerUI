@@ -8,6 +8,7 @@
     "development": {
         "behodler": "0x91C7817988d0af2F652e37438b636b9e6799895e",
         "lachesis": "0xabDC9aa736207f567D5bc51983Ae637e48d5139E",
-        "liquidityReceiver": "0xa237d6aB67f1c6E58Ad2A2d954e0446e5F2f0b3b"
+        "liquidityReceiver": "0xa237d6aB67f1c6E58Ad2A2d954e0446e5F2f0b3b",
+        "multicall2": "0x4f3dfa59F822B0201E0DedF2d60B0A559c88e8Ef"
     }
 }
