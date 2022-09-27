@@ -32,7 +32,7 @@
         "ajv": "^6.8.1",
         "bignumber.js": "^8.0.1",
         "connected-react-router": "^6.3.2",
-        "ethereum-multicall": "^2.8.0",
+        "ethereum-multicall": "^2.15.0",
         "ethereumjs-util": "^7.1.0",
         "fork-ts-checker-webpack-plugin": "^0.2.10",
         "handy-redis": "^2.2.1",
@@ -70,7 +70,8 @@
         "docker:start": "react-scripts start",
         "docker:build": "rm -rf build && npx react-scripts build",
         "build:package": "tsdx build --entry src/components/BehodlerUIPyrotokens/index.ts --tsconfig package.tsconfig.json --transpileOnly",
-        "prepare": "yarn build:package"
+        "prepare": "yarn build:package",
+        "truffle:dev-deploy-multicall": "truffle migrate --network development --f 4 --to 4"
     },
     "devDependencies": {
         "@behodler/sdk": "0.1.1",
