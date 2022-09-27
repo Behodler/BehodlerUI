@@ -61,7 +61,8 @@ export const injected = new InjectedConnector({
         1666600000, // harmony
         1666700000, // harmony testnet
         66, // okex testnet
-        65 // okex testnet
+        65, // okex testnet
+        1337, // ganache local testnet
     ]
 })
 
