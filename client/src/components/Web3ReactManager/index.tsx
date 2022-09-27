@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
-import { network } from '../../connectors'
+import { network, injected } from '../../connectors'
 import { NetworkContextName } from '../Contexts/Web3ContextProvider'
-import { injected } from '../../connectors'
 import Loader from './Loader'
 
 const MessageWrapper = styled.div`
