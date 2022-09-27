@@ -431,36 +431,6 @@ export default function (props: {}) {
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
 
-    const getTokensInfo = useCallback(async () => {
-        const liquidityReceiver = walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver
-        const lachesis = walletContextProps.contracts.behodler.Behodler2.Lachesis
-
-        const tokensInfo = Promise.all(tokenListJSON[walletContextProps.networkName].map(async ({ address, name }) => {
-            const pyroAddress = await liquidityReceiver.baseTokenMapping(address).call()
-            const cut = await lachesis.cut(address).call()
-            const token = await API.getToken(address, walletContextProps.networkName)
-            const tokenBalanceOnBehodler = await token.balanceOf(behodlerAddress).call({ from: account })
-
-            return {
-                name,
-                address,
-                pyroAddress,
-                tradable: cut[0],
-                burnable: cut[1],
-                token,
-                tokenBalanceOnBehodler,
-            }
-        }))
-
-        console.info('tokensInfo', await tokensInfo);
-    }, [behodlerAddress])
-
-    useEffect(() => {
-        if (behodlerAddress) {
-            getTokensInfo()
-        }
-    }, [behodlerAddress])
-
     const account = acountAddress || "0x0"
     const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
