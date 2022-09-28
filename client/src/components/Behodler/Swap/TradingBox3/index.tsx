@@ -431,36 +431,6 @@ export default function (props: {}) {
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
 
-    const getTokensInfo = useCallback(async () => {
-        const liquidityReceiver = walletContextProps.contracts.behodler.Behodler2.LiquidityReceiver
-        const lachesis = walletContextProps.contracts.behodler.Behodler2.Lachesis
-
-        const tokensInfo = Promise.all(tokenListJSON[walletContextProps.networkName].map(async ({ address, name }) => {
-            const pyroAddress = await liquidityReceiver.baseTokenMapping(address).call()
-            const cut = await lachesis.cut(address).call()
-            const token = await API.getToken(address, walletContextProps.networkName)
-            const tokenBalanceOnBehodler = await token.balanceOf(behodlerAddress).call({ from: account })
-
-            return {
-                name,
-                address,
-                pyroAddress,
-                tradable: cut[0],
-                burnable: cut[1],
-                token,
-                tokenBalanceOnBehodler,
-            }
-        }))
-
-        console.info('tokensInfo', await tokensInfo);
-    }, [behodlerAddress])
-
-    useEffect(() => {
-        if (behodlerAddress) {
-            getTokensInfo()
-        }
-    }, [behodlerAddress])
-
     const account = acountAddress || "0x0"
     const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
@@ -501,7 +471,7 @@ export default function (props: {}) {
     }
 
     const balanceCheck = async (menu: string) => {
-        const baseBalanceResults = await FetchBalances(account || "0x0", baseTokenImages)
+        const baseBalanceResults = await FetchBalances(account || "0x0", baseTokenImages, networkName)
         let baseBalances: TokenBalanceMapping[] = baseTokenImages.map(t => {
             let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
@@ -519,7 +489,7 @@ export default function (props: {}) {
             setBaseTokenBalances(ethUpdated)
         }
 
-        const pyroBalanceResults = await FetchBalances(account || "0x0", pyroTokenImages)
+        const pyroBalanceResults = await FetchBalances(account || "0x0", pyroTokenImages, networkName)
         let pyroBalances: TokenBalanceMapping[] = pyroTokenImages.map(t => {
             let hexBalance = pyroBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
