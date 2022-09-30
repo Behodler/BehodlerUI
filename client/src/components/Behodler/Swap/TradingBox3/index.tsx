@@ -643,7 +643,8 @@ export default function (props: {}) {
             const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
             const pyroToken = await API.getPyroToken(inputAddress, networkName)
             const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            const bigSpot = BigInt(intSpot)
+            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot: 0)
+            // const bigSpot = BigInt(intSpot)
             const spotForPyro = (redeemRate * bigSpot) / ONE
             const inputSpot = parseFloat(spotForPyro.toString()) / Factor
             setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
