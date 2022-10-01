@@ -630,7 +630,7 @@ export default function (props: {}) {
             const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
             const pyroToken = await API.getPyroToken(outputAddress, networkName)
             const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot: 0)
+            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
             const spotForPyro = (redeemRate * bigSpot) / (ONE)
             const outputSpot = parseFloat(spotForPyro.toString()) / Factor
             setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
@@ -643,7 +643,7 @@ export default function (props: {}) {
             const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
             const pyroToken = await API.getPyroToken(inputAddress, networkName)
             const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot: 0)
+            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
             // const bigSpot = BigInt(intSpot)
             const spotForPyro = (redeemRate * bigSpot) / ONE
             const inputSpot = parseFloat(spotForPyro.toString()) / Factor
@@ -1108,7 +1108,7 @@ export default function (props: {}) {
                                         scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
                                 <Grid item onClick={() => setFlipClicked(true)} >
-                                    <img width={100} src={swapping? animatedLogo.image : staticLogo.image} className={classes.pyroShieldMobileAnimated} />
+                                    <img width={100} src={swapping ? animatedLogo.image : staticLogo.image} className={classes.pyroShieldMobileAnimated} />
 
                                 </Grid>
                                 <Grid item>
@@ -1284,7 +1284,7 @@ export default function (props: {}) {
                                     <Grid item>
                                         <div className={classes.pyroShieldContainer} >
                                             <Tooltip title={swapping ? "" : "FLIP TOKEN ORDER"} arrow>
-                                                <img width={160} src={swapping? animatedLogo.image : staticLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} />
+                                                <img width={160} src={swapping ? animatedLogo.image : staticLogo.image} className={classes.pyroShield} onClick={() => setFlipClicked(true)} />
 
                                             </Tooltip>
                                         </div>
