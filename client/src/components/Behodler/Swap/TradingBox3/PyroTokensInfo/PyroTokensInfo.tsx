@@ -86,11 +86,11 @@ export function PyroTokensInfo() {
                     </StyledModalP>
 
                     <StyledModalP>
-                        For instance, if there are 1000 BAT held in reserve and 100 PyroBAT circulating
+                        For instance, if there are 1000 LINK held in reserve and 100 PyroBAT circulating
                         then the redeem rate is <NoWrap>1000 / 100 = 10</NoWrap>.
                         <br />
-                        This means if I purchase 1 PyroBAT, I require 10 BAT. Similarly, if I redeem
-                        4 PyroBAT, I will receive 40 BAT.
+                        This means if I purchase 1 PyroBAT, I require 10 LINK. Similarly, if I redeem
+                        4 PyroBAT, I will receive 40 LINK.
                     </StyledModalP>
 
                     <StyledLearnMoreLink
