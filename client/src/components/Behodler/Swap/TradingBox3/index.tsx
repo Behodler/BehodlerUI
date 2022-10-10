@@ -1,10 +1,8 @@
-import * as React from 'react'
-import { useEffect, useCallback, useState, useContext } from 'react'
+import React, { useEffect, useCallback, useState, useContext } from 'react'
 import { Button, Box, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { DebounceInput } from 'react-debounce-input';
 import { useDebounce } from '@react-hook/debounce'
-// import { ONE } from '@behodler/sdk'
 
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
@@ -64,19 +62,19 @@ const imageLoader = (network: string) => {
     return [base, pyro, dai]
 }
 
-export default function (props: {}) {
+export default function () {
     const classes = useStyles();
     const inputClasses = inputStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
-    const { chainId, account: acountAddress } = useActiveWeb3React()
+    const { chainId, account: accountAddress, active } = useActiveWeb3React()
 
     const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
 
-    const account = acountAddress || "0x0"
+    const account = accountAddress || "0x0"
     const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
@@ -151,10 +149,10 @@ export default function (props: {}) {
     useEffect(() => {
         const bigBlock = BigInt(block)
         const two = BigInt(2)
-        if (bigBlock % two === BigInt(0)) {
+        if (bigBlock % two === BigInt(0) && walletContextProps.initialized) {
             balanceCallback(block)
         }
-    }, [block])
+    }, [block, walletContextProps.initialized])
 
     const fetchBaseToken = (address: string): TokenListItem => baseTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
 
@@ -178,7 +176,7 @@ export default function (props: {}) {
             return false
         return pendingTXQueue[0]
     }
-    if (block === "") {
+    if (walletContextProps.initialized && block === "") {
         API.addBlockWatcher(setBlock)
     }
     const queueUpdateCallback = useCallback(async (outstanding: number) => {
@@ -297,8 +295,10 @@ export default function (props: {}) {
     }, [inputAddress, outputAddress, daiAddress])
 
     useEffect(() => {
-        spotPriceCallback()
-    }, [inputAddress, outputAddress, daiAddress])
+        if (walletContextProps.initialized) {
+            spotPriceCallback()
+        }
+    }, [inputAddress, outputAddress, daiAddress, walletContextProps.initialized])
 
 
     const [swapClicked, setSwapClicked] = useLoggedState<boolean>(false)
@@ -359,10 +359,15 @@ export default function (props: {}) {
         }
     }, [inputEnabled, inputAddress, outputAddress])
 
-    const currentTokenEffects = API.generateNewEffects(inputAddress, account, isInputEth)
-
+    const currentTokenEffects = walletContextProps.initialized
+        ? API.generateNewEffects(inputAddress, account, isInputEth)
+        : null
 
     useEffect(() => {
+        if (!currentTokenEffects) {
+            return;
+        }
+
         const balance = formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)
         if (swapState === SwapState.IMPOSSIBLE)
             setImpliedExchangeRate("")
@@ -389,7 +394,7 @@ export default function (props: {}) {
             subscription.unsubscribe()
         }
 
-    }, [inputAddress, outputAddress, swapState, independentFieldState])
+    }, [inputAddress, outputAddress, swapState, independentFieldState, currentTokenEffects])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
@@ -720,6 +725,14 @@ export default function (props: {}) {
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
     const animatedLogo = Logos.filter(l => l.name === 'PyroAnimated')[0]
 
+    if (!(walletContextProps.initialized && accountAddress && active && chainId)) {
+        return (
+            <Box justifyContent="center" alignItems="center" display="flex" height="100%" color="#ddd">
+                Please connect your wallet to use the app
+            </Box>
+        );
+    }
+
     return (
         <Box className={classes.root}>
 
@@ -735,7 +748,7 @@ export default function (props: {}) {
                     <Grid
                         container
                         direction="column"
-                        justify="center"
+                        justifyContent="center"
                         alignItems="center"
                         className={classes.mobileGrid}
                         spacing={3}
@@ -744,7 +757,7 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="row"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
@@ -766,14 +779,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justify="flex-start"
+                                justifyContent="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilFrom' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"FROM"} /></Grid>
                                         <Grid item>
@@ -804,14 +817,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justify="flex-start"
+                                justifyContent="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilTo' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"TO"} /></Grid>
                                         <Grid item>
@@ -856,7 +869,7 @@ export default function (props: {}) {
                         <Grid item>
                             <Grid container
                                 direction="column"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 spacing={2}
                                 className={classes.Info}
@@ -875,7 +888,7 @@ export default function (props: {}) {
 
                 <Grid container
                     direction="column"
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                     className={classes.fieldGrid}
                     key="desktopContainer"
@@ -884,7 +897,7 @@ export default function (props: {}) {
                         <Grid
                             container
                             direction="row"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={3}
                         >
@@ -892,7 +905,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridInput_grid"}
@@ -919,7 +932,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="space-between"
+                                    justifyContent="space-between"
                                     alignItems="center"
                                     id="central-selector-monster-grid"
                                 >
@@ -944,7 +957,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridOutput_grid"}
@@ -997,7 +1010,7 @@ export default function (props: {}) {
                     <Grid item>
                         <Grid container
                             direction="column"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={2}
                             className={classes.Info}
@@ -1034,7 +1047,7 @@ function BalanceContainer(props: { estimate: string, balance: string, token: str
     return <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         spacing={1}
         className={classes.BalanceContainer}
@@ -1059,7 +1072,7 @@ function Balance(props: { token: string, balance: string, setValue: (v: string) 
     return <Grid
         container
         direction="row"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="center"
 
     >
