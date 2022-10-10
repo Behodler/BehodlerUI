@@ -35,17 +35,22 @@ function WalletContextProvider(props: { children: any }) {
     const [networkName, setNetworkName] = useState<string>("")
     const [initialized, setInitialized] = useState<boolean>(false)
     const { active, chainId, account,  connector } = useActiveWeb3React()
+    const [subscribed, setSubscribed] = useState(true)
 
     const initializeWeb3Callback = useCallback(async () => {
         if (chainId && connector) {
             const web3Provider = await connector.getProvider()
             API.web3 = new Web3(web3Provider)
-            setWeb3(API.web3)
+
+            if (subscribed) {
+                setWeb3(API.web3)
+            }
         }
-    }, [chainId, connector])
+    }, [chainId, connector, subscribed])
 
     useEffect(() => {
         initializeWeb3Callback()
+        return () => setSubscribed(false)
     }, [active, chainId, account])
 
     const initializeContractsCallback = useCallback(async () => {

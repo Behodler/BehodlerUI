@@ -212,7 +212,7 @@ function ExtendedTextField(props: props) {
             <Dialog fullWidth={true} open={dialogOpen} onClose={() => setDialogOpen(false)}>
                 <DialogTitle>Select a token</DialogTitle>
                 <Container maxWidth="xl">
-                    <Grid container spacing={2} alignItems="center" justify="flex-start" direction="row">
+                    <Grid container spacing={2} alignItems="center" justifyContent="flex-start" direction="row">
                         <Grid item>
                             <Search />
                         </Grid>
@@ -301,7 +301,7 @@ function ExtendedTextField(props: props) {
                     </Box>
                     {props.liquidityMessage ? (
                         <Grid item>
-                            <Grid container direction="row" justify="space-between" alignItems="flex-start">
+                            <Grid container direction="row" justifyContent="space-between" alignItems="flex-start">
                                 <Grid item>
                                     <Typography variant="caption" className={classes.subfields}>
                                         Scarcity to mint

@@ -199,7 +199,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
             <Grid
                 container
                 direction="column"
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="flex-start"
                 spacing={3}
                 className={classes.grid}
@@ -224,7 +224,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="space-between"
+                                    justifyContent="space-between"
                                     alignItems="center"
                                     spacing={1}
                                 >

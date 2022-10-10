@@ -35,7 +35,7 @@ function LoadingComponent(props: props) {
 					<Grid
 						container
 						direction="column"
-						justify="center"
+						justifyContent="center"
 						alignItems="center"
 						spacing={2}
 					>
@@ -54,13 +54,13 @@ function LoadingComponent(props: props) {
 							<Grid
 								container
 								direction="row"
-								justify="center"
+								justifyContent="center"
 								alignItems="center"
 								alignContent="center">
 								<Grid item>
 									<Grid container
 										direction="column"
-										justify="flex-start"
+										justifyContent="flex-start"
 										alignItems="center"
 										spacing={3}
 									>
