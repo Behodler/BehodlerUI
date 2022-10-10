@@ -114,8 +114,7 @@ export default function () {
             setSwapping(true)
         else setSwapping(false)
     }
-
-    const balanceCheck = async (menu: string) => {
+    const balanceCallback = useCallback(async () => {
         const baseBalanceResults = await FetchBalances(account || "0x0", baseTokenImages, networkName)
         let baseBalances: TokenBalanceMapping[] = baseTokenImages.map(t => {
             let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
@@ -145,14 +144,13 @@ export default function () {
         if (stringified !== JSON.stringify(pyroTokenBalances) && subscribed) {
             setPyroTokenBalances(pyroBalances)
         }
-    }
-    const balanceCallback = useCallback(async (menu: string) => await balanceCheck(menu), [block])
+    }, [block, walletContextProps.initialized, subscribed])
 
     useEffect(() => {
         const bigBlock = BigInt(block)
         const two = BigInt(2)
         if (bigBlock % two === BigInt(0) && walletContextProps.initialized) {
-            balanceCallback(block)
+            balanceCallback()
         }
         return () => setSubscribed(false)
     }, [block, walletContextProps.initialized])
@@ -416,6 +414,30 @@ export default function () {
     const mintHashBack = hashBack(TXType.mintPyro)
     const redeemHashBack = hashBack(TXType.redeemPyro)
 
+    const mintOrRedeem = useCallback(async (
+        contract,
+        method,
+        options,
+        valueInWei,
+        hashBack,
+    ) => {
+        return new Promise((resolve, reject) => {
+            contract[method](valueInWei)
+                .estimateGas(options, async function (error, gas) {
+                    if (error) console.error("gas estimation error: " + error);
+                    options.gas = gas;
+                    const txResult = await contract[method](valueInWei)
+                        .send(options, hashBack)
+                        .catch(err => {
+                            console.log(`${contract}.${method} failed`, err)
+                            reject(err)
+                        })
+                    resolve(txResult)
+                })
+        })
+
+    }, [])
+
     const swap2Callback = useCallback(async () => {
         const inputValWei = API.toWei(inputValue)
         const primaryOptions = { from: account, gas: undefined };
@@ -425,48 +447,18 @@ export default function () {
         if (swapClicked) {
             const pyroTokenAddress = minting ? outputAddress : inputAddress
             const pyroToken = await API.getPyroToken(pyroTokenAddress, networkName)
+            const mintContract = isInputEth ? pyroWethProxy : pyroToken
+            const redeemContract = isOutputEth ? pyroWethProxy : pyroToken
+            const options = minting && isInputEth ? ethOptions : primaryOptions
+
             if (minting) {
-                if (isInputEth) {
-                    pyroWethProxy.mint(inputValWei)
-                        .estimateGas(ethOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            ethOptions.gas = gas;
-                            pyroWethProxy.mint(inputValWei)
-                                .send(ethOptions, mintHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                } else {
-                    pyroToken.mint(inputValWei)
-                        .estimateGas(primaryOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            ethOptions.gas = gas;
-                            pyroToken.mint(inputValWei)
-                                .send(primaryOptions, mintHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                }
+                await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
             } else {
-                if (isOutputEth) {
-                    pyroWethProxy.redeem(inputValWei)
-                        .estimateGas(primaryOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            primaryOptions.gas = gas;
-                            pyroWethProxy.redeem(inputValWei)
-                                .send(primaryOptions, redeemHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                }
-                else {
-                    pyroToken.redeem(inputValWei)
-                        .estimateGas(primaryOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            primaryOptions.gas = gas;
-                            pyroToken.redeem(inputValWei)
-                                .send(primaryOptions, redeemHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                }
+                await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
             }
+
+            setInputValue('')
+            setOutputValue('')
         }
         setSwapClicked(false)
     }, [swapClicked])
