@@ -95,8 +95,6 @@ export default function () {
     const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
     //Estimating SCX from a given number of input tokens is
 
-    const [subscribed, setSubscribed] = useState(true)
-
     useEffect(() => {
         const results = imageLoader(networkName)
         setBaseTokenImages(results[0] as TokenListItem[])
@@ -129,7 +127,7 @@ export default function () {
             }
             return b
         })
-        if (JSON.stringify(ethUpdated) !== JSON.stringify(baseTokenBalances) && subscribed) {
+        if (JSON.stringify(ethUpdated) !== JSON.stringify(baseTokenBalances)) {
             setBaseTokenBalances(ethUpdated)
         }
 
@@ -141,10 +139,10 @@ export default function () {
             return { address, balance: decimalBalance, name: t.name }
         })
         const stringified = JSON.stringify(pyroBalances)
-        if (stringified !== JSON.stringify(pyroTokenBalances) && subscribed) {
+        if (stringified !== JSON.stringify(pyroTokenBalances)) {
             setPyroTokenBalances(pyroBalances)
         }
-    }, [block, walletContextProps.initialized, subscribed])
+    }, [block, walletContextProps.initialized])
 
     useEffect(() => {
         const bigBlock = BigInt(block)
@@ -152,7 +150,6 @@ export default function () {
         if (bigBlock % two === BigInt(0) && walletContextProps.initialized) {
             balanceCallback()
         }
-        return () => setSubscribed(false)
     }, [block, walletContextProps.initialized])
 
     const fetchBaseToken = (address: string): TokenListItem => baseTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
