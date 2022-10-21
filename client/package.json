@@ -15,7 +15,7 @@
     "repository": "git@github.com:Behodler/BehodlerUI.git",
     "module": "dist/pyrotokens-legacy.esm.js",
     "dependencies": {
-        "@behodler/dev-env": "0.0.3",
+        "@behodler/dev-env": "0.1.2",
         "@ethereumjs/vm": "5.5.3",
         "@ethersproject/abi": "^5.4.1",
         "@ethersproject/providers": "^5.4.5",
