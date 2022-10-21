@@ -1359,6 +1359,11 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
+"@behodler/dev-env@0.0.3":
+  version "0.0.3"
+  resolved "https://npm.pkg.github.com/download/@behodler/dev-env/0.0.3/db0af1e22c9a65b865d9fd9fe8bd72dba8ae96a2#db0af1e22c9a65b865d9fd9fe8bd72dba8ae96a2"
+  integrity sha512-+jrIoeSAvmlvZnKoQ8vaAG5DNayzTR34zLaHQRBnwF5lXY4qZZl+0F/0+QsRMxgC+9cYDmNJwOmFKVhx1UrcCw==
+
 "@behodler/sdk@0.1.1":
   version "0.1.1"
   resolved "https://npm.pkg.github.com/download/@behodler/sdk/0.1.1/9909c6b9c3a82c2fb2017a7748275624a933795250b1d45986fcc8d2631a8332#a8d6f5274346dd5536724588ccc6bd1dc1861953"

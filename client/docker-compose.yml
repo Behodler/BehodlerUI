@@ -9,7 +9,7 @@ services:
             - ./:/app
     client:
         image: node:14
-        command: sh -c "npm run docker:start"
+        command: sh -c "npm run client:dev"
         working_dir: /app
         ports:
             - 3000:3000
@@ -18,7 +18,7 @@ services:
         tty: true
     build:
         image: node:14
-        command: sh -c "npm run docker:build"
+        command: sh -c "npm run client:build"
         working_dir: /app
         volumes:
             - ./:/app
@@ -28,14 +28,6 @@ services:
         working_dir: /app
         volumes:
             - ./:/app
-    ganache:
-        image: trufflesuite/ganache-cli
-        ports:
-            - 8545:8545
-        tty: true
-        command: "-g 1 -b 20 -l 15481674 --db behodlerDB -m 'eight fun oak spot hip pencil matter domain bright fiscal nurse easy'"
-        volumes:
-            - ./behodlerDB:/app/behodlerDB
     S3:
        image: amazon/aws-cli:latest
        tty: true
