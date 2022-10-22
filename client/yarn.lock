@@ -1359,12 +1359,11 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@behodler/dev-env@0.1.2":
-  version "0.1.2"
-  resolved "https://npm.pkg.github.com/download/@behodler/dev-env/0.1.2/45699d65659e161ae9c7b5d46c8bd352903240bf#45699d65659e161ae9c7b5d46c8bd352903240bf"
-  integrity sha512-5EHZt9/jiIt0hL3t6jE7uK1VBsjLVycsif0A6/BG0Xd7PaBrNBzXLlv3rUIAIbe4q8+tIErRMW/Lk8Qg/dgW1A==
+"@behodler/dev-env@0.2.4":
+  version "0.2.4"
+  resolved "https://npm.pkg.github.com/download/@behodler/dev-env/0.2.4/e4001239bc842fc062fc678cd0205dd0d47a533a#e4001239bc842fc062fc678cd0205dd0d47a533a"
+  integrity sha512-w8JnJ2xx2M4ojtvlZ4Maa7dxwWD6pPSMfxKC+WkGQqTag4LsiF5xBNp1DYwnNc0R8Y+LV31MlIqN3iHwJza4vA==
   dependencies:
-    cross-spawn "^7.0.3"
     dir-compare "^4.0.0"
     shelljs "^0.8.5"
 
@@ -6974,7 +6973,7 @@ cross-spawn@^6.0.0, cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@^7.0.0, cross-spawn@^7.0.3:
+cross-spawn@^7.0.0:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
