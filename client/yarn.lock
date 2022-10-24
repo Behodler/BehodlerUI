@@ -1359,10 +1359,10 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@behodler/dev-env@0.2.4":
-  version "0.2.4"
-  resolved "https://npm.pkg.github.com/download/@behodler/dev-env/0.2.4/e4001239bc842fc062fc678cd0205dd0d47a533a#e4001239bc842fc062fc678cd0205dd0d47a533a"
-  integrity sha512-w8JnJ2xx2M4ojtvlZ4Maa7dxwWD6pPSMfxKC+WkGQqTag4LsiF5xBNp1DYwnNc0R8Y+LV31MlIqN3iHwJza4vA==
+"@behodler/dev-env@0.2.6":
+  version "0.2.6"
+  resolved "https://npm.pkg.github.com/download/@behodler/dev-env/0.2.6/89b7552f2d9bd5852de07c46f86153db9bf7b412#89b7552f2d9bd5852de07c46f86153db9bf7b412"
+  integrity sha512-l0vDUntJoCXDsaHIfijrlfz+2ONGnWF8OaW1zI/41CTWMV8WK6xmeDdWzbEdbTdRL1UTd8TX2fM87G7x+Ma9GQ==
   dependencies:
     dir-compare "^4.0.0"
     shelljs "^0.8.5"
