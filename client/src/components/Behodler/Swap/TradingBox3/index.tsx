@@ -1,387 +1,30 @@
-import * as React from 'react'
-import { useEffect, useCallback, useState, useContext } from 'react'
-import { Button, Box, makeStyles, Theme, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
+import React, { useEffect, useCallback, useState, useContext } from 'react'
+import { Button, Box, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
+import BigNumber from 'bignumber.js'
+import { DebounceInput } from 'react-debounce-input';
+import { useDebounce } from '@react-hook/debounce'
+
 import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { TokenList, Logos } from './ImageLoader'
-import BigNumber from 'bignumber.js'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
 import { Notification, NotificationType } from './Notification'
 import FetchBalances from './FetchBalances'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
-import { DebounceInput } from 'react-debounce-input';
 import AmountFormat from './AmountFormat'
-import { useDebounce } from '@react-hook/debounce'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
 import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { PyroTokensInfo } from './PyroTokensInfo/PyroTokensInfo';
-import { TokenBalanceMapping } from './types';
+import { TokenBalanceMapping, TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
+import { useStyles, inputStyles } from './styles';
 
-const sideScaler = (scale) => (perc) => (perc / scale) + "%"
-const scaler = sideScaler(0.8)
-const useStyles = makeStyles((theme: Theme) => ({
-    root: {
-        margin: '0 auto',
-        backgroundColor: 'rgba(255,255,255,0)',
-        borderRadius: 20,
-        alignContent: "center",
-        height: "100%",
-        position: 'relative',
-    },
-    iconWrapper: {
-        display: 'flex',
-        justifyContent: 'center',
-        margin: '0 0',
-    },
-    buttonWrapper: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        border: "1px solid rgba(218, 86, 221)",
-        borderRadius: "5px",
-        marginTop: 70,
-        left: "35%",
-    },
-    buttonWrapperDisabled: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        border: "1px solid rgba(60, 60, 60)",
-        borderRadius: "5px",
-        marginTop: 70,
-        left: "35%",
-    },
-    swapButton: {
-        background: "linear-gradient(105.11deg, rgba(218, 86, 221,0.1) 46.06%, rgba(218, 86, 221,0.1) 77.76%)",
-
-        width: 500,
-        '&:hover': {
-            background: "rgba(218, 86, 221,0.4)",
-            fontWeight: "bolder",
-            textShadow: "2px 2px 5px white"
-        },
-    },
-    swapButtonDisabled: {
-        color: "grey",
-        backgroundColor: "rgba(100,100,100,0.3)",
-        width: 500,
-        '&:hover': {
-            backgroundColor: "rgba(100,100,100,0.3)",
-
-        },
-    },
-    swapButtonMobile: {
-        background: "linear-gradient(105.11deg, rgba(218, 86, 221,0.1) 46.06%, rgba(218, 86, 221,0.1) 77.76%)",
-
-        width: 360,
-        '&:hover': {
-            background: "rgba(218, 86, 221,0.4)",
-            fontWeight: "bolder",
-            textShadow: "2px 2px 5px white"
-        },
-    },
-    swapButtonMobileDisabled: {
-        color: "grey",
-        backgroundColor: "rgba(100,100,100,0.3)",
-
-        width: 360,
-        '&:hover': {
-            backgroundColor: "rgba(100,100,100,0.3)",
-        },
-    },
-    hideIt: {
-        color: "white",
-        fontWeight: "bold",
-        display: "none"
-    },
-    centerWrapper: {
-        margin: "0 auto",
-        width: "80%",
-        maxWidth: "1300px",
-        position: "absolute",
-        left: "10%",
-        top: "40%",
-    },
-    leftSelector: {
-        position: "absolute",
-        left: "37%",
-        top: "40%",
-        zIndex: 10
-    },
-    rightSelector: {
-        position: "absolute",
-        right: "37%",
-        top: "40%",
-        zIndex: 10
-    },
-    leftField: {
-        position: "absolute",
-        left: scaler(14),
-        top: "40%"
-    },
-    rightField: {
-        position: "absolute",
-        right: scaler(15),
-        top: "40%"
-
-    },
-    pyroShieldContainer: {
-        position: "relative",
-        zIndex: 1,
-        width: 350,
-        //   background: "radial-gradient(circle 90px, #DDD, transparent)",
-        alignContent: "center",
-        margin: "0 -45px 0 -55px"
-
-    },
-    pyroShield: {
-        display: "block",
-        margin: "auto",
-        '&:hover': {
-            cursor: "pointer"
-        },
-        filter: "brightness(1.1)"
-    },
-    pyroShieldMobile: {
-        display: "block",
-        margin: "0 30px 3px 30px",
-        '&:hover': {
-            cursor: "pointer"
-        },
-        filter: "brightness(1.1)"
-    },
-    pyroShieldMobileAnimated: {
-        display: "block",
-        margin: "0 16px 0 16px",
-        '&:hover': {
-            cursor: "pointer"
-        },
-        filter: "brightness(1.3)"
-    },
-    fieldGrid: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: "100%"
-
-    },
-    Info: {
-        right: "1%",
-        color: "white",
-        marginTop: 30
-    }, mobileGrid: {
-        maxWidth: '100%',
-        width: 400,
-    },
-    mobileSelectorGrid: {
-    },
-    mobileContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: '20px',
-    },
-    flippySwitch: {
-        /* Ellipse 18 */
-        width: 26,
-        height: 26,
-        background: "#2E2455",
-        border: "1px solid #3C3682",
-        boxSizing: "border-box",
-        borderRadius: "50%",
-        backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image})`,
-        backgroundSize: "cover",
-        '&:hover': {
-            cursor: "pointer",
-            boxShadow: "0 0 4px 1px #AAf",
-            background: "#473D6E",
-            backgroundImage: `url(${Logos.filter(l => l.name === 'flippyArrows')[0].image}})`,
-            backgroundSize: "cover",
-        }
-    },
-    transactionFeedbackState: {
-        fontSize: 30,
-        color: "white"
-    },
-    impliedExchangeRate: {
-        minHeight: "50px"
-    },
-    scxEstimationWarning: {
-
-        width: 400,
-        textAlign: "center"
-    },
-    scxEstimationWarningText: {
-        color: "red",
-        textShadow: "rgb(200, 200, 200) 1px 1px 30px !important",
-        fontSize: scale(20),
-        textAlign: "center",
-        width: "100%"
-    }
-
-}))
-
-
-const textScaler = (scale) => num => Math.floor(num * scale)
-const scale = textScaler(0.9)
-const inputStyles = makeStyles((theme: Theme) => ({
-    root: {
-        width: scale(310),
-    },
-    mobileRoot: {
-        width: scale(400),
-        background: "#360C57",
-        borderRadius: 10,
-        padding: 10
-    },
-    Direction: {
-
-        // height: 17,
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: scale(16),
-        // lineHeight: 17,
-        /* identical to box height */
-        color: "darkGrey",
-        textAlign: "center",
-        verticalAlign: " middle",
-    },
-    BalanceContainer: {
-
-    },
-    BalanceLabel: {
-        height: scale(19),
-
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: scale(16),
-        /* identical to box height */
-
-        color: "darkGrey"
-    },
-    BalanceValue: {
-
-        height: scale(19),
-
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: scale(16),
-        color: "white"
-    },
-    Max: {
-        /* (MAX) */
-
-        height: scale(19),
-
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: scale(16),
-        /* identical to box height */
-
-        color: "#80C2FF",
-        cursor: 'pointer'
-
-    },
-    PaddedGridItem: {
-        marginRight: '5px',
-        padding: 0
-    },
-    estimate: {
-        height: scale(19),
-
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 600,
-        fontSize: scale(16),
-        color: "white"
-    },
-    dollarSign: {
-        color: "grey",
-        marginRight: 5,
-        display: "inline"
-    },
-
-    inputWide: {
-        /* Vector */
-        width: scale(300),
-        height: scale(57),
-        background: "#360C57",
-        border: "1px solid rgba(70, 57, 130, 0.5)",
-        boxSizing: "border-box",
-        /* 2.00073731114506 */
-
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 500,
-        fontSize: scale(24),
-        padding: "10px 20px 10px 20px",
-        color: "#FFFFFF",
-        outline: 0,
-        borderRadius: 5,
-        placeholder: {
-            direction: "rtl"
-        }
-    },
-    inputNarrow: {
-        width: scale(270),
-        background: "transparent",
-        border: "none",
-        /* 2.00073731114506 */
-
-        fontFamily: "Gilroy",
-        fontStyle: "normal",
-        fontWeight: 500,
-        fontSize: scale(20),
-        color: "#FFFFFF",
-        outline: 0,
-        placeHolder: {
-            direction: "rtl"
-        }
-
-    }
-}))
-
-enum TXType {
-    approval,
-    mintPyro,
-    redeemPyro
-}
-
-interface PendingTX {
-    hash: string
-    type: TXType,
-    token1: string
-    token2: string
-}
-
-export interface TokenListItem {
-    address: string
-    name: string
-    image: string
-}
-
-interface IndependentField {
-    target: 'TO' | 'FROM'
-    newValue: string
-}
-
-type FieldState = 'dormant' | 'updating dependent field' | 'validating swap'
-
-enum SwapState {
-    IMPOSSIBLE,
-    DISABLED,
-    POSSIBLE
-}
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
 const loggingOn: boolean = false
+
 function useLoggedState<T>(initialState: T, logthis?: boolean): [T, (newState: T) => void] {
     const [state, setState] = useState<T>(initialState)
     useEffect(() => {
@@ -419,19 +62,19 @@ const imageLoader = (network: string) => {
     return [base, pyro, dai]
 }
 
-export default function (props: {}) {
+export default function () {
     const classes = useStyles();
     const inputClasses = inputStyles();
     BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
     const walletContextProps = useContext(WalletContext);
-    const { chainId, account: acountAddress } = useActiveWeb3React()
+    const { chainId, account: accountAddress, active } = useActiveWeb3React()
 
     const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
     const behodlerAddress = behodler.address
 
-    const account = acountAddress || "0x0"
+    const account = accountAddress || "0x0"
     const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
@@ -469,8 +112,7 @@ export default function (props: {}) {
             setSwapping(true)
         else setSwapping(false)
     }
-
-    const balanceCheck = async (menu: string) => {
+    const balanceCallback = useCallback(async () => {
         const baseBalanceResults = await FetchBalances(account || "0x0", baseTokenImages, networkName)
         let baseBalances: TokenBalanceMapping[] = baseTokenImages.map(t => {
             let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
@@ -500,16 +142,15 @@ export default function (props: {}) {
         if (stringified !== JSON.stringify(pyroTokenBalances)) {
             setPyroTokenBalances(pyroBalances)
         }
-    }
-    const balanceCallback = useCallback(async (menu: string) => await balanceCheck(menu), [block])
+    }, [block, walletContextProps.initialized])
 
     useEffect(() => {
         const bigBlock = BigInt(block)
         const two = BigInt(2)
-        if (bigBlock % two === BigInt(0)) {
-            balanceCallback(block)
+        if (bigBlock % two === BigInt(0) && walletContextProps.initialized) {
+            balanceCallback()
         }
-    }, [block])
+    }, [block, walletContextProps.initialized])
 
     const fetchBaseToken = (address: string): TokenListItem => baseTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
 
@@ -533,7 +174,7 @@ export default function (props: {}) {
             return false
         return pendingTXQueue[0]
     }
-    if (block === "") {
+    if (walletContextProps.initialized && block === "") {
         API.addBlockWatcher(setBlock)
     }
     const queueUpdateCallback = useCallback(async (outstanding: number) => {
@@ -652,8 +293,10 @@ export default function (props: {}) {
     }, [inputAddress, outputAddress, daiAddress])
 
     useEffect(() => {
-        spotPriceCallback()
-    }, [inputAddress, outputAddress, daiAddress])
+        if (walletContextProps.initialized) {
+            spotPriceCallback()
+        }
+    }, [inputAddress, outputAddress, daiAddress, walletContextProps.initialized])
 
 
     const [swapClicked, setSwapClicked] = useLoggedState<boolean>(false)
@@ -714,10 +357,15 @@ export default function (props: {}) {
         }
     }, [inputEnabled, inputAddress, outputAddress])
 
-    const currentTokenEffects = API.generateNewEffects(inputAddress, account, isInputEth)
-
+    const currentTokenEffects = walletContextProps.initialized
+        ? API.generateNewEffects(inputAddress, account, isInputEth)
+        : null
 
     useEffect(() => {
+        if (!currentTokenEffects) {
+            return;
+        }
+
         const balance = formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)
         if (swapState === SwapState.IMPOSSIBLE)
             setImpliedExchangeRate("")
@@ -744,7 +392,7 @@ export default function (props: {}) {
             subscription.unsubscribe()
         }
 
-    }, [inputAddress, outputAddress, swapState, independentFieldState])
+    }, [inputAddress, outputAddress, swapState, independentFieldState, currentTokenEffects])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
@@ -763,6 +411,30 @@ export default function (props: {}) {
     const mintHashBack = hashBack(TXType.mintPyro)
     const redeemHashBack = hashBack(TXType.redeemPyro)
 
+    const mintOrRedeem = useCallback(async (
+        contract,
+        method,
+        options,
+        valueInWei,
+        hashBack,
+    ) => {
+        return new Promise((resolve, reject) => {
+            contract[method](valueInWei)
+                .estimateGas(options, async function (error, gas) {
+                    if (error) console.error("gas estimation error: " + error);
+                    options.gas = gas;
+                    const txResult = await contract[method](valueInWei)
+                        .send(options, hashBack)
+                        .catch(err => {
+                            console.log(`${contract}.${method} failed`, err)
+                            reject(err)
+                        })
+                    resolve(txResult)
+                })
+        })
+
+    }, [])
+
     const swap2Callback = useCallback(async () => {
         const inputValWei = API.toWei(inputValue)
         const primaryOptions = { from: account, gas: undefined };
@@ -772,48 +444,18 @@ export default function (props: {}) {
         if (swapClicked) {
             const pyroTokenAddress = minting ? outputAddress : inputAddress
             const pyroToken = await API.getPyroToken(pyroTokenAddress, networkName)
+            const mintContract = isInputEth ? pyroWethProxy : pyroToken
+            const redeemContract = isOutputEth ? pyroWethProxy : pyroToken
+            const options = minting && isInputEth ? ethOptions : primaryOptions
+
             if (minting) {
-                if (isInputEth) {
-                    pyroWethProxy.mint(inputValWei)
-                        .estimateGas(ethOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            ethOptions.gas = gas;
-                            pyroWethProxy.mint(inputValWei)
-                                .send(ethOptions, mintHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                } else {
-                    pyroToken.mint(inputValWei)
-                        .estimateGas(primaryOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            ethOptions.gas = gas;
-                            pyroToken.mint(inputValWei)
-                                .send(primaryOptions, mintHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                }
+                await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
             } else {
-                if (isOutputEth) {
-                    pyroWethProxy.redeem(inputValWei)
-                        .estimateGas(primaryOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            primaryOptions.gas = gas;
-                            pyroWethProxy.redeem(inputValWei)
-                                .send(primaryOptions, redeemHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                }
-                else {
-                    pyroToken.redeem(inputValWei)
-                        .estimateGas(primaryOptions, function (error, gas) {
-                            if (error) console.error("gas estimation error: " + error);
-                            primaryOptions.gas = gas;
-                            pyroToken.redeem(inputValWei)
-                                .send(primaryOptions, redeemHashBack)
-                                .catch(err => console.log('user rejection'))
-                        })
-                }
+                await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
             }
+
+            setInputValue('')
+            setOutputValue('')
         }
         setSwapClicked(false)
     }, [swapClicked])
@@ -1075,6 +717,14 @@ export default function (props: {}) {
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
     const animatedLogo = Logos.filter(l => l.name === 'PyroAnimated')[0]
 
+    if (!(walletContextProps.initialized && accountAddress && active && chainId)) {
+        return (
+            <Box justifyContent="center" alignItems="center" display="flex" height="100%" color="#ddd">
+                Please connect your wallet to use the app
+            </Box>
+        );
+    }
+
     return (
         <Box className={classes.root}>
 
@@ -1090,7 +740,7 @@ export default function (props: {}) {
                     <Grid
                         container
                         direction="column"
-                        justify="center"
+                        justifyContent="center"
                         alignItems="center"
                         className={classes.mobileGrid}
                         spacing={3}
@@ -1099,7 +749,7 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="row"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
@@ -1121,14 +771,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justify="flex-start"
+                                justifyContent="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilFrom' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"FROM"} /></Grid>
                                         <Grid item>
@@ -1159,14 +809,14 @@ export default function (props: {}) {
                             <Grid
                                 container
                                 direction="column"
-                                justify="flex-start"
+                                justifyContent="flex-start"
                                 alignItems="stretch"
                                 spacing={2}
                                 key={'MobilTo' + "_grid"}
                                 className={inputClasses.mobileRoot}
                             >
                                 <Grid item>
-                                    <Grid container direction="row" spacing={2} justify="space-between" alignItems="center">
+                                    <Grid container direction="row" spacing={2} justifyContent="space-between" alignItems="center">
                                         <Grid item>
                                             <DirectionLabel direction={"TO"} /></Grid>
                                         <Grid item>
@@ -1211,7 +861,7 @@ export default function (props: {}) {
                         <Grid item>
                             <Grid container
                                 direction="column"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center"
                                 spacing={2}
                                 className={classes.Info}
@@ -1230,7 +880,7 @@ export default function (props: {}) {
 
                 <Grid container
                     direction="column"
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                     className={classes.fieldGrid}
                     key="desktopContainer"
@@ -1239,7 +889,7 @@ export default function (props: {}) {
                         <Grid
                             container
                             direction="row"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={3}
                         >
@@ -1247,7 +897,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridInput_grid"}
@@ -1274,7 +924,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="space-between"
+                                    justifyContent="space-between"
                                     alignItems="center"
                                     id="central-selector-monster-grid"
                                 >
@@ -1299,7 +949,7 @@ export default function (props: {}) {
                                 <Grid
                                     container
                                     direction="column"
-                                    justify="flex-start"
+                                    justifyContent="flex-start"
                                     alignItems="stretch"
                                     spacing={2}
                                     key={"dekstopGridOutput_grid"}
@@ -1352,7 +1002,7 @@ export default function (props: {}) {
                     <Grid item>
                         <Grid container
                             direction="column"
-                            justify="center"
+                            justifyContent="center"
                             alignItems="center"
                             spacing={2}
                             className={classes.Info}
@@ -1389,7 +1039,7 @@ function BalanceContainer(props: { estimate: string, balance: string, token: str
     return <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         spacing={1}
         className={classes.BalanceContainer}
@@ -1414,7 +1064,7 @@ function Balance(props: { token: string, balance: string, setValue: (v: string) 
     return <Grid
         container
         direction="row"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="center"
 
     >

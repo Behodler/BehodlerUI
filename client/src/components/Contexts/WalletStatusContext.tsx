@@ -40,6 +40,7 @@ function WalletContextProvider(props: { children: any }) {
         if (chainId && connector) {
             const web3Provider = await connector.getProvider()
             API.web3 = new Web3(web3Provider)
+
             setWeb3(API.web3)
         }
     }, [chainId, connector])

@@ -36,7 +36,7 @@ const defaultContextProps: StatelessBehodlerContextProps = {
     }
 }
 
-let StatelessBehodlerContext = React.createContext<StatelessBehodlerContextProps>(defaultContextProps)
+const StatelessBehodlerContext = React.createContext<StatelessBehodlerContextProps>(defaultContextProps)
 
 function StatelessBehodlerContextProvider(props: any) {
     const accountPk = Buffer.from(
@@ -85,8 +85,6 @@ function StatelessBehodlerContextProvider(props: any) {
         const withdrawLiquidityFindSCXCreator = (vm: VM, contractAddress: Address, caller: Address) => (reserve: string, tokensToRelease: string, scx: string, passes: number) => getWithdrawLiquidityFindSCXCall(vm, contractAddress, caller, reserve, tokensToRelease, scx, passes)
         const swapCreator = (vm: VM, contractAddress: Address, caller: Address) => (inputAmount: string, outputAmount: string, initialInputBalance: string, initialOutputBalance: string, fee: number) => getSwapCall(vm, contractAddress, caller, inputAmount, outputAmount, initialInputBalance, initialOutputBalance, fee)
         if (contractAddress) {
-
-
             setContextProps({
                 addLiquidity: addLiquidityCreator(EVM, contractAddress, accountAddress),
                 withdrawLiquidity: withdrawLiquidityCreator(EVM, contractAddress, accountAddress),
@@ -99,10 +97,6 @@ function StatelessBehodlerContextProvider(props: any) {
     useEffect(() => {
         populateContextProps()
     }, [contractAddress])
-
-    useEffect(() => {
-        StatelessBehodlerContext = React.createContext(contextProps)
-    }, [contextProps])
 
     return <StatelessBehodlerContext.Provider value={contextProps}>{props.children}</StatelessBehodlerContext.Provider>
 }

@@ -51,7 +51,7 @@ function MetamaskNotFoundComponent(props: formProps) {
 			<Grid
 				container
 				direction="column"
-				justify="center"
+				justifyContent="center"
 				alignItems="center"
 				spacing={4}
 			>
@@ -62,7 +62,7 @@ function MetamaskNotFoundComponent(props: formProps) {
 						<Grid
 							container
 							direction="row"
-							justify="center"
+							justifyContent="center"
 							alignItems="center"
 							spacing={2}
 						>

@@ -56,7 +56,7 @@ export default function TokenSelector(props: props) {
             className={classes.outerCircle}
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             onClick={() => setShowMenu(true)}
         >
