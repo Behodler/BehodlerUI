@@ -618,19 +618,26 @@ export default function () {
 
     }
 
-    const swapValidationCallback = useCallback(async () => {
+    const swapValidationCallback = useCallback(() => {
         if (independentFieldState === "validating swap") {
             try {
                 if (!inputEnabled && swapState === SwapState.POSSIBLE) {
                     setSwapState(SwapState.DISABLED)
-                }
-                else {
-                    await validateLiquidityExit()
-                    if (validateBalances())
-                        setSwapState(SwapState.POSSIBLE)
-                    else {
-                        setSwapState(SwapState.DISABLED)
-                    }
+                } else {
+                    //check pyrotokens balances
+                    const balanceOfInput = parseFloat(API.fromWei(
+                        minting
+                            ?
+                            baseTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                            :
+                            pyroTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                    ))
+
+                    setSwapState((
+                        balanceOfInput >= parseFloat(inputValue)
+                            ? SwapState.POSSIBLE
+                            : SwapState.DISABLED
+                    ))
                 }
                 setImpliedExchangeRateString()
             } catch (e) {
@@ -639,41 +646,16 @@ export default function () {
             }
             setIndependentFieldState("dormant")
         }
-    }, [independentFieldState])
+    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, inputAddress, inputValue])
 
     useEffect(() => {
         swapValidationCallback()
-    }, [independentFieldState])
+    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, inputAddress, inputValue])
 
     useEffect(() => {
         setIndependentFieldState("validating swap")
     }, [inputEnabled])
-    const validateBalances = (): boolean => {
-        //check pyrotokens balances
-        const balanceOfInput = parseFloat(API.fromWei(
-            minting
-                ?
-                baseTokenBalances.filter(b => b.address === inputAddress)[0].balance
-                :
-                pyroTokenBalances.filter(b => b.address === inputAddress)[0].balance
-        ))
-        return (balanceOfInput >= parseFloat(inputValue))
-    }
 
-    const validateLiquidityExit = async () => {
-        if (!minting) {
-            const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
-            const token = await API.getToken(outputAddressToUse, networkName)
-            const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress).call({ from: account })).toString()))
-
-            if (reserveBalance < parseFloat(inputValue)) {
-                const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
-
-                fieldSet(` Insufficient ${nameOfSelectedOutputAddress(outputAddress)} reserves`)
-                throw "Reserve Insufficient"
-            }
-        }
-    }
     const fromBalance = minting ? baseTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase()) : pyroTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
     const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
