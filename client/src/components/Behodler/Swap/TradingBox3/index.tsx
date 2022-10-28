@@ -426,10 +426,7 @@ export default function () {
                     options.gas = gas;
                     const txResult = await contract[method](valueInWei)
                         .send(options, hashBack)
-                        .catch(err => {
-                            console.log(`${contract}.${method} failed`, err)
-                            reject(err)
-                        })
+                        .catch(reject)
                     resolve(txResult)
                 })
         })
@@ -449,14 +446,20 @@ export default function () {
             const redeemContract = isOutputEth ? pyroWethProxy : pyroToken
             const options = minting && isInputEth ? ethOptions : primaryOptions
 
-            if (minting) {
-                await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
-            } else {
-                await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
-            }
+            try {
+                if (minting) {
+                    await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
+                } else {
+                    await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
+                }
 
-            setInputValue('')
-            setOutputValue('')
+                setSwapState(SwapState.IMPOSSIBLE)
+                // setIndependentFieldState('dormant');
+                updateIndependentFromField('')
+                updateIndependentToField('')
+            } catch (e) {
+                console.error(e);
+            }
         }
         setSwapClicked(false)
     }, [swapClicked])
