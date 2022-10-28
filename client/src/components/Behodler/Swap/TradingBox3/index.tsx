@@ -454,7 +454,6 @@ export default function () {
                 }
 
                 setSwapState(SwapState.IMPOSSIBLE)
-                // setIndependentFieldState('dormant');
                 updateIndependentFromField('')
                 updateIndependentToField('')
             } catch (e) {
