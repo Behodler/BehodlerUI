@@ -224,7 +224,8 @@ export default function () {
 
     useEffect(() => {
         if (independentFieldState === 'dormant') {
-            let updating = !isNaN(parseFloat(independentField.newValue))
+            const independentFieldNumericValue = parseFloat(independentField.newValue);
+            let updating = !Number.isNaN(independentFieldNumericValue) && independentFieldNumericValue > 0;
             if (independentField.target === 'FROM') {
                 updating = updating && independentField.newValue !== inputValue
                 setInputValue(independentField.newValue)
