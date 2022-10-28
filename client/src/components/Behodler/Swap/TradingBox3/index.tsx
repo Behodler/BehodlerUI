@@ -690,13 +690,13 @@ export default function () {
 
     const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE) || swapping
     const setNewMenuInputAddress = (address: string) => {
-        setInputValue("")
-        setOutputValue("")
+        updateIndependentFromField('')
+        updateIndependentToField('')
         setInputAddress(address)
     }
     const setNewMenuOutputAddress = (address: string) => {
-        setInputValue("")
-        setOutputValue("")
+        updateIndependentFromField('')
+        updateIndependentToField('')
         setOutputAddress(address)
     }
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
