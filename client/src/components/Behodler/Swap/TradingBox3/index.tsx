@@ -225,16 +225,25 @@ export default function () {
     useEffect(() => {
         if (independentFieldState === 'dormant') {
             const independentFieldNumericValue = parseFloat(independentField.newValue);
-            let updating = !Number.isNaN(independentFieldNumericValue) && independentFieldNumericValue > 0;
-            if (independentField.target === 'FROM') {
-                updating = updating && independentField.newValue !== inputValue
-                setInputValue(independentField.newValue)
-                setOutputValue(updating ? 'calculating...' : '')
-            } else {
-                updating = updating && independentField.newValue !== outputValue
-                setInputValue(updating ? 'calculating...' : '')
-                setOutputValue(independentField.newValue)
-            }
+            const independentFieldContainsOnlyDigitsAndDot = /^[\d\.]+$/g.test(independentField.newValue);
+            const isEmptyIndependentFieldInput = independentField.newValue === ''
+            const isValidIndependentFieldInput = isEmptyIndependentFieldInput || (
+                !Number.isNaN(independentFieldNumericValue)
+                && independentFieldNumericValue > 0
+                && independentFieldContainsOnlyDigitsAndDot
+            )
+            const independentFieldTargetIsFrom = independentField.target === 'FROM'
+
+            const updating = independentFieldTargetIsFrom
+                ? isValidIndependentFieldInput && independentField.newValue !== inputValue
+                : isValidIndependentFieldInput && independentField.newValue !== outputValue
+
+            const outputMessage = (!isEmptyIndependentFieldInput && updating && 'calculating...')
+                || (!isValidIndependentFieldInput && 'invalid input')
+                || ''
+
+            setInputValue(independentFieldTargetIsFrom ? independentField.newValue : outputMessage)
+            setOutputValue(independentFieldTargetIsFrom ? outputMessage : independentField.newValue)
 
             if (swapState !== SwapState.IMPOSSIBLE)
                 setSwapState(SwapState.IMPOSSIBLE)
