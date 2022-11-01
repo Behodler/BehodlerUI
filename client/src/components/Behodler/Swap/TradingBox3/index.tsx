@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { DebounceInput } from 'react-debounce-input';
 import { useDebounce } from '@react-hook/debounce'
 
-import tokenListJSON from '../../../../blockchain/behodlerUI/baseTokens.json'
+import tokensConfigByNetwork from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { TokenList, Logos } from './ImageLoader'
 import API from '../../../../blockchain/ethereumAPI'
@@ -37,7 +37,7 @@ const imageLoader = (network: string) => {
     let base: TokenListItem[] = []
     let pyro: TokenListItem[] = []
     let dai: string = ''
-    tokenListJSON[network].forEach(i => {
+    tokensConfigByNetwork[network].forEach(i => {
         let name = i.name
         const LPposition = i.name.toLowerCase().indexOf('UniV2LP')
         if (LPposition !== -1) {
@@ -94,6 +94,8 @@ export default function () {
     const [minting, setMinting] = useLoggedState<boolean>(true)
     const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
     //Estimating SCX from a given number of input tokens is
+
+    console.info('baseTokenImages', baseTokenImages);
 
     useEffect(() => {
         const results = imageLoader(networkName)
@@ -207,8 +209,8 @@ export default function () {
     }, 600)
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
-    const [inputAddress, setInputAddress] = useLoggedState<string>(tokenListJSON[networkName][0].address)
-    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokenListJSON[networkName][0].pyro)
+    const [inputAddress, setInputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].address)
+    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].pyro)
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
     const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
@@ -332,18 +334,18 @@ export default function () {
     const assignCorrectCorrespondingToken = useCallback(async (inputChanged: boolean) => {
         if (inputChanged) {
             if (minting) {
-                const tokenPair = tokenListJSON[networkName].filter(t => t.address === inputAddress)[0]
+                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.address === inputAddress)[0]
                 setOutputAddress(tokenPair.pyro)
             } else {
-                const tokenPair = tokenListJSON[networkName].filter(t => t.pyro === inputAddress)[0]
+                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyro === inputAddress)[0]
                 setOutputAddress(tokenPair.address)
             }
         } else {
             if (minting) {
-                const tokenPair = tokenListJSON[networkName].filter(t => t.pyro === outputAddress)[0]
+                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyro === outputAddress)[0]
                 setInputAddress(tokenPair.address)
             } else {
-                const tokenPair = tokenListJSON[networkName].filter(t => t.address === outputAddress)[0]
+                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.address === outputAddress)[0]
                 setInputAddress(tokenPair.pyro)
             }
         }
@@ -495,7 +497,7 @@ export default function () {
                 setOutputValue("")
             }
         }
-        const inputIsBase = tokenListJSON[networkName].filter(t => t.address.toLowerCase() === newInputAddress.toLowerCase()).length > 0
+        const inputIsBase = tokensConfigByNetwork[networkName].filter(t => t.address.toLowerCase() === newInputAddress.toLowerCase()).length > 0
         setMinting(inputIsBase)
 
         setFlipClicked(false)
