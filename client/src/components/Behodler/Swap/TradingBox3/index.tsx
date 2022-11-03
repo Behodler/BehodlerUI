@@ -224,16 +224,26 @@ export default function () {
 
     useEffect(() => {
         if (independentFieldState === 'dormant') {
-            let updating = !isNaN(parseFloat(independentField.newValue))
-            if (independentField.target === 'FROM') {
-                updating = updating && independentField.newValue !== inputValue
-                setInputValue(independentField.newValue)
-                setOutputValue(updating ? 'calculating...' : '')
-            } else {
-                updating = updating && independentField.newValue !== outputValue
-                setInputValue(updating ? 'calculating...' : '')
-                setOutputValue(independentField.newValue)
-            }
+            const independentFieldNumericValue = parseFloat(independentField.newValue);
+            const independentFieldContainsOnlyDigitsAndDot = /^[\d\.]+$/g.test(independentField.newValue);
+            const isEmptyIndependentFieldInput = independentField.newValue === ''
+            const isValidIndependentFieldInput = isEmptyIndependentFieldInput || (
+                !Number.isNaN(independentFieldNumericValue)
+                && independentFieldNumericValue > 0
+                && independentFieldContainsOnlyDigitsAndDot
+            )
+            const independentFieldTargetIsFrom = independentField.target === 'FROM'
+
+            const updating = independentFieldTargetIsFrom
+                ? isValidIndependentFieldInput && independentField.newValue !== inputValue
+                : isValidIndependentFieldInput && independentField.newValue !== outputValue
+
+            const outputMessage = (!isEmptyIndependentFieldInput && updating && 'calculating...')
+                || (!isValidIndependentFieldInput && 'invalid input')
+                || ''
+
+            setInputValue(independentFieldTargetIsFrom ? independentField.newValue : outputMessage)
+            setOutputValue(independentFieldTargetIsFrom ? outputMessage : independentField.newValue)
 
             if (swapState !== SwapState.IMPOSSIBLE)
                 setSwapState(SwapState.IMPOSSIBLE)
@@ -425,10 +435,7 @@ export default function () {
                     options.gas = gas;
                     const txResult = await contract[method](valueInWei)
                         .send(options, hashBack)
-                        .catch(err => {
-                            console.log(`${contract}.${method} failed`, err)
-                            reject(err)
-                        })
+                        .catch(reject)
                     resolve(txResult)
                 })
         })
@@ -448,14 +455,19 @@ export default function () {
             const redeemContract = isOutputEth ? pyroWethProxy : pyroToken
             const options = minting && isInputEth ? ethOptions : primaryOptions
 
-            if (minting) {
-                await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
-            } else {
-                await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
-            }
+            try {
+                if (minting) {
+                    await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
+                } else {
+                    await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
+                }
 
-            setInputValue('')
-            setOutputValue('')
+                setSwapState(SwapState.IMPOSSIBLE)
+                updateIndependentFromField('')
+                updateIndependentToField('')
+            } catch (e) {
+                console.error(e);
+            }
         }
         setSwapClicked(false)
     }, [swapClicked])
@@ -618,19 +630,26 @@ export default function () {
 
     }
 
-    const swapValidationCallback = useCallback(async () => {
+    const swapValidationCallback = useCallback(() => {
         if (independentFieldState === "validating swap") {
             try {
                 if (!inputEnabled && swapState === SwapState.POSSIBLE) {
                     setSwapState(SwapState.DISABLED)
-                }
-                else {
-                    await validateLiquidityExit()
-                    if (validateBalances())
-                        setSwapState(SwapState.POSSIBLE)
-                    else {
-                        setSwapState(SwapState.DISABLED)
-                    }
+                } else {
+                    //check pyrotokens balances
+                    const balanceOfInput = parseFloat(API.fromWei(
+                        minting
+                            ?
+                            baseTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                            :
+                            pyroTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                    ))
+
+                    setSwapState((
+                        balanceOfInput >= parseFloat(inputValue)
+                            ? SwapState.POSSIBLE
+                            : SwapState.DISABLED
+                    ))
                 }
                 setImpliedExchangeRateString()
             } catch (e) {
@@ -639,41 +658,16 @@ export default function () {
             }
             setIndependentFieldState("dormant")
         }
-    }, [independentFieldState])
+    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, inputAddress, inputValue])
 
     useEffect(() => {
         swapValidationCallback()
-    }, [independentFieldState])
+    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, inputAddress, inputValue])
 
     useEffect(() => {
         setIndependentFieldState("validating swap")
     }, [inputEnabled])
-    const validateBalances = (): boolean => {
-        //check pyrotokens balances
-        const balanceOfInput = parseFloat(API.fromWei(
-            minting
-                ?
-                baseTokenBalances.filter(b => b.address === inputAddress)[0].balance
-                :
-                pyroTokenBalances.filter(b => b.address === inputAddress)[0].balance
-        ))
-        return (balanceOfInput >= parseFloat(inputValue))
-    }
 
-    const validateLiquidityExit = async () => {
-        if (!minting) {
-            const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
-            const token = await API.getToken(outputAddressToUse, networkName)
-            const reserveBalance = parseFloat(API.fromWei((await token.balanceOf(inputAddress).call({ from: account })).toString()))
-
-            if (reserveBalance < parseFloat(inputValue)) {
-                const fieldSet = independentField.target === 'FROM' ? setOutputValue : setInputValue
-
-                fieldSet(` Insufficient ${nameOfSelectedOutputAddress(outputAddress)} reserves`)
-                throw "Reserve Insufficient"
-            }
-        }
-    }
     const fromBalance = minting ? baseTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase()) : pyroTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
     const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
 
@@ -705,13 +699,13 @@ export default function () {
 
     const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE) || swapping
     const setNewMenuInputAddress = (address: string) => {
-        setInputValue("")
-        setOutputValue("")
+        updateIndependentFromField('')
+        updateIndependentToField('')
         setInputAddress(address)
     }
     const setNewMenuOutputAddress = (address: string) => {
-        setInputValue("")
-        setOutputValue("")
+        updateIndependentFromField('')
+        updateIndependentToField('')
         setOutputAddress(address)
     }
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
