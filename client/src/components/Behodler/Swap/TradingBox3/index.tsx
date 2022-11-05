@@ -9,14 +9,14 @@ import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { TokenList, Logos } from './ImageLoader'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
-import { Notification, NotificationType } from './Notification'
+import { Notification, NotificationType } from './components/Notification'
 import FetchBalances from './FetchBalances'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
-import AmountFormat from './AmountFormat'
+import AmountFormat from './components/AmountFormat'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
 import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
-import { PyroTokensInfo } from './PyroTokensInfo/PyroTokensInfo';
+import { PyroTokensInfo } from './components/PyroTokensInfo';
 import { TokenBalanceMapping, TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
 import { useStyles, inputStyles } from './styles';
 

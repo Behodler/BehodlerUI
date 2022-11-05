@@ -1,7 +1,7 @@
 import { FormControl, makeStyles, Theme } from '@material-ui/core'
 import * as React from 'react'
 import { DebounceInput } from 'react-debounce-input';
-import { formatNumberText, isNullOrWhiteSpace } from './jsHelpers'
+import { formatNumberText, isNullOrWhiteSpace } from '../jsHelpers'
 // import { WalletContext } from 'src/components/Contexts/WalletStatusContext'
 // import { useEffect, useCallback, useState, useContext } from 'react'
 // import { Button, IconButton, Box, makeStyles, Theme } from '@material-ui/core'
