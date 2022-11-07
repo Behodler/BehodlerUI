@@ -99,30 +99,30 @@
             "pyro": ""
         },
         {
-            "id": "mockToken1",
-            "displayName": "MockToken1",
-            "pyroDisplayName": "PyroMockToken1",
+            "id": "oxt",
+            "displayName": "OXT",
+            "pyroDisplayName": "PyroOXT",
             "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca",
             "pyro": "0x9c67378E00b97c454f5249E064D32F2a2D52301D"
         },
         {
-            "id": "mockToken2",
-            "displayName": "MockToken2",
-            "pyroDisplayName": "PyroMockToken2",
+            "id": "pnk",
+            "displayName": "PNK",
+            "pyroDisplayName": "PyroPNK",
             "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D",
             "pyro": "0xd56d64baB1D9444881630373760C2D1c57E8204D"
         },
         {
-            "id": "mockToken3",
-            "displayName": "MockToken3",
-            "pyroDisplayName": "PyroMockToken3",
+            "id": "link",
+            "displayName": "Link",
+            "pyroDisplayName": "PyroLink",
             "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135",
             "pyro": "0xA2aA6bF5D25c73c72b767d19903cBf626294766e"
         },
         {
-            "id": "mockToken4",
-            "displayName": "MockToken4",
-            "pyroDisplayName": "PyroMockToken4",
+            "id": "eyeDaiUniV2LP",
+            "displayName": "EYE/DAI UniV2LP",
+            "pyroDisplayName": "Pyro EYE/DAI UniV2LP",
             "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06",
             "pyro": "0xDb5181Dbeb2BfB1176F78be05B7902998B99f462"
         }
