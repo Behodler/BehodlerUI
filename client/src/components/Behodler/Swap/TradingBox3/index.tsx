@@ -171,7 +171,7 @@ export default function () {
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
     const [inputAddress, setInputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].address)
-    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].pyro)
+    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].pyroAddress)
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
     const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
@@ -296,18 +296,18 @@ export default function () {
         if (inputChanged) {
             if (minting) {
                 const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.address === inputAddress)[0]
-                setOutputAddress(tokenPair.pyro)
+                setOutputAddress(tokenPair.pyroAddress)
             } else {
-                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyro === inputAddress)[0]
+                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyroAddress === inputAddress)[0]
                 setOutputAddress(tokenPair.address)
             }
         } else {
             if (minting) {
-                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyro === outputAddress)[0]
+                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyroAddress === outputAddress)[0]
                 setInputAddress(tokenPair.address)
             } else {
                 const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.address === outputAddress)[0]
-                setInputAddress(tokenPair.pyro)
+                setInputAddress(tokenPair.pyroAddress)
             }
         }
     }, [inputAddress, outputAddress])

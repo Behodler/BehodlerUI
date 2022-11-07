@@ -22,14 +22,14 @@ export function useTradeableTokensList() {
 
     tokensConfig
         .filter(({ id }) => id !== 'dai' && id !== 'scarcity')
-        .forEach(({ id, address, displayName, pyroDisplayName, pyro }) => {
+        .forEach(({ id, address, displayName, pyroDisplayName, pyroAddress }) => {
             const imagePair = TokenList.find(pair => pair.id === id)
                 || { baseToken: { image: '' }, pyroToken: { image: '' } }
 
             baseTokens
                 .push({ name: displayName, address: address, image: imagePair.baseToken.image })
             pyroTokens
-                .push({ name: pyroDisplayName, address: pyro, image: imagePair.pyroToken.image })
+                .push({ name: pyroDisplayName, address: pyroAddress, image: imagePair.pyroToken.image })
         })
 
     return { baseTokens, pyroTokens, daiAddress }
