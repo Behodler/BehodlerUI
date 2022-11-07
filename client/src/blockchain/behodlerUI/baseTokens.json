@@ -1,74 +1,74 @@
 {
     "main": [
         {
-            "name": "Weth",
+            "id": "weth",
+            "displayName": "ETH",
+            "pyroDisplayName": "PyroWETH",
             "address": "0x4f5704D9D2cbCcAf11e70B34048d41A0d572993F",
-            "pyro": "0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12",
-            "imageName": "eth-logo.png",
-            "pyroImageName": "pyro-eth-logo.png"
+            "pyro": "0x5b4e96994356CAC1c7907B9C51F7F7c8f0bEad12"
         },
         {
-            "name": "Scarcity",
+            "id": "scarcity",
+            "displayName": "Scarcity",
+            "pyroDisplayName": "",
             "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
-            "pyro": "",
-            "imageName": "scx-logo.png",
-            "pyroImageName": ""
+            "pyro": ""
         },
         {
-            "name": "Dai",
+            "id": "dai",
+            "displayName": "Dai",
+            "pyroDisplayName": "",
             "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
-            "pyro": "",
-            "imageName": "dai-logo.png",
-            "pyroImageName": ""
+            "pyro": ""
         },
         {
-            "name": "OXT",
+            "id": "oxt",
+            "displayName": "OXT",
+            "pyroDisplayName": "PyroOXT",
             "address": "0x4575f41308ec1483f3d399aa9a2826d74da13deb",
-            "pyro": "0x0c4b748DB1F78A679401608C27B5637Cd0a31eCf",
-            "imageName": "oxt-logo.png",
-            "pyroImageName": "pyro-oxt-logo.png"
+            "pyro": "0x0c4b748DB1F78A679401608C27B5637Cd0a31eCf"
         },
         {
-            "name": "PNK",
+            "id": "pnk",
+            "displayName": "PNK",
+            "pyroDisplayName": "PyroPNK",
             "address": "0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d",
-            "pyro": "0xBe210a9573d2654AFe04488C2556554466862367",
-            "imageName": "pnk-logo.png",
-            "pyroImageName": "pyro-pnk-logo.png"
+            "pyro": "0xBe210a9573d2654AFe04488C2556554466862367"
         },
         {
-            "name": "Link",
+            "id": "link",
+            "displayName": "Link",
+            "pyroDisplayName": "PyroLink",
             "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-            "pyro": "0x0B30de2a2aDA5fc5cA43C2320f68FEfb1D72d8Cb",
-            "imageName": "link-logo.png",
-            "pyroImageName": "pyro-link-logo.png"
+            "pyro": "0x0B30de2a2aDA5fc5cA43C2320f68FEfb1D72d8Cb"
         },
         {
-            "name": "Loom",
+            "id": "loom",
+            "displayName": "Loom",
+            "pyroDisplayName": "PyroLoom",
             "address": "0x42476F744292107e34519F9c357927074Ea3F75D",
-            "pyro": "0x9e5655054fE7698F108A76Ca221aD6F0A1358C33",
-            "imageName": "loom-logo.png",
-            "pyroImageName": "pyro-loom-logo.png"
+            "pyro": "0x9e5655054fE7698F108A76Ca221aD6F0A1358C33"
         },
         {
-            "name": "EYE/DAI UniV2LP",
+            "id": "eyeDaiUniV2LP",
+            "displayName": "EYE/DAI UniV2LP",
+            "pyroDisplayName": "PyroEYE/DAI UniV2LP",
             "address": "0x890ff7533ca0c44f33167fdeeeab1ca7e690634f",
-            "pyro": "0x53c21C48F77df17b158c5A146ABCCaFc9a7CE9F2",
-            "imageName": "eye-dai-logo.png",
-            "pyroImageName": "pyro-eye-dai-logo.png"
+            "pyro": "0x53c21C48F77df17b158c5A146ABCCaFc9a7CE9F2"
         },
         {
-            "name": "SCX/ETH UniV2LP",
+            "id": "scxEthUniV2LP",
+            "displayName": "SCX/ETH UniV2LP",
+            "pyroDisplayName": "PyroSCX/ETH UniV2LP",
             "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
-            "pyro": "0x74C4ef0ef4C96DdFb3128CA8DcB8C77a00139Cb3",
-            "imageName": "scx-eth-logo.png",
-            "pyroImageName": "pyro-scx-eth-logo.png"
+            "pyro": "0x74C4ef0ef4C96DdFb3128CA8DcB8C77a00139Cb3"
         },
         {
-            "name": "SCX/EYE UniV2LP",
+            "id": "scxEyeUniV2LP",
+            "displayName": "SCX/EYE UniV2LP",
+            "pyroDisplayName": "PyroSCX/EYE UniV2LP",
             "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
-            "pyro": "0xf929e448618A455513108976E3439C523D0f7f53",
-            "imageName": "scx-eye-logo.png",
-            "pyroImageName": "pyro-scx-eye-logo.png"
+            "pyro": "0xf929e448618A455513108976E3439C523D0f7f53"
         }
     ],
     "morden": [],
@@ -78,53 +78,53 @@
     "kovan": [],
     "private": [
         {
-            "name": "Weth",
+            "id": "weth",
+            "displayName": "Eth",
+            "pyroDisplayName": "PyroEth",
             "address": "0x57B370AA3F86F0F40125ed1574Ad2345D15146A4",
-            "pyro": "0x316cbf146A4cC506ebEb0FD323dE6f4CD722D44f",
-            "imageName": "eth-logo.png",
-            "pyroImageName": "pyro-eth-logo.png"
+            "pyro": "0x316cbf146A4cC506ebEb0FD323dE6f4CD722D44f"
         },
         {
-            "name": "Scarcity",
+            "id": "scarcity",
+            "displayName": "Scarcity",
+            "pyroDisplayName": "",
             "address": "0x1c0fFf2FEE9e686666d924305524c2A58709e77e",
-            "pyro": "",
-            "imageName": "scx-logo.png",
-            "pyroImageName": ""
+            "pyro": ""
         },
         {
-            "name": "Dai",
+            "id": "dai",
+            "displayName": "Dai",
+            "pyroDisplayName": "",
             "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE",
-            "pyro": "",
-            "imageName": "dai-logo.png",
-            "pyroImageName": ""
+            "pyro": ""
         },
         {
-            "name": "MockToken1",
+            "id": "mockToken1",
+            "displayName": "MockToken1",
+            "pyroDisplayName": "PyroMockToken1",
             "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca",
-            "pyro": "0x9c67378E00b97c454f5249E064D32F2a2D52301D",
-            "imageName": "dai-logo.png",
-            "pyroImageName": "pyrotokens.png"
+            "pyro": "0x9c67378E00b97c454f5249E064D32F2a2D52301D"
         },
         {
-            "name": "MockToken2",
+            "id": "mockToken2",
+            "displayName": "MockToken2",
+            "pyroDisplayName": "PyroMockToken2",
             "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D",
-            "pyro": "0xd56d64baB1D9444881630373760C2D1c57E8204D",
-            "imageName": "dai-logo.png",
-            "pyroImageName": "pyrotokens.png"
+            "pyro": "0xd56d64baB1D9444881630373760C2D1c57E8204D"
         },
         {
-            "name": "MockToken3",
+            "id": "mockToken3",
+            "displayName": "MockToken3",
+            "pyroDisplayName": "PyroMockToken3",
             "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135",
-            "pyro": "0xA2aA6bF5D25c73c72b767d19903cBf626294766e",
-            "imageName": "dai-logo.png",
-            "pyroImageName": "pyrotokens.png"
+            "pyro": "0xA2aA6bF5D25c73c72b767d19903cBf626294766e"
         },
         {
-            "name": "MockToken4",
+            "id": "mockToken4",
+            "displayName": "MockToken4",
+            "pyroDisplayName": "PyroMockToken4",
             "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06",
-            "pyro": "0xDb5181Dbeb2BfB1176F78be05B7902998B99f462",
-            "imageName": "dai-logo.png",
-            "pyroImageName": "pyrotokens.png"
+            "pyro": "0xDb5181Dbeb2BfB1176F78be05B7902998B99f462"
         }
     ]
 }

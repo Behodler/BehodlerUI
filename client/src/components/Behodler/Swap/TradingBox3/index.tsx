@@ -6,7 +6,7 @@ import { useDebounce } from '@react-hook/debounce'
 
 import tokensConfigByNetwork from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
-import { TokenList, Logos } from './ImageLoader'
+import { Logos } from './ImageLoader'
 import API from '../../../../blockchain/ethereumAPI'
 import TokenSelector from './TokenSelector'
 import { Notification, NotificationType } from './components/Notification'
@@ -19,6 +19,7 @@ import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { PyroTokensInfo } from './components/PyroTokensInfo';
 import { TokenBalanceMapping, TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
 import { useStyles, inputStyles } from './styles';
+import {useTradeableTokensList} from "../hooks/useTradeableTokensList";
 
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
@@ -33,34 +34,6 @@ function useLoggedState<T>(initialState: T, logthis?: boolean): [T, (newState: T
     }, [state])
     return [state, setState]
 }
-const imageLoader = (network: string) => {
-    let base: TokenListItem[] = []
-    let pyro: TokenListItem[] = []
-    let dai: string = ''
-    tokensConfigByNetwork[network].forEach(i => {
-        let name = i.name
-        const LPposition = i.name.toLowerCase().indexOf('UniV2LP')
-        if (LPposition !== -1) {
-            name = i.name.substring(0, LPposition)
-        }
-        if (name.toLowerCase() === 'weth')
-            name = 'Eth'
-
-        if (name.toLowerCase() === 'scarcity') {
-            return
-        }
-        if (name.toLowerCase() === 'dai') {
-            dai = i.address
-            return;
-        }
-        let imagePair = TokenList.filter(pair => pair.baseToken.name.toLowerCase() === i.name.toLowerCase())[0]
-
-        base.push({ name, address: i.address, image: imagePair.baseToken.image })
-        const pyroName = name.toLowerCase() === 'eth' ? 'PyroWeth' : 'Pyro' + name
-        pyro.push({ name: pyroName, address: i.pyro, image: imagePair.pyroToken.image })
-    })
-    return [base, pyro, dai]
-}
 
 export default function () {
     const classes = useStyles();
@@ -69,6 +42,7 @@ export default function () {
 
     const walletContextProps = useContext(WalletContext);
     const { chainId, account: accountAddress, active } = useActiveWeb3React()
+    const { baseTokens, pyroTokens, daiAddress } = useTradeableTokensList()
 
     const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
@@ -79,8 +53,6 @@ export default function () {
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
     //NEW HOOKS BEGIN
-    const [baseTokenImages, setBaseTokenImages] = useState<TokenListItem[]>(imageLoader(networkName)[0] as TokenListItem[])
-    const [pyroTokenImages, setPyroTokenImages] = useState<TokenListItem[]>(imageLoader(networkName)[1] as TokenListItem[])
     const [pendingTXQueue, setPendingTXQueue] = useLoggedState<PendingTX[]>([])
     const [block, setBlock] = useLoggedState<string>("")
     const [showNotification, setShowNotification] = useLoggedState<boolean>(false)
@@ -90,20 +62,9 @@ export default function () {
     const [baseTokenBalances, setBaseTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [pyroTokenBalances, setPyroTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
-    const [daiAddress, setDaiAddress] = useLoggedState<string>(imageLoader(networkName)[3] as string)
     const [minting, setMinting] = useLoggedState<boolean>(true)
     const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
     //Estimating SCX from a given number of input tokens is
-
-    console.info('baseTokenImages', baseTokenImages);
-
-    useEffect(() => {
-        const results = imageLoader(networkName)
-        setBaseTokenImages(results[0] as TokenListItem[])
-        setPyroTokenImages(results[1] as TokenListItem[])
-        setDaiAddress(results[2] as string)
-    }, [walletContextProps.networkName])
-
 
     const notify = (hash: string, type: NotificationType) => {
         setCurrentTxHash(hash)
@@ -115,8 +76,8 @@ export default function () {
         else setSwapping(false)
     }
     const balanceCallback = useCallback(async () => {
-        const baseBalanceResults = await FetchBalances(account || "0x0", baseTokenImages, networkName)
-        let baseBalances: TokenBalanceMapping[] = baseTokenImages.map(t => {
+        const baseBalanceResults = await FetchBalances(account || "0x0", baseTokens, networkName)
+        let baseBalances: TokenBalanceMapping[] = baseTokens.map(t => {
             let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
@@ -133,8 +94,8 @@ export default function () {
             setBaseTokenBalances(ethUpdated)
         }
 
-        const pyroBalanceResults = await FetchBalances(account || "0x0", pyroTokenImages, networkName)
-        let pyroBalances: TokenBalanceMapping[] = pyroTokenImages.map(t => {
+        const pyroBalanceResults = await FetchBalances(account || "0x0", pyroTokens, networkName)
+        let pyroBalances: TokenBalanceMapping[] = pyroTokens.map(t => {
             let hexBalance = pyroBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
             let address = t.address
             let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
@@ -154,10 +115,10 @@ export default function () {
         }
     }, [block, walletContextProps.initialized])
 
-    const fetchBaseToken = (address: string): TokenListItem => baseTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
+    const fetchBaseToken = (address: string): TokenListItem => baseTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
 
     const fetchPyroToken = (address: string): TokenListItem => {
-        const p = pyroTokenImages.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
+        const p = pyroTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
         return p
     }
 
@@ -315,7 +276,7 @@ export default function () {
     const nameOfSelectedAddress = (input: boolean, minting: boolean) => (address: string) => {
         const useBase = input && minting || !input && !minting
         address = address.toLowerCase()
-        return (useBase ? baseTokenImages.find(i => i.address.toLowerCase() === address)?.name : pyroTokenImages.find(i => i.address.toLowerCase() === address)?.name) || ''
+        return (useBase ? baseTokens.find(i => i.address.toLowerCase() === address)?.name : pyroTokens.find(i => i.address.toLowerCase() === address)?.name) || ''
     }
     const nameOfSelectedInputAddress = nameOfSelectedAddress(true, minting)
     const nameOfSelectedOutputAddress = nameOfSelectedAddress(false, minting)
@@ -755,7 +716,6 @@ export default function () {
                                 </Grid>
                                 <Grid item onClick={() => setFlipClicked(true)} >
                                     <img width={100} src={swapping ? animatedLogo.image : staticLogo.image} className={classes.pyroShieldMobileAnimated} />
-
                                 </Grid>
                                 <Grid item>
                                     <TokenSelector pyro={minting} network={networkName} balances={minting ? pyroTokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={!minting ? fetchBaseToken(outputAddress).image : fetchPyroToken(outputAddress).image} scale={0.65} mobile />

@@ -30,26 +30,73 @@ interface ImageNamePair {
 }
 
 interface ImagePair {
+    id: string,
     baseToken: ImageNamePair,
     pyroToken: ImageNamePair,
 }
 
 export const TokenList: ImagePair[] =
     [
-        { baseToken: { image: OXT, name: 'OXT' }, pyroToken: { image: pyroOXT, name: 'pyroOXT' } },
-        { baseToken: { image: PNK, name: 'PNK' }, pyroToken: { image: pyroPNK, name: 'pyroPNK' } },
-        { baseToken: { image: Weth, name: "WETH" }, pyroToken: { image: pyroWETH, name: 'pyroWeth' } },
-        { baseToken: { image: LINK, name: "LINK" }, pyroToken: { image: pyroLINK, name: 'pyroLINK' } },
-        { baseToken: { image: LOOM, name: "LOOM" }, pyroToken: { image: pyroLOOM, name: 'pyroLOOM' } },
-        { baseToken: { image: eyedai, name: "EYE/DAI UniV2LP" }, pyroToken: { image: pyroEYEDAI, name: 'PyroEYE/DAI UniV2LP' } },
-        { baseToken: { image: scxeth, name: "SCX/ETH UniV2LP" }, pyroToken: { image: pyroScxeth, name: 'PyroSCX/ETH UniV2LP' } },
-        { baseToken: { image: scxeye, name: "SCX/EYE UniV2LP" }, pyroToken: { image: pyroScxeye, name: 'PyroSCX/EYE UniV2LP' } },
-        { baseToken: { image: Weth, name: "Weth" }, pyroToken: { image: pyroWETH, name: 'pyroWeth' } },
-        { baseToken: { image: Weth, name: "MockWeth" }, pyroToken: { image: pyroWETH, name: 'pyroMockWeth' } },
-        { baseToken: { image: eye, name: "MockToken1" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken1' } },
-        { baseToken: { image: eye, name: "MockToken2" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken2' } },
-        { baseToken: { image: eye, name: "MockToken3" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken3' } },
-        { baseToken: { image: eye, name: "MockToken4" }, pyroToken: { image: pyroEYEDAI, name: 'pyroMockToken4' } },
+        {
+            id: 'oxt',
+            baseToken: { image: OXT, name: 'OXT' },
+            pyroToken: { image: pyroOXT, name: 'PyroOXT' },
+        },
+        {
+            id: 'pnk',
+            baseToken: { image: PNK, name: 'PNK' },
+            pyroToken: { image: pyroPNK, name: 'PyroPNK' },
+        },
+        {
+            id: 'weth',
+            baseToken: { image: Weth, name: "ETH" },
+            pyroToken: { image: pyroWETH, name: 'PyroWETH' },
+        },
+        {
+            id: 'link',
+            baseToken: { image: LINK, name: "LINK" },
+            pyroToken: { image: pyroLINK, name: 'PyroLINK' },
+        },
+        {
+            id: 'loom',
+            baseToken: { image: LOOM, name: "LOOM" },
+            pyroToken: { image: pyroLOOM, name: 'PyroLOOM' },
+        },
+        {
+            id: 'eyeDaiUniV2LP',
+            baseToken: { image: eyedai, name: "EYE/DAI UniV2LP"},
+            pyroToken: { image: pyroEYEDAI, name: 'Pyro EYE/DAI UniV2LP' },
+        },
+        {
+            id: 'scxEthUniV2LP',
+            baseToken: { image: scxeth, name: "SCX/ETH UniV2LP"},
+            pyroToken: { image: pyroScxeth, name: 'Pyro SCX/ETH UniV2LP' },
+        },
+        {
+            id: 'scxEyeUniV2LP',
+            baseToken: { image: scxeye, name: "SCX/EYE UniV2LP" },
+            pyroToken: { image: pyroScxeye, name: 'Pyro SCX/EYE UniV2LP' },
+        },
+        {
+            id: 'mockToken1',
+            baseToken: { image: eye, name: "MockToken1" },
+            pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken1' },
+        },
+        {
+            id: 'mockToken2',
+            baseToken: { image: eye, name: "MockToken2" },
+            pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken2' },
+        },
+        {
+            id: 'mockToken3',
+            baseToken: { image: eye, name: "MockToken3" },
+            pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken3' },
+        },
+        {
+            id: 'mockToken4',
+            baseToken: { image: eye, name: "MockToken4" },
+            pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken4' },
+        },
     ]
 
 export const Logos: ImageNamePair[] = [
