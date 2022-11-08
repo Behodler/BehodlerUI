@@ -16,11 +16,11 @@ export function useTradeableTokensList() {
         return { baseTokens, pyroTokens, daiAddress: '' }
     }
 
-    const tokensConfig = tokensConfigByNetwork[networkName];
+    const allTokensConfig = tokensConfigByNetwork[networkName];
 
-    const daiAddress = tokensConfig.find(token => token.id === 'dai').address
+    const daiAddress = allTokensConfig.find(token => token.id === 'dai').address
 
-    tokensConfig
+    allTokensConfig
         .filter(({ id }) => id !== 'dai' && id !== 'scarcity')
         .forEach(({ id, address, displayName, pyroDisplayName, pyroAddress }) => {
             const imagePair = TokenList.find(pair => pair.id === id)
@@ -32,5 +32,5 @@ export function useTradeableTokensList() {
                 .push({ name: pyroDisplayName, address: pyroAddress, image: imagePair.pyroToken.image })
         })
 
-    return { baseTokens, pyroTokens, daiAddress }
+    return { baseTokens, pyroTokens, daiAddress, allTokensConfig }
 }

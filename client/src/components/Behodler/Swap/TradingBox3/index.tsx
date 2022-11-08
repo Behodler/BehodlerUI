@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js'
 import { DebounceInput } from 'react-debounce-input';
 import { useDebounce } from '@react-hook/debounce'
 
-import tokensConfigByNetwork from '../../../../blockchain/behodlerUI/baseTokens.json'
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import { Logos } from './ImageLoader'
 import API from '../../../../blockchain/ethereumAPI'
@@ -42,7 +41,7 @@ export default function () {
 
     const walletContextProps = useContext(WalletContext);
     const { chainId, account: accountAddress, active } = useActiveWeb3React()
-    const { baseTokens, pyroTokens, daiAddress } = useTradeableTokensList()
+    const { baseTokens, pyroTokens, daiAddress, allTokensConfig } = useTradeableTokensList()
 
     const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
     const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
@@ -170,8 +169,8 @@ export default function () {
     }, 600)
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
     const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
-    const [inputAddress, setInputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].address)
-    const [outputAddress, setOutputAddress] = useLoggedState<string>(tokensConfigByNetwork[networkName][0].pyroAddress)
+    const [inputAddress, setInputAddress] = useLoggedState<string>(baseTokens[0].address)
+    const [outputAddress, setOutputAddress] = useLoggedState<string>(pyroTokens[0].address)
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
     const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
@@ -295,18 +294,18 @@ export default function () {
     const assignCorrectCorrespondingToken = useCallback(async (inputChanged: boolean) => {
         if (inputChanged) {
             if (minting) {
-                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.address === inputAddress)[0]
+                const tokenPair = allTokensConfig.filter(t => t.address === inputAddress)[0]
                 setOutputAddress(tokenPair.pyroAddress)
             } else {
-                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyroAddress === inputAddress)[0]
+                const tokenPair = allTokensConfig.filter(t => t.pyroAddress === inputAddress)[0]
                 setOutputAddress(tokenPair.address)
             }
         } else {
             if (minting) {
-                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.pyroAddress === outputAddress)[0]
+                const tokenPair = allTokensConfig.filter(t => t.pyroAddress === outputAddress)[0]
                 setInputAddress(tokenPair.address)
             } else {
-                const tokenPair = tokensConfigByNetwork[networkName].filter(t => t.address === outputAddress)[0]
+                const tokenPair = allTokensConfig.filter(t => t.address === outputAddress)[0]
                 setInputAddress(tokenPair.pyroAddress)
             }
         }
@@ -458,7 +457,7 @@ export default function () {
                 setOutputValue("")
             }
         }
-        const inputIsBase = tokensConfigByNetwork[networkName].filter(t => t.address.toLowerCase() === newInputAddress.toLowerCase()).length > 0
+        const inputIsBase = allTokensConfig.filter(t => t.address.toLowerCase() === newInputAddress.toLowerCase()).length > 0
         setMinting(inputIsBase)
 
         setFlipClicked(false)
