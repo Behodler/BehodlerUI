@@ -9,6 +9,7 @@
     "engines": {
         "node": ">=14.17.0"
     },
+    "type": "module",
     "publishConfig": {
         "registry": "https://npm.pkg.github.com/"
     },
@@ -71,7 +72,7 @@
         "prepare": "yarn package:build"
     },
     "devDependencies": {
-        "@behodler/sdk": "0.1.1",
+        "@behodler/sdk": "0.2.0",
         "@rollup/plugin-url": "^6.1.0",
         "@svgr/rollup": "^5.5.0",
         "@types/jest": "^23.3.12",
