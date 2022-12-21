@@ -16,12 +16,16 @@ import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
 import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
 import {PyroWeth10Proxy} from './contractInterfaces/behodler2/PyroWeth10Proxy'
 
+//Limbo
+import { TokenProxyRegistry } from './contractInterfaces/limbo/TokenProxyRegistry'
+
 export interface Behodler2Contracts {
-	Behodler2: Behodler2,
-	Lachesis: Lachesis2,
+	Behodler2: Behodler2
+	Lachesis: Lachesis2
 	LiquidityReceiver: LiquidityReceiver
-	Weth10: Weth,
+	Weth10: Weth
 	PyroWeth10Proxy: PyroWeth10Proxy
+	LimboTokenProxyRegistry: TokenProxyRegistry
 }
 
 export interface BehodlerContracts {
@@ -198,12 +202,18 @@ const defaultPyroTokenRegistry: PyroWeth10Proxy = {
     redeemRate: () => {}
 }
 
+const defaultLimboTokenProxyRegistry: TokenProxyRegistry = {
+	...defaultBase,
+	tokenProxy: (address: address) => ['0x0', '0x0'],
+}
+
 const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
 	Lachesis: defaultLachesis2,
 	LiquidityReceiver: defaultLiquidityReceiver,
 	Weth10: defaultWeth,
-	PyroWeth10Proxy: defaultPyroTokenRegistry
+	PyroWeth10Proxy: defaultPyroTokenRegistry,
+	LimboTokenProxyRegistry: defaultLimboTokenProxyRegistry,
 }
 
 
