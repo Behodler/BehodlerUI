@@ -122,7 +122,6 @@ export default function () {
     }
 
     const txQueuePush = (val: PendingTX) => {
-
         const newQueue = [...pendingTXQueue, val]
         setPendingTXQueue(newQueue)
     }

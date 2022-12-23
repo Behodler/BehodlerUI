@@ -2,6 +2,7 @@ import Web3 from 'web3'
 import { Observable } from 'rxjs'
 import BigNumber from 'bignumber.js'
 import { TokenProxyRegistryAbi } from '@behodler/sdk/abis/limbo'
+import { V2MigratorAbi } from '@behodler/sdk/abis/pyrotokens3'
 
 import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
 import { ERC20 } from './contractInterfaces/ERC20'
@@ -36,6 +37,7 @@ import UniswapV2Factory from './contractInterfaces/liquidQueue/UniswapV2Factory'
 import { UniswapV2Effects } from './observables/UniswapEffects'
 import { PyroWeth10Proxy } from './contractInterfaces/behodler2/PyroWeth10Proxy'
 import { TokenProxyRegistry } from "./contractInterfaces/limbo/TokenProxyRegistry";
+import { V2Migrator } from "./contractInterfaces/pyrotokens/V2Migrator";
 
 interface AccountObservable {
     account: string
@@ -398,6 +400,11 @@ class ethereumAPI {
         const limboTokenProxyRegistryDeployment = await this.deployBehodlerContract(TokenProxyRegistryAbi, addresses.limboTokenProxyRegistry)
         let limboTokenProxyRegistry: TokenProxyRegistry = limboTokenProxyRegistryDeployment.methods
         limboTokenProxyRegistry.address = addresses.limboTokenProxyRegistry
+        pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
+
+        const pyroV2MigratorDeployment = await this.deployBehodlerContract(V2MigratorAbi, addresses.pyroV2Migrator)
+        let pyroV2Migrator: V2Migrator = pyroV2MigratorDeployment.methods
+        pyroV2Migrator.address = addresses.pyroV2Migrator
 
         return {
             Behodler2: behodler2,
@@ -406,6 +413,7 @@ class ethereumAPI {
             Weth10,
             PyroWeth10Proxy: pyroWeth10Proxy,
             LimboTokenProxyRegistry: limboTokenProxyRegistry,
+            PyroV2Migrator: pyroV2Migrator,
         }
     }
 }
