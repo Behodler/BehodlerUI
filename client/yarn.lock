@@ -1367,14 +1367,16 @@
     dir-compare "^4.0.0"
     shelljs "^0.8.5"
 
-"@behodler/sdk@0.1.1":
-  version "0.1.1"
-  resolved "https://npm.pkg.github.com/download/@behodler/sdk/0.1.1/9909c6b9c3a82c2fb2017a7748275624a933795250b1d45986fcc8d2631a8332#a8d6f5274346dd5536724588ccc6bd1dc1861953"
-  integrity sha512-dUf0Xgq84fgTc/LU2ebNTP5ocaMUyD9n8Lba2hH+tMuTw8WgMp/TcuC87yXZNdsJX8vfukAc6hmp1eKNQJ6OTQ==
+"@behodler/sdk@0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@Behodler/sdk/0.2.0/b5f9e3b46741de7df20f922c1c32051cf545f2d3#b5f9e3b46741de7df20f922c1c32051cf545f2d3"
+  integrity sha512-e52t92NFQBqOtDxaXXW0GXD0v1itFqhwLzAAX4V2r3SDYSTqGjhin3wlMQseEvQuAz5I9VFaqWRUsXLJu3UB+A==
   dependencies:
+    "@web3-react/core" "^6.1.0"
     big.js "^6.1.1"
     decimal.js-light "^2.5.1"
     jsbi "^3.1.6"
+    react "^17.0.2"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
