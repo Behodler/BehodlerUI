@@ -1,5 +1,4 @@
 import { useContext } from 'react'
-import { UIContainerContext } from '@behodler/sdk'
-import { WalletState } from '@behodler/sdk/dist/types/wallet'
+import { UIContainerContext, WalletState } from '@behodler/sdk'
 
-export const useWalletState = ():WalletState => useContext(UIContainerContext).walletState
+export const useWalletState = ():WalletState => useContext(UIContainerContext).walletState || {}

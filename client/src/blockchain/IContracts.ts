@@ -1,4 +1,4 @@
-import { address, uint, int } from './contractInterfaces/SolidityTypes'
+import { address, uint, int, uint256 } from './contractInterfaces/SolidityTypes'
 import { Behodler } from './contractInterfaces/behodler/Behodler'
 import { Chronos } from './contractInterfaces/behodler/Chronos'
 import { Janus } from './contractInterfaces/behodler/Janus'
@@ -16,12 +16,20 @@ import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
 import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
 import {PyroWeth10Proxy} from './contractInterfaces/behodler2/PyroWeth10Proxy'
 
+//Limbo
+import { TokenProxyRegistry } from './contractInterfaces/limbo/TokenProxyRegistry'
+
+//Pyrotokens3
+import { V2Migrator } from './contractInterfaces/pyrotokens/V2Migrator'
+
 export interface Behodler2Contracts {
-	Behodler2: Behodler2,
-	Lachesis: Lachesis2,
+	Behodler2: Behodler2
+	Lachesis: Lachesis2
 	LiquidityReceiver: LiquidityReceiver
-	Weth10: Weth,
+	Weth10: Weth
 	PyroWeth10Proxy: PyroWeth10Proxy
+	LimboTokenProxyRegistry: TokenProxyRegistry
+	PyroV2Migrator: V2Migrator
 }
 
 export interface BehodlerContracts {
@@ -198,14 +206,36 @@ const defaultPyroTokenRegistry: PyroWeth10Proxy = {
     redeemRate: () => {}
 }
 
+const defaultLimboTokenProxyRegistry: TokenProxyRegistry = {
+	...defaultBase,
+	tokenProxy: (address: address) => ['0x0', '0x0'],
+}
+
+const defaultPyroV2Migrator: V2Migrator = {
+	...defaultBase,
+	migrate: (
+		pyro2Address: address,
+		pyro3Address: address,
+		pyro2Amount: uint256,
+		pyro3Amount: uint256,
+	) => {},
+	migrateMany: (
+		pyro2Address: address[],
+		pyro3Address: address[],
+		pyro2Amount: uint256[],
+		pyro3Amount: uint256[],
+	) => {},
+}
+
 const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
 	Lachesis: defaultLachesis2,
 	LiquidityReceiver: defaultLiquidityReceiver,
 	Weth10: defaultWeth,
-	PyroWeth10Proxy: defaultPyroTokenRegistry
+	PyroWeth10Proxy: defaultPyroTokenRegistry,
+	LimboTokenProxyRegistry: defaultLimboTokenProxyRegistry,
+	PyroV2Migrator: defaultPyroV2Migrator,
 }
-
 
 export const DefaultBehodlerContracts: BehodlerContracts = {
 	Behodler: defaultBehodler,

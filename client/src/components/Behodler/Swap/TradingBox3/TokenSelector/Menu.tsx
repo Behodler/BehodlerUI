@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
-import { TokenList } from '../ImageLoader'
+import {useState, useEffect, useCallback} from 'react'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 import { TokenBalanceMapping } from '../types'
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
 import API from "../../../../../blockchain/ethereumAPI"
+import {useTradeableTokensList} from "../../hooks/useTradeableTokensList";
+
 const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     root: {
         position: "absolute",
@@ -111,60 +112,39 @@ const trunc = (str: string, max: number) => {
     return str;
 }
 export default function Menu(props: props) {
-    const [menuItems, setMenuItems] = useState<MenuToken[]>(props.balances
-        .map((t, i) => {
-            const token = props.balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
-            const showSwirly = token.length === 0
-            const balance = !showSwirly ? token[0].balance : "0"
-            const currentTokenListItem = TokenList
-                .map(t => {
-                    if (t.baseToken.name.toLowerCase() === 'Weth') {
-                        const baseToken = t.baseToken;
-                        const newBase = { ...baseToken, name: "ETH" }
-                        return { ...t, baseToken: newBase }
-                    }
-                    return t
-                })
-                .filter(token => {
-                    const pairItem = props.pyro ? token.pyroToken : token.baseToken
-                    const ethFound = pairItem.name.toLowerCase() === 'weth' && t.name.toLowerCase() === 'eth'
-                    return ethFound || pairItem.name.toLowerCase() === t.name.toLowerCase()
-                })[0]
-            let item: MenuToken = { ...t, image: props.pyro ? currentTokenListItem.pyroToken.image : currentTokenListItem.baseToken.image, loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
-            return item
-        }));
+    const { baseTokens, pyroTokens } = useTradeableTokensList()
+    const [menuItems, setMenuItems] = useState<MenuToken[]>((
+        (props.pyro ? pyroTokens : baseTokens)
+            .map(token => ({ ...token, loading: true, balance: '0' }))
+    ));
+
+    const findBaseTokenOrPyroWithAddress = useCallback(({ address }) => (
+        baseTokens.find(token => token.address.toLowerCase() === address.toLowerCase())
+        || pyroTokens.find(token => token.address.toLowerCase() === address.toLowerCase())
+    ), [baseTokens, pyroTokens])
 
     useEffect(() => {
-        const factory = (balances: TokenBalanceMapping[]) => props.balances
-            .map((t, i) => {
-                const token = balances.filter(b => b.address.toLowerCase() === t.address.toLowerCase())
-                const showSwirly = token.length === 0
-                const balance = !showSwirly ? token[0].balance : "0"
-                const currentTokenListItem = TokenList
-                    .map(t => {
-                        if (t.baseToken.name.toLowerCase() === 'Weth') {
-                            const baseToken = t.baseToken;
-                            const newBase = { ...baseToken, name: "ETH" }
-                            return { ...t, baseToken: newBase }
-                        }
-                        return t
-                    })
-                    .filter(token => {
-                        const pairItem = props.pyro ? token.pyroToken : token.baseToken
-                        const ethFound = pairItem.name.toLowerCase() === 'weth' && t.name.toLowerCase() === 'eth'
-                        return ethFound || pairItem.name.toLowerCase() === t.name.toLowerCase()
-                    })[0]
+        const getMenuItems = (balances: TokenBalanceMapping[]) => balances
+            .filter(findBaseTokenOrPyroWithAddress)
+            .map(({ balance, address }) => {
+                const currentTokenListItem = findBaseTokenOrPyroWithAddress({ address });
 
-                let item: MenuToken = { ...t, image: props.pyro ? currentTokenListItem.pyroToken.image : currentTokenListItem.baseToken.image, loading: showSwirly, balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4) }
+                const item: MenuToken = {
+                    address,
+                    name: currentTokenListItem?.name || '',
+                    image: currentTokenListItem?.image || '',
+                    loading: false,
+                    balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4)
+                }
                 const uni = item.name.toLowerCase().indexOf('univ2lp')
-                if (uni !== -1)
+                if (uni !== -1) {
                     item.name = item.name.substring(0, uni).trim()
+                }
                 return item
             })
-        let tokenDropDownList: MenuToken[] = factory(props.balances)
-        setMenuItems(tokenDropDownList)
-    }, [props.balances])
 
+        setMenuItems(getMenuItems(props.balances))
+    }, [props.balances])
 
     return <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
 }
@@ -188,8 +168,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
     }, [searchText, props.tokens])
 
     return <Modal
-
-        open={props.open === true}
+        open={props.open}
         onClose={close}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"

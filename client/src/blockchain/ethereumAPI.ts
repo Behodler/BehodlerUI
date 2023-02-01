@@ -1,33 +1,29 @@
 import Web3 from 'web3'
+import { Observable } from 'rxjs'
+import BigNumber from 'bignumber.js'
+import { TokenProxyRegistryAbi } from '@behodler/sdk/abis/limbo'
+import { V2MigratorAbi } from '@behodler/sdk/abis/pyrotokens3'
+
 import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { Pyrotoken } from './contractInterfaces/behodler2/Pyrotoken'
 import { Weth } from './contractInterfaces/behodler/Weth'
-
 import { address } from './contractInterfaces/SolidityTypes'
-import { Observable } from 'rxjs'
 import { ERC20Effects } from './observables/ERC20'
 import { EtherEffects } from './observables/Ether'
 import Token from './observables/Token'
 import { PatienceRegulationEffects } from './observables/PatienceRegulationEngine'
 import { BankEffects } from './observables/WeiDaiBank'
-
 import ERC20JSON from './behodlerUI/ERC20.json'
 import { PyrotokenEffects } from './observables/PyrotokenEffects'
-
 import BehodlerContractMappings from '../temp/BehodlerABIAddressMapping.json'
 import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
 import PyroWeth10ProxyJson from '../blockchain/behodler2UI/PyroWeth10Proxy.json'
-
-import BigNumber from 'bignumber.js'
-
 import { Behodler2Contracts } from './IContracts'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
-
 import Behodler2Addresses from './behodler2UI/Addresses.json'
-
 import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
 import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
 import { BridgeEffects } from './observables/BridgeEffects'
@@ -35,12 +31,13 @@ import { SluiceGateEffects } from './observables/SluiceGateEffects'
 import { LiquidQueueEffects } from './observables/LiquidQueueEffects'
 import Weth10JSON from './behodler2UI/WETH10.json'
 import PyrotokenJSON from './behodler2UI/Pyrotoken.json'
-
 import UniswapV2FactoryJSON from './liquidQueue/UniswapV2Factory.json'
 import LiquidQueueAddresses from './liquidQueue/Addresses.json'
 import UniswapV2Factory from './contractInterfaces/liquidQueue/UniswapV2Factory'
 import { UniswapV2Effects } from './observables/UniswapEffects'
 import { PyroWeth10Proxy } from './contractInterfaces/behodler2/PyroWeth10Proxy'
+import { TokenProxyRegistry } from "./contractInterfaces/limbo/TokenProxyRegistry";
+import { V2Migrator } from "./contractInterfaces/pyrotokens/V2Migrator";
 
 interface AccountObservable {
     account: string
@@ -400,7 +397,24 @@ class ethereumAPI {
         let pyroWeth10Proxy: PyroWeth10Proxy = pyroWeth10ProxyDeployment.methods
         pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
 
-        return { Behodler2: behodler2, Lachesis: lachesis, LiquidityReceiver: liquidityReceiver, Weth10,PyroWeth10Proxy:pyroWeth10Proxy }
+        const limboTokenProxyRegistryDeployment = await this.deployBehodlerContract(TokenProxyRegistryAbi, addresses.limboTokenProxyRegistry)
+        let limboTokenProxyRegistry: TokenProxyRegistry = limboTokenProxyRegistryDeployment.methods
+        limboTokenProxyRegistry.address = addresses.limboTokenProxyRegistry
+        pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
+
+        const pyroV2MigratorDeployment = await this.deployBehodlerContract(V2MigratorAbi, addresses.pyroV2Migrator)
+        let pyroV2Migrator: V2Migrator = pyroV2MigratorDeployment.methods
+        pyroV2Migrator.address = addresses.pyroV2Migrator
+
+        return {
+            Behodler2: behodler2,
+            Lachesis: lachesis,
+            LiquidityReceiver: liquidityReceiver,
+            Weth10,
+            PyroWeth10Proxy: pyroWeth10Proxy,
+            LimboTokenProxyRegistry: limboTokenProxyRegistry,
+            PyroV2Migrator: pyroV2Migrator,
+        }
     }
 }
 
