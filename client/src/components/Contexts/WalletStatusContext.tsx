@@ -61,11 +61,11 @@ function WalletContextProvider(props: { children: any }) {
                     alignItems: 'center',
                     color: '#9081d2',
                     display: 'flex',
-                    height: '100vh',
+                    height: '100%',
                     justifyContent: 'center',
                 }}
             >
-                Initializing the app, please wait.
+                Please connect your Web3 wallet to continue.
             </div>
         )
     }
