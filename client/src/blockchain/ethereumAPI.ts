@@ -360,7 +360,7 @@ class ethereumAPI {
 
     private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
         let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
-        let mappingsList = BehodlerContractMappings.filter((item) => item.name == network)[0].list
+        let mappingsList = BehodlerContractMappings[network]
         const keys = Object.keys(behodlerContracts).filter((key) => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
         keys.forEach(async (key) => {
             const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
