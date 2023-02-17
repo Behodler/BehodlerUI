@@ -13,7 +13,6 @@ interface walletProps {
     initialized: boolean
 }
 
-
 let WalletContext = React.createContext<walletProps>({
     contracts: DefaultContracts,
     primary: false,
@@ -27,7 +26,7 @@ function WalletContextProvider(props: { children: any }) {
     const [primary, setPrimary] = useState<boolean>(false)
     const [networkName, setNetworkName] = useState<string>("")
     const [initialized, setInitialized] = useState<boolean>(false)
-    const { chainId, account,  connector } = useActiveWeb3React()
+    const { chainId, account, connector } = useActiveWeb3React()
 
     useEffect(() => {
         (async () => {
@@ -35,7 +34,7 @@ function WalletContextProvider(props: { children: any }) {
                 const web3Provider = await connector.getProvider()
                 API.web3 = new Web3(web3Provider)
 
-                if (account) {
+                if (account && !initialized) {
                     const c = await API.initialize(chainId, account)
                     setContracts(c)
                     const owner = await c.behodler.Behodler.primary().call({ from: account })
@@ -43,9 +42,13 @@ function WalletContextProvider(props: { children: any }) {
                     setNetworkName(networkNameMapper(chainId))
                     setInitialized(true)
                 }
+
+                if (!account && initialized) {
+                    setInitialized(false)
+                }
             }
         })();
-    }, [chainId, account])
+    }, [chainId, account, connector, initialized])
 
     const providerProps: walletProps = {
         contracts,
@@ -54,7 +57,7 @@ function WalletContextProvider(props: { children: any }) {
         initialized,
     }
 
-    if (!initialized) {
+    if (!initialized || !account) {
         return (
             <div
                 style={{
