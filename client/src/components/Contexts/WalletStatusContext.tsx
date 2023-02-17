@@ -1,16 +1,10 @@
 import * as React from 'react'
 import Web3 from 'web3'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import useActiveWeb3React from "../Behodler/Swap/hooks/useActiveWeb3React";
-
-export enum MetamaskStatus {
-    disabled,
-    disconnected,
-    connected,
-}
 
 interface walletProps {
     contracts: IContracts
@@ -31,42 +25,49 @@ const networkNameMapper = (id: number): string => API.networkMapping[id]
 function WalletContextProvider(props: { children: any }) {
     const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
     const [primary, setPrimary] = useState<boolean>(false)
-    const [web3, setWeb3] = useState<Web3>()
     const [networkName, setNetworkName] = useState<string>("")
     const [initialized, setInitialized] = useState<boolean>(false)
-    const { active, chainId, account,  connector } = useActiveWeb3React()
-
-    const initializeWeb3Callback = useCallback(async () => {
-        if (chainId && connector) {
-            const web3Provider = await connector.getProvider()
-            API.web3 = new Web3(web3Provider)
-
-            setWeb3(API.web3)
-        }
-    }, [chainId, connector])
+    const { chainId, account,  connector } = useActiveWeb3React()
 
     useEffect(() => {
-        initializeWeb3Callback()
-    }, [active, chainId, account])
+        (async () => {
+            if (chainId && connector) {
+                const web3Provider = await connector.getProvider()
+                API.web3 = new Web3(web3Provider)
 
-    const initializeContractsCallback = useCallback(async () => {
-        if (web3 && chainId && account) {
-            const c = await API.initialize(chainId, account)
-            setContracts(c)
-            const owner = await c.behodler.Behodler.primary().call({ from: account })
-            setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
-            setNetworkName(networkNameMapper(chainId))
-            setInitialized(true)
-        }
-    }, [web3, chainId, account])
-
-    useEffect(() => { initializeContractsCallback() }, [web3, chainId, account])
+                if (account) {
+                    const c = await API.initialize(chainId, account)
+                    setContracts(c)
+                    const owner = await c.behodler.Behodler.primary().call({ from: account })
+                    setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
+                    setNetworkName(networkNameMapper(chainId))
+                    setInitialized(true)
+                }
+            }
+        })();
+    }, [chainId, account])
 
     const providerProps: walletProps = {
         contracts,
         primary,
         networkName,
         initialized,
+    }
+
+    if (!initialized) {
+        return (
+            <div
+                style={{
+                    alignItems: 'center',
+                    color: '#9081d2',
+                    display: 'flex',
+                    height: '100vh',
+                    justifyContent: 'center',
+                }}
+            >
+                Initializing the app, please wait.
+            </div>
+        )
     }
 
     WalletContext = React.createContext<walletProps>(providerProps)
