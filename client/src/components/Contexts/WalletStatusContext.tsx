@@ -37,7 +37,7 @@ function WalletContextProvider(props: { children: any }) {
                 if (account && !initialized) {
                     const c = await API.initialize(chainId, account)
                     setContracts(c)
-                    const owner = await c.behodler.Behodler.primary().call({ from: account })
+                    const owner = await c.behodler.Behodler2.Behodler2.owner().call({ from: account })
                     setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
                     setNetworkName(networkNameMapper(chainId))
                     setInitialized(true)

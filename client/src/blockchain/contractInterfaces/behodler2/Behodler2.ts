@@ -23,4 +23,5 @@ export interface Behodler2 extends ERC20, Ownable {
     setWhiteListUser: (user: address, whiteList: boolean) => any
     whiteListUsers:(user:address)=>any
     Weth:()=>any
+    owner:()=>any
 }

@@ -8,11 +8,13 @@
         "pyroV2Migrator": ""
     },
     "development": {
-        "behodler": "0x91C7817988d0af2F652e37438b636b9e6799895e",
-        "lachesis": "0xabDC9aa736207f567D5bc51983Ae637e48d5139E",
-        "liquidityReceiver": "0xa237d6aB67f1c6E58Ad2A2d954e0446e5F2f0b3b",
-        "multicall2": "0x4f3dfa59F822B0201E0DedF2d60B0A559c88e8Ef",
-        "pyroWeth10Proxy":"0x86a17d63Dee64fe9eff56C6E2221cd6da9e6Fc7d",
-        "pyroV2Migrator": ""
+        "behodler": "0x8a16E29CaC5e50c9aa2a497589a02004e83e10e2",
+        "lachesis": "0x5b90D4F95316B50215bF9447EA43A5dA6b53cf0A",
+        "liquidityReceiver": "0xF82654067F3931F7315dA967792Abf00E8Ca8FB6",
+        "liquidityReceiverV2": "0x4159792177321A935751321cb4C3B590C0429c84",
+        "multicall2": "0x189B51c422d3668F0695F776A3e7cdf0589cD79E",
+        "pyroWeth10Proxy":"0xD28b888333eaC54dCF3D11A5eC5CfBDDEC6528E8",
+        "pyroV2Migrator": "0x91C7817988d0af2F652e37438b636b9e6799895e",
+        "limboTokenProxyRegistry": "0x7B43701FE60A93596f6b9104ed06590FF556d52a"
     }
 }
