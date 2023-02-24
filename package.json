@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "optics-ts": "^2.4.0"
+  }
+}
