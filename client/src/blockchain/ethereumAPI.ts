@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { TokenProxyRegistryAbi } from '@behodler/sdk/abis/limbo'
 import { V2MigratorAbi } from '@behodler/sdk/abis/pyrotokens3'
 
-import IContracts, { BehodlerContracts, DefaultBehodlerContracts } from './IContracts'
+import IContracts, { BehodlerContracts, DefaultBehodlerContracts, defaultBehodler2, Behodler2Contracts } from './IContracts'
 import { ERC20 } from './contractInterfaces/ERC20'
 import { Pyrotoken } from './contractInterfaces/behodler2/Pyrotoken'
 import { Weth } from './contractInterfaces/behodler/Weth'
@@ -17,7 +17,6 @@ import Behodler2ContractMappings from '../blockchain/behodler2UI/Behodler.json'
 import Lachesis2Json from '../blockchain/behodler2UI/Lachesis.json'
 import LiquidityReceiverJson from '../blockchain/behodler2UI/LiquidityReceiver.json'
 import PyroWeth10ProxyJson from '../blockchain/behodler2UI/PyroWeth10Proxy.json'
-import { Behodler2Contracts } from './IContracts'
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 import Behodler2Addresses from './behodler2UI/Addresses.json'
 import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
@@ -172,61 +171,77 @@ class ethereumAPI {
     }
 
     private async fetchBehodlerDeployments(network: string): Promise<BehodlerContracts> {
-        let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
-        let mappingsList = BehodlerContractMappings[network]
-        const keys = Object.keys(behodlerContracts).filter((key) => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
-        keys.forEach(async (key) => {
-            const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
-            const currentMapping = mappingsList.filter((mapping) => mapping.contract == key || mapping.contract == alternateKey)[0]
-            const deployment = await this.deployBehodlerContract(currentMapping.abi, currentMapping.address)
-            behodlerContracts[key] = deployment.methods
-            behodlerContracts[key].address = deployment.address
-        })
-        return behodlerContracts
+        try {
+            let behodlerContracts: BehodlerContracts = DefaultBehodlerContracts
+            let mappingsList = BehodlerContractMappings[network]
+            const keys = Object.keys(behodlerContracts).filter((key) => key !== 'Sisyphus' && key !== 'Nimrodel' && key !== 'Behodler2')
+            keys.forEach((key) => {
+                const alternateKey = key == 'Weth' ? 'MockWeth' : 'BADKEY'
+                const currentMapping = mappingsList.filter((mapping) => mapping.contract == key || mapping.contract == alternateKey)[0]
+                this
+                    .deployBehodlerContract(currentMapping.abi, currentMapping.address)
+                    .then((deployment) => {
+                        behodlerContracts[key] = deployment.methods
+                        behodlerContracts[key].address = deployment.address
+                    })
+                    .catch(err => {
+                        throw(err)
+                    });
+            })
+            return behodlerContracts
+        } catch (e) {
+            console.error('Error: fetchBehodlerDeployments', e)
+            return DefaultBehodlerContracts
+        }
     }
 
     private async fetchBehodler2(network: string): Promise<Behodler2Contracts> {
-        let behodler2: Behodler2
-        const addresses = Behodler2Addresses[network]
+        try {
+            let behodler2: Behodler2
+            const addresses = Behodler2Addresses[network]
 
-        const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, addresses.behodler)
-        behodler2 = deployment.methods
-        behodler2.address = addresses.behodler
+            const deployment = await this.deployBehodlerContract(Behodler2ContractMappings.abi, addresses.behodler)
+            behodler2 = deployment.methods
+            behodler2.address = addresses.behodler
 
-        const wethAddress = await behodler2.Weth().call()
-        const wethDeployment = await this.deployBehodlerContract(Weth10JSON.abi, wethAddress)
-        const Weth10: Weth = wethDeployment.methods
-        Weth10.address = wethAddress
+            const wethAddress = await behodler2.Weth().call()
+            const wethDeployment = await this.deployBehodlerContract(Weth10JSON.abi, wethAddress)
+            const Weth10: Weth = wethDeployment.methods
+            Weth10.address = wethAddress
 
-        const lachesisDeployment = await this.deployBehodlerContract(Lachesis2Json.abi, addresses.lachesis)
-        let lachesis: Lachesis2 = lachesisDeployment.methods
-        lachesis.address = addresses.liquidityReceiver
+            const lachesisDeployment = await this.deployBehodlerContract(Lachesis2Json.abi, addresses.lachesis)
+            let lachesis: Lachesis2 = lachesisDeployment.methods
+            lachesis.address = addresses.liquidityReceiver
 
-        const liquidityDeployment = await this.deployBehodlerContract(LiquidityReceiverJson.abi, addresses.liquidityReceiver)
-        let liquidityReceiver: LiquidityReceiver = liquidityDeployment.methods
-        liquidityReceiver.address = addresses.liquidityReceiver
+            const liquidityDeployment = await this.deployBehodlerContract(LiquidityReceiverJson.abi, addresses.liquidityReceiver)
+            let liquidityReceiver: LiquidityReceiver = liquidityDeployment.methods
+            liquidityReceiver.address = addresses.liquidityReceiver
 
-        const pyroWeth10ProxyDeployment = await this.deployBehodlerContract(PyroWeth10ProxyJson.abi, addresses.pyroWeth10Proxy)
-        let pyroWeth10Proxy: PyroWeth10Proxy = pyroWeth10ProxyDeployment.methods
-        pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
+            const pyroWeth10ProxyDeployment = await this.deployBehodlerContract(PyroWeth10ProxyJson.abi, addresses.pyroWeth10Proxy)
+            let pyroWeth10Proxy: PyroWeth10Proxy = pyroWeth10ProxyDeployment.methods
+            pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
 
-        const limboTokenProxyRegistryDeployment = await this.deployBehodlerContract(TokenProxyRegistryAbi, addresses.limboTokenProxyRegistry)
-        let limboTokenProxyRegistry: TokenProxyRegistry = limboTokenProxyRegistryDeployment.methods
-        limboTokenProxyRegistry.address = addresses.limboTokenProxyRegistry
-        pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
+            const limboTokenProxyRegistryDeployment = await this.deployBehodlerContract(TokenProxyRegistryAbi, addresses.limboTokenProxyRegistry)
+            let limboTokenProxyRegistry: TokenProxyRegistry = limboTokenProxyRegistryDeployment.methods
+            limboTokenProxyRegistry.address = addresses.limboTokenProxyRegistry
+            pyroWeth10Proxy.address = addresses.pyroWeth10Proxy
 
-        const pyroV2MigratorDeployment = await this.deployBehodlerContract(V2MigratorAbi, addresses.pyroV2Migrator)
-        let pyroV2Migrator: V2Migrator = pyroV2MigratorDeployment.methods
-        pyroV2Migrator.address = addresses.pyroV2Migrator
+            const pyroV2MigratorDeployment = await this.deployBehodlerContract(V2MigratorAbi, addresses.pyroV2Migrator)
+            let pyroV2Migrator: V2Migrator = pyroV2MigratorDeployment.methods
+            pyroV2Migrator.address = addresses.pyroV2Migrator
 
-        return {
-            Behodler2: behodler2,
-            Lachesis: lachesis,
-            LiquidityReceiver: liquidityReceiver,
-            Weth10,
-            PyroWeth10Proxy: pyroWeth10Proxy,
-            LimboTokenProxyRegistry: limboTokenProxyRegistry,
-            PyroV2Migrator: pyroV2Migrator,
+            return {
+                Behodler2: behodler2,
+                Lachesis: lachesis,
+                LiquidityReceiver: liquidityReceiver,
+                Weth10,
+                PyroWeth10Proxy: pyroWeth10Proxy,
+                LimboTokenProxyRegistry: limboTokenProxyRegistry,
+                PyroV2Migrator: pyroV2Migrator,
+            }
+        } catch (e) {
+            console.error('Error: fetchBehodler2', e)
+            return defaultBehodler2
         }
     }
 }

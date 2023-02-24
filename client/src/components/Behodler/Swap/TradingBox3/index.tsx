@@ -229,37 +229,42 @@ export default function () {
             return
         setSwapState(SwapState.IMPOSSIBLE)
 
-        const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
-        const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
-        const inputAddressToUse = isInputEth ? behodler2Weth : inputAddress
-        const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
-        if (minting) {
-            const inputToken = await API.getToken(inputAddressToUse, walletContextProps.networkName)
-            const inputBalanceOnBehodler = await inputToken.balanceOf(behodlerAddress).call({ from: account })
-            const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
-            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
+        try {
+            const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
+            const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
+            const inputAddressToUse = isInputEth ? behodler2Weth : inputAddress
+            const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
+            if (minting) {
+                const inputToken = await API.getToken(inputAddressToUse, walletContextProps.networkName)
+                const inputBalanceOnBehodler = await inputToken.balanceOf(behodlerAddress).call({ from: account })
+                const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
+                setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
 
-            const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
-            const pyroToken = await API.getPyroToken(outputAddress, networkName)
-            const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
-            const spotForPyro = (redeemRate * bigSpot) / (ONE)
-            const outputSpot = parseFloat(spotForPyro.toString()) / Factor
-            setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
-        } else {
-            const outputToken = await API.getToken(outputAddressToUse, walletContextProps.networkName)
-            const outputBalanceOnBehodler = await outputToken.balanceOf(behodlerAddress).call({ from: account })
-            const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
-            setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
+                const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
+                const pyroToken = await API.getPyroToken(outputAddress, networkName)
+                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
+                const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
+                const spotForPyro = (redeemRate * bigSpot) / (ONE)
+                const outputSpot = parseFloat(spotForPyro.toString()) / Factor
+                setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
+            } else {
+                const outputToken = await API.getToken(outputAddressToUse, walletContextProps.networkName)
+                const outputBalanceOnBehodler = await outputToken.balanceOf(behodlerAddress).call({ from: account })
+                const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
+                setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
 
-            const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
-            const pyroToken = await API.getPyroToken(inputAddress, networkName)
-            const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
-            const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
-            // const bigSpot = BigInt(intSpot)
-            const spotForPyro = (redeemRate * bigSpot) / ONE
-            const inputSpot = parseFloat(spotForPyro.toString()) / Factor
-            setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
+                const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
+                const pyroToken = await API.getPyroToken(inputAddress, networkName)
+                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
+                const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
+                // const bigSpot = BigInt(intSpot)
+                const spotForPyro = (redeemRate * bigSpot) / ONE
+                const inputSpot = parseFloat(spotForPyro.toString()) / Factor
+                setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
+            }
+        } catch (e) {
+            console.error(e)
+            return
         }
     }, [inputAddress, outputAddress, daiAddress])
 

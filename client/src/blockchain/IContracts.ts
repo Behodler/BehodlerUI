@@ -227,7 +227,7 @@ const defaultPyroV2Migrator: V2Migrator = {
 	) => {},
 }
 
-const defaultBehodler2: Behodler2Contracts = {
+export const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
 	Lachesis: defaultLachesis2,
 	LiquidityReceiver: defaultLiquidityReceiver,

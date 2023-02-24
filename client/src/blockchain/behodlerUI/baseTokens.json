@@ -81,50 +81,50 @@
             "id": "weth",
             "displayName": "Eth",
             "pyroDisplayName": "PyroEth",
-            "address": "0x57B370AA3F86F0F40125ed1574Ad2345D15146A4",
-            "pyroAddress": "0x316cbf146A4cC506ebEb0FD323dE6f4CD722D44f"
+            "address": "0x06c32f6952A13FA9F4dF225E953bB1637b6893Ec",
+            "pyroAddress": ""
         },
         {
             "id": "scarcity",
             "displayName": "Scarcity",
             "pyroDisplayName": "",
-            "address": "0x1c0fFf2FEE9e686666d924305524c2A58709e77e",
+            "address": "0x8a16E29CaC5e50c9aa2a497589a02004e83e10e2",
             "pyroAddress": ""
         },
         {
             "id": "dai",
             "displayName": "Dai",
             "pyroDisplayName": "",
-            "address": "0xB9f5A0Ad0B8F3b3C704C9b071f753F73Cc8843bE",
+            "address": "0xB4312f651B006Ba820C61c5612d38CE5f9DACD40",
             "pyroAddress": ""
         },
         {
             "id": "oxt",
             "displayName": "OXT",
             "pyroDisplayName": "PyroOXT",
-            "address": "0xCd6c476c3BA03F39768b727C413F940D9aBd3Cca",
-            "pyroAddress": "0x9c67378E00b97c454f5249E064D32F2a2D52301D"
+            "address": "0xbD1AD82482A0D27B37B0FAd61AB30C12F329Ad06",
+            "pyroAddress": ""
         },
         {
             "id": "pnk",
             "displayName": "PNK",
             "pyroDisplayName": "PyroPNK",
-            "address": "0xF14A5d4565b12D476ae60A8bb0C2a3a02F83C32D",
-            "pyroAddress": "0xd56d64baB1D9444881630373760C2D1c57E8204D"
+            "address": "0xC4365928daDdC6514531324A997DBA590E68fe89",
+            "pyroAddress": ""
         },
         {
             "id": "link",
             "displayName": "Link",
             "pyroDisplayName": "PyroLink",
-            "address": "0xEc1d4409E7a301f5848641E07fb078579dE03135",
-            "pyroAddress": "0xA2aA6bF5D25c73c72b767d19903cBf626294766e"
+            "address": "0x8629A03B95c75bC27278122F5A00438439dAF628",
+            "pyroAddress": ""
         },
         {
             "id": "eyeDaiUniV2LP",
             "displayName": "EYE/DAI UniV2LP",
             "pyroDisplayName": "Pyro EYE/DAI UniV2LP",
-            "address": "0x7cE1946313f30E83E4863c12040cE803A1EF3c06",
-            "pyroAddress": "0xDb5181Dbeb2BfB1176F78be05B7902998B99f462"
+            "address": "0x7063FAa213fcd516A8ee22A6f56aD71330a3d4a1",
+            "pyroAddress": ""
         }
     ]
 }
