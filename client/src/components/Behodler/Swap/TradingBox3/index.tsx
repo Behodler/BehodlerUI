@@ -9,8 +9,9 @@ import API from '../../../../blockchain/ethereumAPI'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
 import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
-import {useTradeableTokensList} from "../hooks/useTradeableTokensList";
-import {useLoggedState} from "../hooks/useLoggedState";
+import { useTradeableTokensList } from "../hooks/useTradeableTokensList";
+import { useLoggedState } from "../hooks/useLoggedState";
+import { useCurrentBlock } from "../hooks/useCurrentBlock";
 
 import { Notification, NotificationType } from './components/Notification'
 import { PyroTokensInfo } from './components/PyroTokensInfo';
@@ -45,8 +46,8 @@ export default function () {
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
     //NEW HOOKS BEGIN
+    const block = useCurrentBlock()
     const [pendingTXQueue, setPendingTXQueue] = useLoggedState<PendingTX[]>([])
-    const [block, setBlock] = useLoggedState<string>("")
     const [showNotification, setShowNotification] = useLoggedState<boolean>(false)
     const [currentTxHash, setCurrentTxHash] = useLoggedState<string>("")
     const [notificationType, setNotificationType] = useLoggedState<NotificationType>(NotificationType.pending)
@@ -127,9 +128,6 @@ export default function () {
         if (pendingTXQueue.length == 0)
             return false
         return pendingTXQueue[0]
-    }
-    if (walletContextProps.initialized && block === "") {
-        API.addBlockWatcher(setBlock)
     }
     const queueUpdateCallback = useCallback(async (outstanding: number) => {
 
