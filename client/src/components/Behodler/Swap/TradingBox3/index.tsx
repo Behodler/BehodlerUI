@@ -1,38 +1,31 @@
 import React, { useEffect, useCallback, useState, useContext } from 'react'
-import { Button, Box, Grid, Hidden, Tooltip, Link } from '@material-ui/core'
+import { Button, Box, Grid, Hidden, Tooltip } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { DebounceInput } from 'react-debounce-input';
 import { useDebounce } from '@react-hook/debounce'
 
 import { WalletContext } from '../../../Contexts/WalletStatusContext'
-import { Logos } from './ImageLoader'
 import API from '../../../../blockchain/ethereumAPI'
-import TokenSelector from './TokenSelector'
-import { Notification, NotificationType } from './components/Notification'
-import FetchBalances from './FetchBalances'
-import { formatSignificantDecimalPlaces } from './jsHelpers'
-import AmountFormat from './components/AmountFormat'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
 import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
-import { PyroTokensInfo } from './components/PyroTokensInfo';
-import { TokenBalanceMapping, TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
-import { useStyles, inputStyles } from './styles';
 import {useTradeableTokensList} from "../hooks/useTradeableTokensList";
+import {useLoggedState} from "../hooks/useLoggedState";
+
+import { Notification, NotificationType } from './components/Notification'
+import { PyroTokensInfo } from './components/PyroTokensInfo';
+import { BalanceContainer } from './components/BalanceContainer';
+import { DirectionLabel } from './components/DirectionLabel';
+import { useStyles, inputStyles } from './styles';
+import { TokenBalanceMapping, TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
+import TokenSelector from './TokenSelector'
+import FetchBalances from './FetchBalances'
+import { formatSignificantDecimalPlaces } from './jsHelpers'
+import { Logos } from './ImageLoader'
 
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
-const loggingOn: boolean = false
-
-function useLoggedState<T>(initialState: T, logthis?: boolean): [T, (newState: T) => void] {
-    const [state, setState] = useState<T>(initialState)
-    useEffect(() => {
-        if (loggingOn || logthis)
-            console.log(`state update: ${JSON.stringify(state)}`)
-    }, [state])
-    return [state, setState]
-}
 
 export default function () {
     const classes = useStyles();
@@ -981,61 +974,4 @@ export default function () {
             />
         </Box >
     )
-}
-
-
-
-function DirectionLabel(props: { direction: string }) {
-    const classes = inputStyles()
-    return <div className={classes.Direction}>
-        {props.direction}
-    </div>
-}
-
-
-function BalanceContainer(props: { estimate: string, balance: string, token: string, setValue: (v: string) => void }) {
-    const classes = inputStyles()
-    return <Grid
-        container
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={1}
-        className={classes.BalanceContainer}
-    >
-        <Grid item>
-            <Balance setValue={props.setValue} balance={props.balance} token={props.token} />
-        </Grid>
-        <Grid item>
-            <Estimate estimate={props.estimate} />
-        </Grid>
-    </Grid>
-}
-
-const PaddedGridItem = (props: { children?: any }) => {
-    const classes = inputStyles()
-    return <Grid item className={classes.PaddedGridItem}>
-        {props.children}
-    </Grid>
-}
-function Balance(props: { token: string, balance: string, setValue: (v: string) => void }) {
-    const classes = inputStyles()
-    return <Grid
-        container
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="center"
-
-    >
-        <PaddedGridItem  ><div className={classes.BalanceLabel}>Balance</div></PaddedGridItem>
-        <PaddedGridItem ><div className={classes.BalanceValue}>{props.balance}</div></PaddedGridItem>
-        <PaddedGridItem ><Link onClick={() => props.setValue(props.balance)} className={classes.Max}>(MAX)</Link></PaddedGridItem>
-    </Grid>
-}
-
-function Estimate(props: { estimate: string }) {
-    const classes = inputStyles()
-    const estimateNum = parseFloat(props.estimate)
-    return isNaN(estimateNum) ? <div></div> :
-        <div className={classes.estimate}><div className={classes.dollarSign}>~$</div><AmountFormat value={estimateNum} formatType="standard" /></div>
 }
