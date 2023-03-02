@@ -13,7 +13,7 @@ import { useTradeableTokensList } from "../hooks/useTradeableTokensList";
 import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
 
-import { Notification, NotificationType } from './components/Notification'
+import { Notification, NotificationType, useShowNotification } from './components/Notification'
 import { PyroTokensInfo } from './components/PyroTokensInfo';
 import { BalanceContainer } from './components/BalanceContainer';
 import { DirectionLabel } from './components/DirectionLabel';
@@ -45,13 +45,11 @@ export default function () {
     const networkName = API.networkMapping[(chainId || 0).toString()]
     const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
-    //NEW HOOKS BEGIN
     const block = useCurrentBlock()
+    const showNotification = useShowNotification()
+
+    //NEW HOOKS BEGIN
     const [pendingTXQueue, setPendingTXQueue] = useLoggedState<PendingTX[]>([])
-    const [showNotification, setShowNotification] = useLoggedState<boolean>(false)
-    const [currentTxHash, setCurrentTxHash] = useLoggedState<string>("")
-    const [notificationType, setNotificationType] = useLoggedState<NotificationType>(NotificationType.pending)
-    const [outstandingTXCount, setOutstandingTXCount] = useLoggedState<number>(0)
     const [baseTokenBalances, setBaseTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [pyroTokenBalances, setPyroTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
@@ -60,14 +58,13 @@ export default function () {
     //Estimating SCX from a given number of input tokens is
 
     const notify = (hash: string, type: NotificationType) => {
-        setCurrentTxHash(hash)
-        setNotificationType(type)
-        setShowNotification(true)
-        setOutstandingTXCount(type === NotificationType.pending ? outstandingTXCount + 1 : outstandingTXCount - 1)
-        if (type === NotificationType.pending)
-            setSwapping(true)
-        else setSwapping(false)
+        showNotification(type, hash, () => {
+            if (type === NotificationType.pending)
+                setSwapping(true)
+            else setSwapping(false)
+        })
     }
+
     const balanceCallback = useCallback(async () => {
         const baseBalanceResults = await FetchBalances(account || "0x0", baseTokens, networkName)
         let baseBalances: TokenBalanceMapping[] = baseTokens.map(t => {
@@ -129,7 +126,7 @@ export default function () {
             return false
         return pendingTXQueue[0]
     }
-    const queueUpdateCallback = useCallback(async (outstanding: number) => {
+    const queueUpdateCallback = useCallback(async () => {
 
         const top = peekTX()
         if (!top) return;
@@ -145,7 +142,7 @@ export default function () {
     }, [block])
 
     useEffect(() => {
-        queueUpdateCallback(outstandingTXCount)
+        queueUpdateCallback()
     }, [block])
 
     //NEW HOOKS END
@@ -825,7 +822,7 @@ export default function () {
                     </Grid>
                 </div>
             </Hidden>
-            <Notification type={notificationType} hash={currentTxHash} open={showNotification} setOpen={setShowNotification} />
+            <Notification />
             <Hidden mdDown>
 
                 <Grid container

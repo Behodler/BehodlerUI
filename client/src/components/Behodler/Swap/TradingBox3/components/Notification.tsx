@@ -1,11 +1,9 @@
 import * as React from 'react'
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps, Color } from '@material-ui/lab/Alert';
-import link from "../../../../../images/new/externalLink.png"
+import { atom, useAtom } from 'jotai';
 
-function Alert(props: AlertProps) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import link from "../../../../../images/new/externalLink.png"
 
 export enum NotificationType {
     rejected,
@@ -15,23 +13,42 @@ export enum NotificationType {
     newBlock
 }
 
-interface props {
+interface Notification {
     type: NotificationType,
-    hash: string
+    txHash: string
     open: boolean
-    setOpen: (o: boolean) => void
 }
 
-export function Notification(props: props) {
+const initialNotification: Notification = {
+    open: false,
+    type: NotificationType.pending,
+    txHash: '',
+}
+
+const notificationAtom = atom(initialNotification)
+
+export const useShowNotification = () => {
+    const [, setNotification] = useAtom(notificationAtom)
+
+    return (type: NotificationType, txHash: string, callback?: Function) => {
+        setNotification({ type, open: true, txHash })
+        return callback?.()
+    }
+}
+
+export function Notification() {
+    const [notification, setNotification] = useAtom(notificationAtom)
 
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-        setTimeout(() => { props.setOpen(false); }, 3000)
+        setTimeout(() => {
+            setNotification({ ...notification, open: false, txHash: '' });
+        }, 3000)
     };
 
     let severity: Color = "info"
     let message: string = "Transaction submitted"
 
-    switch (props.type) {
+    switch (notification.type) {
         case NotificationType.pending:
             break;
         case NotificationType.success:
@@ -53,14 +70,14 @@ export function Notification(props: props) {
 
     return (
         <Snackbar
-            open={props.open}
+            open={notification.open}
             onClose={handleClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             autoHideDuration={3000}
         >
             <Alert onClose={handleClose} severity={severity} action={
-                props.type === NotificationType.rejected ? <div></div> :
-                    <a href={`https://etherscan.io/tx/${props.hash}`} target="_blank" rel="noopener noreferrer">
+                notification.type === NotificationType.rejected ? <div></div> :
+                    <a href={`https://etherscan.io/tx/${notification.txHash}`} target="_blank" rel="noopener noreferrer">
                         <img src={link} alt="link" style={{ width: "20px", height: "20px" }} />
                     </a>
             }>
@@ -68,4 +85,8 @@ export function Notification(props: props) {
             </Alert>
         </Snackbar>
     );
+}
+
+function Alert(props: AlertProps) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
