@@ -12,6 +12,7 @@ import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { useTradeableTokensList } from "../hooks/useTradeableTokensList";
 import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
+import { useTXQueue } from "../hooks/useTXQueue";
 
 import { Notification, NotificationType, useShowNotification } from './components/Notification'
 import { PyroTokensInfo } from './components/PyroTokensInfo';
@@ -48,24 +49,29 @@ export default function () {
     const block = useCurrentBlock()
     const showNotification = useShowNotification()
 
-    //NEW HOOKS BEGIN
-    const [pendingTXQueue, setPendingTXQueue] = useLoggedState<PendingTX[]>([])
     const [baseTokenBalances, setBaseTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [pyroTokenBalances, setPyroTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
     const [minting, setMinting] = useLoggedState<boolean>(true)
     const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
-    //Estimating SCX from a given number of input tokens is
 
     const notify = (hash: string, type: NotificationType) => {
         showNotification(type, hash, () => {
-            if (type === NotificationType.pending)
-                setSwapping(true)
-            else setSwapping(false)
+            setSwapping(type === NotificationType.pending)
         })
     }
 
+    const { queueUpdateCallback, txQueuePush } = useTXQueue(notify)
+
     const balanceCallback = useCallback(async () => {
+        const bigBlock = BigInt(block)
+        const two = BigInt(2)
+        const zero = BigInt(0)
+
+        if (!(bigBlock % two === zero && walletContextProps.initialized)) {
+            return;
+        }
+
         const baseBalanceResults = await FetchBalances(account || "0x0", baseTokens, networkName)
         let baseBalances: TokenBalanceMapping[] = baseTokens.map(t => {
             let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
@@ -97,14 +103,6 @@ export default function () {
         }
     }, [block, walletContextProps.initialized])
 
-    useEffect(() => {
-        const bigBlock = BigInt(block)
-        const two = BigInt(2)
-        if (bigBlock % two === BigInt(0) && walletContextProps.initialized) {
-            balanceCallback()
-        }
-    }, [block, walletContextProps.initialized])
-
     const fetchBaseToken = (address: string): TokenListItem => baseTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
 
     const fetchPyroToken = (address: string): TokenListItem => {
@@ -112,40 +110,10 @@ export default function () {
         return p
     }
 
-    const txQueuePush = (val: PendingTX) => {
-        const newQueue = [...pendingTXQueue, val]
-        setPendingTXQueue(newQueue)
-    }
-    const txDequeue = () => {
-        let newArray = [...pendingTXQueue]
-        newArray.shift()
-        setPendingTXQueue(newArray)
-    }
-    const peekTX = () => {
-        if (pendingTXQueue.length == 0)
-            return false
-        return pendingTXQueue[0]
-    }
-    const queueUpdateCallback = useCallback(async () => {
-
-        const top = peekTX()
-        if (!top) return;
-        const receipt = await API.getTransactionReceipt(top.hash)
-
-        if (!!receipt) {
-            txDequeue()
-            if (receipt.status)
-                notify(top.hash, NotificationType.success)
-            else
-                notify(top.hash, NotificationType.fail)
-        }
-    }, [block])
-
     useEffect(() => {
+        balanceCallback()
         queueUpdateCallback()
     }, [block])
-
-    //NEW HOOKS END
 
     const [inputValue, setInputValue] = useLoggedState<string>('')
     const [outputValue, setOutputValue] = useLoggedState<string>('')
