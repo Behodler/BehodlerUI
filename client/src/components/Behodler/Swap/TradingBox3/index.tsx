@@ -1,10 +1,9 @@
-import React, { useEffect, useCallback, useState, useContext } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import { Button, Box, Grid, Hidden, Tooltip } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { DebounceInput } from 'react-debounce-input';
 import { useDebounce } from '@react-hook/debounce'
 
-import { WalletContext } from '../../../Contexts/WalletStatusContext'
 import API from '../../../../blockchain/ethereumAPI'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
@@ -13,6 +12,12 @@ import { useTradeableTokensList } from "../hooks/useTradeableTokensList";
 import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
 import { useTXQueue } from "../hooks/useTXQueue";
+import { useWalletContext } from "../hooks/useWalletContext";
+import {
+    useBehodlerContract,
+    usePyroWeth10ProxyContract,
+    useWeth10Contract,
+} from "../hooks/useContracts";
 
 import { Notification, NotificationType, useShowNotification } from './components/Notification'
 import { PyroTokensInfo } from './components/PyroTokensInfo';
@@ -25,6 +30,8 @@ import FetchBalances from './FetchBalances'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { Logos } from './ImageLoader'
 
+BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
+
 const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
@@ -32,19 +39,16 @@ const ONE = BigInt(1000000000000000000)
 export default function () {
     const classes = useStyles();
     const inputClasses = inputStyles();
-    BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
-    const walletContextProps = useContext(WalletContext);
+    const { networkName, initialized } = useWalletContext();
     const { chainId, account: accountAddress, active } = useActiveWeb3React()
     const { baseTokens, pyroTokens, daiAddress, allTokensConfig } = useTradeableTokensList()
 
-    const pyroWethProxy = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy
-    const behodler = walletContextProps.contracts.behodler.Behodler2.Behodler2
-    const behodlerAddress = behodler.address
+    const pyroWethProxy = usePyroWeth10ProxyContract()
+    const behodler = useBehodlerContract()
+    const weth10 = useWeth10Contract()
 
     const account = accountAddress || "0x0"
-    const networkName = API.networkMapping[(chainId || 0).toString()]
-    const behodler2Weth = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
 
     const block = useCurrentBlock()
     const showNotification = useShowNotification()
@@ -68,7 +72,7 @@ export default function () {
         const two = BigInt(2)
         const zero = BigInt(0)
 
-        if (!(bigBlock % two === zero && walletContextProps.initialized)) {
+        if (!(bigBlock % two === zero && initialized)) {
             return;
         }
 
@@ -81,7 +85,7 @@ export default function () {
         })
         const ethBalance = await API.getEthBalance(account || "0x0")
         let ethUpdated = baseBalances.map(b => {
-            if (b.address === behodler2Weth) {
+            if (b.address === weth10.address) {
                 return { ...b, balance: ethBalance }
             }
             return b
@@ -101,7 +105,7 @@ export default function () {
         if (stringified !== JSON.stringify(pyroTokenBalances)) {
             setPyroTokenBalances(pyroBalances)
         }
-    }, [block, walletContextProps.initialized])
+    }, [block, initialized])
 
     const fetchBaseToken = (address: string): TokenListItem => baseTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
 
@@ -186,13 +190,13 @@ export default function () {
         setSwapState(SwapState.IMPOSSIBLE)
 
         try {
-            const DAI = await API.getToken(daiAddress, walletContextProps.networkName)
-            const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodlerAddress).call({ from: account }))
-            const inputAddressToUse = isInputEth ? behodler2Weth : inputAddress
-            const outputAddressToUse = isOutputEth ? behodler2Weth : outputAddress
+            const DAI = await API.getToken(daiAddress, networkName)
+            const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodler.address).call({ from: account }))
+            const inputAddressToUse = isInputEth ? weth10.address : inputAddress
+            const outputAddressToUse = isOutputEth ? weth10.address : outputAddress
             if (minting) {
-                const inputToken = await API.getToken(inputAddressToUse, walletContextProps.networkName)
-                const inputBalanceOnBehodler = await inputToken.balanceOf(behodlerAddress).call({ from: account })
+                const inputToken = await API.getToken(inputAddressToUse, networkName)
+                const inputBalanceOnBehodler = await inputToken.balanceOf(behodler.address).call({ from: account })
                 const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
                 setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
 
@@ -204,8 +208,8 @@ export default function () {
                 const outputSpot = parseFloat(spotForPyro.toString()) / Factor
                 setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
             } else {
-                const outputToken = await API.getToken(outputAddressToUse, walletContextProps.networkName)
-                const outputBalanceOnBehodler = await outputToken.balanceOf(behodlerAddress).call({ from: account })
+                const outputToken = await API.getToken(outputAddressToUse, networkName)
+                const outputBalanceOnBehodler = await outputToken.balanceOf(behodler.address).call({ from: account })
                 const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
                 setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
 
@@ -225,10 +229,10 @@ export default function () {
     }, [inputAddress, outputAddress, daiAddress])
 
     useEffect(() => {
-        if (walletContextProps.initialized) {
+        if (initialized) {
             spotPriceCallback()
         }
-    }, [inputAddress, outputAddress, daiAddress, walletContextProps.initialized])
+    }, [inputAddress, outputAddress, daiAddress, initialized])
 
 
     const [swapClicked, setSwapClicked] = useLoggedState<boolean>(false)
@@ -289,7 +293,7 @@ export default function () {
         }
     }, [inputEnabled, inputAddress, outputAddress])
 
-    const currentTokenEffects = walletContextProps.initialized
+    const currentTokenEffects = initialized
         ? API.generateNewEffects(inputAddress, account, isInputEth)
         : null
 
@@ -304,7 +308,7 @@ export default function () {
 
         let addressToCheck = minting ? outputAddress : inputAddress
         if (isOutputEth)
-            addressToCheck = walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.address
+            addressToCheck = pyroWethProxy.address
         if (isInputEth) {
             setInputEnabled(true)
             return
@@ -432,7 +436,7 @@ export default function () {
         if (minting) {
             let pyrotokensGeneratedWei
             if (isInputEth) {
-                pyrotokensGeneratedWei = bigFactor * BigInt(await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateMintedPyroWeth(inputValToUse).call({ account }))
+                pyrotokensGeneratedWei = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(inputValToUse).call({ account }))
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
                 redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
@@ -442,7 +446,7 @@ export default function () {
         } else {
             let baseTokensGeneratedWei
             if (isOutputEth) {
-                baseTokensGeneratedWei = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(inputValToUse).call({ account })
+                baseTokensGeneratedWei = await pyroWethProxy.calculateRedeemedWeth(inputValToUse).call({ account })
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
                 const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
@@ -460,7 +464,7 @@ export default function () {
         if (minting) {
             let baseTokensRequired
             if (isInputEth) {
-                baseTokensRequired = await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateRedeemedWeth(outputValToUse).call({ account })
+                baseTokensRequired = await pyroWethProxy.calculateRedeemedWeth(outputValToUse).call({ account })
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
                 redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
@@ -470,7 +474,7 @@ export default function () {
         } else {
             let pyroTokensRequired
             if (isInputEth) {
-                pyroTokensRequired = bigFactor * BigInt(await walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.calculateMintedPyroWeth(outputValToUse).call({ account }))
+                pyroTokensRequired = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(outputValToUse).call({ account }))
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
                 const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
@@ -598,7 +602,7 @@ export default function () {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
-            const addressToUse = isOutputEth ? walletContextProps.contracts.behodler.Behodler2.PyroWeth10Proxy.address : (minting ? outputAddress : inputAddress)
+            const addressToUse = isOutputEth ? pyroWethProxy.address : (minting ? outputAddress : inputAddress)
             await API.enableToken(
                 inputAddress,
                 account || "",
@@ -633,7 +637,7 @@ export default function () {
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
     const animatedLogo = Logos.filter(l => l.name === 'PyroAnimated')[0]
 
-    if (!(walletContextProps.initialized && accountAddress && active && chainId)) {
+    if (!(initialized && accountAddress && active && chainId)) {
         return (
             <Box justifyContent="center" alignItems="center" display="flex" height="100%" color="#ddd">
                 Please connect your wallet to use the app

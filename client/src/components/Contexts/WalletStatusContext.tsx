@@ -6,14 +6,14 @@ import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import useActiveWeb3React from "../Behodler/Swap/hooks/useActiveWeb3React";
 
-interface walletProps {
+interface WalletContextProps {
     contracts: IContracts
     primary: boolean,
     networkName: string,
     initialized: boolean
 }
 
-let WalletContext = React.createContext<walletProps>({
+let WalletContext = React.createContext<WalletContextProps>({
     contracts: DefaultContracts,
     primary: false,
     networkName: "",
@@ -50,7 +50,7 @@ function WalletContextProvider(props: { children: any }) {
         })();
     }, [chainId, account, connector, initialized])
 
-    const providerProps: walletProps = {
+    const providerProps: WalletContextProps = {
         contracts,
         primary,
         networkName,
@@ -73,8 +73,9 @@ function WalletContextProvider(props: { children: any }) {
         )
     }
 
-    WalletContext = React.createContext<walletProps>(providerProps)
+    WalletContext = React.createContext<WalletContextProps>(providerProps)
     return <WalletContext.Provider value={providerProps}>{props.children}</WalletContext.Provider>
 }
 
-export { WalletContext, WalletContextProvider }
+export {WalletContext, WalletContextProvider}
+export type { WalletContextProps }
