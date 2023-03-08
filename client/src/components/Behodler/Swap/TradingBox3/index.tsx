@@ -13,20 +13,17 @@ import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
 import { useTXQueue } from "../hooks/useTXQueue";
 import { useWalletContext } from "../hooks/useWalletContext";
-import {
-    useBehodlerContract,
-    usePyroWeth10ProxyContract,
-    useWeth10Contract,
-} from "../hooks/useContracts";
+import { useBehodlerContract, usePyroWeth10ProxyContract, useWeth10Contract } from "../hooks/useContracts";
+import { useWatchTokenBalancesEffect, useBaseTokenBalances, usePyroTokenBalances } from "../hooks/useTokenBalances";
+import { useActiveAccountAddress } from "../hooks/useAccount";
 
 import { Notification, NotificationType, useShowNotification } from './components/Notification'
 import { PyroTokensInfo } from './components/PyroTokensInfo';
 import { BalanceContainer } from './components/BalanceContainer';
 import { DirectionLabel } from './components/DirectionLabel';
 import { useStyles, inputStyles } from './styles';
-import { TokenBalanceMapping, TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
+import { TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
 import TokenSelector from './TokenSelector'
-import FetchBalances from './FetchBalances'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { Logos } from './ImageLoader'
 
@@ -41,20 +38,20 @@ export default function () {
     const inputClasses = inputStyles();
 
     const { networkName, initialized } = useWalletContext();
-    const { chainId, account: accountAddress, active } = useActiveWeb3React()
+    const { chainId, active } = useActiveWeb3React()
     const { baseTokens, pyroTokens, daiAddress, allTokensConfig } = useTradeableTokensList()
+    const activeAccountAddress = useActiveAccountAddress()
 
     const pyroWethProxy = usePyroWeth10ProxyContract()
     const behodler = useBehodlerContract()
     const weth10 = useWeth10Contract()
 
-    const account = accountAddress || "0x0"
-
     const block = useCurrentBlock()
     const showNotification = useShowNotification()
 
-    const [baseTokenBalances, setBaseTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
-    const [pyroTokenBalances, setPyroTokenBalances] = useLoggedState<TokenBalanceMapping[]>([])
+    const pyroTokenBalances = usePyroTokenBalances()
+    const baseTokenBalances = useBaseTokenBalances()
+
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
     const [minting, setMinting] = useLoggedState<boolean>(true)
     const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
@@ -67,46 +64,6 @@ export default function () {
 
     const { queueUpdateCallback, txQueuePush } = useTXQueue(notify)
 
-    const balanceCallback = useCallback(async () => {
-        const bigBlock = BigInt(block)
-        const two = BigInt(2)
-        const zero = BigInt(0)
-
-        if (!(bigBlock % two === zero && initialized)) {
-            return;
-        }
-
-        const baseBalanceResults = await FetchBalances(account || "0x0", baseTokens, networkName)
-        let baseBalances: TokenBalanceMapping[] = baseTokens.map(t => {
-            let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
-            let address = t.address
-            let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
-            return { address, balance: decimalBalance, name: t.name }
-        })
-        const ethBalance = await API.getEthBalance(account || "0x0")
-        let ethUpdated = baseBalances.map(b => {
-            if (b.address === weth10.address) {
-                return { ...b, balance: ethBalance }
-            }
-            return b
-        })
-        if (JSON.stringify(ethUpdated) !== JSON.stringify(baseTokenBalances)) {
-            setBaseTokenBalances(ethUpdated)
-        }
-
-        const pyroBalanceResults = await FetchBalances(account || "0x0", pyroTokens, networkName)
-        let pyroBalances: TokenBalanceMapping[] = pyroTokens.map(t => {
-            let hexBalance = pyroBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
-            let address = t.address
-            let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
-            return { address, balance: decimalBalance, name: t.name }
-        })
-        const stringified = JSON.stringify(pyroBalances)
-        if (stringified !== JSON.stringify(pyroTokenBalances)) {
-            setPyroTokenBalances(pyroBalances)
-        }
-    }, [block, initialized])
-
     const fetchBaseToken = (address: string): TokenListItem => baseTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
 
     const fetchPyroToken = (address: string): TokenListItem => {
@@ -114,8 +71,9 @@ export default function () {
         return p
     }
 
+    useWatchTokenBalancesEffect()
+
     useEffect(() => {
-        balanceCallback()
         queueUpdateCallback()
     }, [block])
 
@@ -191,31 +149,31 @@ export default function () {
 
         try {
             const DAI = await API.getToken(daiAddress, networkName)
-            const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodler.address).call({ from: account }))
+            const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodler.address).call({ from: activeAccountAddress }))
             const inputAddressToUse = isInputEth ? weth10.address : inputAddress
             const outputAddressToUse = isOutputEth ? weth10.address : outputAddress
             if (minting) {
                 const inputToken = await API.getToken(inputAddressToUse, networkName)
-                const inputBalanceOnBehodler = await inputToken.balanceOf(behodler.address).call({ from: account })
+                const inputBalanceOnBehodler = await inputToken.balanceOf(behodler.address).call({ from: activeAccountAddress })
                 const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
                 setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
 
                 const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
-                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
+                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: activeAccountAddress })).toString())
                 const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
                 const spotForPyro = (redeemRate * bigSpot) / (ONE)
                 const outputSpot = parseFloat(spotForPyro.toString()) / Factor
                 setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
             } else {
                 const outputToken = await API.getToken(outputAddressToUse, networkName)
-                const outputBalanceOnBehodler = await outputToken.balanceOf(behodler.address).call({ from: account })
+                const outputBalanceOnBehodler = await outputToken.balanceOf(behodler.address).call({ from: activeAccountAddress })
                 const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
                 setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
 
                 const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
-                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: account })).toString())
+                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: activeAccountAddress })).toString())
                 const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
                 // const bigSpot = BigInt(intSpot)
                 const spotForPyro = (redeemRate * bigSpot) / ONE
@@ -294,7 +252,7 @@ export default function () {
     }, [inputEnabled, inputAddress, outputAddress])
 
     const currentTokenEffects = initialized
-        ? API.generateNewEffects(inputAddress, account, isInputEth)
+        ? API.generateNewEffects(inputAddress, activeAccountAddress, isInputEth)
         : null
 
     useEffect(() => {
@@ -314,7 +272,7 @@ export default function () {
             return
         }
 
-        const effect = currentTokenEffects.allowance(account, addressToCheck)
+        const effect = currentTokenEffects.allowance(activeAccountAddress, addressToCheck)
         const subscription = effect.Observable.subscribe((allowance) => {
 
             const scaledAllowance = API.fromWei(allowance)
@@ -370,8 +328,8 @@ export default function () {
 
     const swap2Callback = useCallback(async () => {
         const inputValWei = API.toWei(inputValue)
-        const primaryOptions = { from: account, gas: undefined };
-        const ethOptions = { from: account, value: inputValWei, gas: undefined };
+        const primaryOptions = { from: activeAccountAddress, gas: undefined };
+        const ethOptions = { from: activeAccountAddress, value: inputValWei, gas: undefined };
 
         console.info("tx invocation initiated.")
         if (swapClicked) {
@@ -436,20 +394,20 @@ export default function () {
         if (minting) {
             let pyrotokensGeneratedWei
             if (isInputEth) {
-                pyrotokensGeneratedWei = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(inputValToUse).call({ account }))
+                pyrotokensGeneratedWei = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(inputValToUse).call({ account: activeAccountAddress }))
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
-                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
                 pyrotokensGeneratedWei = (inputValToUse * bigFactor * ONE) / redeemRate
             }
             outputEstimate = parseFloat(API.fromWei(pyrotokensGeneratedWei.toString())) / Factor
         } else {
             let baseTokensGeneratedWei
             if (isOutputEth) {
-                baseTokensGeneratedWei = await pyroWethProxy.calculateRedeemedWeth(inputValToUse).call({ account })
+                baseTokensGeneratedWei = await pyroWethProxy.calculateRedeemedWeth(inputValToUse).call({ account: activeAccountAddress })
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
-                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
                 baseTokensGeneratedWei = (inputValToUse * redeemRate * BigInt(98)) / (ONE * BigInt(100))
             }
             outputEstimate = parseFloat(API.fromWei(baseTokensGeneratedWei.toString()))
@@ -464,20 +422,20 @@ export default function () {
         if (minting) {
             let baseTokensRequired
             if (isInputEth) {
-                baseTokensRequired = await pyroWethProxy.calculateRedeemedWeth(outputValToUse).call({ account })
+                baseTokensRequired = await pyroWethProxy.calculateRedeemedWeth(outputValToUse).call({ account: activeAccountAddress })
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
-                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
                 baseTokensRequired = (outputValToUse * redeemRate) / ONE
             }
             inputEstimate = parseFloat(API.fromWei(baseTokensRequired.toString()))
         } else {
             let pyroTokensRequired
             if (isInputEth) {
-                pyroTokensRequired = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(outputValToUse).call({ account }))
+                pyroTokensRequired = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(outputValToUse).call({ account: activeAccountAddress }))
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
-                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: account }))
+                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
                 pyroTokensRequired = (outputValToUse * bigFactor * ONE * BigInt(98)) / (redeemRate * BigInt(100))
             }
             inputEstimate = parseFloat(API.fromWei(pyroTokensRequired.toString())) / Factor
@@ -605,7 +563,7 @@ export default function () {
             const addressToUse = isOutputEth ? pyroWethProxy.address : (minting ? outputAddress : inputAddress)
             await API.enableToken(
                 inputAddress,
-                account || "",
+                activeAccountAddress || "",
                 addressToUse, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {
@@ -637,7 +595,7 @@ export default function () {
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
     const animatedLogo = Logos.filter(l => l.name === 'PyroAnimated')[0]
 
-    if (!(initialized && accountAddress && active && chainId)) {
+    if (!(initialized && active && chainId)) {
         return (
             <Box justifyContent="center" alignItems="center" display="flex" height="100%" color="#ddd">
                 Please connect your wallet to use the app
