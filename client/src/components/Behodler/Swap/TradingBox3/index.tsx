@@ -16,13 +16,14 @@ import { useWalletContext } from "../hooks/useWalletContext";
 import { useBehodlerContract, usePyroWeth10ProxyContract, useWeth10Contract } from "../hooks/useContracts";
 import { useWatchTokenBalancesEffect, useBaseTokenBalances, usePyroTokenBalances } from "../hooks/useTokenBalances";
 import { useActiveAccountAddress } from "../hooks/useAccount";
+import { useTokenConfigs } from "../hooks/useTokenConfigs";
 
 import { Notification, NotificationType, useShowNotification } from './components/Notification'
 import { PyroTokensInfo } from './components/PyroTokensInfo';
 import { BalanceContainer } from './components/BalanceContainer';
 import { DirectionLabel } from './components/DirectionLabel';
 import { useStyles, inputStyles } from './styles';
-import { TokenListItem, SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
+import { SwapState, TXType, PendingTX, FieldState, IndependentField } from './types';
 import TokenSelector from './TokenSelector'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { Logos } from './ImageLoader'
@@ -41,6 +42,7 @@ export default function () {
     const { chainId, active } = useActiveWeb3React()
     const { baseTokens, pyroTokens, daiAddress, allTokensConfig } = useTradeableTokensList()
     const activeAccountAddress = useActiveAccountAddress()
+    const { addressToPyroToken, addressToBaseToken } = useTokenConfigs()
 
     const pyroWethProxy = usePyroWeth10ProxyContract()
     const behodler = useBehodlerContract()
@@ -63,13 +65,6 @@ export default function () {
     }
 
     const { queueUpdateCallback, txQueuePush } = useTXQueue(notify)
-
-    const fetchBaseToken = (address: string): TokenListItem => baseTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
-
-    const fetchPyroToken = (address: string): TokenListItem => {
-        const p = pyroTokens.filter(t => t.address.toLowerCase() === address.toLowerCase())[0]
-        return p
-    }
 
     useWatchTokenBalancesEffect()
 
@@ -632,14 +627,14 @@ export default function () {
                                 className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
                                 <Grid item>
-                                    <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image}
+                                    <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? addressToBaseToken(inputAddress).image : addressToPyroToken(inputAddress).image}
                                         scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
                                 </Grid>
                                 <Grid item onClick={() => setFlipClicked(true)} >
                                     <img width={100} src={swapping ? animatedLogo.image : staticLogo.image} className={classes.pyroShieldMobileAnimated} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector pyro={minting} network={networkName} balances={minting ? pyroTokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={!minting ? fetchBaseToken(outputAddress).image : fetchPyroToken(outputAddress).image} scale={0.65} mobile />
+                                    <TokenSelector pyro={minting} network={networkName} balances={minting ? pyroTokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={!minting ? addressToBaseToken(outputAddress).image : addressToPyroToken(outputAddress).image} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
@@ -806,7 +801,7 @@ export default function () {
                                     id="central-selector-monster-grid"
                                 >
                                     <Grid item>
-                                        <TokenSelector pyro={!minting} balances={minting ? baseTokenBalances : pyroTokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? fetchBaseToken(inputAddress).image : fetchPyroToken(inputAddress).image} scale={0.8} />
+                                        <TokenSelector pyro={!minting} balances={minting ? baseTokenBalances : pyroTokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? addressToBaseToken(inputAddress).image : addressToPyroToken(inputAddress).image} scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.pyroShieldContainer} >
@@ -817,7 +812,7 @@ export default function () {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector pyro={minting} balances={minting ? pyroTokenBalances : baseTokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={minting ? fetchPyroToken(outputAddress).image : fetchBaseToken(outputAddress).image} scale={0.8} />
+                                        <TokenSelector pyro={minting} balances={minting ? pyroTokenBalances : baseTokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={minting ? addressToPyroToken(outputAddress).image : addressToBaseToken(outputAddress).image} scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>
