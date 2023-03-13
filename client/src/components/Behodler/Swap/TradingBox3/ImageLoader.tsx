@@ -29,7 +29,7 @@ interface ImageNamePair {
     name: string
 }
 
-interface ImagePair {
+export interface ImagePair {
     id: string,
     baseToken: ImageNamePair,
     pyroToken: ImageNamePair,
