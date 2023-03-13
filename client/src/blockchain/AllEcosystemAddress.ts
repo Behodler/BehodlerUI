@@ -71,6 +71,3 @@ export interface IFlatEcosystemAddress {
     ToggleFlashGovernanceProposal: string,
     UpdateProposalConfigProposal: string
 }    
-
-export const FlatEcosystemAddresses = flat as IFlatEcosystemAddress
-
