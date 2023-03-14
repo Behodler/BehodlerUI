@@ -1,4 +1,4 @@
-import flat from "./FlatEcosystemAddresses.json"
+import addressesMap from "./FlatEcosystemAddresses.json"
 
 export interface IFlatEcosystemAddress {
     Weth: string,
@@ -70,4 +70,7 @@ export interface IFlatEcosystemAddress {
     SetFateSpendersProposal: string,
     ToggleFlashGovernanceProposal: string,
     UpdateProposalConfigProposal: string
-}    
+}
+
+export const flatEcosystemAddressMapByNetwork = addressesMap;
+
