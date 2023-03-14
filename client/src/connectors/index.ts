@@ -64,6 +64,7 @@ export const injected = new InjectedConnector({
         66, // okex testnet
         65, // okex testnet
         1337, // ganache local testnet
+        11155111, // sepolia testnet
     ]
 })
 
