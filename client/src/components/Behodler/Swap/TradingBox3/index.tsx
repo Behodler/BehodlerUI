@@ -13,7 +13,7 @@ import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
 import { useTXQueue } from "../hooks/useTXQueue";
 import { useWalletContext } from "../hooks/useWalletContext";
-import { useBehodlerContract, usePyroWeth10ProxyContract, useWeth10Contract } from "../hooks/useContracts";
+import { useBehodlerContract, usePyroWeth10ProxyContract, useWeth10Contract, useContractCall } from "../hooks/useContracts";
 import { useWatchTokenBalancesEffect, useBaseTokenBalances, usePyroTokenBalances } from "../hooks/useTokenBalances";
 import { useActiveAccountAddress } from "../hooks/useAccount";
 import { useTokenConfigs } from "../hooks/useTokenConfigs";
@@ -47,6 +47,7 @@ export default function () {
     const pyroWethProxy = usePyroWeth10ProxyContract()
     const behodler = useBehodlerContract()
     const weth10 = useWeth10Contract()
+    const [callPyroWethProxy] = useContractCall(pyroWethProxy)
 
     const block = useCurrentBlock()
     const showNotification = useShowNotification()
@@ -345,7 +346,10 @@ export default function () {
                 updateIndependentFromField('')
                 updateIndependentToField('')
             } catch (e) {
-                console.error(e);
+                console.error('swap error: ', e, {
+                    minting,
+                    pyroToken,
+                })
             }
         }
         setSwapClicked(false)
@@ -389,7 +393,12 @@ export default function () {
         if (minting) {
             let pyrotokensGeneratedWei
             if (isInputEth) {
-                pyrotokensGeneratedWei = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(inputValToUse).call({ account: activeAccountAddress }))
+                const mintedPyroWeth = await callPyroWethProxy({
+                    method: 'calculateMintedPyroWeth',
+                    args: [inputValToUse],
+                    overrides: { from: activeAccountAddress },
+                })
+                pyrotokensGeneratedWei = bigFactor * BigInt(mintedPyroWeth)
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
                 redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
@@ -399,7 +408,11 @@ export default function () {
         } else {
             let baseTokensGeneratedWei
             if (isOutputEth) {
-                baseTokensGeneratedWei = await pyroWethProxy.calculateRedeemedWeth(inputValToUse).call({ account: activeAccountAddress })
+                baseTokensGeneratedWei = await callPyroWethProxy({
+                    method: 'calculateRedeemedWeth',
+                    args: [inputValToUse],
+                    overrides: { from: activeAccountAddress },
+                })
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
                 const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
@@ -417,7 +430,11 @@ export default function () {
         if (minting) {
             let baseTokensRequired
             if (isInputEth) {
-                baseTokensRequired = await pyroWethProxy.calculateRedeemedWeth(outputValToUse).call({ account: activeAccountAddress })
+                baseTokensRequired = await callPyroWethProxy({
+                    method: 'calculateRedeemedWeth',
+                    args: [outputValToUse],
+                    overrides: { from: activeAccountAddress },
+                })
             } else {
                 const pyroToken = await API.getPyroToken(outputAddress, networkName)
                 redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
@@ -427,7 +444,12 @@ export default function () {
         } else {
             let pyroTokensRequired
             if (isInputEth) {
-                pyroTokensRequired = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(outputValToUse).call({ account: activeAccountAddress }))
+                const mintedPyroWeth = await callPyroWethProxy({
+                    method: 'calculateMintedPyroWeth',
+                    args: [outputValToUse],
+                    overrides: { from: activeAccountAddress },
+                })
+                pyroTokensRequired = bigFactor * BigInt(mintedPyroWeth)
             } else {
                 const pyroToken = await API.getPyroToken(inputAddress, networkName)
                 const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))

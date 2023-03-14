@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import useActiveWeb3React from "../Behodler/Swap/hooks/useActiveWeb3React";
+import { useContractCall } from "../Behodler/Swap/hooks/useContracts";
 
 interface WalletContextProps {
     contracts: IContracts
@@ -28,6 +29,8 @@ function WalletContextProvider(props: { children: any }) {
     const [initialized, setInitialized] = useState<boolean>(false)
     const { chainId, account, connector } = useActiveWeb3React()
 
+    const [callContract] = useContractCall()
+
     useEffect(() => {
         (async () => {
             if (chainId && connector) {
@@ -37,7 +40,11 @@ function WalletContextProvider(props: { children: any }) {
                 if (account && !initialized) {
                     const c = await API.initialize(chainId, account)
                     setContracts(c)
-                    const owner = await c.behodler.Behodler2.Behodler2.owner().call({ from: account })
+                    const owner = await callContract({
+                        contract:  c.behodler.Behodler2.Behodler2,
+                        method: 'owner',
+                        overrides: { from: account },
+                    }) || ''
                     setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
                     setNetworkName(networkNameMapper(chainId))
                     setInitialized(true)
