@@ -1,4 +1,4 @@
-import flat from "./FlatEcosystemAddresses.json"
+// import flat from "./FlatEcosystemAddresses.json"
 
 export interface IFlatEcosystemAddress {
     Weth: string,

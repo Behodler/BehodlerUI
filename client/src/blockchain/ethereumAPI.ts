@@ -45,6 +45,13 @@ class ethereumAPI {
     public UINTMAX: string = '115792089237316000000000000000000000000000000000000000000000000000000000000000'
     public ONE = BigInt('1000000000000000000')
     constructor() {
+        //TODO: conditionally fetch addresses from dev server. ChainID 1337
+        /*fetch("http://localhost:1024/get-deployment-addresses",{mode:'cors',method:'GET',credentials:"omit",cache:"no-cache"})
+
+        .then((response) => response.json())
+        .catch(err => console.log(err))
+        .then((data) => console.log(data));
+        */
         this.networkMapping = {
             '1': 'main',
             '2': 'morden',
