@@ -61,9 +61,10 @@ class ethereumAPI {
             '42': 'kovan',
             '66': 'private',
             '1337': 'private',
+            '11155111':'sepolia'
         }
         // if we want to add more chains, add their ids and names in this.networkMapping and add their names to the array below
-        this.contractsAvailable = ['main']
+        this.contractsAvailable = ['main', 'sepolia']
     }
 
     public async initialize(chainId, currentAccount: string): Promise<IContracts> {
