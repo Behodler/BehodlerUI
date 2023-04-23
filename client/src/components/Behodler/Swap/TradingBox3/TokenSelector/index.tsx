@@ -1,9 +1,9 @@
-import React, {useContext} from 'react'
-import {Grid, makeStyles, Theme} from '@material-ui/core'
+import React, { useContext } from 'react'
+import { Grid, makeStyles, Theme } from '@material-ui/core'
 
 import Menu from './Menu'
-import {TokenBalanceMapping} from '../types'
-import {WalletContext} from "../../../../Contexts/WalletStatusContext";
+import { TokenBalanceMapping } from '../types'
+import { WalletContext } from "../../../../Contexts/WalletStatusContext";
 
 const useStyles = (scale) => makeStyles((theme: Theme) => ({
     root: {
@@ -48,7 +48,7 @@ export default function TokenSelector(props: props) {
     const walletContextProps = useContext(WalletContext);
 
     const weth10Address = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
-    const scarcityAddress = walletContextProps.contracts.behodler.Scarcity.address;
+    const scarcityAddress = walletContextProps.contracts.behodler.Behodler2.Behodler2.address;
 
     const classes = useStyles(props.scale)()
     return <div className={classes.root}>
@@ -63,8 +63,8 @@ export default function TokenSelector(props: props) {
             <Grid item>
                 <div className={classes.innerCircle}>
                     <img alt="token"
-                         src={props.tokenImage}
-                         width={(props.pyro ? 100 : 80) * props.scale} />
+                        src={props.tokenImage}
+                        width={(props.pyro ? 100 : 80) * props.scale} />
                 </div>
             </Grid>
 

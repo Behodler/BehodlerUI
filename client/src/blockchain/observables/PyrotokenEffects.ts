@@ -1,13 +1,13 @@
 import Web3 from "web3";
-import { Pyrotoken } from '../contractInterfaces/behodler2/Pyrotoken'
+import { PyrotokenV2 } from '../contractInterfaces/behodler2/PyrotokenV2'
 
 import { Effect, FetchNumberFields, FetchNumber } from './common'
 import EffectBase from './EffectBase'
 
 export class PyrotokenEffects extends EffectBase {
-	pyroTokenInstance: Pyrotoken
+	pyroTokenInstance: PyrotokenV2
 
-	constructor(web3: Web3, pyroToken: Pyrotoken, account: string) {
+	constructor(web3: Web3, pyroToken: PyrotokenV2, account: string) {
 		super(web3, account)
 		this.pyroTokenInstance = pyroToken;
 	}

@@ -30,7 +30,6 @@ interface ImageNamePair {
 }
 
 export interface ImagePair {
-    id: string,
     baseToken: ImageNamePair,
     pyroToken: ImageNamePair,
 }
@@ -38,62 +37,54 @@ export interface ImagePair {
 export const TokenList: ImagePair[] =
     [
         {
-            id: 'oxt',
+            baseToken: { image: OXT, name: 'MKR' },//TODO: image for MKR and PyroMKR. Currently mainnt has no PyroMKR
+            pyroToken: { image: pyroOXT, name: 'PyroMKR' },
+        },
+        {
             baseToken: { image: OXT, name: 'OXT' },
             pyroToken: { image: pyroOXT, name: 'PyroOXT' },
         },
         {
-            id: 'pnk',
             baseToken: { image: PNK, name: 'PNK' },
             pyroToken: { image: pyroPNK, name: 'PyroPNK' },
         },
         {
-            id: 'weth',
             baseToken: { image: Weth, name: "ETH" },
             pyroToken: { image: pyroWETH, name: 'PyroWETH' },
         },
         {
-            id: 'link',
             baseToken: { image: LINK, name: "LINK" },
             pyroToken: { image: pyroLINK, name: 'PyroLINK' },
         },
         {
-            id: 'loom',
             baseToken: { image: LOOM, name: "LOOM" },
             pyroToken: { image: pyroLOOM, name: 'PyroLOOM' },
         },
         {
-            id: 'eyeDaiUniV2LP',
-            baseToken: { image: eyedai, name: "EYE/DAI UniV2LP"},
-            pyroToken: { image: pyroEYEDAI, name: 'Pyro EYE/DAI UniV2LP' },
+            baseToken: { image: eyedai, name: "EYE/DAI UniV2" },
+            pyroToken: { image: pyroEYEDAI, name: 'Pyro(EYE/DAI UniV2)' },
         },
         {
-            id: 'scxEthUniV2LP',
-            baseToken: { image: scxeth, name: "SCX/ETH UniV2LP"},
-            pyroToken: { image: pyroScxeth, name: 'Pyro SCX/ETH UniV2LP' },
+            baseToken: { image: scxeth, name: "SCX/ETH UniV2" },
+            pyroToken: { image: pyroScxeth, name: 'Pyro (SCX/ETH UniV2)' },
         },
         {
-            id: 'scxEyeUniV2LP',
-            baseToken: { image: scxeye, name: "SCX/EYE UniV2LP" },
-            pyroToken: { image: pyroScxeye, name: 'Pyro SCX/EYE UniV2LP' },
+            baseToken: { image: scxeye, name: "SCX/EYE UniV2" },
+            pyroToken: { image: pyroScxeye, name: 'Pyro (SCX/EYE UniV2)' },
         },
         {
-            id: 'mockToken1',
             baseToken: { image: eye, name: "MockToken1" },
             pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken1' },
         },
         {
-            id: 'mockToken2',
             baseToken: { image: eye, name: "MockToken2" },
             pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken2' },
         },
         {
-            id: 'mockToken3',
             baseToken: { image: eye, name: "MockToken3" },
             pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken3' },
         },
         {
-            id: 'mockToken4',
             baseToken: { image: eye, name: "MockToken4" },
             pyroToken: { image: pyroEYEDAI, name: 'PyroMockToken4' },
         },

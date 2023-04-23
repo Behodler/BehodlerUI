@@ -1,10 +1,10 @@
 import * as React from 'react'
-import {useState, useEffect, useCallback} from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 import { TokenBalanceMapping } from '../types'
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
 import API from "../../../../../blockchain/ethereumAPI"
-import {useTradeableTokensList} from "../../hooks/useTradeableTokensList";
+import { useTradeableTokensList } from "../../hooks/useTradeableTokensList";
 
 const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     root: {
@@ -112,23 +112,27 @@ const trunc = (str: string, max: number) => {
     return str;
 }
 export default function Menu(props: props) {
-    const { baseTokens, pyroTokens } = useTradeableTokensList()
+    const groups = useTradeableTokensList()
+    const conjoinedPyro = [...groups.pyroTokensV2, ...groups.pyroTokensV3]
+        .sort((a, b) => a.name.substring(0, a.name.length - 5).localeCompare(b.name.substring(0, b.name.length - 5)))
+
     const [menuItems, setMenuItems] = useState<MenuToken[]>((
-        (props.pyro ? pyroTokens : baseTokens)
+        (props.pyro ? conjoinedPyro : groups.baseTokens)
             .map(token => ({ ...token, loading: true, balance: '0' }))
     ));
 
     const findBaseTokenOrPyroWithAddress = useCallback(({ address }) => (
-        baseTokens.find(token => token.address.toLowerCase() === address.toLowerCase())
-        || pyroTokens.find(token => token.address.toLowerCase() === address.toLowerCase())
-    ), [baseTokens, pyroTokens])
+        groups.baseTokens.find(token => token.address.toLowerCase() === address.toLowerCase())
+        || groups.pyroTokensV2.find(token => token.address.toLowerCase() === address.toLowerCase())
+        || groups.pyroTokensV3.find(token => token.address.toLowerCase() === address.toLowerCase())
+
+    ), [groups.baseTokens, groups.pyroTokensV2, groups.pyroTokensV3])
 
     useEffect(() => {
         const getMenuItems = (balances: TokenBalanceMapping[]) => balances
             .filter(findBaseTokenOrPyroWithAddress)
             .map(({ balance, address }) => {
                 const currentTokenListItem = findBaseTokenOrPyroWithAddress({ address });
-
                 const item: MenuToken = {
                     address,
                     name: currentTokenListItem?.name || '',
@@ -136,10 +140,7 @@ export default function Menu(props: props) {
                     loading: false,
                     balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4)
                 }
-                const uni = item.name.toLowerCase().indexOf('univ2lp')
-                if (uni !== -1) {
-                    item.name = item.name.substring(0, uni).trim()
-                }
+
                 return item
             })
 
@@ -194,7 +195,6 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                         {filteredList.map((t, i) => <ListItem className={props.mobile ? classes.listItemMobile : classes.listItem} button key={i} onClick={() => {
                             props.setShow(false)
                             props.setAddress(t.address)
-                            console.log('selected token: ' + t.address)
                         }}>
                             <ListItemIcon>
                                 <img width={props.mobile ? 24 : 32} src={t.image} alt={t.name} />
@@ -209,7 +209,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                                 >
 
                                     <Grid item>
-                                        {trunc(t.name, props.mobile ? 10 : 20)}
+                                        {trunc(t.name, props.mobile ? 10 : 24)}
                                     </Grid>
 
                                     <Grid item>

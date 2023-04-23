@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import useActiveWeb3React from "../Behodler/Swap/hooks/useActiveWeb3React";
+import {networkMapper} from '../../blockchain/AllEcosystemAddress'
 
 interface WalletContextProps {
     contracts: IContracts
@@ -19,7 +20,6 @@ let WalletContext = React.createContext<WalletContextProps>({
     networkName: "",
     initialized: false
 })
-const networkNameMapper = (id: number): string => API.networkMapping[id]
 
 function WalletContextProvider(props: { children: any }) {
     const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
@@ -39,7 +39,7 @@ function WalletContextProvider(props: { children: any }) {
                     setContracts(c)
                     const owner = await c.behodler.Behodler2.Behodler2.owner().call({ from: account })
                     setPrimary(owner.toString().toLowerCase() === account.toLowerCase())
-                    setNetworkName(networkNameMapper(chainId))
+                    setNetworkName(networkMapper.getNameFromChainId(chainId))
                     setInitialized(true)
                 }
 

@@ -1,20 +1,21 @@
 import { Multicall, ContractCallResults, ContractCallContext } from 'ethereum-multicall'
 import API from '../../../../blockchain/ethereumAPI'
-import ERC20JSON from '../../../../blockchain/behodlerUI/ERC20.json'
-import addresses from '../../../../blockchain/behodler2UI/Addresses.json'
+
+import api from "../../../../blockchain/ethereumAPI"
+import ABIs from '../../../../blockchain/ABIs.json'
 
 interface contract {
     address: string
     name: string
 }
-export default async function FetchBalances(account, contracts: contract[], networkName: String): Promise<ContractCallResults> {
-    const abi = ERC20JSON.abi
+export default async function FetchBalances(account, contracts: contract[], networkName: string): Promise<ContractCallResults> {
+
+    const abi = ABIs.ERC20
+
     const multicall = new Multicall({
         web3Instance: API.web3,
         tryAggregate: true,
-        multicallCustomContractAddress: networkName === 'private'
-            ? addresses.development.multicall2
-            : undefined,
+        multicallCustomContractAddress: api.contractAddresses.Multicall3
     })
     const contractCallContext: ContractCallContext[] = contracts.map((c, i) => ({
         reference: c.name,

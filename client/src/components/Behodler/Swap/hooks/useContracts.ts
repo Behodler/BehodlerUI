@@ -2,6 +2,7 @@ import IContracts, { DefaultContracts } from '../../../../blockchain/IContracts'
 import { Weth } from '../../../../blockchain/contractInterfaces/behodler/Weth'
 import { Behodler2 } from '../../../../blockchain/contractInterfaces/behodler2/Behodler2'
 import { PyroWeth10Proxy } from '../../../../blockchain/contractInterfaces/behodler2/PyroWeth10Proxy'
+import { PyroWethProxy } from '../../../../blockchain/contractInterfaces/behodler2/PyroWethProxy'
 
 import { useWalletContext } from './useWalletContext'
 
@@ -16,6 +17,10 @@ export function useContracts(): IContracts {
 
 export function usePyroWeth10ProxyContract(): PyroWeth10Proxy {
     return useContracts().behodler.Behodler2.PyroWeth10Proxy
+}
+
+export function usePyroWethProxyContract(): PyroWethProxy {
+    return useContracts().behodler.Behodler2.PyroWethProxy
 }
 
 export function useBehodlerContract(): Behodler2 {

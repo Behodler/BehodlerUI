@@ -12,17 +12,19 @@ import { useActiveAccountAddress } from './useAccount';
 import { useWeth10Contract } from './useContracts';
 
 const baseTokenBalancesAtom = atom<TokenBalanceMapping[]>([])
-const pyroTokenBalancesAtom = atom<TokenBalanceMapping[]>([])
+const pyroTokenV2BalancesAtom = atom<TokenBalanceMapping[]>([])
+const pyroTokenV3BalancesAtom = atom<TokenBalanceMapping[]>([])
 
 export function useWatchTokenBalancesEffect() {
     const block = useCurrentBlock()
     const { initialized, networkName } = useWalletContext();
-    const { baseTokens, pyroTokens } = useTradeableTokensList()
+    const groups = useTradeableTokensList()
     const accountAddress = useActiveAccountAddress()
     const weth10 = useWeth10Contract()
 
     const [baseTokenBalances, setBaseTokenBalances] = useAtom(baseTokenBalancesAtom)
-    const [pyroTokenBalances, setPyroTokenBalances] = useAtom(pyroTokenBalancesAtom)
+    const [pyroTokenV2Balances, setPyroV2TokenBalances] = useAtom(pyroTokenV2BalancesAtom)
+    const [pyroTokenV3Balances, setPyroV3TokenBalances] = useAtom(pyroTokenV3BalancesAtom)
 
     useEffect(() => {
         (async () => {
@@ -34,8 +36,8 @@ export function useWatchTokenBalancesEffect() {
                 return;
             }
 
-            const baseBalanceResults = await FetchBalances(accountAddress, baseTokens, networkName)
-            let baseBalances: TokenBalanceMapping[] = baseTokens.map(t => {
+            const baseBalanceResults = await FetchBalances(accountAddress, groups.baseTokens, networkName)
+            let baseBalances: TokenBalanceMapping[] = groups.baseTokens.map(t => {
                 let hexBalance = baseBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
                 let address = t.address
                 let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
@@ -52,16 +54,29 @@ export function useWatchTokenBalancesEffect() {
                 setBaseTokenBalances(ethUpdated)
             }
 
-            const pyroBalanceResults = await FetchBalances(accountAddress, pyroTokens, networkName)
-            let pyroBalances: TokenBalanceMapping[] = pyroTokens.map(t => {
-                let hexBalance = pyroBalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+            const pyroV2BalanceResults = await FetchBalances(accountAddress, groups.pyroTokensV2, networkName)
+            let pyroBalances: TokenBalanceMapping[] = groups.pyroTokensV2.map(t => {
+                let hexBalance = pyroV2BalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
                 let address = t.address
                 let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
                 return { address, balance: decimalBalance, name: t.name }
             })
-            const stringified = JSON.stringify(pyroBalances)
-            if (stringified !== JSON.stringify(pyroTokenBalances)) {
-                setPyroTokenBalances(pyroBalances)
+            let stringified = JSON.stringify(pyroBalances)
+            if (stringified !== JSON.stringify(pyroTokenV2Balances)) {
+                setPyroV2TokenBalances(pyroBalances)
+            }
+
+            const pyroV3BalanceResults = await FetchBalances(accountAddress, groups.pyroTokensV3, networkName)
+            pyroBalances = groups.pyroTokensV3.map(t => {
+                let hexBalance = pyroV3BalanceResults.results[t.name].callsReturnContext[0].returnValues[0].hex.toString()
+                let address = t.address
+                let decimalBalance = API.web3.utils.hexToNumberString(hexBalance)
+                return { address, balance: decimalBalance, name: t.name }
+            })
+
+            stringified = JSON.stringify(pyroBalances)
+            if (stringified !== JSON.stringify(pyroTokenV3Balances)) {
+                setPyroV3TokenBalances(pyroBalances)
             }
         })()
     }, [block, initialized])
@@ -71,6 +86,10 @@ export function useBaseTokenBalances() {
     return useAtomValue(baseTokenBalancesAtom)
 }
 
-export function usePyroTokenBalances() {
-    return useAtomValue(pyroTokenBalancesAtom)
+export function usePyroV2TokenBalances() {
+    return useAtomValue(pyroTokenV2BalancesAtom)
+}
+
+export function usePyroV3TokenBalances() {
+    return useAtomValue(pyroTokenV3BalancesAtom)
 }

@@ -16,7 +16,6 @@
     "repository": "git@github.com:Behodler/BehodlerUI.git",
     "module": "dist/pyrotokens-legacy.esm.js",
     "dependencies": {
-        "@behodler/dev-env": "0.2.6",
         "@ethereumjs/vm": "5.5.3",
         "@ethersproject/abi": "^5.4.1",
         "@ethersproject/providers": "^5.4.5",
@@ -61,15 +60,12 @@
         "web3": "^1.5.2"
     },
     "scripts": {
-        "dev": "yarn behodler-dev-env:start && yarn client:dev",
-        "client:dev": "react-scripts start",
+        "dev": "react-scripts start",
         "package:build": "tsdx build --entry src/components/BehodlerUIPyrotokens/index.ts --tsconfig package.tsconfig.json --transpileOnly",
-        "behodler-dev-env:start": "sudo yarn behodler-dev-env-start",
-        "behodler-dev-env:stop": "yarn behodler-dev-env-stop",
-        "docker:dev": "yarn behodler-dev-env:start && yarn docker:dev-client",
+        "docker:dev": "docker:dev-client",
         "docker:install": "sudo rm -rf node_modules/* && sudo rm -f yarn.lock && docker compose up install",
         "docker:dev-client": "docker compose up --remove-orphans  -d client",
-        "docker:stop": "yarn behodler-dev-env:stop && docker compose down",
+        "docker:stop": "docker compose down",
         "docker:deploy-s3": "docker compose up build && docker compose up S3",
         "prepare": "yarn package:build"
     },

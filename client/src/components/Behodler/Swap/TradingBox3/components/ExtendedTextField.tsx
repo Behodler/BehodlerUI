@@ -159,7 +159,7 @@ function ExtendedTextField(props: props) {
     const currentTokenEffects = API.generateNewEffects(props.address, props.account, useEth, props.decimalPlaces)
 
     useEffect(() => {
-        const effect = currentTokenEffects.allowance(props.account, props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address)
+        const effect = currentTokenEffects.allowance(props.account, props.addressToEnableFor||"")
         const subscription = effect.Observable.subscribe((allowance) => {
             const scaledAllowance = API.fromWei(allowance)
             const allowanceFloat = parseFloat(scaledAllowance)
@@ -290,7 +290,7 @@ function ExtendedTextField(props: props) {
                                         await API.enableToken(
                                             props.address,
                                             props.account,
-                                            props.addressToEnableFor || walletContextProps.contracts.behodler.Behodler.address
+                                            props.addressToEnableFor || ""
                                         )
                                     }
                                 >

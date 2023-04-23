@@ -1,48 +1,36 @@
-import { address, uint, int, uint256 } from './contractInterfaces/SolidityTypes'
-import { Behodler } from './contractInterfaces/behodler/Behodler'
-import { Chronos } from './contractInterfaces/behodler/Chronos'
-import { Janus } from './contractInterfaces/behodler/Janus'
-import { Kharon } from './contractInterfaces/behodler/Kharon'
-import { Prometheus } from './contractInterfaces/behodler/Prometheus'
-import { Scarcity } from './contractInterfaces/behodler/Scarcity'
+import { address, uint, int, uint256, uint8 } from './contractInterfaces/SolidityTypes'
+
 import { Weth } from './contractInterfaces/behodler/Weth'
-//hephaestus
-import { Bellows } from './contractInterfaces/behodler/hephaestus/Bellows'
-import { Lachesis } from './contractInterfaces/behodler/hephaestus/Lachesis'
+
 
 //Behodler2
 import { Behodler2 } from './contractInterfaces/behodler2/Behodler2'
 import { Lachesis as Lachesis2 } from './contractInterfaces/behodler2/Lachesis'
-import { LiquidityReceiver } from './contractInterfaces/behodler2/LiquidityReceiver'
-import {PyroWeth10Proxy} from './contractInterfaces/behodler2/PyroWeth10Proxy'
+import { LiquidityReceiverV2 } from './contractInterfaces/behodler2/LiquidityReceiverV2'
+import { PyroWeth10Proxy } from './contractInterfaces/behodler2/PyroWeth10Proxy'
 
 //Limbo
 import { TokenProxyRegistry } from './contractInterfaces/limbo/TokenProxyRegistry'
 
 //Pyrotokens3
 import { V2Migrator } from './contractInterfaces/pyrotokens/V2Migrator'
+import { LiquidityReceiverV3 } from './contractInterfaces/behodler2/LiquidityReceiverV3'
+import { PyroWethProxy } from './contractInterfaces/behodler2/PyroWethProxy'
 
 export interface Behodler2Contracts {
 	Behodler2: Behodler2
 	Lachesis: Lachesis2
-	LiquidityReceiver: LiquidityReceiver
+	LiquidityReceiverV2: LiquidityReceiverV2
+	LiquidityReceiverV3: LiquidityReceiverV3
 	Weth10: Weth
 	PyroWeth10Proxy: PyroWeth10Proxy
+	PyroWethProxy: PyroWethProxy
 	LimboTokenProxyRegistry: TokenProxyRegistry
 	PyroV2Migrator: V2Migrator
 }
 
 export interface BehodlerContracts {
-	Behodler: Behodler,
 	Behodler2: Behodler2Contracts,
-	Chronos: Chronos,
-	Janus: Janus,
-	Kharon: Kharon,
-	Prometheus: Prometheus,
-	Scarcity: Scarcity,
-	Weth: Weth,
-	Bellows: Bellows,
-	Lachesis: Lachesis,
 }
 
 export default interface IContracts {
@@ -78,16 +66,6 @@ const defaultERC20 = {
 	name: () => { }
 }
 
-const defaultBehodler: Behodler = {
-	...defaultBase,
-	...defaultSecondary,
-	seed: (lachesis: address, kharon: address, janus: address, chronos: address) => { },
-	calculateAverageScarcityPerToken: (token: address, value: uint) => { },
-	tokenScarcityObligations: (token: string) => { },
-	buyDryRun: (tokenAddress: address, value: uint, minPrice: uint) => { },
-	sellDryRun: (tokenAddress: address, scarcityValue: uint, maxPrice: uint) => { }
-}
-
 const defaultLachesis2: Lachesis2 = {
 	...defaultOwnable,
 	cut: (token: address) => { },
@@ -95,11 +73,18 @@ const defaultLachesis2: Lachesis2 = {
 	measureLP: (token1: address, token2: address) => { }
 }
 
-const defaultLiquidityReceiver: LiquidityReceiver = {
+const defaultLiquidityReceiverV2: LiquidityReceiverV2 = {
 	...defaultOwnable,
 	registerPyroToken: (baseToken: address) => { },
 	drain: (pyroToken: address) => { },
 	baseTokenMapping: (pyrotoken: address) => { }
+}
+
+const defaultLiquidityReceiverV3: LiquidityReceiverV3 = {
+	...defaultOwnable,
+	registerPyroToken: (baseToken: address, name: string, symbol: string, decimals: uint8) => { },
+	drain: (baseToken: address) => { },
+	getPyroToken: (baseToken: address) => { }
 }
 
 const defaultBehodler2Contract: Behodler2 = {
@@ -128,48 +113,6 @@ const defaultBehodler2Contract: Behodler2 = {
 	Weth: () => { }
 }
 
-const defaultChronos: Chronos = {
-	...defaultBase,
-	...defaultSecondary,
-	seed: (behodler: address) => { }
-}
-
-const defaultJanus: Janus = {
-	...defaultBase,
-	...defaultSecondary,
-	seed: (scx: address, weth: address, behodler: address) => { },
-	tokenToToken: (input: address, output: uint, value: uint, minPrice: uint, maxPrice: uint) => { },
-	ethToToken: (output: address, minPrice: uint, maxPrice: uint) => { },
-	tokenToEth: (input: address, value: uint, minPrice: uint, maxPrice: uint) => { },
-	addLiquidityTokens: (token1: address, token2: address, v1: string, v2: string) => { },
-	addLiquidityTokenAndEth: (token: address, v1: string) => { }
-}
-
-const defaultKharon: Kharon = {
-	...defaultBase,
-	...defaultSecondary,
-	setTollRate: (toll: uint) => { },
-	seed: (bellows: address, behodler: address, prometheus: address, weiDaiBank: address, dai: address, weidai: address, scar: address, cut: uint, donationAddress: address) => { },
-	toll: (token: address, value: uint) => { },
-	withdrawDonations: (token: address) => { },
-	demandPaymentRewardDryRun: (token: address, value: uint) => { }
-}
-
-const defaultPrometheus: Prometheus = {
-	...defaultBase,
-	...defaultSecondary,
-	seed: (kharon: address, scarcity: address, weidai: address, dai: address, registry: address) => { },
-	stealFlame: (token: address, kharonToll: uint, buyer: address) => { },
-}
-
-const defaultScarcity: Scarcity = {
-	...defaultSecondary,
-	...defaultBase,
-	...defaultERC20,
-	setBehodler: (behodler: address) => { },
-	burn: (value: uint) => { }
-}
-
 const defaultWeth: Weth = {
 	...defaultBase,
 	...defaultSecondary,
@@ -178,32 +121,23 @@ const defaultWeth: Weth = {
 	withdraw: (value: uint) => { }
 }
 
-const defaultBellows: Bellows = {
-	...defaultBase,
-	...defaultSecondary,
-	seed: (lachesisAddress: address, pyroTokenRegistry: address) => { },
-	open: (baseToken: address, value: uint) => { },
-	blast: (pyroToken: address, value: uint) => { },
-	getLastAdjustmentBlockNumber: () => { },
-	getRedeemRate: (pyroToken: address) => { }
-}
-
-const defaultLachesis: Lachesis = {
-	...defaultSecondary,
-	...defaultBase,
-	setScarcity: (s: address) => { },
-	measure: (token: address, valid: boolean) => { },
-	cut: (token: address) => { }
-}
 
 const defaultPyroTokenRegistry: PyroWeth10Proxy = {
 	...defaultOwnable,
-	baseToken: () => {},
-    redeem: (amount: {},) => {},
-    mint: (baseTokenAmount: {},) => {},
-    calculateMintedPyroWeth: (baseTokenAmount: {},) => {},
-    calculateRedeemedWeth: (amount: {},) => {},
-    redeemRate: () => {}
+	baseToken: () => { },
+	redeem: (amount: {},) => { },
+	mint: (baseTokenAmount: {},) => { },
+	calculateMintedPyroWeth: (baseTokenAmount: {},) => { },
+	calculateRedeemedWeth: (amount: {},) => { },
+	redeemRate: () => { }
+}
+
+const defaultPyroWethProxy: PyroWethProxy = {
+	...defaultBase,
+	balanceOf: (amount: uint) => { },
+	redeem: (amount: uint) => { },
+	mint: (baseTokenAmount: uint) => { },
+	pyroWeth: () => { }
 }
 
 const defaultLimboTokenProxyRegistry: TokenProxyRegistry = {
@@ -218,36 +152,29 @@ const defaultPyroV2Migrator: V2Migrator = {
 		pyro3Address: address,
 		pyro2Amount: uint256,
 		pyro3Amount: uint256,
-	) => {},
+	) => { },
 	migrateMany: (
 		pyro2Address: address[],
 		pyro3Address: address[],
 		pyro2Amount: uint256[],
 		pyro3Amount: uint256[],
-	) => {},
+	) => { },
 }
 
 export const defaultBehodler2: Behodler2Contracts = {
 	Behodler2: defaultBehodler2Contract,
 	Lachesis: defaultLachesis2,
-	LiquidityReceiver: defaultLiquidityReceiver,
+	LiquidityReceiverV2: defaultLiquidityReceiverV2,
+	LiquidityReceiverV3: defaultLiquidityReceiverV3,
 	Weth10: defaultWeth,
 	PyroWeth10Proxy: defaultPyroTokenRegistry,
+	PyroWethProxy: defaultPyroWethProxy,
 	LimboTokenProxyRegistry: defaultLimboTokenProxyRegistry,
 	PyroV2Migrator: defaultPyroV2Migrator,
 }
 
 export const DefaultBehodlerContracts: BehodlerContracts = {
-	Behodler: defaultBehodler,
-	Behodler2: defaultBehodler2,
-	Chronos: defaultChronos,
-	Janus: defaultJanus,
-	Kharon: defaultKharon,
-	Prometheus: defaultPrometheus,
-	Scarcity: defaultScarcity,
-	Weth: defaultWeth,
-	Bellows: defaultBellows,
-	Lachesis: defaultLachesis
+	Behodler2: defaultBehodler2
 }
 
 export const DefaultContracts: IContracts = {

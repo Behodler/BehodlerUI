@@ -14,7 +14,7 @@ import { useCurrentBlock } from "../hooks/useCurrentBlock";
 import { useTXQueue } from "../hooks/useTXQueue";
 import { useWalletContext } from "../hooks/useWalletContext";
 import { useBehodlerContract, usePyroWeth10ProxyContract, useWeth10Contract } from "../hooks/useContracts";
-import { useWatchTokenBalancesEffect, useBaseTokenBalances, usePyroTokenBalances } from "../hooks/useTokenBalances";
+import { useWatchTokenBalancesEffect, useBaseTokenBalances, usePyroV2TokenBalances, usePyroV3TokenBalances } from "../hooks/useTokenBalances";
 import { useActiveAccountAddress } from "../hooks/useAccount";
 import { useTokenConfigs } from "../hooks/useTokenConfigs";
 
@@ -34,15 +34,75 @@ const Factor = 1000000
 const bigFactor = BigInt(Factor)
 const ONE = BigInt(1000000000000000000)
 
+//using undefined coupled with boolean can lead to false negatives
+enum V2BalanceState {
+    unset,
+    has,
+    hasNot
+}
+class IOset {
+    input: string
+    output: string
+    private _minting: boolean
+    private account: string
+    private v2BalanceState: V2BalanceState = V2BalanceState.unset
+    private _hasV2Balance: boolean = false
+
+    hasV2BalanceStale(): boolean {
+        return this.v2BalanceState == V2BalanceState.unset
+    }
+
+    hasV2Balance(): boolean {
+        return this._hasV2Balance
+    }
+
+    async updateV2Balance(): Promise<void> {
+        const baseTokenAddress = this._minting ? this.input : this.output
+        const pyroV2 = await API.getPyroTokenV2(baseTokenAddress, true)
+        const balance = BigInt(await pyroV2.balanceOf(this.account).call())
+        console.log('balance ' + balance)
+        this._hasV2Balance = balance > (1000000n)
+        this.v2BalanceState = this._hasV2Balance ? V2BalanceState.has : V2BalanceState.hasNot
+    }
+
+    //function for comparing equality of IOsets
+    equals(other: IOset): boolean {
+        return this.input === other.input && this.output === other.output && this._minting === other._minting && other.hasV2Balance == this.hasV2Balance
+    }
+
+    minting(): boolean {
+        return this._minting
+    }
+
+    //ensure a valid IOset is instantiated.
+    static async spawn(input: string, output: string, minting: boolean, account: string): Promise<IOset> {
+        const set: IOset = new IOset(input, output, minting, account)
+        await set.updateV2Balance()
+        return set;
+    }
+
+    constructor(input: string, output: string, minting: boolean, account: string) {
+        this.input = input
+        this.output = output
+        this._minting = minting
+        this.account = account
+        this.v2BalanceState = V2BalanceState.unset
+    }
+
+    async flip(): Promise<IOset> {
+        return await IOset.spawn(this.output, this.input, !this._minting, this.account)
+    }
+}
+
 export default function () {
     const classes = useStyles();
     const inputClasses = inputStyles();
 
-    const { networkName, initialized } = useWalletContext();
+    const { networkName, initialized, contracts } = useWalletContext();
     const { chainId, active } = useActiveWeb3React()
-    const { baseTokens, pyroTokens, daiAddress, allTokensConfig } = useTradeableTokensList()
+    const groups = useTradeableTokensList()
     const activeAccountAddress = useActiveAccountAddress()
-    const { addressToPyroToken, addressToBaseToken } = useTokenConfigs()
+    const { addressToPyroTokenV2, addressToPyroTokenV3, addressToBaseToken } = useTokenConfigs()
 
     const pyroWethProxy = usePyroWeth10ProxyContract()
     const behodler = useBehodlerContract()
@@ -51,11 +111,11 @@ export default function () {
     const block = useCurrentBlock()
     const showNotification = useShowNotification()
 
-    const pyroTokenBalances = usePyroTokenBalances()
+    const pyroV2TokenBalances = usePyroV2TokenBalances()
+    const pyroV3TokenBalances = usePyroV3TokenBalances()
     const baseTokenBalances = useBaseTokenBalances()
 
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
-    const [minting, setMinting] = useLoggedState<boolean>(true)
     const [isPyroV3MigrationModalOpen, setIsPyroV3MigrationModalOpen] = useState(false);
 
     const notify = (hash: string, type: NotificationType) => {
@@ -73,16 +133,30 @@ export default function () {
     }, [block])
 
     const [inputValue, setInputValue] = useLoggedState<string>('')
+
     const [outputValue, setOutputValue] = useLoggedState<string>('')
-    const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE)
+    const [swapState, setSwapState] = useLoggedState<SwapState>(SwapState.IMPOSSIBLE, "swap state")
     const [independentField, setIndependentField] = useDebounce<IndependentField>({
         target: 'FROM',
         newValue: ''
     }, 600)
+    const [flipClicked, setFlipClicked] = useLoggedState<boolean>(false)
     const [independentFieldState, setIndependentFieldState] = useLoggedState<FieldState>('dormant')
-    const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false)
-    const [inputAddress, setInputAddress] = useLoggedState<string>(baseTokens[0].address)
-    const [outputAddress, setOutputAddress] = useLoggedState<string>(pyroTokens[0].address)
+    const [inputEnabled, setInputEnabled] = useLoggedState<boolean>(false, 'inputEnabled')
+
+    const [addresses, setAddresses] = useState<IOset>(new IOset(groups.baseTokens[0].address, groups.pyroTokensV3[0].address, true, activeAccountAddress))
+
+    const v2BalanceCallBack = useCallback(async () => {
+        if (addresses.hasV2BalanceStale()) {
+            await addresses.updateV2Balance()
+            setAddresses(addresses)
+        }
+    }, [addresses.hasV2BalanceStale()])
+
+    useEffect(() => {
+        v2BalanceCallBack()
+    }, [addresses.hasV2BalanceStale()])
+
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
     const [impliedExchangeRate, setImpliedExchangeRate] = useLoggedState<string>("")
 
@@ -130,6 +204,7 @@ export default function () {
     const updateIndependentFromField = updateIndependentField('FROM')
     const updateIndependentToField = updateIndependentField('TO')
 
+
     const setFormattedInputFactory = (setValue: (v: string) => void) => (value: string) => {
         setValue(value)
     }
@@ -138,37 +213,46 @@ export default function () {
     const setFormattingTo = setFormattedInputFactory(updateIndependentToField)
 
     const spotPriceCallback = useCallback(async () => {
-        if (!daiAddress || daiAddress.length < 3)
+        if (!groups.daiAddress || groups.daiAddress.length < 3 || addresses.hasV2BalanceStale())
             return
         setSwapState(SwapState.IMPOSSIBLE)
 
         try {
-            const DAI = await API.getToken(daiAddress, networkName)
+            const DAI = await API.getToken(groups.daiAddress, networkName)
             const daiBalanceOnBehodler = new BigNumber(await DAI.balanceOf(behodler.address).call({ from: activeAccountAddress }))
-            const inputAddressToUse = isInputEth ? weth10.address : inputAddress
-            const outputAddressToUse = isOutputEth ? weth10.address : outputAddress
-            if (minting) {
-                const inputToken = await API.getToken(inputAddressToUse, networkName)
+            const inputToUse = isInputEth ? weth10.address : addresses.input
+            const outputToUse = isOutputEth ? weth10.address : addresses.output
+            if (addresses.minting()) {
+                const inputToken = await API.getToken(inputToUse, networkName)
                 const inputBalanceOnBehodler = await inputToken.balanceOf(behodler.address).call({ from: activeAccountAddress })
                 const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
                 setinputSpotDaiPriceView(formatSignificantDecimalPlaces(inputSpot.toString(), 2))
 
                 const intSpot = Math.floor(parseFloat(inputSpot) * Factor)
-                const pyroToken = await API.getPyroToken(outputAddress, networkName)
+                //Don't allow minting of V2
+                const pyroToken = await API.getPyroTokenV3(addresses.output)
                 const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: activeAccountAddress })).toString())
                 const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
                 const spotForPyro = (redeemRate * bigSpot) / (ONE)
                 const outputSpot = parseFloat(spotForPyro.toString()) / Factor
                 setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot.toString(), 2))
             } else {
-                const outputToken = await API.getToken(outputAddressToUse, networkName)
+                const outputToken = await API.getToken(outputToUse, networkName)
                 const outputBalanceOnBehodler = await outputToken.balanceOf(behodler.address).call({ from: activeAccountAddress })
                 const outputSpot = daiBalanceOnBehodler.div(outputBalanceOnBehodler).toString()
                 setoutputSpotDaiPriceView(formatSignificantDecimalPlaces(outputSpot, 2))
 
                 const intSpot = Math.floor(parseFloat(outputSpot) * Factor)
-                const pyroToken = await API.getPyroToken(inputAddress, networkName)
-                const redeemRate = BigInt((await pyroToken.redeemRate().call({ from: activeAccountAddress })).toString())
+
+                //Don't allow redeeming of V3 until all V2 is redeemed for a given token. 
+                //We're nudging everyone off the V2 cliff into the ocean of V3 via UX 
+                //like one of those annoying facebook feature updates you didn't ask for.
+                const pyroTokenV2 = await API.getPyroTokenV2(addresses.input, addresses.minting())
+                const pyroTokenV3 = await API.getPyroTokenV3(addresses.input, addresses.minting())
+
+                const redeemRateFunction = (await addresses.hasV2Balance()) ? pyroTokenV2.redeemRate : pyroTokenV3.redeemRate
+                const redeemString = (await redeemRateFunction().call({ from: activeAccountAddress })).toString()
+                const redeemRate = BigInt(redeemString)
                 const bigSpot = BigInt(!Number.isNaN(intSpot) ? intSpot : 0)
                 // const bigSpot = BigInt(intSpot)
                 const spotForPyro = (redeemRate * bigSpot) / ONE
@@ -179,75 +263,56 @@ export default function () {
             console.error(e)
             return
         }
-    }, [inputAddress, outputAddress, daiAddress])
+    }, [addresses, groups.daiAddress])
 
     useEffect(() => {
         if (initialized) {
             spotPriceCallback()
         }
-    }, [inputAddress, outputAddress, daiAddress, initialized])
+    }, [addresses, addresses, groups.daiAddress, initialized])
 
 
     const [swapClicked, setSwapClicked] = useLoggedState<boolean>(false)
-    const nameOfSelectedAddress = (input: boolean, minting: boolean) => (address: string) => {
+    const nameOfSelectedAddress = (input: boolean, minting: boolean, hasV2Balance: boolean) => (address: string) => {
         const useBase = input && minting || !input && !minting
         address = address.toLowerCase()
-        return (useBase ? baseTokens.find(i => i.address.toLowerCase() === address)?.name : pyroTokens.find(i => i.address.toLowerCase() === address)?.name) || ''
+        let value: string | undefined = ''
+        if (useBase)
+            value = groups.baseTokens.find(i => i.address.toLowerCase() === address)?.name
+
+        else if (hasV2Balance && !minting)
+            value = groups.pyroTokensV2.find(i => i.address.toLowerCase() === address)?.name
+
+        else value = groups.pyroTokensV3.find(i => i.address.toLowerCase() === address)?.name
+        return value || ''
     }
-    const nameOfSelectedInputAddress = nameOfSelectedAddress(true, minting)
-    const nameOfSelectedOutputAddress = nameOfSelectedAddress(false, minting)
+    const nameOfSelectedInput = nameOfSelectedAddress(true, addresses.minting(), addresses.hasV2Balance())
+    const nameOfSelectedOutput = nameOfSelectedAddress(false, addresses.minting(), addresses.hasV2Balance())
 
 
     const isTokenPredicateFactory = (tokenName: string) => (address: string) => {
         return (input: boolean) => {
-            const name = input ? nameOfSelectedInputAddress(address) : nameOfSelectedOutputAddress(address)
+            const name = input ? nameOfSelectedInput(address) : nameOfSelectedOutput(address)
             return (name.toLowerCase() === tokenName.toLowerCase())
         }
     }
 
-    const isInputEth = isTokenPredicateFactory("Eth")(inputAddress)(true)
-    const isOutputEth = isTokenPredicateFactory("Eth")(outputAddress)(false)
-
-    const assignCorrectCorrespondingToken = useCallback(async (inputChanged: boolean) => {
-        if (inputChanged) {
-            if (minting) {
-                const tokenPair = allTokensConfig.filter(t => t.address === inputAddress)[0]
-                setOutputAddress(tokenPair.pyroAddress)
-            } else {
-                const tokenPair = allTokensConfig.filter(t => t.pyroAddress === inputAddress)[0]
-                setOutputAddress(tokenPair.address)
-            }
-        } else {
-            if (minting) {
-                const tokenPair = allTokensConfig.filter(t => t.pyroAddress === outputAddress)[0]
-                setInputAddress(tokenPair.address)
-            } else {
-                const tokenPair = allTokensConfig.filter(t => t.address === outputAddress)[0]
-                setInputAddress(tokenPair.pyroAddress)
-            }
-        }
-    }, [inputAddress, outputAddress])
-    useEffect(() => {
-        assignCorrectCorrespondingToken(true)
-    }, [inputAddress])
-
-    useEffect(() => {
-        assignCorrectCorrespondingToken(false)
-    }, [outputAddress])
+    const isInputEth = isTokenPredicateFactory("Eth")(addresses.input)(true)
+    const isOutputEth = isTokenPredicateFactory("Eth")(addresses.output)(false)
 
     useEffect(() => {
         if (!inputEnabled) {
-            setSwapText('APPROVE ' + nameOfSelectedInputAddress(inputAddress))
+            setSwapText('APPROVE ' + nameOfSelectedInput(addresses.input))
         }
-        else if (minting) {
+        else if (addresses.minting()) {
             setSwapText('MINT')
         } else {
             setSwapText('REDEEM')
         }
-    }, [inputEnabled, inputAddress, outputAddress])
+    }, [inputEnabled, addresses.input, addresses.output])
 
     const currentTokenEffects = initialized
-        ? API.generateNewEffects(inputAddress, activeAccountAddress, isInputEth)
+        ? API.generateNewEffects(addresses.input, activeAccountAddress, isInputEth)
         : null
 
     useEffect(() => {
@@ -259,7 +324,7 @@ export default function () {
         if (swapState === SwapState.IMPOSSIBLE)
             setImpliedExchangeRate("")
 
-        let addressToCheck = minting ? outputAddress : inputAddress
+        let addressToCheck = addresses.minting() ? addresses.output : addresses.input
         if (isOutputEth)
             addressToCheck = pyroWethProxy.address
         if (isInputEth) {
@@ -281,15 +346,15 @@ export default function () {
             subscription.unsubscribe()
         }
 
-    }, [inputAddress, outputAddress, swapState, independentFieldState, currentTokenEffects])
+    }, [addresses.input, addresses.output, swapState, independentFieldState, currentTokenEffects])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
             let t: PendingTX = {
                 hash,
                 type,
-                token1: inputAddress,
-                token2: outputAddress,
+                token1: addresses.input,
+                token2: addresses.output,
             }
             txQueuePush(t)
             notify(hash, NotificationType.pending)
@@ -300,19 +365,21 @@ export default function () {
     const mintHashBack = hashBack(TXType.mintPyro)
     const redeemHashBack = hashBack(TXType.redeemPyro)
 
-    const mintOrRedeem = useCallback(async (
+    const broadCast = useCallback(async (
         contract,
         method,
         options,
-        valueInWei,
+
         hashBack,
+        ...inputParams: any[]
     ) => {
+        //Note, for PyroV3, there's an initial param of mintTo address
         return new Promise((resolve, reject) => {
-            contract[method](valueInWei)
+            contract[method](...inputParams)
                 .estimateGas(options, async function (error, gas) {
                     if (error) console.error("gas estimation error: " + error);
                     options.gas = gas;
-                    const txResult = await contract[method](valueInWei)
+                    const txResult = await contract[method](...inputParams)
                         .send(options, hashBack)
                         .catch(reject)
                     resolve(txResult)
@@ -326,19 +393,24 @@ export default function () {
         const primaryOptions = { from: activeAccountAddress, gas: undefined };
         const ethOptions = { from: activeAccountAddress, value: inputValWei, gas: undefined };
 
-        console.info("tx invocation initiated.")
         if (swapClicked) {
-            const pyroTokenAddress = minting ? outputAddress : inputAddress
-            const pyroToken = await API.getPyroToken(pyroTokenAddress, networkName)
+            const pyroTokenAddress = addresses.minting() ? addresses.output : addresses.input
+            const pyroToken = addresses.minting() ? await API.getPyroTokenV3(pyroTokenAddress)
+                : (addresses.hasV2Balance() ? await API.getPyroTokenV2(pyroTokenAddress) : await API.getPyroTokenV3(pyroTokenAddress))
             const mintContract = isInputEth ? pyroWethProxy : pyroToken
             const redeemContract = isOutputEth ? pyroWethProxy : pyroToken
-            const options = minting && isInputEth ? ethOptions : primaryOptions
+            const options = addresses.minting() && isInputEth ? ethOptions : primaryOptions
 
             try {
-                if (minting) {
-                    await mintOrRedeem(mintContract, 'mint', options, inputValWei, mintHashBack)
+                if (addresses.minting()) {
+
+                    await broadCast(mintContract, 'mint', options, mintHashBack, activeAccountAddress, inputValWei)
                 } else {
-                    await mintOrRedeem(redeemContract, 'redeem', options, inputValWei, redeemHashBack)
+                    if (addresses.hasV2Balance())
+                        await broadCast(redeemContract, 'redeem', options, redeemHashBack, inputValWei)
+                    else
+                        await broadCast(redeemContract, 'redeem', options, redeemHashBack, activeAccountAddress, inputValWei)
+
                 }
 
                 setSwapState(SwapState.IMPOSSIBLE)
@@ -357,82 +429,82 @@ export default function () {
         }
     }, [swapClicked])
 
+    useEffect(() => {
+        const flipClickedCallback = async () => {
+            let newaddresses = addresses
 
-    const [flipClicked, setFlipClicked] = useLoggedState<boolean>(false)
-    const flipClickedCallback = useCallback(async () => {
-        let newInputAddress = inputAddress
-        if (flipClicked) {
-            const inputAddressTemp = inputAddress
-            const oldValues = [inputValue, outputValue]
-            setInputAddress(outputAddress)
-            newInputAddress = outputAddress
-            setOutputAddress(inputAddressTemp)
-            if (swapState !== SwapState.IMPOSSIBLE) {
-                updateIndependentField('FROM')(oldValues[1])
-            } else {
-                setInputValue("")
-                setOutputValue("")
+            if (flipClicked) {
+                setFlipClicked(false)
+    
+                if (addresses.minting()) {
+                    if (addresses.hasV2Balance()) {
+                        const pyroTokenV2Address = await contracts.behodler.Behodler2.LiquidityReceiverV2.baseTokenMapping(addresses.input).call()
+                        newaddresses = await IOset.spawn(pyroTokenV2Address, addresses.input, false, activeAccountAddress)
+                    } else {
+                        newaddresses = await addresses.flip()
+                    }
+                } else {
+                    const pyroV3Address = await contracts.behodler.Behodler2.LiquidityReceiverV3.getPyroToken(addresses.output).call();
+                    newaddresses = await IOset.spawn(addresses.output, pyroV3Address, true, activeAccountAddress)
+                }
+
+                if (swapState !== SwapState.IMPOSSIBLE) {
+                    updateIndependentField('FROM')(outputValue)
+                } else {
+                    setInputValue("")
+                    setOutputValue("")
+                }
+                setAddresses(newaddresses)
             }
-        }
-        const inputIsBase = allTokensConfig.filter(t => t.address.toLowerCase() === newInputAddress.toLowerCase()).length > 0
-        setMinting(inputIsBase)
 
+        }
+        if (flipClicked)
+            flipClickedCallback()
         setFlipClicked(false)
     }, [flipClicked])
 
-    useEffect(() => {
-        flipClickedCallback()
-    }, [flipClicked])
     const calculateOutputFromInput = async () => {
         const inputValToUse = BigInt(API.toWei(inputValue))
         let outputEstimate, redeemRate
-        if (minting) {
+
+        if (addresses.minting()) {
             let pyrotokensGeneratedWei
-            if (isInputEth) {
-                pyrotokensGeneratedWei = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(inputValToUse).call({ account: activeAccountAddress }))
-            } else {
-                const pyroToken = await API.getPyroToken(outputAddress, networkName)
-                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
-                pyrotokensGeneratedWei = (inputValToUse * bigFactor * ONE) / redeemRate
-            }
+
+            const pyroToken = await API.getPyroTokenV3(addresses.output)
+            redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
+            pyrotokensGeneratedWei = (inputValToUse * bigFactor * ONE) / redeemRate
+
             outputEstimate = parseFloat(API.fromWei(pyrotokensGeneratedWei.toString())) / Factor
         } else {
             let baseTokensGeneratedWei
-            if (isOutputEth) {
+            if (isOutputEth && addresses.hasV2Balance()) {
                 baseTokensGeneratedWei = await pyroWethProxy.calculateRedeemedWeth(inputValToUse).call({ account: activeAccountAddress })
             } else {
-                const pyroToken = await API.getPyroToken(inputAddress, networkName)
+                const pyroToken = addresses.hasV2Balance() ? await API.getPyroTokenV2(addresses.input) : await API.getPyroTokenV3(addresses.input)
                 const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
                 baseTokensGeneratedWei = (inputValToUse * redeemRate * BigInt(98)) / (ONE * BigInt(100))
             }
             outputEstimate = parseFloat(API.fromWei(baseTokensGeneratedWei.toString()))
         }
-
         setOutputValue(formatSignificantDecimalPlaces(outputEstimate, 18))
     }
 
     const calculateInputFromOutput = async () => {
         const outputValToUse = BigInt(API.toWei(outputValue))
         let inputEstimate, redeemRate
-        if (minting) {
+        if (addresses.minting()) {
             let baseTokensRequired
-            if (isInputEth) {
-                baseTokensRequired = await pyroWethProxy.calculateRedeemedWeth(outputValToUse).call({ account: activeAccountAddress })
-            } else {
-                const pyroToken = await API.getPyroToken(outputAddress, networkName)
-                redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
-                baseTokensRequired = (outputValToUse * redeemRate) / ONE
-            }
+            const pyroToken = await API.getPyroTokenV3(addresses.output)
+            redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
+            baseTokensRequired = (outputValToUse * redeemRate) / ONE
+
             inputEstimate = parseFloat(API.fromWei(baseTokensRequired.toString()))
         } else {
             let pyroTokensRequired
-            if (isInputEth) {
-                pyroTokensRequired = bigFactor * BigInt(await pyroWethProxy.calculateMintedPyroWeth(outputValToUse).call({ account: activeAccountAddress }))
-            } else {
-                const pyroToken = await API.getPyroToken(inputAddress, networkName)
-                const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
-                pyroTokensRequired = (outputValToUse * bigFactor * ONE * BigInt(98)) / (redeemRate * BigInt(100))
-            }
+            const pyroToken = await (addresses.hasV2Balance() ? API.getPyroTokenV2(addresses.input) : API.getPyroTokenV3(addresses.input))
+            const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
+            pyroTokensRequired = (outputValToUse * bigFactor * ONE * BigInt(98)) / (redeemRate * BigInt(100))
+
             inputEstimate = parseFloat(API.fromWei(pyroTokensRequired.toString())) / Factor
         }
 
@@ -451,12 +523,6 @@ export default function () {
                 setIndependentFieldState("validating swap")
             }
         } catch (e) {
-
-            // if (independentField.target === 'FROM')
-            //     setOutputValue('invalid input')
-            // else
-            //     setInputValue('invalid input')
-
             setSwapState(SwapState.IMPOSSIBLE)
             setIndependentFieldState("dormant")
         }
@@ -474,9 +540,9 @@ export default function () {
             setImpliedExchangeRate('')
             return
         }
-        if (minting) {
-            pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
-            baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
+        if (addresses.minting()) {
+            pyroName = pyroV3TokenBalances.filter(p => p.address.toLowerCase() === addresses.output.toLowerCase())[0].name
+            baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === addresses.input.toLowerCase())[0].name
 
             if (independentField.target === 'FROM') {
                 e = parsedOutput / parsedInput
@@ -490,8 +556,9 @@ export default function () {
             }
         }
         else {
-            pyroName = pyroTokenBalances.filter(p => p.address.toLowerCase() === inputAddress.toLowerCase())[0].name
-            baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === outputAddress.toLowerCase())[0].name
+            pyroName = addresses.hasV2Balance() ? pyroV2TokenBalances.filter(p => p.address.toLowerCase() === addresses.input.toLowerCase())[0].name
+                : pyroV3TokenBalances.filter(p => p.address.toLowerCase() === addresses.input.toLowerCase())[0].name
+            baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === addresses.output.toLowerCase())[0].name
 
             if (independentField.target === 'FROM') {
                 e = parsedOutput / parsedInput
@@ -510,6 +577,7 @@ export default function () {
     }
 
     const swapValidationCallback = useCallback(() => {
+
         if (independentFieldState === "validating swap") {
             try {
                 if (!inputEnabled && swapState === SwapState.POSSIBLE) {
@@ -517,11 +585,12 @@ export default function () {
                 } else {
                     //check pyrotokens balances
                     const balanceOfInput = parseFloat(API.fromWei(
-                        minting
+                        addresses.minting()
                             ?
-                            baseTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                            baseTokenBalances.filter(b => b.address === addresses.input)[0].balance
                             :
-                            pyroTokenBalances.filter(b => b.address === inputAddress)[0].balance
+                            (addresses.hasV2Balance() ? pyroV2TokenBalances.filter(b => b.address === addresses.input)[0].balance :
+                                pyroV3TokenBalances.filter(b => b.address === addresses.input)[0].balance)
                     ))
 
                     setSwapState((
@@ -537,35 +606,35 @@ export default function () {
             }
             setIndependentFieldState("dormant")
         }
-    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, inputAddress, inputValue])
+    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, addresses.input, inputValue])
 
     useEffect(() => {
         swapValidationCallback()
-    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, inputAddress, inputValue])
+    }, [independentFieldState, inputEnabled, swapState, baseTokenBalances?.length, addresses.input, inputValue])
 
     useEffect(() => {
         setIndependentFieldState("validating swap")
     }, [inputEnabled])
 
-    const fromBalance = minting ? baseTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase()) : pyroTokenBalances.filter(t => t.address.toLowerCase() === inputAddress.toLowerCase())
-    const toBalance = minting ? pyroTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === outputAddress.toLowerCase())
+    const fromBalance = addresses.minting() ? baseTokenBalances.filter(t => t.address.toLowerCase() === addresses.input.toLowerCase()) : (addresses.hasV2Balance() ? pyroV2TokenBalances : pyroV3TokenBalances).filter(t => t.address.toLowerCase() === addresses.input.toLowerCase())
+    const toBalance = addresses.minting() ? pyroV3TokenBalances.filter(t => t.address.toLowerCase() === addresses.output.toLowerCase()) : baseTokenBalances.filter(t => t.address.toLowerCase() === addresses.output.toLowerCase())
 
     const swapAction = async () => {
         if (swapState === SwapState.POSSIBLE && inputEnabled) {
             setSwapClicked(true)
             return;
         } else if (!inputEnabled) {
-            const addressToUse = isOutputEth ? pyroWethProxy.address : (minting ? outputAddress : inputAddress)
+            const addressToUse = isOutputEth ? pyroWethProxy.address : (addresses.minting() ? addresses.output : addresses.input)
             await API.enableToken(
-                inputAddress,
+                addresses.input,
                 activeAccountAddress || "",
                 addressToUse, (err, hash: string) => {
                     if (hash) {
                         let t: PendingTX = {
                             hash,
                             type: TXType.approval,
-                            token1: inputAddress,
-                            token2: outputAddress,
+                            token1: addresses.input,
+                            token2: addresses.output,
                         }
                         txQueuePush(t)
                         notify(hash, NotificationType.pending)
@@ -575,17 +644,17 @@ export default function () {
                 })
         }
     }
-
     const greySwap = inputEnabled && (swapState === SwapState.DISABLED || swapState === SwapState.IMPOSSIBLE) || swapping
     const setNewMenuInputAddress = (address: string) => {
         updateIndependentFromField('')
         updateIndependentToField('')
-        setInputAddress(address)
+        setAddresses(new IOset(address, addresses.output, addresses.minting(), activeAccountAddress))
     }
     const setNewMenuOutputAddress = (address: string) => {
         updateIndependentFromField('')
         updateIndependentToField('')
-        setOutputAddress(address)
+        setAddresses(new IOset(addresses.input, address, addresses.minting(), activeAccountAddress))
+
     }
     const staticLogo = Logos.filter(l => l.name === 'Pyrotoken')[0]
     const animatedLogo = Logos.filter(l => l.name === 'PyroAnimated')[0]
@@ -597,7 +666,6 @@ export default function () {
             </Box>
         );
     }
-
     return (
         <Box className={classes.root}>
 
@@ -605,7 +673,7 @@ export default function () {
                 isMigrationModalOpen={isPyroV3MigrationModalOpen}
                 openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
                 closeMigrationModal={() => setIsPyroV3MigrationModalOpen(false)}
-                pyroTokenV2Balances={pyroTokenBalances}
+                pyroTokenV2Balances={pyroV2TokenBalances}
             />
 
             <Hidden lgUp>
@@ -627,14 +695,17 @@ export default function () {
                                 className={`${classes.mobileSelectorGrid} token-selectors-and-monster`}
                             >
                                 <Grid item>
-                                    <TokenSelector pyro={!minting} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? addressToBaseToken(inputAddress).image : addressToPyroToken(inputAddress).image}
-                                        scale={0.65} mobile balances={minting ? baseTokenBalances : pyroTokenBalances} />
+                                    <TokenSelector pyro={!addresses.minting()} network={networkName} setAddress={setNewMenuInputAddress}
+                                        tokenImage={addresses.minting() ? addressToBaseToken(addresses.input, "mobile input").image : (addresses.hasV2Balance() ?
+                                            addressToPyroTokenV2(addresses.input) :
+                                            addressToPyroTokenV3(addresses.input)).image}
+                                        scale={0.65} mobile balances={addresses.minting() ? baseTokenBalances : pyroV3TokenBalances} />
                                 </Grid>
                                 <Grid item onClick={() => setFlipClicked(true)} >
                                     <img width={100} src={swapping ? animatedLogo.image : staticLogo.image} className={classes.pyroShieldMobileAnimated} />
                                 </Grid>
                                 <Grid item>
-                                    <TokenSelector pyro={minting} network={networkName} balances={minting ? pyroTokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={!minting ? addressToBaseToken(outputAddress).image : addressToPyroToken(outputAddress).image} scale={0.65} mobile />
+                                    <TokenSelector pyro={addresses.minting()} network={networkName} balances={addresses.minting() ? pyroV3TokenBalances : baseTokenBalances} setAddress={setNewMenuOutputAddress} tokenImage={addresses.minting() ? addressToPyroTokenV3(addresses.output).image : addressToBaseToken(addresses.output, "mobile output").image} scale={0.65} mobile />
                                 </Grid>
                             </Grid>
 
@@ -656,9 +727,9 @@ export default function () {
                                         <Grid item>
                                             <div key={"MobileFrom"}>
                                                 <DebounceInput
-                                                    id={inputAddress}
+                                                    id={addresses.input}
                                                     debounceTimeout={300}
-                                                    placeholder={nameOfSelectedInputAddress(inputAddress)}
+                                                    placeholder={nameOfSelectedInput(addresses.input)}
                                                     value={inputValue}
                                                     onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
@@ -667,7 +738,7 @@ export default function () {
                                     </Grid>
                                 </Grid>
                                 <Grid item>
-                                    <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                    <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={addresses.input} estimate={inputSpotDaiPriceView} />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -695,8 +766,8 @@ export default function () {
                                             <div key={"MobileTO"}>
                                                 <DebounceInput
                                                     debounceTimeout={300}
-                                                    id={outputAddress}
-                                                    placeholder={nameOfSelectedOutputAddress(outputAddress)}
+                                                    id={addresses.output}
+                                                    placeholder={nameOfSelectedOutput(addresses.output)}
                                                     value={outputValue}
                                                     onChange={(event) => { setFormattingTo(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
@@ -708,7 +779,7 @@ export default function () {
                                     <BalanceContainer
                                         setValue={setFormattingTo}
                                         balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
-                                        token={outputAddress}
+                                        token={addresses.output}
                                         estimate={outputSpotDaiPriceView} />
                                 </Grid>
                             </Grid>
@@ -779,16 +850,16 @@ export default function () {
                                         <div key={"desktopInput"}>
                                             <DebounceInput
                                                 debounceTimeout={300}
-                                                id={inputAddress}
+                                                id={addresses.input}
                                                 key={"desktopInputInput"}
-                                                placeholder={nameOfSelectedInputAddress(inputAddress)}
+                                                placeholder={nameOfSelectedInput(addresses.input)}
                                                 value={inputValue}
                                                 onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                 className={inputClasses.inputWide} />
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={inputAddress} estimate={inputSpotDaiPriceView} />
+                                        <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance[0].balance) : '0', 4)} token={addresses.input} estimate={inputSpotDaiPriceView} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -801,7 +872,11 @@ export default function () {
                                     id="central-selector-monster-grid"
                                 >
                                     <Grid item>
-                                        <TokenSelector pyro={!minting} balances={minting ? baseTokenBalances : pyroTokenBalances} network={networkName} setAddress={setNewMenuInputAddress} tokenImage={minting ? addressToBaseToken(inputAddress).image : addressToPyroToken(inputAddress).image} scale={0.8} />
+                                        <TokenSelector pyro={!addresses.minting()} balances={addresses.minting() ? baseTokenBalances : (addresses.hasV2Balance() ? pyroV2TokenBalances : pyroV3TokenBalances)}
+                                            network={networkName}
+                                            setAddress={setNewMenuInputAddress}
+                                            tokenImage={addresses.minting() ? addressToBaseToken(addresses.input, "desktop input").image : (addresses.hasV2Balance() ? addressToPyroTokenV2(addresses.input) : addressToPyroTokenV3(addresses.input)).image}
+                                            scale={0.8} />
                                     </Grid>
                                     <Grid item>
                                         <div className={classes.pyroShieldContainer} >
@@ -812,7 +887,11 @@ export default function () {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <TokenSelector pyro={minting} balances={minting ? pyroTokenBalances : baseTokenBalances} network={networkName} setAddress={setNewMenuOutputAddress} tokenImage={minting ? addressToPyroToken(outputAddress).image : addressToBaseToken(outputAddress).image} scale={0.8} />
+                                        <TokenSelector pyro={addresses.minting()}
+                                            balances={addresses.minting() ? pyroV3TokenBalances : baseTokenBalances} network={networkName}
+                                            setAddress={setNewMenuOutputAddress}
+                                            tokenImage={addresses.minting() ? addressToPyroTokenV3(addresses.output).image : addressToBaseToken(addresses.output, "desktop output").image}
+                                            scale={0.8} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -830,10 +909,10 @@ export default function () {
                                     <Grid item>
                                         <div key={"desktopOutput"}>
                                             <DebounceInput
-                                                id={outputAddress}
+                                                id={addresses.output}
                                                 debounceTimeout={300}
                                                 key={"desktopInputOutput"}
-                                                placeholder={nameOfSelectedOutputAddress(outputAddress)}
+                                                placeholder={nameOfSelectedOutput(addresses.output)}
                                                 value={outputValue}
                                                 onChange={(event) => { setFormattingTo(event.target.value) }}
                                                 className={inputClasses.inputWide} />
@@ -843,7 +922,7 @@ export default function () {
                                         <BalanceContainer
                                             setValue={setFormattingTo}
                                             balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance[0].balance) : '0', 4)}
-                                            token={outputAddress}
+                                            token={addresses.output}
                                             estimate={outputSpotDaiPriceView} />
                                     </Grid>
                                 </Grid>
@@ -890,7 +969,7 @@ export default function () {
 
             <MigrateToPyroV3Link
                 openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
-                pyroTokenV2Balances={pyroTokenBalances}
+                pyroTokenV2Balances={pyroV2TokenBalances}
             />
         </Box >
     )

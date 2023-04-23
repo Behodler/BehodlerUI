@@ -1,44 +1,52 @@
 import { useMemo } from 'react'
 
 import { TokenListItem } from "../TradingBox3/types";
-import tokensConfigByNetwork from "../../../../blockchain/behodlerUI/baseTokens.json";
+import ethereumAPI from '../../../../blockchain/ethereumAPI'
 import { TokenList, ImagePair } from "../TradingBox3/ImageLoader";
 
 import { useWalletContext } from "./useWalletContext";
+import { ITokenConfig } from 'src/blockchain/AllEcosystemAddress';
 
-interface ITokenConfig {
-    id: string,
-    displayName: string,
-    pyroDisplayName: string,
-    address: string,
-    pyroAddress: string
-}
 interface ITokenGroup {
     config: ITokenConfig
     baseToken: TokenListItem
-    pyroToken: TokenListItem
+    pyroTokenV2: TokenListItem
+    pyroTokenV3: TokenListItem
 }
-export function useTradeableTokensList() {
+
+export interface IGroupedList {
+    baseTokens: TokenListItem[]
+    pyroTokensV2: TokenListItem[]
+    pyroTokensV3: TokenListItem[]
+    allTokensConfig: ITokenConfig[]
+    daiAddress?: string
+}
+export function useTradeableTokensList(): IGroupedList {
     const { networkName } = useWalletContext()
 
     const daiAddress = useMemo(() => (
-        tokensConfigByNetwork[networkName].find(token => token.id === 'dai').address
+        ethereumAPI.tokenConfigs.find(({ displayName }) => displayName.toLowerCase() === 'dai')?.address
     ), [networkName])
 
     const tokenInfo: ITokenGroup[] = useMemo(() => (
-        (tokensConfigByNetwork[networkName] as ITokenConfig[])
-            .filter(({ id }) => id !== 'dai' && id !== 'scarcity')
+        ethereumAPI.tokenConfigs
+            .filter(({ displayName }) => !['dai', 'eye', 'scarcity', 'weidai'].includes(displayName.toLocaleLowerCase()))
             .map((config: ITokenConfig) => {
-                const imagePair: ImagePair = TokenList.find(pair => pair.id === config.id)
-                    || { id: '', baseToken: { image: '', name: '' }, pyroToken: { image: '', name: '' } }
+                let configId = config.displayName.toLowerCase()
+                configId = configId == "weth" ? "eth" : configId
+                const imagePair: ImagePair = TokenList.find(pair => pair.baseToken.name.toLowerCase() === configId)
+                    || { baseToken: { image: '', name: '' }, pyroToken: { image: '', name: '' } }
 
                 const baseToken: TokenListItem = { name: config.displayName, address: config.address, image: imagePair.baseToken.image }
-                const pyroToken: TokenListItem = { name: config.pyroDisplayName, address: config.pyroAddress, image: imagePair.pyroToken.image }
-                return { config, baseToken, pyroToken }
+                const pyroTokenV2: TokenListItem = { name: config.pyroDisplayName + " (V2)", address: config.pyroV2Address, image: imagePair.pyroToken.image }
+                const pyroTokenV3: TokenListItem = { name: config.pyroDisplayName + " (V3)", address: config.pyroV3Address, image: imagePair.pyroToken.image }
+
+                return { config, baseToken, pyroTokenV2, pyroTokenV3 }
             })
     ), [networkName])
     const baseTokens = tokenInfo.map(item => item.baseToken)
-    const pyroTokens = tokenInfo.map(item => item.pyroToken)
+    const pyroTokensV2 = tokenInfo.map(item => item.pyroTokenV2)
+    const pyroTokensV3 = tokenInfo.map(item => item.pyroTokenV3)
     const allTokensConfig = tokenInfo.map(item => item.config)
-    return { baseTokens, pyroTokens, allTokensConfig, daiAddress }
+    return { baseTokens, pyroTokensV2, pyroTokensV3, allTokensConfig, daiAddress }
 }
