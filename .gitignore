@@ -21,3 +21,4 @@ client/behodlerDB
 README.pdf
 /client/src/images/new/gif
 .idea
+*.patch
