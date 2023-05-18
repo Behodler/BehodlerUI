@@ -60,7 +60,7 @@
         "web3": "^1.5.2"
     },
     "scripts": {
-        "dev": "react-scripts start",
+        "start": "react-scripts start",
         "package:build": "tsdx build --entry src/components/BehodlerUIPyrotokens/index.ts --tsconfig package.tsconfig.json --transpileOnly",
         "docker:dev": "docker:dev-client",
         "docker:install": "sudo rm -rf node_modules/* && sudo rm -f yarn.lock && docker compose up install",

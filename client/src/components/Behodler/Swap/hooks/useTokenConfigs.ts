@@ -17,7 +17,7 @@ export function useTokenConfigs(): TokenConfigAddressMaps {
         if (vals.length !== 0)
             return vals[0]
 
-        throw `addressToBaseToken location ${location}: could not find ${address} in ${groups.baseTokens.map(t => t.address.toLowerCase())}`
+        throw `addressToBaseToken location ${location}: could not find <${address}> in ${groups.baseTokens.map(t => t.address.toLowerCase())}`
     }, [groups.baseTokens])
 
     const addressToPyroTokenV2 = useCallback((address: string): TokenListItem => {
@@ -29,7 +29,7 @@ export function useTokenConfigs(): TokenConfigAddressMaps {
         const vals = groups.pyroTokensV3.filter(t => t.address.toLowerCase() === address.toLowerCase())
         if (vals.length === 1)
             return vals[0]
-        throw `could not find ${address} with display name in set`
+        throw `could not find <${address}> with display name in set`
     }, [groups.pyroTokensV3])
 
 
