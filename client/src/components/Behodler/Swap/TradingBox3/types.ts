@@ -60,6 +60,7 @@ export interface CoherentModel {
     swapClicked: boolean
     impliedExchangeRate: string
     flipClicked: boolean
+    finalized:boolean
 }
 
 export type actionTypes ='SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
@@ -74,9 +75,15 @@ export type actionTypes ='SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
 | 'UPDATE_MINTING'
 | 'SET_IMPLIED_EXCHANGE_RATE' | 'BATCH_UPDATE' | 'SET_FLIP_CLICKED'
 
+interface debug{
+    final: boolean
+}
+
 export interface actions {
     type: actionTypes,
-    payload?: any
+    payload?: any,
+    debug?: debug
+    
 }
 
 export const modelTypes = {

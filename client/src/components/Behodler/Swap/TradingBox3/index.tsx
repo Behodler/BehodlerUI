@@ -38,102 +38,85 @@ const ONE = BigInt(1000000000000000000)
 
 
 function reducer(state: CoherentModel, action: actions): CoherentModel {
-    let newState: CoherentModel;
+    let newState: CoherentModel = { ...state };
+    if (action.debug) {
+        if (action.debug.final && !state.finalized) {
+            console.log('final action:')
+            console.log(JSON.stringify(action, null, 2))
+            newState.finalized = true
+        }
+    }
+    if (state.finalized) {
+        return state
+    }
     switch (action.type) {
         case 'SPOTPRICE':
-            newState = {
-                ...state,
-                inputSpotDaiPriceView: getPayloadValue("string", action.payload.inputSpotDaiPriceView),
-                outputSpotDaiPriceView: getPayloadValue("string", action.payload.outputSpotDaiPriceView),
-                swapState: getPayloadValue("number", action.payload.swapState)
-            }
+            newState.inputSpotDaiPriceView = getPayloadValue("string", action.payload.inputSpotDaiPriceView);
+            newState.outputSpotDaiPriceView = getPayloadValue("string", action.payload.outputSpotDaiPriceView);
+            newState.swapState = getPayloadValue("number", action.payload.swapState);
             break;
         case 'UPDATE_HAS_V2_BALANCE':
-            newState = {
-                ...state,
-                hasV2Balance: getPayloadValue("boolean", action.payload.hasV2Balance),
-                V2BalanceState: getPayloadValue("number", action.payload.V2BalanceState)
-            }
+            newState.hasV2Balance = getPayloadValue("boolean", action.payload.hasV2Balance);
+            newState.V2BalanceState = getPayloadValue("number", action.payload.V2BalanceState);
             break;
         case 'SET_FLIP_CLICKED':
-            newState = {
-                ...state,
-                flipClicked: getPayloadValue("boolean", action.payload.flipClicked)
-            }
+            newState.flipClicked = getPayloadValue("boolean", action.payload.flipClicked);
             break;
         case 'UPDATE_DEPENDENT_FIELD':
-            newState = {
-                ...state,
-                V2BalanceState: V2BalanceState.unset,
-                inputText: getPayloadValue("string", action.payload.inputText),
-                outputText: getPayloadValue("string", action.payload.outputText),
-                swapState: getPayloadValue("number", action.payload.swapState),
-                independentFieldState: getPayloadValue("string", action.payload.fieldState)
-            }
+            newState.V2BalanceState = V2BalanceState.unset;
+            newState.inputText = getPayloadValue("string", action.payload.inputText);
+            newState.outputText = getPayloadValue("string", action.payload.outputText);
+            newState.swapState = getPayloadValue("number", action.payload.swapState);
+            newState.independentFieldState = getPayloadValue("string", action.payload.fieldState);
             break;
         case 'UPDATE_INDEPENDENT_FIELD':
-            var independentField = {
+            newState.independentField = {
                 target: getPayloadValue(action.payload.target, action.payload.target),
                 newValue: getPayloadValue("string", action.payload.newValue)
-            }
-            newState = {
-                ...state,
-                independentField,
-            }
+            };
             break;
         case 'UPDATE_SWAP_STATE':
-            newState = {
-                ...state,
-                swapState: getPayloadValue("number", action.payload.newState)
-            }
+            newState.swapState = getPayloadValue("number", action.payload.newState);
             break;
         case 'SET_SWAP_CLICKED':
-            newState = {
-                ...state,
-                swapClicked: getPayloadValue("boolean", action.payload.swapClicked)
-            }
+            newState.swapClicked = getPayloadValue("boolean", action.payload.swapClicked);
             break;
         case 'UPDATE_INPUT_TEXT':
-            newState = {
-                ...state,
-                inputText: getPayloadValue("string", action.payload.inputText)
-            }
+            newState.inputText = getPayloadValue("string", action.payload.inputText);
             break;
         case 'MARK_HAS_V2_BALANCE_STALE':
-            newState = {
-                ...state,
-                V2BalanceState: V2BalanceState.unset
-            }
+            newState.V2BalanceState = V2BalanceState.unset;
             break;
         case 'UPDATE_OUTPUT_TEXT':
-            newState = { ...state, outputText: getPayloadValue("string", action.payload.outputText) };
+            newState.outputText = getPayloadValue("string", action.payload.outputText);
             break;
         case 'UPDATE_MINTING':
-            newState = { ...state, minting: getPayloadValue("boolean", action.payload.minting) };
+            newState.minting = getPayloadValue("boolean", action.payload.minting);
             break;
         case 'UPDATE_INPUT_ENABLED':
-            newState = { ...state, inputEnabled: getPayloadValue("boolean", action.payload.inputEnabled) };
+            newState.inputEnabled = getPayloadValue("boolean", action.payload.inputEnabled);
             break;
         case 'UPDATE_INDEPENDENT_FIELD_STATE':
-            newState = { ...state, independentFieldState: getPayloadValue("string", action.payload.fieldState) };
+            newState.independentFieldState = getPayloadValue("string", action.payload.fieldState);
             break;
         case 'UPDATE_INPUT_ADDRESS':
             //note to dev: do not delete this console.log. It's for the end user
-            console.log('Input Address: ' + action.payload.newValue)
-            newState = { ...state, inputAddress: getPayloadValue("string", action.payload.newValue) };
+            console.log('Input Address: ' + action.payload.newValue);
+            newState.inputAddress = getPayloadValue("string", action.payload.newValue);
             break;
         case 'UPDATE_OUTPUT_ADDRESS':
-            console.log('Output Address: ' + action.payload.newValue)
-            newState = { ...state, outputAddress: getPayloadValue("string", action.payload.newValue) };
+            console.log('Output Address: ' + action.payload.newValue);
+            newState.outputAddress = getPayloadValue("string", action.payload.newValue);
             break;
         case 'SET_IMPLIED_EXCHANGE_RATE':
-            newState = { ...state, impliedExchangeRate: getPayloadValue("string", action.payload.impliedExchangeRate) };
+            console.log('setting exchange rate to ' + action.payload.impliedExchangeRate);
+            newState.impliedExchangeRate = getPayloadValue("string", action.payload.impliedExchangeRate);
             break;
         case 'BATCH_UPDATE':
             newState = action.payload;
             break;
         default:
-            throw 'unaccounted for action type: ' + action.type
+            throw 'unaccounted for action type: ' + action.type;
     }
     // Only return new state if it's different from the current state
     return JSON.stringify(state) === JSON.stringify(newState) ? state : newState;
@@ -141,7 +124,13 @@ function reducer(state: CoherentModel, action: actions): CoherentModel {
 
 const preDispatch = (existing: CoherentModel) => (actions: actions[]): CoherentModel => {
     let newState = { ...existing }
-    console.log('compressing the actions ' + actions.map(a => `${a.type}: ${JSON.stringify(a.payload)}`).join('\n '))
+    let actionsToExecute: actions[] = []
+    for (let i = 0; i < actions.length; i++) {
+        actionsToExecute.push(actions[i])
+        if (actions[i].debug?.final)
+            break;
+    }
+    console.log('compressing the actions ' + actionsToExecute.map(a => `${a.type}: ${JSON.stringify(a.payload)}`).join('\n '))
     for (let i = 0; i < actions.length; i++) {
         newState = reducer(newState, actions[i])
     }
@@ -167,14 +156,15 @@ let initialState: CoherentModel = {
     outputSpotDaiPriceView: '',
     swapClicked: false,
     impliedExchangeRate: '',
-    flipClicked: false
+    flipClicked: false,
+    finalized: false,
 }
 
 export default function () {
     const classes = useStyles();
     const inputClasses = inputStyles();
     const isMinting = () => {
-      //  console.log('isMinting: ' + viewModel.minting)
+        //  console.log('isMinting: ' + viewModel.minting)
         return viewModel.minting
     }
     const { networkName, initialized, contracts } = useWalletContext();
@@ -250,6 +240,7 @@ export default function () {
                 })
             }
             dispatchQueue.push(action)
+            console.log('dispatching many')
             dispatchMany(dispatchQueue, viewModel)
         }
     }, [viewModel.V2BalanceState])
@@ -272,6 +263,7 @@ export default function () {
             )
             const independentFieldTargetIsFrom = viewModel.independentField.target === 'FROM'
 
+            console.log(`isValidIndependentFieldInput ${isValidIndependentFieldInput} ,  viewModel.independentField.newValue !== viewModel.outputText ${viewModel.independentField.newValue !== viewModel.outputText} `)
             const updating = independentFieldTargetIsFrom
                 ? isValidIndependentFieldInput && viewModel.independentField.newValue !== viewModel.inputText
                 : isValidIndependentFieldInput && viewModel.independentField.newValue !== viewModel.outputText
@@ -286,6 +278,7 @@ export default function () {
             const newSwapState = viewModel.swapState !== SwapState.IMPOSSIBLE ? SwapState.IMPOSSIBLE : viewModel.swapState
 
             const newfieldState: FieldState = updating ? 'updating dependent field' : 'dormant'
+
             const action: actions = {
                 type: 'UPDATE_DEPENDENT_FIELD',
                 payload: {
@@ -295,6 +288,7 @@ export default function () {
                     fieldState: newfieldState,
                 }
             }
+            console.log('updating dependent field ' + JSON.stringify(action))
             dispatch(action)
         }
     }, [viewModel.independentField.target, viewModel.independentField.newValue])
@@ -578,113 +572,84 @@ export default function () {
         const flipClickedCallback = async () => {
             let queue: actions[] = []
             if (viewModel.flipClicked) {
-                queue.push({ type: 'SET_FLIP_CLICKED', payload: { flipClicked: false } })
+                queue.push({
+                    type: 'SET_FLIP_CLICKED', payload: { flipClicked: false }, debug: {
+                        final: false
+                    }
+                })
                 queue.push({
                     type: 'UPDATE_MINTING',
                     payload: {
                         minting: !isMinting()
                     }
                 })
-
-                if (isMinting()) {
-                    if (viewModel.hasV2Balance) {
-                        const pyroTokenV2Address = await contracts.behodler.Behodler2.LiquidityReceiverV2.baseTokenMapping(viewModel.inputAddress).call()
-                        queue.push({
-                            type: 'UPDATE_INPUT_ADDRESS',
-                            payload: {
-                                newValue: pyroTokenV2Address
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_OUTPUT_ADDRESS',
-                            payload: {
-                                newValue: viewModel.inputAddress
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_OUTPUT_TEXT',
-                            payload: {
-                                outputText: ''
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_INPUT_TEXT',
-                            payload: {
-                                inputText: ''
-                            }
-                        })
-                        queue.push({
-                            type: 'MARK_HAS_V2_BALANCE_STALE'
-                        })
-                        queue.push({
-                            type: 'UPDATE_INDEPENDENT_FIELD',
-                            payload: {
-                                target: 'TO',
-                                newValue: viewModel.inputText
-                            }
-                        })
-                    } else {
-                        queue.push({
-                            type: 'UPDATE_INPUT_ADDRESS',
-                            payload: {
-                                newValue: viewModel.outputAddress
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_OUTPUT_ADDRESS',
-                            payload: {
-                                newValue: viewModel.inputAddress
-                            }
-                        })
-
-                        queue.push({
-                            type: 'UPDATE_INPUT_ENABLED',
-                            payload: {
-                                inputEnabled: false
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_OUTPUT_TEXT',
-                            payload: {
-                                outputText: ''
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_INPUT_TEXT',
-                            payload: {
-                                inputText: ''
-                            }
-                        })
-                        queue.push({
-                            type: 'UPDATE_INDEPENDENT_FIELD',
-                            payload: {
-                                target: viewModel.independentField.target === 'FROM' ? 'TO' : 'FROM',
-                                newValue: viewModel.outputText
-                            }
-                        })
+                queue.push({
+                    type: 'UPDATE_INDEPENDENT_FIELD_STATE',
+                    payload: {
+                        fieldState: 'dormant'
                     }
-                } else {
-                    const pyroV3Address = await contracts.behodler.Behodler2.LiquidityReceiverV3.getPyroToken(viewModel.outputAddress).call();
+                })
+                //MINTING switching to REDEEMING
+                if (isMinting()) {
+                    const newInputAddress = viewModel.hasV2Balance ?
+                        await contracts.behodler.Behodler2.LiquidityReceiverV2.baseTokenMapping(viewModel.inputAddress).call()
+                        : viewModel.outputAddress
+
                     queue.push({
-                        type: 'UPDATE_INPUT_TEXT',
+                        type: 'UPDATE_INPUT_ADDRESS',
                         payload: {
-                            inputText: viewModel.outputText
+                            newValue: newInputAddress
                         }
                     })
+
+                    queue.push({
+                        type: 'UPDATE_OUTPUT_ADDRESS',
+                        payload: {
+                            newValue: viewModel.inputAddress
+                        }
+                    })
+
+                    queue.push({
+                        type: 'UPDATE_OUTPUT_TEXT',
+                        payload: {
+                            outputText: ''
+                        },
+                    })
+                    queue.push({
+                        type: 'UPDATE_INDEPENDENT_FIELD',
+                        payload: {
+                            target: 'TO',
+                            newValue: viewModel.inputText
+                        },
+                    })
+                } else { //REDEEMING switchig to MINTING
+                    const pyroV3Address = await contracts.behodler.Behodler2.LiquidityReceiverV3.getPyroToken(viewModel.outputAddress).call();
                     queue.push({
                         type: 'UPDATE_INPUT_ADDRESS',
                         payload: {
                             newValue: viewModel.outputAddress
                         }
                     })
+
                     queue.push({
                         type: 'UPDATE_OUTPUT_ADDRESS',
                         payload: {
                             newValue: pyroV3Address
                         }
                     })
+
                     queue.push({
-                        type: 'MARK_HAS_V2_BALANCE_STALE'
+                        type: 'UPDATE_INPUT_TEXT',
+                        payload: {
+                            inputText: ''
+                        },
+                    })
+                    queue.push({
+                        type: 'UPDATE_INDEPENDENT_FIELD',
+                        payload: {
+                            target: 'FROM',
+                            newValue: viewModel.outputText
+                        },
                     })
                 }
 
@@ -695,6 +660,7 @@ export default function () {
                             inputText: ''
                         }
                     })
+                    console.log('setting output to zero in impossible state')
                     queue.push({
                         type: 'UPDATE_OUTPUT_TEXT',
                         payload: {
@@ -705,6 +671,7 @@ export default function () {
                 }
 
             }
+            console.log('dispatching many')
             dispatchMany(queue, viewModel)
         }
         if (viewModel.flipClicked)
@@ -748,6 +715,7 @@ export default function () {
         const outputValToUse = BigInt(API.toWei(viewModel.outputText))
         let inputEstimate, redeemRate
         if (isMinting()) {
+
             let baseTokensRequired
             const pyroToken = await API.getPyroTokenV3(viewModel.outputAddress)
             redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
@@ -755,18 +723,32 @@ export default function () {
 
             inputEstimate = parseFloat(API.fromWei(baseTokensRequired.toString()))
         } else {
+            console.log('inside non minting block of caclulate input from output')
             let pyroTokensRequired
             const pyroToken = await (viewModel.hasV2Balance ? API.getPyroTokenV2(viewModel.inputAddress) : API.getPyroTokenV3(viewModel.inputAddress))
             const redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
             pyroTokensRequired = (outputValToUse * bigFactor * ONE * BigInt(98)) / (redeemRate * BigInt(100))
 
             inputEstimate = parseFloat(API.fromWei(pyroTokensRequired.toString())) / Factor
+            //TODO: dispatch output
+            dispatch({
+                type: 'UPDATE_OUTPUT_TEXT',
+                payload: {
+                    outputText: viewModel.independentField.newValue
+                }
+
+            })
+            console.log('ABOUT TO DISPATCH INPUT TEXT UPDATE OF ' + formatSignificantDecimalPlaces(inputEstimate, 18))
             var updateOutputTextAction: actions = {
                 type: 'UPDATE_INPUT_TEXT',
                 payload: {
                     inputText: formatSignificantDecimalPlaces(inputEstimate, 18)
+                },
+                debug: {
+                    final: false
                 }
             }
+
             dispatch(updateOutputTextAction)
         }
     }
@@ -774,9 +756,13 @@ export default function () {
     const independentFieldCallback = useCallback(async () => {
         try {
             if (viewModel.independentFieldState === "updating dependent field") {
+                console.log('about to update independent field')
+
                 if (viewModel.independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
+                    console.log('about to update input from output')
+                    // throw 'terminating execution';
                     await calculateInputFromOutput()
                 }
                 dispatch({
@@ -800,17 +786,19 @@ export default function () {
                 }
             })
         }
-    }, [viewModel.independentFieldState, viewModel.independentField.target, viewModel.independentField.newValue])
+    }, [viewModel.independentFieldState, /*viewModel.independentField.target, viewModel.independentField.newValue*/])
 
     useEffect(() => {
         independentFieldCallback()
     }, [viewModel.independentFieldState])
 
     const setImpliedExchangeRateString = () => {
+        console.log('set IMplied exchange rate string activated')
         let pyroName, baseName, e, connectorPhrase
         let parsedInput = parseFloat(viewModel.inputText)
         let parsedOutput = parseFloat(viewModel.outputText)
         if (isNaN(parsedInput) || isNaN(parsedOutput)) {
+            console.log('nanning')
             dispatch({
                 type: 'SET_IMPLIED_EXCHANGE_RATE',
                 payload: {
@@ -834,6 +822,7 @@ export default function () {
                 })
             }
             else {
+                console.log('TO block active')
                 e = parsedInput / parsedOutput
                 connectorPhrase = 'requires'
                 dispatch({
@@ -846,6 +835,7 @@ export default function () {
             }
         }
         else {
+            console.log('not minting')
             pyroName = viewModel.hasV2Balance ? pyroV2TokenBalances.filter(p => p.address.toLowerCase() === viewModel.inputAddress.toLowerCase())[0].name
                 : pyroV3TokenBalances.filter(p => p.address.toLowerCase() === viewModel.inputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === viewModel.outputAddress.toLowerCase())[0].name
