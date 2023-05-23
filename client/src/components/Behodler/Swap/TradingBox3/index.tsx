@@ -839,12 +839,6 @@ export default function () {
             pyroName = viewModel.hasV2Balance ? pyroV2TokenBalances.filter(p => p.address.toLowerCase() === viewModel.inputAddress.toLowerCase())[0].name
                 : pyroV3TokenBalances.filter(p => p.address.toLowerCase() === viewModel.inputAddress.toLowerCase())[0].name
             baseName = baseTokenBalances.filter(p => p.address.toLowerCase() === viewModel.outputAddress.toLowerCase())[0].name
-            dispatch({
-                type: 'SET_IMPLIED_EXCHANGE_RATE',
-                payload: {
-                    impliedExchangeRate: `1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`
-                }
-            })
             if (viewModel.independentField.target === 'FROM') {
                 e = parsedOutput / parsedInput
                 connectorPhrase = 'can redeem'
@@ -852,16 +846,16 @@ export default function () {
             else {
                 e = parsedInput / parsedOutput
                 connectorPhrase = 'can be redeemed for'
-                dispatch({
-                    type: 'SET_IMPLIED_EXCHANGE_RATE',
-                    payload: {
-                        impliedExchangeRate: `1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`
-                    }
-                })
+           
 
             }
 
-
+            dispatch({
+                type: 'SET_IMPLIED_EXCHANGE_RATE',
+                payload: {
+                    impliedExchangeRate: `1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`
+                }
+            })
         }
 
     }
