@@ -1,10 +1,12 @@
 import * as React from 'react'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
-import { TokenBalanceMapping } from '../types'
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
 import API from "../../../../../blockchain/ethereumAPI"
-import { useTradeableTokensList } from "../../hooks/useTradeableTokensList";
+import { TokenInfo, emptyToken, rowsAtom } from '../../hooks/useTokeRows';
+import { useAtom } from 'jotai';
+import { mintingAtom } from '.';
+import _ from 'lodash'
 
 const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     root: {
@@ -91,63 +93,70 @@ interface props {
     setShow: (show: boolean) => void,
     mobile: boolean
     setAddress: (a: string) => void
-    balances: TokenBalanceMapping[]
-    pyro: boolean
+    input: boolean
 }
 
 interface MenuToken {
     name: string
     address: string
     image: string,
-    loading: boolean,
     balance: string,
 
 }
+//TODO: create a derived atom for tokensUnderConsideration as per chatGPT discussion. Let it rely on minting and input atoms.
 
-// const randomInt = (range: number) => Math.floor(Math.random() * range)
 const trunc = (str: string, max: number) => {
     if (str.length > max) {
         return str.substring(0, max) + "..."
     }
     return str;
 }
+const isNonZero = (balance: string) => BigInt(balance) > 0n
+
+
 export default function Menu(props: props) {
-    const groups = useTradeableTokensList()
-    const conjoinedPyro = [...groups.pyroTokensV2, ...groups.pyroTokensV3]
-        .sort((a, b) => a.name.substring(0, a.name.length - 5).localeCompare(b.name.substring(0, b.name.length - 5)))
 
-    const [menuItems, setMenuItems] = useState<MenuToken[]>((
-        (props.pyro ? conjoinedPyro : groups.baseTokens)
-            .map(token => ({ ...token, loading: true, balance: '0' }))
-    ));
-
-    const findBaseTokenOrPyroWithAddress = useCallback(({ address }) => (
-        groups.baseTokens.find(token => token.address.toLowerCase() === address.toLowerCase())
-        || groups.pyroTokensV2.find(token => token.address.toLowerCase() === address.toLowerCase())
-        || groups.pyroTokensV3.find(token => token.address.toLowerCase() === address.toLowerCase())
-
-    ), [groups.baseTokens, groups.pyroTokensV2, groups.pyroTokensV3])
+    const [rows,] = useAtom(rowsAtom)
+    const [minting,] = useAtom(mintingAtom)
+    const [menuItems, setMenuItems] = useState<MenuToken[]>([])
 
     useEffect(() => {
-        const getMenuItems = (balances: TokenBalanceMapping[]) => balances
-            .filter(findBaseTokenOrPyroWithAddress)
-            .map(({ balance, address }) => {
-                const currentTokenListItem = findBaseTokenOrPyroWithAddress({ address });
+        let tokensUnder = rows.map(r => r.base)
+        if (minting && !props.input) {
+            tokensUnder = rows.map(r => r.PV3)
+        } else if (!minting && props.input) {
+            tokensUnder = rows.map(r => isNonZero(r.PV2.balance) ? r.PV2 : r.PV3)
+        }
+
+        const filter = (token: TokenInfo, index: number, tokens: TokenInfo[]) => (
+            tokens.find(t => t.address.toLowerCase() === token.address.toLowerCase()
+            )
+        )
+
+        const getMenuItems = (balances: TokenInfo[]) => balances
+            .filter(filter)
+            .map((token: TokenInfo) => {
+                const currentTokenListItem = filter(token, 0, tokensUnder) || emptyToken
                 const item: MenuToken = {
-                    address,
+                    address: currentTokenListItem.address,
                     name: currentTokenListItem?.name || '',
                     image: currentTokenListItem?.image || '',
-                    loading: false,
-                    balance: formatSignificantDecimalPlaces(API.fromWei(balance), 4)
+                    balance: formatSignificantDecimalPlaces(API.fromWei(currentTokenListItem.balance), 4)
                 }
 
                 return item
             })
 
-        setMenuItems(getMenuItems(props.balances))
-    }, [props.balances])
+        const newMenuItems = getMenuItems(tokensUnder)
 
-    return <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
+        if (!_.isEqual(newMenuItems, menuItems)) {
+            setMenuItems(newMenuItems)
+        }
+
+    }, [rows, props.input, minting])
+
+    return 3 < 4 ? <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
+        : <div></div>
 }
 
 function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void, mobile: boolean, setAddress: (a: string) => void }) {
@@ -213,7 +222,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                                     </Grid>
 
                                     <Grid item>
-                                        {t.loading ? <CircularProgress size={props.mobile ? 30 : 40} /> : t.balance}
+                                        {false ? <CircularProgress size={props.mobile ? 30 : 40} /> : t.balance}
                                     </Grid>
                                 </Grid>
                             </div>

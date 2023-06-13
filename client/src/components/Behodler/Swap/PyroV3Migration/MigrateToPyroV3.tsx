@@ -3,7 +3,6 @@ import { Hidden } from '@material-ui/core'
 import styled from 'styled-components'
 import { lighten } from 'polished'
 
-import { TokenBalanceMapping } from '../TradingBox3/types'
 import Modal, {
     StyledModalContent,
     StyledModalHeader,
@@ -19,6 +18,7 @@ import {
     StyledMigrateToPyroV3ModalButtons,
     LineBreak,
 } from './styled'
+import { TokenTripletRow } from '../hooks/useTokeRows'
 
 const StyledPyroTokensReadmeLink = styled.a`
   color: #9081d2;
@@ -28,26 +28,26 @@ const StyledPyroTokensReadmeLink = styled.a`
   }
 `
 
-export const areV2PyroTokensPresentInActiveWallet = (pyroTokenV2Balances: TokenBalanceMapping[]) => (
-    !!pyroTokenV2Balances.find(({ balance }) => balance !== '0')
+export const areV2PyroTokensPresentInActiveWallet = (pyroTokenV2Balances: TokenTripletRow[]) => (
+    !!pyroTokenV2Balances.find(({ PV2 }) => BigInt(PV2.balance) >0)
 );
 
 export function MigrateToPyroV3(props: {
     isMigrationModalOpen: boolean,
     openMigrationModal: () => void,
     closeMigrationModal: () => void,
-    pyroTokenV2Balances: TokenBalanceMapping[],
+    rows: TokenTripletRow[]
 }) {
     const {
         isMigrationModalOpen,
         openMigrationModal,
         closeMigrationModal,
-        pyroTokenV2Balances,
+        rows,
     } = props;
 
-    const walletContainsPyroV2 = areV2PyroTokensPresentInActiveWallet(pyroTokenV2Balances)
+    const walletContainsPyroV2 = areV2PyroTokensPresentInActiveWallet(rows)
 
-    return Array.isArray(pyroTokenV2Balances) && !!pyroTokenV2Balances.length ? (
+    return Array.isArray(rows) && !!rows.length ? (
         <StyledMigrateToPyroV3Wrapper>
 
             <StyledMigrateToPyroV3Box>

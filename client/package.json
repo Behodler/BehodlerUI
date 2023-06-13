@@ -39,6 +39,7 @@
         "handy-redis": "^2.2.1",
         "jotai": "^2.0.2",
         "jotai-optics": "^0.3.0",
+        "lodash": "^4.17.21",
         "openzeppelin-solidity": "^2.1.1",
         "polished": "^4.1.3",
         "react": "^17.0.2",

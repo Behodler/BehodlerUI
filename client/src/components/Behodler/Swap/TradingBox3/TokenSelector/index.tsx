@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Grid, makeStyles, Theme } from '@material-ui/core'
 
 import Menu from './Menu'
-import { TokenBalanceMapping } from '../types'
 import { WalletContext } from "../../../../Contexts/WalletStatusContext";
+import { atom, useAtom } from 'jotai';
 
 const useStyles = (scale) => makeStyles((theme: Theme) => ({
     root: {
@@ -35,22 +35,29 @@ const useStyles = (scale) => makeStyles((theme: Theme) => ({
 
 interface props {
     tokenImage: string,
-    balances: TokenBalanceMapping[]
     scale: number,
     setAddress: (a: string) => void
     network: string
-    pyro: boolean
+    minting: boolean
+    input: boolean
     mobile?: boolean
 }
+export const mintingAtom = atom(false)
 
 export default function TokenSelector(props: props) {
     const [showMenu, setShowMenu] = React.useState<boolean>(false)
     const walletContextProps = useContext(WalletContext);
+    const [, setMinting] = useAtom(mintingAtom)
+
+    useEffect(() => {
+        setMinting(props.minting)
+    }, [props.minting])
 
     const weth10Address = walletContextProps.contracts.behodler.Behodler2.Weth10.address;
     const scarcityAddress = walletContextProps.contracts.behodler.Behodler2.Behodler2.address;
 
     const classes = useStyles(props.scale)()
+    const isPyro = (props.minting && !props.input) || (!props.minting && props.input)
     return <div className={classes.root}>
         <Grid
             className={classes.outerCircle}
@@ -64,12 +71,13 @@ export default function TokenSelector(props: props) {
                 <div className={classes.innerCircle}>
                     <img alt="token"
                         src={props.tokenImage}
-                        width={(props.pyro ? 100 : 80) * props.scale} />
+                        width={(isPyro ? 100 : 80) * props.scale} />
                 </div>
             </Grid>
 
         </Grid>
-        <Menu
+
+        {3 < 4 ? <Menu
             show={showMenu}
             weth10Address={weth10Address}
             scarcityAddress={scarcityAddress}
@@ -77,8 +85,7 @@ export default function TokenSelector(props: props) {
             setShow={setShowMenu}
             mobile={props.mobile || false}
             setAddress={props.setAddress}
-            balances={props.balances}
-            pyro={props.pyro}
-        />
+            input={props.input}
+        /> : <div></div>}
     </div>
 }

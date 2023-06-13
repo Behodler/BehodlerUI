@@ -109,7 +109,7 @@ class ethereumAPI {
             .catch((err) => console.log('user rejected'))
     }
 
-    public async getToken(tokenAddress: string, network: string): Promise<ERC20> {
+    public async getToken(tokenAddress: string): Promise<ERC20> {
         var token = new this.web3.eth.Contract(ABIs.ERC20 as any, tokenAddress).methods as unknown as ERC20
         token.address = tokenAddress
         return token

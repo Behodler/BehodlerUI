@@ -1,9 +1,3 @@
-export interface TokenBalanceMapping {
-    address: string
-    balance: string
-    name: string
-}
-
 export enum TXType {
     approval,
     mintPyro,
@@ -36,17 +30,8 @@ export enum SwapState {
     POSSIBLE
 }
 
-export enum V2BalanceState {
-    unset,
-    has,
-    hasNot
-}
-
 export interface CoherentModel {
-    hasV2Balance: boolean
-    V2BalanceState: V2BalanceState
-
-    inputEnabled: boolean
+    inputEnabled:boolean
     inputAddress: string
     outputAddress: string
     independentField: IndependentField
@@ -60,22 +45,23 @@ export interface CoherentModel {
     swapClicked: boolean
     impliedExchangeRate: string
     flipClicked: boolean
-    finalized:boolean
+    finalized: boolean
 }
 
-export type actionTypes ='SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
-'UPDATE_INPUT_ADDRESS' | 'UPDATE_OUTPUT_ADDRESS' |
-'UPDATE_INPUT_TEXT'
-| 'UPDATE_OUTPUT_TEXT'
-| 'UPDATE_SWAP_STATE'
-| 'UPDATE_DEPENDENT_FIELD' |
-'UPDATE_INDEPENDENT_FIELD'
-| 'UPDATE_INDEPENDENT_FIELD_STATE' |
-'UPDATE_INPUT_ENABLED' | 'SET_SWAP_CLICKED' | 'MARK_HAS_V2_BALANCE_STALE'
-| 'UPDATE_MINTING'
-| 'SET_IMPLIED_EXCHANGE_RATE' | 'BATCH_UPDATE' | 'SET_FLIP_CLICKED'
+export type actionTypes = 'SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
+    'UPDATE_ADDRESS_PAIR' |
+    'UPDATE_INPUT_TEXT'
+    | 'UPDATE_OUTPUT_TEXT'
+    | 'UPDATE_SWAP_STATE'
+    | 'UPDATE_DEPENDENT_FIELD' |
+    'UPDATE_INDEPENDENT_FIELD'
+    | 'UPDATE_INDEPENDENT_FIELD_STATE' |
+    'SET_SWAP_CLICKED'
+    |'SET_INPUT_ENABLED'
+    | 'UPDATE_MINTING'
+    | 'SET_IMPLIED_EXCHANGE_RATE' | 'BATCH_UPDATE' | 'SET_FLIP_CLICKED'
 
-interface debug{
+interface debug {
     final: boolean
 }
 
@@ -83,7 +69,7 @@ export interface actions {
     type: actionTypes,
     payload?: any,
     debug?: debug
-    
+
 }
 
 export const modelTypes = {
