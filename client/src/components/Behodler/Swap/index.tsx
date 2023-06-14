@@ -8,7 +8,7 @@ import TradingBox3 from './TradingBox3'
 import { useWatchCurrentBlockEffect } from './hooks/useCurrentBlock'
 
 import './fonts/gilroy-font.css'
-import { rowsAtom, useTokenRows } from './hooks/useTokeRows'
+import { rowsAtom, useTokenRows } from './hooks/useTokenRows'
 import { useEffect, useState } from 'react'
 import { useAtom } from 'jotai';
 

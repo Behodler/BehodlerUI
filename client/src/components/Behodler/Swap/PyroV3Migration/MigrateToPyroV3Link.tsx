@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { lighten } from 'polished'
 
 import {areV2PyroTokensPresentInActiveWallet} from "./MigrateToPyroV3";
-import { TokenTripletRow } from '../hooks/useTokeRows';
+import { TokenTripletRow } from '../hooks/useTokenRows';
 
 const StyledMigrateToPyroV3Link = styled.button`
   background-color: transparent;

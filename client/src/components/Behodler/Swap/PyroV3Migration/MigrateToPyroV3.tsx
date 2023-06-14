@@ -18,7 +18,7 @@ import {
     StyledMigrateToPyroV3ModalButtons,
     LineBreak,
 } from './styled'
-import { TokenTripletRow } from '../hooks/useTokeRows'
+import { TokenTripletRow } from '../hooks/useTokenRows'
 
 const StyledPyroTokensReadmeLink = styled.a`
   color: #9081d2;

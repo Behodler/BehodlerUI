@@ -25,7 +25,7 @@ import { SwapState, TXType, PendingTX, FieldState, CoherentModel, actions, getPa
 import TokenSelector from './TokenSelector'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { Logos } from './ImageLoader'
-import { TokenTripletRow, daiAtom, rowsAtom } from '../hooks/useTokeRows';
+import { TokenTripletRow, daiAtom, rowsAtom } from '../hooks/useTokenRows';
 import { useAtom } from 'jotai';
 
 BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });

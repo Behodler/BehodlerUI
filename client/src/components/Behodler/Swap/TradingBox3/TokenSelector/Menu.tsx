@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
 import API from "../../../../../blockchain/ethereumAPI"
-import { TokenInfo, emptyToken, rowsAtom } from '../../hooks/useTokeRows';
+import { TokenInfo, emptyToken, rowsAtom } from '../../hooks/useTokenRows';
 import { useAtom } from 'jotai';
 import { mintingAtom } from '.';
 import _ from 'lodash'
