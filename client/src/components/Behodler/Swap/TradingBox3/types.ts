@@ -48,7 +48,7 @@ export interface CoherentModel {
     finalized: boolean
 }
 
-export type actionTypes = 'SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
+export type actionTypes = 'SET_SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
     'UPDATE_ADDRESS_PAIR' |
     'UPDATE_INPUT_TEXT'
     | 'UPDATE_OUTPUT_TEXT'

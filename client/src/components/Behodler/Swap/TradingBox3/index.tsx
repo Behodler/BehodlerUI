@@ -54,7 +54,7 @@ function reducer(state: CoherentModel, action: actions): CoherentModel {
         itemsToPrint.push(JSON.stringify(action, null, 4))
     }
     switch (action.type) {
-        case 'SPOTPRICE':
+        case 'SET_SPOTPRICE':
             newState.inputSpotDaiPriceView = getPayloadValue("string", action.payload.inputSpotDaiPriceView);
             newState.outputSpotDaiPriceView = getPayloadValue("string", action.payload.outputSpotDaiPriceView);
             newState.swapState = getPayloadValue("number", action.payload.swapState);
@@ -161,11 +161,12 @@ export default function () {
     const isMinting = () => {
         return viewModel.minting
     }
+
     const { networkName, initialized, contracts } = useWalletContext();
     const { chainId, active } = useActiveWeb3React()
     const [rows,] = useAtom(rowsAtom)
     const [daiAddress,] = useAtom(daiAtom)
-
+    const [everyThreeBlocks, setEveryThreeBlocks] = useState<number>(0)
     const activeAccountAddress = useActiveAccountAddress()
 
     initialState.inputAddress = rows[0].base.address
@@ -177,6 +178,10 @@ export default function () {
     const weth10 = useWeth10Contract()
 
     const block = useCurrentBlock()
+    useEffect(() => {
+        if (BigInt(block) % 3n === 0n)
+            setEveryThreeBlocks(everyThreeBlocks + 1)
+    }, [block])
     const showNotification = useShowNotification()
 
     const [swapping, setSwapping] = useLoggedState<boolean>(false)
@@ -304,6 +309,9 @@ export default function () {
             swapState: SwapState.IMPOSSIBLE,
             inputSpotDaiPriceView: '',
             outputSpotDaiPriceView: '',
+            debug: {
+                log: false
+            }
         }
 
         try {
@@ -347,8 +355,9 @@ export default function () {
                 const inputSpot = parseFloat(spotForPyro.toString()) / Factor
                 payload.inputSpotDaiPriceView = formatSignificantDecimalPlaces(inputSpot.toString(), 2)
             }
+
             let action: actions = {
-                type: 'SPOTPRICE',
+                type: 'SET_SPOTPRICE',
                 payload
             }
             dispatch(action)
@@ -356,13 +365,13 @@ export default function () {
             console.error(e)
             return
         }
-    }, [daiAddress])
+    }, [daiAddress, viewModel.inputAddress, viewModel.outputAddress, everyThreeBlocks])
 
     useEffect(() => {
         if (initialized) {
             spotPriceCallback()
         }
-    }, [daiAddress, initialized])
+    }, [daiAddress, initialized, viewModel.inputAddress, viewModel.outputAddress, everyThreeBlocks])
 
 
     const nameOfSelectedAddress = (input: boolean) => {
