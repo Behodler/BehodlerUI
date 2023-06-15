@@ -204,8 +204,6 @@ export function useTokenRows(): void {
             const pv2Name = trunc(newRows[i].PV2.name)
             const pv3Name = trunc(newRows[i].PV3.name)
 
-            console.log(`baseName  ${baseName} from ${newRows[i].base.name}`)
-
             try {
 
 
@@ -271,7 +269,6 @@ export function useTokenRows(): void {
             }
         }
         if (!_.isEqual(newRows, rows)) {
-            console.log('updating rows in approval')
             updateRow(newRows)
         }
 

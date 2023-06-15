@@ -62,7 +62,8 @@ export type actionTypes = 'SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
     | 'SET_IMPLIED_EXCHANGE_RATE' | 'BATCH_UPDATE' | 'SET_FLIP_CLICKED'
 
 interface debug {
-    final: boolean
+    final?: boolean,
+    log?:boolean
 }
 
 export interface actions {

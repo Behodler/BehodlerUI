@@ -50,6 +50,9 @@ function reducer(state: CoherentModel, action: actions): CoherentModel {
     if (state.finalized) {
         return state
     }
+    if (action.payload?.debug?.log) {
+        itemsToPrint.push(JSON.stringify(action, null, 4))
+    }
     switch (action.type) {
         case 'SPOTPRICE':
             newState.inputSpotDaiPriceView = getPayloadValue("string", action.payload.inputSpotDaiPriceView);
@@ -156,7 +159,6 @@ export default function () {
     const classes = useStyles();
     const inputClasses = inputStyles();
     const isMinting = () => {
-        //  console.log('isMinting: ' + viewModel.minting)
         return viewModel.minting
     }
     const { networkName, initialized, contracts } = useWalletContext();
@@ -183,7 +185,6 @@ export default function () {
 
     const [viewModel, dispatch] = useReducer(reducer, initialState)
     const [activeRow, setActiveRow] = useState<TokenTripletRow>(rows[0])
-    console.log('mintAllowance of Pv3 ' + activeRow.PV3.mintAllowance)
     const hasV2Balance = BigInt(activeRow.PV2.balance) > 10000n
 
     useEffect(() => {
@@ -421,7 +422,7 @@ export default function () {
                 }
             })
         }
-    }, [viewModel.inputAddress, viewModel.outputAddress, viewModel.swapState, viewModel.independentFieldState, currentTokenEffects,rows,activeRow])
+    }, [viewModel.inputAddress, viewModel.outputAddress, viewModel.swapState, viewModel.independentFieldState, currentTokenEffects, rows, activeRow])
 
     const hashBack = (type: TXType) => (err, hash: string) => {
         if (hash) {
@@ -550,7 +551,7 @@ export default function () {
                         type: 'UPDATE_ADDRESS_PAIR',
                         payload: {
                             input: newInputAddress,
-                            output: viewModel.outputAddress
+                            output: viewModel.inputAddress
                         }
                     })
 
@@ -611,7 +612,6 @@ export default function () {
                 }
 
             }
-            console.log('dispatching many')
             dispatchMany(queue, viewModel)
         }
         if (viewModel.flipClicked)
@@ -625,7 +625,6 @@ export default function () {
 
         if (isMinting()) {
             let pyrotokensGeneratedWei
-
             const pyroToken = await API.getPyroTokenV3(viewModel.outputAddress)
             redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
             pyrotokensGeneratedWei = (inputValToUse * bigFactor * ONE) / redeemRate
@@ -694,14 +693,12 @@ export default function () {
     }
 
     const independentFieldCallback = useCallback(async () => {
+
         try {
             if (viewModel.independentFieldState === "updating dependent field") {
-
                 if (viewModel.independentField.target === 'FROM') { //changes in input textbox affect output textbox
                     await calculateOutputFromInput()
                 } else {
-
-                    // throw 'terminating execution';
                     await calculateInputFromOutput()
                 }
                 dispatch({
@@ -712,6 +709,7 @@ export default function () {
                 })
             }
         } catch (e) {
+            console.log('calculation error: ' + e)
             dispatch({
                 type: 'UPDATE_SWAP_STATE',
                 payload: {
@@ -853,14 +851,14 @@ export default function () {
         swapValidationCallback()
     }, [viewModel.independentFieldState, inputEnabled, viewModel.swapState, activeRow, viewModel.inputAddress, viewModel.inputText])
 
-    useEffect(() => {
-        dispatch({
-            type: 'UPDATE_INDEPENDENT_FIELD_STATE',
-            payload: {
-                fieldState: 'validating swap' as FieldState
-            }
-        })
-    }, [inputEnabled])
+    // useEffect(() => {
+    //     dispatch({
+    //         type: 'UPDATE_INDEPENDENT_FIELD_STATE',
+    //         payload: {
+    //             fieldState: 'validating swap' as FieldState
+    //         }
+    //     })
+    // }, [inputEnabled])
 
     const [fromBalance, setFromBalance] = useState<string>('0')
     const [toBalance, setToBalance] = useState<string>('0')
@@ -950,7 +948,6 @@ export default function () {
     }
 
     useEffect(() => {
-        console.log('balances updated')
         const currentActiveRow = rows.filter(r => r.base.address == activeRow.base.address)[0]
         if (!_.isEqual(currentActiveRow, activeRow))
             setActiveRow(currentActiveRow)
