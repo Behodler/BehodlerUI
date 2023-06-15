@@ -654,12 +654,10 @@ export default function () {
         const outputValToUse = BigInt(API.toWei(viewModel.outputText))
         let inputEstimate, redeemRate
         if (isMinting()) {
-
             let baseTokensRequired
             const pyroToken = await API.getPyroTokenV3(viewModel.outputAddress)
             redeemRate = BigInt(await pyroToken.redeemRate().call({ from: activeAccountAddress }))
             baseTokensRequired = (outputValToUse * redeemRate) / ONE
-
             inputEstimate = parseFloat(API.fromWei(baseTokensRequired.toString()))
         } else {
 
@@ -669,27 +667,27 @@ export default function () {
             pyroTokensRequired = (outputValToUse * bigFactor * ONE * BigInt(98)) / (redeemRate * BigInt(100))
 
             inputEstimate = parseFloat(API.fromWei(pyroTokensRequired.toString())) / Factor
-
-            dispatch({
-                type: 'UPDATE_OUTPUT_TEXT',
-                payload: {
-                    outputText: viewModel.independentField.newValue
-                }
-
-            })
-
-            var updateOutputTextAction: actions = {
-                type: 'UPDATE_INPUT_TEXT',
-                payload: {
-                    inputText: formatSignificantDecimalPlaces(inputEstimate, 18)
-                },
-                debug: {
-                    final: false
-                }
+        }
+        dispatch({
+            type: 'UPDATE_OUTPUT_TEXT',
+            payload: {
+                outputText: viewModel.independentField.newValue
             }
 
-            dispatch(updateOutputTextAction)
+        })
+
+        var updateOutputTextAction: actions = {
+            type: 'UPDATE_INPUT_TEXT',
+            payload: {
+                inputText: formatSignificantDecimalPlaces(inputEstimate, 18)
+            },
+            debug: {
+                final: false
+            }
         }
+
+        dispatch(updateOutputTextAction)
+
     }
 
     const independentFieldCallback = useCallback(async () => {
@@ -749,7 +747,7 @@ export default function () {
 
             if (viewModel.independentField.target === 'FROM') {
                 e = parsedOutput / parsedInput
-                connectorPhrase = 'can '
+                connectorPhrase = 'can mint'
                 dispatch({
                     type: 'SET_IMPLIED_EXCHANGE_RATE',
                     payload: {
@@ -773,13 +771,17 @@ export default function () {
             pyroName = (hasV2Balance ? activeRow.PV2 : activeRow.PV3).name
             baseName = activeRow.base.name
 
+            let leftToken = pyroName
+            let rightToken = baseName
             if (viewModel.independentField.target === 'FROM') {
                 e = parsedOutput / parsedInput
                 connectorPhrase = 'can redeem'
             }
             else {
                 e = parsedInput / parsedOutput
-                connectorPhrase = 'can be redeemed for'
+                leftToken = baseName
+                rightToken = pyroName
+                connectorPhrase = 'can be redeemed from'
 
 
             }
@@ -787,7 +789,7 @@ export default function () {
             dispatch({
                 type: 'SET_IMPLIED_EXCHANGE_RATE',
                 payload: {
-                    impliedExchangeRate: `1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`
+                    impliedExchangeRate: `1 ${leftToken} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${rightToken}`
                 }
             })
         }
