@@ -101,7 +101,6 @@ export function useTokenRows(): void {
 
 
             if (configId === "eth") {
-
                 pyroTokenV2Redeem = async (amount: string) => {
                     await contracts.behodler.Behodler2.PyroWeth10Proxy.redeem(amount)
                 }
@@ -163,8 +162,8 @@ export function useTokenRows(): void {
 
     const rowIsEth = (row: TokenTripletRow) => {
         const displayName = row.base.name.toLocaleLowerCase()
-        const lowerDisplayName = displayName.toLocaleLowerCase()
-        const condition = lowerDisplayName === 'eth' || lowerDisplayName === 'weth'
+
+        const condition = displayName === 'eth' || displayName === 'weth'
         return condition
     }
 
@@ -238,16 +237,30 @@ export function useTokenRows(): void {
         if (!(bigBlock % two === zero && initialized)) {
             return;
         }
-        const newRows = _.cloneDeep(rows)
-        const ethRowIndex = rows.findIndex(rowIsEth)[0]
-
-        for (let i = 0; i < 2; i++) {
+        const newRows: TokenTripletRow[] = _.cloneDeep(rows)
+        const ethRowIndex = rows.findIndex(rowIsEth)
+        for (let i = 0; i < newRows.length; i++) {
             let minting: boolean = i === 0//1 is redeeming
-            if (minting && i == ethRowIndex) {
-                newRows[ethRowIndex].PV2.mintAllowance = API.UINTMAX
-                newRows[ethRowIndex].PV3.mintAllowance = API.UINTMAX
+            if (i === ethRowIndex) {
+
+                if (minting) {
+                    newRows[ethRowIndex].PV2.mintAllowance = API.UINTMAX
+                    newRows[ethRowIndex].PV3.mintAllowance = API.UINTMAX
+                }
+                else {
+                    const v2ProxyAddress = contracts.behodler.Behodler2.PyroWeth10Proxy.address
+                    const v3ProxyAddress = contracts.behodler.Behodler2.PyroWethProxy.address
+                    const pyroWethV2 = await API.getPyroTokenV2(newRows[ethRowIndex].PV2.address)
+                    const pyroWethV3 = await API.getPyroTokenV3(newRows[ethRowIndex].PV3.address)
+                    const v2Allowance = await pyroWethV2.allowance(accountAddress, v2ProxyAddress).call()
+                    const v3Allowance = await pyroWethV3.allowance(accountAddress, v3ProxyAddress).call()
+
+                    newRows[i].PV2.redeemAllowance = v2Allowance
+                    newRows[i].PV3.redeemAllowance = v3Allowance
+                }
                 continue
             }
+
             const pv2addresses = rows.map(r => ({ name: r.PV2.name, holdingToken: minting ? r.base.address : r.PV2.address, takingToken: r.PV2.address }))
             const pv3addresses = rows.map(r => ({ name: r.PV3.name, holdingToken: minting ? r.base.address : r.PV3.address, takingToken: r.PV3.address }))
             const addressOnly = [...pv2addresses, ...pv3addresses]

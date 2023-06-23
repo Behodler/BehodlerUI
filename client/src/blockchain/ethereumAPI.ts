@@ -128,7 +128,9 @@ class ethereumAPI {
         if (fromBase) {
             throw "not implemented"
         }
-        return await (new this.web3.eth.Contract(ABIs.PyroToken as any, tokenAddress).methods as unknown as PyroTokenV3)
+        const token = await (new this.web3.eth.Contract(ABIs.PyroToken as any, tokenAddress).methods as unknown as PyroTokenV3)
+        token.address = tokenAddress
+        return token
     }
 
     public generateNewEffects(tokenAddress: string, currentAccount: string, useEth: boolean, decimalPlaces: number = 18): Token {
