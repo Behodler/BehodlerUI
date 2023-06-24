@@ -230,11 +230,8 @@ export function useTokenRows(): void {
     }, [block, accountAddress, rows])
 
     const approvalUpdateCallBack = useCallback(async () => {
-        const bigBlock = BigInt(block)
-        const two = BigInt(2)
-        const zero = BigInt(0)
 
-        if (!(bigBlock % two === zero && initialized)) {
+        if (!(initialized)) {
             return;
         }
         const newRows: TokenTripletRow[] = _.cloneDeep(rows)

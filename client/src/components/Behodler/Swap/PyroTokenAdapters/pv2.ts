@@ -6,7 +6,7 @@ export const pv2 = async (address: string): Promise<Target> => {
     const baseAddress = await pyroTokenV2Instance.baseToken().call()
     return {
         baseAddress,
-        address:pyroTokenV2Instance.address,
+        address: pyroTokenV2Instance.address,
         redeem: (amount: string, account: string) => {
             return pyroTokenV2Instance.redeem(amount)
         }

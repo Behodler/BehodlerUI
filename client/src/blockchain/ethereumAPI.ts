@@ -121,7 +121,9 @@ class ethereumAPI {
             const LR = (new this.web3.eth.Contract(ABIs.LiquidityReceiverV1 as any, this.contractAddresses.LiquidityReceiverV1).methods as LiquidityReceiverV2)
             pyroAddress = await LR.baseTokenMapping(tokenAddress).call()
         }
-        return await (new this.web3.eth.Contract(ABIs.PyroToken_V2 as any, pyroAddress).methods as PyrotokenV2)
+        const pv2 = await (new this.web3.eth.Contract(ABIs.PyroToken_V2 as any, pyroAddress).methods as PyrotokenV2)
+        pv2.address = pyroAddress
+        return pv2
     }
 
     public async getPyroTokenV3(tokenAddress: string, fromBase?: boolean): Promise<PyroTokenV3> {
