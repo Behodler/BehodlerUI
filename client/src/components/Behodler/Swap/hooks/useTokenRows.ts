@@ -45,6 +45,7 @@ const truncateFactory = (length: number) => (str: string) => {
 export const rowsAtom = atom<TokenTripletRow[]>([]);
 //Note to future devs: chatGpt explains jotai atoms better than the official docs 
 export const daiAtom = atom<string>("0x0")
+const approvalUpdateCheckAtom = atom<string>("0")
 
 export function useTokenRows(): void {
 
@@ -54,6 +55,7 @@ export function useTokenRows(): void {
     const block = useCurrentBlock()
     const accountAddress = useActiveAccountAddress()
     const [, setDaiAddress] = useAtom(daiAtom)
+    const [lastApprovalChecked, setLastApprovalChecked] = useAtom(approvalUpdateCheckAtom)
 
     const updateRow = (newRows: TokenTripletRow[]) => {
         setRows(newRows)
@@ -230,10 +232,16 @@ export function useTokenRows(): void {
     }, [block, accountAddress, rows])
 
     const approvalUpdateCallBack = useCallback(async () => {
-
-        if (!(initialized)) {
+        const bigBlock = BigInt(block)
+        const TWO = BigInt(2)
+        const ZERO = 0n
+        const bigApproval = BigInt(lastApprovalChecked)
+        const shouldUpdate = bigApproval == ZERO || (bigBlock - bigApproval) > TWO
+        if (!(initialized || shouldUpdate)) {
             return;
         }
+        setLastApprovalChecked(block)
+
         const newRows: TokenTripletRow[] = _.cloneDeep(rows)
         const ethRowIndex = rows.findIndex(rowIsEth)
         for (let i = 0; i < newRows.length; i++) {
