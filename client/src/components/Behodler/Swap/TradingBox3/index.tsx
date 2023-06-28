@@ -7,10 +7,9 @@ import { DebounceInput } from 'react-debounce-input';
 import API from '../../../../blockchain/ethereumAPI'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
-import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
+// import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
-import { useTXQueue } from "../hooks/useTXQueue";
 import { useWalletContext } from "../hooks/useWalletContext";
 import { useBehodlerContract } from "../hooks/useContracts";
 import _ from 'lodash'
@@ -21,7 +20,7 @@ import { PyroTokensInfo } from './components/PyroTokensInfo';
 import { BalanceContainer } from './components/BalanceContainer';
 import { DirectionLabel } from './components/DirectionLabel';
 import { useStyles, inputStyles } from './styles';
-import { SwapState, TXType, PendingTX, FieldState, CoherentModel, actions, getPayloadValue } from './types';
+import { SwapState, FieldState, CoherentModel, actions, getPayloadValue } from './types';
 import TokenSelector from './TokenSelector'
 import { formatSignificantDecimalPlaces } from './jsHelpers'
 import { Logos } from './ImageLoader'
@@ -30,6 +29,7 @@ import { useAtom } from 'jotai';
 import { DefaultTarget, Target } from '../PyroTokenAdapters/target';
 import adapterFactory from '../PyroTokenAdapters/adapterFactory';
 import { zeroAddress } from 'ethereumjs-util';
+import { useTransactions } from '../hooks/useTransactions';
 
 BigNumber.config({ EXPONENTIAL_AT: 50, DECIMAL_PLACES: 18 });
 
@@ -110,9 +110,13 @@ function reducer(state: CoherentModel, action: actions): CoherentModel {
         case 'SET_IMPLIED_EXCHANGE_RATE':
             newState.impliedExchangeRate = getPayloadValue("string", action.payload.impliedExchangeRate);
             break;
+        case 'INPUT_APPROVING':
+            newState.inputApproving = getPayloadValue("boolean", action.payload.approving)
+            break;
         case 'BATCH_UPDATE':
             newState = action.payload;
             break;
+
         default:
             throw 'unaccounted for action type: ' + action.type;
     }
@@ -155,6 +159,7 @@ let initialState: CoherentModel = {
     impliedExchangeRate: '',
     flipClicked: false,
     finalized: false,
+    inputApproving: false
 }
 
 
@@ -273,12 +278,7 @@ export default function () {
         })
     }
 
-    const { queueUpdateCallback, txQueuePush } = useTXQueue(notify)
-
-
-    useEffect(() => {
-        queueUpdateCallback()
-    }, [block])
+    const broadCast = useTransactions( notify)
 
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
 
@@ -295,7 +295,6 @@ export default function () {
                 && independentFieldContainsOnlyDigitsAndDot
             )
 
-            console.log('IndependentField is valid : ' + isValidIndependentFieldInput)
             const independentFieldTargetIsFrom = viewModel.independentField.target === 'FROM'
 
             const updating = independentFieldTargetIsFrom
@@ -363,7 +362,6 @@ export default function () {
             const inputToUse = pyroTokenAdapter.baseAddress
             const outputToUse = pyroTokenAdapter.baseAddress
             if (isMinting()) {
-
                 const inputToken = await API.getToken(inputToUse)
                 const inputBalanceOnBehodler = await inputToken.balanceOf(behodler.address).call({ from: activeAccountAddress })
                 const inputSpot = daiBalanceOnBehodler.div(inputBalanceOnBehodler).toString()
@@ -443,45 +441,6 @@ export default function () {
         }
     }, [viewModel.inputAddress, viewModel.outputAddress, viewModel.swapState, viewModel.independentFieldState, currentTokenEffects, rows, activeRow])
 
-    const hashBack = (type: TXType) => (err, hash: string) => {
-        if (hash) {
-            let t: PendingTX = {
-                hash,
-                type,
-                token1: viewModel.inputAddress,
-                token2: viewModel.outputAddress,
-            }
-            txQueuePush(t)
-            notify(hash, NotificationType.pending)
-        } else {
-            notify(hash, NotificationType.rejected)
-        }
-    }
-    const mintHashBack = hashBack(TXType.mintPyro)
-    const redeemHashBack = hashBack(TXType.redeemPyro)
-
-    const broadCast = useCallback(async (
-        contract,
-        method,
-        options,
-
-        hashBack,
-        ...inputParams: any[]
-    ) => {
-        //Note, for PyroV3, there's an initial param of mintTo address
-        return new Promise((resolve, reject) => {
-            contract[method](...inputParams)
-                .estimateGas(options, async function (error, gas) {
-                    if (error) console.error("gas estimation error: " + error);
-                    options.gas = gas;
-                    const txResult = await contract[method](...inputParams)
-                        .send(options, hashBack)
-                        .catch(reject)
-                    resolve(txResult)
-                })
-        })
-
-    }, [])
 
     const swap2Callback = useCallback(async () => {
         const inputValWei = API.toWei(viewModel.inputText)
@@ -493,17 +452,17 @@ export default function () {
             try {
                 if (isMinting()) {
                     if (isInputEth) {
-                        await broadCast(pyroTokenAdapter, 'mint', options, mintHashBack, inputValWei)
+                        await broadCast(pyroTokenAdapter, 'mint', options, inputValWei)
                     }
                     else {
-                        await broadCast(pyroTokenAdapter, 'mint', options, mintHashBack, activeAccountAddress, inputValWei)
+                        await broadCast(pyroTokenAdapter, 'mint', options, activeAccountAddress, inputValWei)
 
                     }
                 } else {
                     if (hasV2Balance || isOutputEth) {
-                        await broadCast(pyroTokenAdapter, 'redeem', options, redeemHashBack, inputValWei)
+                        await broadCast(pyroTokenAdapter, 'redeem', options, inputValWei)
                     }
-                    else { await broadCast(pyroTokenAdapter, 'redeem', options, redeemHashBack, activeAccountAddress, inputValWei) }
+                    else { await broadCast(pyroTokenAdapter, 'redeem', options, activeAccountAddress, inputValWei) }
 
                 }
 
@@ -897,24 +856,26 @@ export default function () {
                 }
             })
             return;
-        } else if (!inputEnabled) {
-            await API.enableToken(
-                viewModel.inputAddress,
-                activeAccountAddress || "",
-                pyroTokenAdapter.address, (err, hash: string) => {
-                    if (hash) {
-                        let t: PendingTX = {
-                            hash,
-                            type: TXType.approval,
-                            token1: viewModel.inputAddress,
-                            token2: viewModel.outputAddress,
-                        }
-                        txQueuePush(t)
-                        notify(hash, NotificationType.pending)
-                    } else {
-                        notify(hash, NotificationType.rejected)
+        } else if (!inputEnabled && !viewModel.inputApproving) {
+            const token = await API.getToken(viewModel.inputAddress)
+            try {
+                dispatch({
+                    type: 'INPUT_APPROVING',
+                    payload: {
+                        approving: true
                     }
                 })
+                await broadCast(token, "approve", { from: activeAccountAddress }, pyroTokenAdapter.address, API.UINTMAX).catch(err => {
+                    console.log('error on approve: ' + JSON.stringify(err))
+                })
+            } finally {
+                dispatch({
+                    type: 'INPUT_APPROVING',
+                    payload: {
+                        approving: false
+                    }
+                })
+            }
         }
     }
     const greySwap = inputEnabled && (viewModel.swapState === SwapState.DISABLED || viewModel.swapState === SwapState.IMPOSSIBLE) || swapping
@@ -1307,10 +1268,10 @@ export default function () {
                 </Grid>
             </Hidden>
 
-            <MigrateToPyroV3Link
+            {/* <MigrateToPyroV3Link
                 openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
                 rows={rows}
-            />
+            /> */}
         </Box >
     )
 }

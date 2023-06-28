@@ -127,11 +127,13 @@ class ethereumAPI {
     }
 
     public async getPyroTokenV3(tokenAddress: string, fromBase?: boolean): Promise<PyroTokenV3> {
+        let pyroAddress = tokenAddress
         if (fromBase) {
-            throw "not implemented"
+            const LR = (new this.web3.eth.Contract(ABIs.LiquidityReceiver as any, this.contractAddresses.LiquidityReceiver).methods as LiquidityReceiverV3)
+            pyroAddress = await LR.getPyroToken(pyroAddress).call()
         }
-        const token = await (new this.web3.eth.Contract(ABIs.PyroToken as any, tokenAddress).methods as unknown as PyroTokenV3)
-        token.address = tokenAddress
+        const token = await (new this.web3.eth.Contract(ABIs.PyroToken as any, pyroAddress).methods as unknown as PyroTokenV3)
+        token.address = pyroAddress
         return token
     }
 

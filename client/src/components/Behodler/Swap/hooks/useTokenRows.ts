@@ -28,6 +28,7 @@ export interface PyroTokenInfo extends TokenInfo {
     redeem: (amount: string) => void,//if a proxy, implement special code, else just use default,
     mintAllowance: string
     redeemAllowance: string
+    redeemingAddress:string,
 
 }
 
@@ -131,7 +132,8 @@ export function useTokenRows(): void {
                 mint: pyroTokenV2Mint,
                 redeem: pyroTokenV2Redeem,
                 mintAllowance: "0",
-                redeemAllowance: "0"
+                redeemAllowance: "0",
+                redeemingAddress:configId==="eth"?contracts.behodler.Behodler2.PyroWeth10Proxy.address:config.pyroV2Address
             }
 
             let pyroV3Token: PyroTokenInfo = {
@@ -142,7 +144,8 @@ export function useTokenRows(): void {
                 mint: pyroTokenV3Mint,
                 redeem: pyroTokenV3Redeem,
                 mintAllowance: "0",
-                redeemAllowance: "0"
+                redeemAllowance: "0",
+                redeemingAddress:configId==="eth"?contracts.behodler.Behodler2.PyroWethProxy.address:config.pyroV2Address
             }
             let row: TokenTripletRow = {
                 base: baseToken,

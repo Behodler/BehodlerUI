@@ -1,14 +1,5 @@
-export enum TXType {
-    approval,
-    mintPyro,
-    redeemPyro
-}
-
 export interface PendingTX {
     hash: string
-    type: TXType,
-    token1: string
-    token2: string
 }
 
 export interface TokenListItem {
@@ -46,6 +37,7 @@ export interface CoherentModel {
     impliedExchangeRate: string
     flipClicked: boolean
     finalized: boolean
+    inputApproving:boolean
 }
 
 export type actionTypes = 'SET_SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
@@ -60,6 +52,7 @@ export type actionTypes = 'SET_SPOTPRICE' | 'UPDATE_HAS_V2_BALANCE' |
     |'SET_INPUT_ENABLED'
     | 'UPDATE_MINTING'
     | 'SET_IMPLIED_EXCHANGE_RATE' | 'BATCH_UPDATE' | 'SET_FLIP_CLICKED'
+    |'INPUT_APPROVING'
 
 interface debug {
     final?: boolean,
