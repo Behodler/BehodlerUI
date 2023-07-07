@@ -1359,10 +1359,10 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@behodler/sdk@0.2.0":
-  version "0.2.0"
-  resolved "https://npm.pkg.github.com/download/@Behodler/sdk/0.2.0/b5f9e3b46741de7df20f922c1c32051cf545f2d3#b5f9e3b46741de7df20f922c1c32051cf545f2d3"
-  integrity sha512-e52t92NFQBqOtDxaXXW0GXD0v1itFqhwLzAAX4V2r3SDYSTqGjhin3wlMQseEvQuAz5I9VFaqWRUsXLJu3UB+A==
+"@behodler/sdk@0.3.0":
+  version "0.3.0"
+  resolved "https://npm.pkg.github.com/download/@Behodler/sdk/0.3.0/d5cccecc7e93fadc1ca001a0ab2438bcc33482c2#d5cccecc7e93fadc1ca001a0ab2438bcc33482c2"
+  integrity sha512-/5PDSz6kKEGyOw9vJDw2qovcHyvnWfPPexH8AWxXjd3HBicg+hWwrMa/6zEeb0Awg8iylWsto6bIaQVbB+HHkw==
   dependencies:
     "@web3-react/core" "^6.1.0"
     big.js "^6.1.1"

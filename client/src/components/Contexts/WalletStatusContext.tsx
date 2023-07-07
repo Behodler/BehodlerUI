@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import API from '../../blockchain/ethereumAPI'
 import IContracts, { DefaultContracts } from '../../blockchain/IContracts'
 import useActiveWeb3React from "../Behodler/Swap/hooks/useActiveWeb3React";
-import {networkMapper} from '../../blockchain/AllEcosystemAddress'
+import { networkMapper } from '../../blockchain/AllEcosystemAddress'
 
 interface WalletContextProps {
     contracts: IContracts
@@ -77,5 +77,5 @@ function WalletContextProvider(props: { children: any }) {
     return <WalletContext.Provider value={providerProps}>{props.children}</WalletContext.Provider>
 }
 
-export {WalletContext, WalletContextProvider}
+export { WalletContext, WalletContextProvider }
 export type { WalletContextProps }

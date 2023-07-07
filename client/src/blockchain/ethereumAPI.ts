@@ -162,7 +162,7 @@ class ethereumAPI {
 
     private async deployBehodlerContract(abi: any, address: string): Promise<deployment> {
         try {
-            const contractInstance = await new this.web3.eth.Contract(abi, address)
+            const contractInstance = await new this.web3.eth.Contract(abi, address)  
             return { methods: contractInstance.methods, address: address, contractInstance }
         } catch (err) {
             console.log('contract failed to load: ' + err)

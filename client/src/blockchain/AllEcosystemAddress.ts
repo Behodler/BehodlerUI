@@ -142,7 +142,7 @@ export const fetchTokenConfigs = async (network: string): Promise<ITokenConfig[]
         }
         else throw 'fetch token config error ' + json.message
     } else {
-        tokenConfigs = publicTokenConfigs[network].tokens as ITokenConfig[]
+        tokenConfigs = publicTokenConfigs[network] as ITokenConfig[]
     }
     return tokenConfigs
 }

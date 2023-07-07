@@ -71,7 +71,7 @@
         "prepare": "yarn package:build"
     },
     "devDependencies": {
-        "@behodler/sdk": "0.2.0",
+        "@behodler/sdk": "0.3.0",
         "@rollup/plugin-url": "^6.1.0",
         "@svgr/rollup": "^5.5.0",
         "@types/jest": "^23.3.12",

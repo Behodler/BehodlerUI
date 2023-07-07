@@ -1,5 +1,4 @@
 import { ChainId } from '@behodler/sdk'
-import { Web3Provider } from '@ethersproject/providers'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 
@@ -28,17 +27,13 @@ const RPC = {
     [ChainId.OKEX]: 'https://exchainrpc.okex.org',
     [ChainId.OKEX_TESTNET]: 'https://exchaintestrpc.okex.org',
     [ChainId.GANACHE]: 'http://localhost:8545',
+    [ChainId.SEPOLIA]: 'https://rpc.bordel.wtf/sepolia'
 }
 
 export const network = new NetworkConnector({
     defaultChainId: 1,
     urls: RPC
 })
-
-let networkLibrary: Web3Provider | undefined
-export function getNetworkLibrary(): Web3Provider {
-    return (networkLibrary = networkLibrary ?? new Web3Provider(network.provider as any))
-}
 
 export const injected = new InjectedConnector({
     supportedChainIds: [
@@ -63,7 +58,8 @@ export const injected = new InjectedConnector({
         1666700000, // harmony testnet
         66, // okex testnet
         65, // okex testnet
-        1337, // ganache local testnet
+        1337, // ganache local testnet,
+        11155111//sepolia
     ]
 })
 
