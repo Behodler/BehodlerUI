@@ -63,7 +63,8 @@ const defaultERC20 = {
 	decreaseAllowance: (spender: address, subtractedValue: uint) => { },
 	decimals: () => { },
 	symbol: () => { },
-	name: () => { }
+	name: () => { },
+	lastMinted: (account:string)=>{}
 }
 
 const defaultLachesis2: Lachesis2 = {

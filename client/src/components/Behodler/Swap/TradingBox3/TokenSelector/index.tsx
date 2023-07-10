@@ -77,7 +77,7 @@ export default function TokenSelector(props: props) {
 
         </Grid>
 
-        {3 < 4 ? <Menu
+        <Menu
             show={showMenu}
             weth10Address={weth10Address}
             scarcityAddress={scarcityAddress}
@@ -86,6 +86,6 @@ export default function TokenSelector(props: props) {
             mobile={props.mobile || false}
             setAddress={props.setAddress}
             input={props.input}
-        /> : <div></div>}
+        /> 
     </div>
 }

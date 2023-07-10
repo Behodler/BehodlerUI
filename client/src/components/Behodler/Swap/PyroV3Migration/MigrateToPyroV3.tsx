@@ -18,7 +18,7 @@ import {
     StyledMigrateToPyroV3ModalButtons,
     LineBreak,
 } from './styled'
-import { PyroTokenInfo, TokenTripletRow } from '../hooks/useTokenRows'
+import { PyroTokenInfo, TokenTripletRow, rowsUpdatingAtom } from '../hooks/useTokenRows'
 import { atom, useAtom } from 'jotai'
 import FetchAllowances from '../TradingBox3/FetchAllowances'
 import { useWalletContext } from '../hooks/useWalletContext'
@@ -200,12 +200,14 @@ export function MigrateToPyroV3(props: {
                     const tokenInfo = approvedMigration
                         .map(async (t) => {
                             const pyroTokenV2 = await API.getPyroTokenV2(t.address)
-                            const pyroTokenV3 = await API.getPyroTokenV3(await pyroTokenV2.baseToken().call(), true)
+                            const baseToken = await (API.getToken(await pyroTokenV2.baseToken().call()))
+                            const pv2ReserveBalance = BigInt(await baseToken.balanceOf(pyroTokenV2.address).call())
+                            const pyroTokenV3 = await API.getPyroTokenV3(baseToken.address, true)
                             const pyroV2RedeemRate = BigInt(await pyroTokenV2.redeemRate().call())
                             const pyroV3RedeemRate = BigInt(await pyroTokenV3.redeemRate().call())
-                            const conversionRate = (pyroV2RedeemRate * API.ONE * 98n) / (pyroV3RedeemRate * 100n)
+                            const applyTransferFee: boolean = pv2ReserveBalance > BigInt(t.balance)
+                            const conversionRate = (pyroV2RedeemRate * API.ONE * 98n * (applyTransferFee ? 999n : 1n)) / (pyroV3RedeemRate * 100n * (applyTransferFee ? 1000n : 1n))
                             const predictedPyroV3Amount = `${(conversionRate * BigInt(t.balance)) / (API.ONE)}`
-
 
                             return {
                                 pyroV2Address: t.address,
@@ -235,8 +237,9 @@ export function MigrateToPyroV3(props: {
         }
     }, [migrationClicked])
 
+    const [rowsUpdating,] = useAtom(rowsUpdatingAtom)
 
-    return Array.isArray(rows) && !!rows.length && pyroV2InWallet.length > 0 ? (
+    return Array.isArray(rows) && !!rows.length && pyroV2InWallet.length > 0 && !rowsUpdating ? (
         <StyledMigrateToPyroV3Wrapper>
 
             <StyledMigrateToPyroV3Box>

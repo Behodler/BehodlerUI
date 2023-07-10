@@ -13,4 +13,5 @@ export interface ERC20 extends BaseContract {
 	decimals: () => any
 	symbol: () => any
 	name: () => any
+	lastMinted: (minter: address) => any
 }

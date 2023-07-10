@@ -46,7 +46,7 @@ const StyledConnectButton = styled.button`
 `;
 
 export default function LayoutFrame() {
-    const { activate, account } = useActiveWeb3React()
+      const { activate, account } = useActiveWeb3React()
 
     const connect = useCallback(async () => {
         try {

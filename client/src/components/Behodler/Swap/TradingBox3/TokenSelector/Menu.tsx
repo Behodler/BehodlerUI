@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { Grid, List, ListItem, ListItemIcon, makeStyles, Modal, Theme, CircularProgress } from '@material-ui/core';
 import { formatSignificantDecimalPlaces } from '../jsHelpers'
 import API from "../../../../../blockchain/ethereumAPI"
-import { TokenInfo, emptyToken, rowsAtom } from '../../hooks/useTokenRows';
+import { TokenInfo, emptyToken, rowsAtom, rowsUpdatingAtom } from '../../hooks/useTokenRows';
 import { useAtom } from 'jotai';
 import { mintingAtom } from '.';
 import _ from 'lodash'
@@ -155,8 +155,7 @@ export default function Menu(props: props) {
 
     }, [rows, props.input, minting])
 
-    return 3 < 4 ? <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
-        : <div></div>
+    return <TokenPopup tokens={menuItems} open={props.show} setShow={props.setShow} mobile={props.mobile} setAddress={props.setAddress} />
 }
 
 function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show: boolean) => void, mobile: boolean, setAddress: (a: string) => void }) {
@@ -164,6 +163,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
     const close = () => props.setShow(false)
     const [searchText, setSearchText] = useState("")
     const [filteredList, setFilteredList] = useState<MenuToken[]>(props.tokens)
+    const [rowsUpdating,] = useAtom(rowsUpdatingAtom)
 
     useEffect(() => {
         var walletPattern = new RegExp(/^0x[a-fA-F0-9]{40}$/);
@@ -222,7 +222,7 @@ function TokenPopup(props: { tokens: MenuToken[], open: boolean, setShow: (show:
                                     </Grid>
 
                                     <Grid item>
-                                        {false ? <CircularProgress size={props.mobile ? 30 : 40} /> : t.balance}
+                                        {rowsUpdating ? <CircularProgress size={props.mobile ? 30 : 40} /> : t.balance}
                                     </Grid>
                                 </Grid>
                             </div>

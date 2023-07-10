@@ -2,12 +2,10 @@ import React, { useEffect, useCallback, useState, useReducer } from 'react'
 import { Button, Box, Grid, Hidden, Tooltip } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { DebounceInput } from 'react-debounce-input';
-// import { useDebounce } from '@react-hook/debounce'
-
+import TestnetFaucet from './components/TestnetFaucet';
 import API from '../../../../blockchain/ethereumAPI'
 import { useActiveWeb3React } from '../hooks/useActiveWeb3React'
 import { MigrateToPyroV3 } from '../PyroV3Migration/MigrateToPyroV3'
-// import { MigrateToPyroV3Link } from '../PyroV3Migration/MigrateToPyroV3Link';
 import { useLoggedState } from "../hooks/useLoggedState";
 import { useCurrentBlock } from "../hooks/useCurrentBlock";
 import { useWalletContext } from "../hooks/useWalletContext";
@@ -176,7 +174,6 @@ export default function () {
     const [daiAddress,] = useAtom(daiAtom)
     const [everyThreeBlocks, setEveryThreeBlocks] = useState<number>(0)
     const activeAccountAddress = useActiveAccountAddress()
-
     initialState.inputAddress = rows[0].base.address
     initialState.outputAddress = rows[0].PV3.address
 
@@ -278,7 +275,7 @@ export default function () {
         })
     }
 
-    const broadCast = useTransactions( notify)
+    const broadCast = useTransactions(notify)
 
     const [swapText, setSwapText] = useLoggedState<string>("MINT")
 
@@ -952,7 +949,7 @@ export default function () {
 
     return (
         <Box className={classes.root}>
-
+            <TestnetFaucet network={networkName} />
             <MigrateToPyroV3
                 isMigrationModalOpen={isPyroV3MigrationModalOpen}
                 openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}

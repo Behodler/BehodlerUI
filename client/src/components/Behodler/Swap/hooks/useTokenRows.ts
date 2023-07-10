@@ -28,7 +28,7 @@ export interface PyroTokenInfo extends TokenInfo {
     redeem: (amount: string) => void,//if a proxy, implement special code, else just use default,
     mintAllowance: string
     redeemAllowance: string
-    redeemingAddress:string,
+    redeemingAddress: string,
 
 }
 
@@ -47,11 +47,12 @@ export const rowsAtom = atom<TokenTripletRow[]>([]);
 //Note to future devs: chatGpt explains jotai atoms better than the official docs 
 export const daiAtom = atom<string>("0x0")
 const approvalUpdateCheckAtom = atom<string>("0")
-
+export const rowsUpdatingAtom = atom<boolean>(false)
 export function useTokenRows(): void {
 
     const trunc = truncateFactory(60)
     const [rows, setRows] = useAtom(rowsAtom)
+    const [, setRowsUpdating] = useAtom(rowsUpdatingAtom)
     const { networkName, initialized, contracts } = useWalletContext()
     const block = useCurrentBlock()
     const accountAddress = useActiveAccountAddress()
@@ -79,7 +80,7 @@ export function useTokenRows(): void {
 
             const baseToken: TokenInfo = {
                 address: config.address,
-                name: config.displayName,
+                name: config.displayName.toLocaleLowerCase() === "weth" ? "ETH" : config.displayName,
                 balance: "0",
                 image: imagePair.baseToken.image
             }
@@ -133,7 +134,7 @@ export function useTokenRows(): void {
                 redeem: pyroTokenV2Redeem,
                 mintAllowance: "0",
                 redeemAllowance: "0",
-                redeemingAddress:configId==="eth"?contracts.behodler.Behodler2.PyroWeth10Proxy.address:config.pyroV2Address
+                redeemingAddress: configId === "eth" ? contracts.behodler.Behodler2.PyroWeth10Proxy.address : config.pyroV2Address
             }
 
             let pyroV3Token: PyroTokenInfo = {
@@ -145,7 +146,7 @@ export function useTokenRows(): void {
                 redeem: pyroTokenV3Redeem,
                 mintAllowance: "0",
                 redeemAllowance: "0",
-                redeemingAddress:configId==="eth"?contracts.behodler.Behodler2.PyroWethProxy.address:config.pyroV2Address
+                redeemingAddress: configId === "eth" ? contracts.behodler.Behodler2.PyroWethProxy.address : config.pyroV2Address
             }
             let row: TokenTripletRow = {
                 base: baseToken,
@@ -155,15 +156,16 @@ export function useTokenRows(): void {
             tokenRows.push(row)
         }
         if (!_.isEqual(tokenRows, rows)) {
-
             updateRow(tokenRows)
-
         }
-    }, [networkName])
+
+
+    }, [networkName, accountAddress])
 
     useEffect(() => {
+        setRowsUpdating(true)
         rowUpdateCallBack()
-    }, [networkName])
+    }, [networkName, accountAddress])
 
     const rowIsEth = (row: TokenTripletRow) => {
         const displayName = row.base.name.toLocaleLowerCase()
@@ -227,7 +229,7 @@ export function useTokenRows(): void {
         if (!_.isEqual(newRows, rows)) {
             updateRow(newRows)
         }
-
+        setRowsUpdating(false)
     }, [block, accountAddress, rows])
 
     useEffect(() => {

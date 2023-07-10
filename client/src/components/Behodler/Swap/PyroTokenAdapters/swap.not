@@ -1,0 +1,34 @@
+// import { ERC20 } from 'src/blockchain/contractInterfaces/ERC20';
+// import API from '../../../../blockchain/ethereumAPI'
+// import { useWalletContext } from '../hooks/useWalletContext'
+// import { Target } from './target'
+
+// export const swap = async (inputAddress: string, outputAddress:string): Promise<Target> => {
+//     const { contracts } = useWalletContext();
+//     const inputInstance:ERC20 = await API.getToken(inputAddress)
+//     const outputInstance = await API.getToken(outputAddress)
+//     const behodler = contracts.behodler.Behodler2.Behodler2
+//     const inputName =inputInstance.name().call()
+//     const outputName = outputInstance.name().call()
+//     return {
+//         baseAddress:inputAddress,
+//         address: outputAddress,
+//         //
+//         redeem: (amount: string, account: string) => {
+//             //discern if eth and scx
+//             return pyroTokenV3Instance.redeem(amount, account)
+//         }
+//         ,
+//         mint: (amount: string, account: string) => {
+//             //replicate above
+//             return pyroTokenV3Instance.mint(amount, account)
+//         }
+//         ,
+//         redeemRate: () => {
+//             //price on Behodler
+//             return pyroTokenV3Instance.redeemRate()
+//         }
+//     }
+// }
+
+// const isEth = (name:string)=> name.toLocaleLowerCase()==="eth" || name.toLocaleLowerCase() === "weth"
