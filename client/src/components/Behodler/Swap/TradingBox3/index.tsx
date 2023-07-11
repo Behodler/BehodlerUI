@@ -1016,7 +1016,7 @@ export default function () {
                                                 <DebounceInput
                                                     id={viewModel.inputAddress}
                                                     debounceTimeout={300}
-                                                    placeholder={nameOfSelectedInput}
+                                                    placeholder={nameOfSelectedInput.toLocaleLowerCase() === "weth" ? "ETH" : nameOfSelectedInput}
                                                     value={viewModel.inputText}
                                                     onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
@@ -1058,7 +1058,7 @@ export default function () {
                                                 <DebounceInput
                                                     debounceTimeout={300}
                                                     id={viewModel.outputAddress}
-                                                    placeholder={nameOfSelectedOutput}
+                                                    placeholder={nameOfSelectedOutput.toLocaleLowerCase() === "weth" ? "ETH" : nameOfSelectedOutput}
                                                     value={viewModel.outputText}
                                                     onChange={(event) => { setFormattingTo(event.target.value) }}
                                                     className={inputClasses.inputNarrow} />
@@ -1143,7 +1143,7 @@ export default function () {
                                                 debounceTimeout={300}
                                                 id={viewModel.inputAddress}
                                                 key={"desktopInputInput"}
-                                                placeholder={nameOfSelectedInput}
+                                                placeholder={nameOfSelectedInput.toLocaleLowerCase() === "weth" ? "ETH" : nameOfSelectedInput}
                                                 value={viewModel.inputText}
                                                 onChange={(event) => { setFormattingFrom(event.target.value) }}
                                                 className={inputClasses.inputWide} />
@@ -1210,7 +1210,7 @@ export default function () {
                                                 id={viewModel.outputAddress}
                                                 debounceTimeout={300}
                                                 key={"desktopInputOutput"}
-                                                placeholder={nameOfSelectedOutput}
+                                                placeholder={nameOfSelectedOutput.toLocaleLowerCase() === "weth" ? "ETH" : nameOfSelectedOutput}
                                                 value={viewModel.outputText}
                                                 onChange={(event) => { setFormattingTo(event.target.value) }}
                                                 className={inputClasses.inputWide} />
@@ -1264,11 +1264,6 @@ export default function () {
                     </Grid>
                 </Grid>
             </Hidden>
-
-            {/* <MigrateToPyroV3Link
-                openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}
-                rows={rows}
-            /> */}
         </Box >
     )
 }

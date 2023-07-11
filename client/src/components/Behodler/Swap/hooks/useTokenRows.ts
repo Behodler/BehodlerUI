@@ -80,7 +80,7 @@ export function useTokenRows(): void {
 
             const baseToken: TokenInfo = {
                 address: config.address,
-                name: config.displayName.toLocaleLowerCase() === "weth" ? "ETH" : config.displayName,
+                name: config.displayName,
                 balance: "0",
                 image: imagePair.baseToken.image
             }

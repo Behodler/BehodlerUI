@@ -103,9 +103,9 @@ interface MenuToken {
     balance: string,
 
 }
-//TODO: create a derived atom for tokensUnderConsideration as per chatGPT discussion. Let it rely on minting and input atoms.
 
 const trunc = (str: string, max: number) => {
+    str = str.toUpperCase() === "WETH" ? "ETH" : str
     if (str.length > max) {
         return str.substring(0, max) + "..."
     }
