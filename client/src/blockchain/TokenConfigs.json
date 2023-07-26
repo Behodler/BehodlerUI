@@ -83,12 +83,12 @@
     "rinkeby": [],
     "goerli": [],
     "kovan": [],
-    "sepolia": [
+    "sepolia":   [
         {
             "name": "EYE",
             "displayName": "EYE",
             "pyroDisplayName": "",
-            "address": "0x7ac77F210Bd99Cf06e88CF0E871d82a4501F41DF",
+            "address": "0x3e2a4fD96e88cEA0E3c2770A528f97a40fAEB7d7",
             "pyroV2Address": "0x0000000000000000000000000000000000000000",
             "pyroV3Address": "0x0000000000000000000000000000000000000000"
         },
@@ -96,47 +96,47 @@
             "name": "MKR",
             "displayName": "MKR",
             "pyroDisplayName": "pyroMKR",
-            "address": "0xD31bA3aA12Aabdb6Cd064E6a40693E5e8fB1Ac24",
-            "pyroV2Address": "0x678aC2c0DBcE2c6AA7f6b50C529e2dE260E4d9Ca",
-            "pyroV3Address": "0xF909283F458371E3e35bD198b48e0DaC7bf3d77A"
+            "address": "0xad49b15bEE933D4e4dF4F2Ed3a2fE22A6f57Ec2b",
+            "pyroV2Address": "0x0c1ddE3b6d3Fb22FEECe6030E4eB2F368F469F3b",
+            "pyroV3Address": "0xF378c1A0845b2cC7afe65EC581BbBBB536d586c5"
         },
         {
             "name": "OXT",
             "displayName": "OXT",
             "pyroDisplayName": "pyroOXT",
-            "address": "0x7d930bdbD4b968fd051450dECaC266eA55d61Cf9",
-            "pyroV2Address": "0x511D218f3DB966CbECdf4B02fF87b84A72cea8Ee",
-            "pyroV3Address": "0xa4e49Fecf0F5f207d7fA81046AEd42afb634264F"
+            "address": "0x981dF208e24c01a4e802abb82Dd046cC6172ab4E",
+            "pyroV2Address": "0x0d60710DcE13C39141c311580b21701e2393488E",
+            "pyroV3Address": "0xb10946b4aa6c630eB912ee523Af7285d4BB36B2C"
         },
         {
             "name": "PNK",
             "displayName": "PNK",
             "pyroDisplayName": "pyroPNK",
-            "address": "0xe479B634f23C08C2cfF5347568b8FdebCee63Aed",
-            "pyroV2Address": "0x9f7b895cB7f0C524b5aF18Bfcf23EB2Ab6572956",
-            "pyroV3Address": "0x467d361142F71A3028CCc4e7c24C952E954B44f7"
+            "address": "0x660C33e42947B0d5BC613e2e00E65EC5Aa769EeB",
+            "pyroV2Address": "0x19642F9a79390DcF986B450E57244F5448ad5AbC",
+            "pyroV3Address": "0x88b7d30d3688c3905F569E0E147fB4aC857f04C6"
         },
         {
             "name": "LINK",
             "displayName": "LINK",
             "pyroDisplayName": "pyroLINK",
-            "address": "0xcbBAEca249987487b6c347f949C144E2283C8b53",
-            "pyroV2Address": "0x34B8dd77E8B8Bb700112eA20B6CAeE807156c5d4",
-            "pyroV3Address": "0x1e8e85ec7CB2Af9a4eDD55Cf82aF058dE0071945"
+            "address": "0xB375611fF857e5eCC783FC2A587001b04D48FD22",
+            "pyroV2Address": "0xcf7164B096366302B87473f51aDaF62F5f57B8f2",
+            "pyroV3Address": "0xcA95C57E7aa30931403aF27b7Ef32F4338454057"
         },
         {
             "name": "LOOM",
             "displayName": "LOOM",
             "pyroDisplayName": "pyroLOOM",
-            "address": "0x8d0752d0e7249A65C87D71e26e5f647856761B29",
-            "pyroV2Address": "0x263925988796e3AA7A39073154D5E598C0636914",
-            "pyroV3Address": "0x94585370b8Ebe5EA5daCDeEAc6DC2037ae918AFe"
+            "address": "0x47348580faD2Bb5B911D261AEb0023F8dC59a3c3",
+            "pyroV2Address": "0x2a800B6bE12cE848D2A43c580fA7945FCA315dBF",
+            "pyroV3Address": "0x421d68Ce19Ee33478029A46fbEF1069eAb309F4A"
         },
         {
             "name": "DAI",
             "displayName": "DAI",
             "pyroDisplayName": "",
-            "address": "0x2b3C238b8d3873A20AbC66451728D3C13c1AB161",
+            "address": "0x4219abFab5ECC841706aB653bcd19E30C2E66fEd",
             "pyroV2Address": "0x0000000000000000000000000000000000000000",
             "pyroV3Address": "0x0000000000000000000000000000000000000000"
         },
@@ -144,7 +144,7 @@
             "name": "WEIDAI",
             "displayName": "WEIDAI",
             "pyroDisplayName": "",
-            "address": "0x1d02CA374348DFC77F4362ab087509C56b8F73d8",
+            "address": "0xf614F55877AbbE7609Ed8D2194C061F03588c5C0",
             "pyroV2Address": "0x0000000000000000000000000000000000000000",
             "pyroV3Address": "0x0000000000000000000000000000000000000000"
         },
@@ -152,33 +152,33 @@
             "name": "EYE_DAI UniV2",
             "displayName": "EYE/DAI UniV2",
             "pyroDisplayName": "pyro(EYE/DAI UniV2)",
-            "address": "0x8756b2E3AFbd107d1EE243FA68112Ac001A9F32e",
-            "pyroV2Address": "0xe6f0a905f00bf7D05783A2577EddCA2240716Aa1",
-            "pyroV3Address": "0x28cF3314078aDE4308d73dFa7a4bC3FD36c4595d"
+            "address": "0xB7c4346368EB0C09Fa71D424451c05ba16716df9",
+            "pyroV2Address": "0x2fB352AFDa76Fcb016E3F73E3F98De347b7b8da1",
+            "pyroV3Address": "0x0DD2F0e1b8aE1C06eDB706B1d9a6967ed434D203"
         },
         {
             "name": "SCX_ETH UniV2",
             "displayName": "SCX/ETH UniV2",
             "pyroDisplayName": "pyro(SCX/ETH UniV2)",
-            "address": "0x6197b6086D79a037B22c07ea9199BEdc2a7dD78E",
-            "pyroV2Address": "0xC4F23C9D28210d54EB0b809481bd197c40e7a669",
-            "pyroV3Address": "0xD2588266Aa0ae046Fa60711c27499DCB1524c806"
+            "address": "0x7c60ACEA2998d44766fe45D9364eB6D55A096a87",
+            "pyroV2Address": "0x2A5d1D45002fB6E8a607fdd231477293dC709F25",
+            "pyroV3Address": "0xD8Da558BD6e2bD669f0fe9A595f16B2588fAC53E"
         },
         {
             "name": "SCX_EYE UniV2",
             "displayName": "SCX/EYE UniV2",
             "pyroDisplayName": "pyro(SCX/EYE UniV2)",
-            "address": "0xb203054CD81e740DF3579d61643204b1dF0aD118",
-            "pyroV2Address": "0xd8F0898fc23f3d6d38074c2708965951347fCc00",
-            "pyroV3Address": "0xbe7B856647961AA923D32677F5A2C4eEdEdd9cA3"
+            "address": "0x9b3D3bC1fcB72468cb68B5274E410A2AccC40cBF",
+            "pyroV2Address": "0x3e7210FBcC2Ffc64e983f771BeB5EF1586813376",
+            "pyroV3Address": "0x23a32Bc8bC07313c498A5eaCe15109ef101cE26f"
         },
         {
             "name": "Weth",
             "displayName": "Weth",
             "pyroDisplayName": "pyroWeth",
-            "address": "0xC0034809E6948e0d9888e42a26A9027cA0E37020",
-            "pyroV2Address": "0xc41392FDe370d172e35e48F1996A597029CEd5Cd",
-            "pyroV3Address": "0x588A2ec23df09878b9390ef2BE64e22526f7b41A"
+            "address": "0x577d5AEa0d4BE3BbA602C7b3916202AFf8cc8996",
+            "pyroV2Address": "0xE1e070c2C9639622b9846B148F24853b03Dab9f6",
+            "pyroV3Address": "0xAaDFbb86d7b600Fd412FF5616CB6d485200524c4"
         }
     ]
 

@@ -86,6 +86,6 @@ export default function TokenSelector(props: props) {
             mobile={props.mobile || false}
             setAddress={props.setAddress}
             input={props.input}
-        /> 
+        />
     </div>
 }

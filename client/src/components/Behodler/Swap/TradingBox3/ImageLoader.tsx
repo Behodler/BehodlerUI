@@ -4,6 +4,7 @@ import PNK from '../../../../images/behodler/pnk-logo.png'
 import Weth from '../../../../images/behodler/eth-logo.png'
 import LINK from '../../../../images/behodler/link-logo.png'
 import LOOM from '../../../../images/behodler/loom-logo.png'
+import MKR from '../../../../images/behodler/maker-logo.png'
 
 import eyedai from '../../../../images/behodler/eye-dai-logo.png'
 import scxeth from '../../../../images/behodler/scx-eth-logo.png'
@@ -19,6 +20,7 @@ import pyroWETH from '../../../../images/pyroTokens/pyro-weth.png'
 import pyroPNK from '../../../../images/pyroTokens/pyro-pnk.png'
 import pyroOXT from '../../../../images/pyroTokens/pyro-oxt.png'
 import pyroLOOM from '../../../../images/pyroTokens/pyro-loom.png'
+import pyroMKR from '../../../../images/pyroTokens/pyro-mkr.png'
 
 import pyroTokenLogo from '../../../../images/new/pyrotokens.png'
 import pyroAnimated from '../../../../images/new/Fire-TransparentLow.gif'
@@ -37,8 +39,8 @@ export interface ImagePair {
 export const TokenList: ImagePair[] =
     [
         {
-            baseToken: { image: OXT, name: 'MKR' },//TODO: image for MKR and PyroMKR. Currently mainnt has no PyroMKR
-            pyroToken: { image: pyroOXT, name: 'PyroMKR' },
+            baseToken: { image: MKR, name: 'MKR' },
+            pyroToken: { image: pyroMKR, name: 'PyroMKR' },
         },
         {
             baseToken: { image: OXT, name: 'OXT' },
