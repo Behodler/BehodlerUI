@@ -46,7 +46,7 @@ function Swap() {
 }
 
 export const BehodlerUIPyrotokens = (props: any) => (
-    <WalletContextProvider>
+    <WalletContextProvider window={window}>
         <Swap {...props} />
     </WalletContextProvider>
 )

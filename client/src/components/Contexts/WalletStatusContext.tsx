@@ -11,22 +11,27 @@ interface WalletContextProps {
     contracts: IContracts
     primary: boolean,
     networkName: string,
-    initialized: boolean
+    initialized: boolean,
 }
 
 let WalletContext = React.createContext<WalletContextProps>({
     contracts: DefaultContracts,
     primary: false,
     networkName: "",
-    initialized: false
+    initialized: false,
 })
 
-function WalletContextProvider(props: { children: any }) {
+function WalletContextProvider(props: { window: any, children: any }) {
     const [contracts, setContracts] = useState<IContracts>(DefaultContracts)
     const [primary, setPrimary] = useState<boolean>(false)
     const [networkName, setNetworkName] = useState<string>("")
     const [initialized, setInitialized] = useState<boolean>(false)
     const { chainId, account, connector } = useActiveWeb3React()
+
+    useEffect(() => {
+        if (initialized)
+            window.location.reload()
+    }, [chainId, account])
 
     useEffect(() => {
         (async () => {

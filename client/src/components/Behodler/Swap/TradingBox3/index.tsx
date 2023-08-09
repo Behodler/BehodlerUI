@@ -946,10 +946,10 @@ export default function () {
 
     const inputTokenInfo = isMinting() ? activeRow.base : (hasV2Balance ? activeRow.PV2 : activeRow.PV3)
     const outputTokenInfo = isMinting() ? (activeRow.PV3) : activeRow.base
-
+    const Faucet = networkName === "sepolia" ? <TestnetFaucet network={networkName} /> : <div></div>
     return (
         <Box className={classes.root}>
-            <TestnetFaucet network={networkName} />
+            {Faucet}
             <MigrateToPyroV3
                 isMigrationModalOpen={isPyroV3MigrationModalOpen}
                 openMigrationModal={() => setIsPyroV3MigrationModalOpen(true)}

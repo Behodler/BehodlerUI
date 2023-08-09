@@ -139,7 +139,8 @@ export function MigrateToPyroV3(props: {
             const index = newTokens.findIndex(t => t.address === tokensToCheck[i].holdingToken)
 
             //migrationApprovals are all approvalStatus.unset before this assingment
-            newTokens[index].migrationApproval = BigInt(allowance) >= BigInt(balance) ? approvalStatus.APPROVED : approvalStatus.UNAPPROVED
+            if (index !== -1)
+                newTokens[index].migrationApproval = BigInt(allowance) >= BigInt(balance) ? approvalStatus.APPROVED : approvalStatus.UNAPPROVED
         }
         if (!_.isEqual(newTokens, pyroV2InWallet)) {
             setPyroV2InWallet(newTokens)
