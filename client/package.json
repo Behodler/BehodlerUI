@@ -1,6 +1,6 @@
 {
     "name": "@behodler/pyrotokens-legacy",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "main": "dist/index.js",
     "typings": "dist/components/BehodlerUIPyrotokens/index.d.ts",
     "files": [
@@ -62,8 +62,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build:package": "tsdx build --entry src/components/Behodler/Swap/index.ts --tsconfig package.tsconfig.json --transpileOnly",
-        "package:build":"tsdx build --entry src/components/Behodler/Swap/index.ts --tsconfig package.tsconfig.json --transpileOnly",
+        "build:package": "tsdx build --entry src/components/Behodler/index.ts --tsconfig package.tsconfig.json --transpileOnly",
         "docker:dev": "docker:dev-client",
         "docker:install": "sudo rm -rf node_modules/* && sudo rm -f yarn.lock && docker compose up install",
         "docker:dev-client": "docker compose up --remove-orphans  -d client",
