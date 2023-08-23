@@ -22,7 +22,7 @@ jobs:
       - run: yarn install
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-      - run: yarn build:package
+      - run: yarn package:build
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
