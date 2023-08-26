@@ -5,7 +5,7 @@
         "allowJs": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "noEmit": true,
+        "noEmit": false,
         "esModuleInterop": true,
         "module": "esnext",
         "strict": true,
@@ -25,5 +25,5 @@
         "sourceMap": true,
         "declaration": true
     },
-    "include": ["./src/components/BehodlerUIPyrotokens/index.ts", "./src/**/*d.ts"]
+    "include": ["./src/components/Behodler/Swap/index.tsx", "./src/**/*d.ts"]
 }

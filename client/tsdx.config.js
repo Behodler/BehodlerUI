@@ -10,22 +10,22 @@ module.exports = {
     rollup(config, options) {
         config.plugins = [
             images(),
-            url({include: ['**/*.webp', '**/*.otf']}),
+            url({ include: ['**/*.webp', '**/*.otf'] }),
             svgr(),
-            postcss({
-                plugins: [
-                    autoprefixer(),
-                    cssnano({
-                        preset: 'default',
+                    postcss({
+                        plugins: [
+                            autoprefixer(),
+                            cssnano({
+                                preset: 'default',
+                            }),
+                        ],
+                        inject: false,
+                        // only write out CSS for the first bundle (avoids pointless extra files):
+                        extract: !!options.writeMeta,
                     }),
-                ],
-                inject: false,
-                // only write out CSS for the first bundle (avoids pointless extra files):
-                extract: !!options.writeMeta,
-            }),
-            ...config.plugins,
+                    ...config.plugins,
         ]
 
         return config;
-    },
+    }
 };

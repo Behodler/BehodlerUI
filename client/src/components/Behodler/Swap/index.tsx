@@ -14,7 +14,7 @@ import { useAtom } from 'jotai';
 
 export const pyrotokensBackgroundImage = backImage
 
-function Swap() {
+function SwapComponent() {
     useWatchCurrentBlockEffect()
     useTokenRows() //kick off row population
     const [loaded, setLoaded] = useState(false)
@@ -45,8 +45,8 @@ function Swap() {
     }
 }
 
-export const BehodlerUIPyrotokens = (props: any) => (
+export const Swap = (props: any) => (
     <WalletContextProvider window={window}>
-        <Swap {...props} />
+        <SwapComponent {...props} />
     </WalletContextProvider>
 )

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
 
-import { BehodlerUIPyrotokens, pyrotokensBackgroundImage } from '../Behodler/Swap'
+import { Swap, pyrotokensBackgroundImage } from '../Behodler/Swap'
 import useActiveWeb3React from '../Behodler/Swap/hooks/useActiveWeb3React'
 import { injected } from '../../connectors'
 
@@ -78,7 +78,7 @@ export default function LayoutFrame() {
                 </StyledHeaderContent>
 
                 <div style={{ height: 'calc(100vh - 96px)' }}>
-                    <BehodlerUIPyrotokens />
+                    <Swap />
                 </div>
 
             </div>
