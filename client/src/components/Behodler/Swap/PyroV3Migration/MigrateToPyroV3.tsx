@@ -23,7 +23,7 @@ import { atom, useAtom } from 'jotai'
 import FetchAllowances from '../TradingBox3/FetchAllowances'
 import { useWalletContext } from '../hooks/useWalletContext'
 import { useActiveAccountAddress } from '../hooks/useAccount'
-import API from 'src/blockchain/ethereumAPI'
+import API from '../../../../blockchain/ethereumAPI'
 import { useTransactions } from '../hooks/useTransactions';
 import { NotificationType, useShowNotification } from '../TradingBox3/components/Notification';
 

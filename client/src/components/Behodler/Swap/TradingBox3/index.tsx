@@ -619,7 +619,7 @@ export default function () {
         var updateOutputTextAction: actions = {
             type: 'UPDATE_OUTPUT_TEXT',
             payload: {
-                outputText: formatSignificantDecimalPlaces(outputEstimate, 18)
+                outputText: formatSignificantDecimalPlaces(outputEstimate.toString(), 18)
             }
         }
         dispatch(updateOutputTextAction)
@@ -652,7 +652,7 @@ export default function () {
         var updateOutputTextAction: actions = {
             type: 'UPDATE_INPUT_TEXT',
             payload: {
-                inputText: formatSignificantDecimalPlaces(inputEstimate, 18)
+                inputText: formatSignificantDecimalPlaces(inputEstimate.toString(), 18)
             }
         }
 
@@ -721,7 +721,7 @@ export default function () {
                 dispatch({
                     type: 'SET_IMPLIED_EXCHANGE_RATE',
                     payload: {
-                        impliedExchangeRate: `1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${pyroName}`
+                        impliedExchangeRate: `1 ${baseName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e.toString(), 5)} ${pyroName}`
                     }
                 })
             }
@@ -731,7 +731,7 @@ export default function () {
                 dispatch({
                     type: 'SET_IMPLIED_EXCHANGE_RATE',
                     payload: {
-                        impliedExchangeRate: `1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${baseName}`
+                        impliedExchangeRate: `1 ${pyroName} ${connectorPhrase} ${formatSignificantDecimalPlaces(e.toString(), 5)} ${baseName}`
 
                     }
                 })
@@ -759,7 +759,7 @@ export default function () {
             dispatch({
                 type: 'SET_IMPLIED_EXCHANGE_RATE',
                 payload: {
-                    impliedExchangeRate: `1 ${leftToken} ${connectorPhrase} ${formatSignificantDecimalPlaces(e, 5)} ${rightToken}`
+                    impliedExchangeRate: `1 ${leftToken} ${connectorPhrase} ${formatSignificantDecimalPlaces(e.toString(), 5)} ${rightToken}`
                 }
             })
         }

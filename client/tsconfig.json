@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"outDir": "build/dist",
+		"rootDir": "src",
 		"module": "esnext",
 		"target": "es2020",
 		"lib": [
@@ -12,7 +13,6 @@
 		"allowJs": true,
 		"jsx": "react",
 		"moduleResolution": "node",
-		"rootDir": "src",
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": true,
 		"noImplicitThis": true,

@@ -1,4 +1,4 @@
-import IContracts from "src/blockchain/IContracts"
+import IContracts from "../../../../blockchain/IContracts"
 import { pv3 } from "./pv3"
 import { Target } from "./target"
 import { wethProxyV2 } from "./wethProxyV2"

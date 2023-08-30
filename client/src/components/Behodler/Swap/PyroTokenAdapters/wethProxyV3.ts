@@ -1,6 +1,6 @@
 import { Target } from './target'
 import IContracts from '../../../../blockchain/IContracts'
-import API from 'src/blockchain/ethereumAPI'
+import API from '../../../../blockchain/ethereumAPI'
 
 export const wethProxyV3 = async (contracts: IContracts): Promise<Target> => {
     const ONE = 1000000000000000000n

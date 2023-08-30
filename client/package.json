@@ -62,7 +62,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "package:build": "tsdx build --entry src/components/Behodler/Swap/index.tsx --tsconfig package.tsconfig.json --transpileOnly",
+        "package:build": "tsdx build --entry src/components/Behodler/Swap/index.tsx --tsconfig package.tsconfig.json",
         "docker:dev": "docker:dev-client",
         "docker:install": "sudo rm -rf node_modules/* && sudo rm -f yarn.lock && docker compose up install",
         "docker:dev-client": "docker compose up --remove-orphans  -d client",

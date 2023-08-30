@@ -1,8 +1,10 @@
 {
     "compilerOptions": {
-        "target": "esnext",
+        "target": "es2020",
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
+        "outDir": "build/dist",
+		"rootDir": "src",
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "noEmit": false,
@@ -11,7 +13,8 @@
         "strict": true,
         "noUnusedLocals": false,
         "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": true,
+        "strictPropertyInitialization":false,
+        "noImplicitAny": false,
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "moduleResolution": "node",
@@ -20,10 +23,12 @@
         "jsx": "react",
         "downlevelIteration": true,
         "allowSyntheticDefaultImports": true,
+        
         "types": ["jest"],
         "baseUrl": "src",
         "sourceMap": true,
-        "declaration": true
+        "declaration": true,
+        "suppressImplicitAnyIndexErrors": true
     },
-    "include": ["./src/components/Behodler/Swap/index.tsx", "./src/**/*d.ts"]
+    "include": ["./src/components/Behodler/Swap/index.tsx", "./src/**/**/*d.ts"]
 }

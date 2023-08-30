@@ -1,9 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useWalletContext } from './useWalletContext';
-import ethereumAPI from 'src/blockchain/ethereumAPI';
 import { useCurrentBlock } from './useCurrentBlock';
 import { TokenList, ImagePair } from "../TradingBox3/ImageLoader";
-import API from 'src/blockchain/ethereumAPI';
+import API from '../../../../blockchain/ethereumAPI';
 import { useActiveAccountAddress } from './useAccount';
 import FetchBalances from '../TradingBox3/FetchBalances';
 import FetchAllowances from '../TradingBox3/FetchAllowances';
@@ -63,10 +62,10 @@ export function useTokenRows(): void {
         setRows(newRows)
     }
     const rowUpdateCallBack = useCallback(async () => {
-        const apiTokens = ethereumAPI.tokenConfigs
+        const apiTokens = API.tokenConfigs
             .filter(({ displayName }) => !['dai', 'eye', 'scarcity', 'weidai'].includes(displayName.toLocaleLowerCase()))
 
-        setDaiAddress(ethereumAPI.tokenConfigs.find(({ displayName }) => displayName.toLowerCase() === 'dai')?.address || '0x0')
+        setDaiAddress(API.tokenConfigs.find(({ displayName }) => displayName.toLowerCase() === 'dai')?.address || '0x0')
 
         let tokenRows: TokenTripletRow[] = []
         //For async blocks, for loops cut down on code noise

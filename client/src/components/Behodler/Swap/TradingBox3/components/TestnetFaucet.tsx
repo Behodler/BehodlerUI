@@ -1,12 +1,12 @@
 
 import React, { useEffect, useState } from 'react'
-import Modal, { StyledModalContent, StyledModalHeader, StyledModalP } from 'src/components/Common/Modal';
+import Modal, { StyledModalContent, StyledModalHeader, StyledModalP } from '../../../../Common/Modal'
 import { StyledMigrateToPyroV3Button, StyledMigrateToPyroV3ModalButtons } from '../../PyroV3Migration/styled';
 import { useCurrentBlock } from '../../hooks/useCurrentBlock';
-import API from 'src/blockchain/ethereumAPI';
+import API from '../../../../../blockchain/ethereumAPI'
 import { useActiveAccountAddress } from '../../hooks/useAccount';
 import _ from "lodash"
-import { PyrotokenV2 } from 'src/blockchain/contractInterfaces/behodler2/PyrotokenV2';
+import { PyrotokenV2 } from '../../../../../blockchain/contractInterfaces/behodler2/PyrotokenV2';
 import { useTransactions } from '../../hooks/useTransactions';
 import { NotificationType, useShowNotification } from './Notification';
 import { rowsUpdatingAtom } from '../../hooks/useTokenRows';

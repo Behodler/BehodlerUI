@@ -33,7 +33,7 @@ interface newContracts {
 class ethereumAPI {
     private newContracts: newContracts = { weiDai: '', weiDaiBank: '', PRE: '' }
 
-    public initialized: boolean
+    public initialized: boolean =false
     public newContractObservable: Observable<newContracts>
     public contractsAvailable: string[]
     public web3: Web3
