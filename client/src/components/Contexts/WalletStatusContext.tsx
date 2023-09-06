@@ -30,7 +30,7 @@ function WalletContextProvider(props: { window: any, children: any }) {
 
     useEffect(() => {
         if (initialized)
-            window.location.reload()
+            // window.location.reload()
     }, [chainId, account])
 
     useEffect(() => {
