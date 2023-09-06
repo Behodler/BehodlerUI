@@ -29,8 +29,8 @@ function WalletContextProvider(props: { window: any, children: any }) {
     const { chainId, account, connector } = useActiveWeb3React()
 
     useEffect(() => {
-        if (initialized){}
-            // window.location.reload()
+        if (initialized)
+            window.location.reload()
     }, [chainId, account])
 
     useEffect(() => {
