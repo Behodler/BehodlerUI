@@ -194,7 +194,10 @@ export default function () {
 
     const [viewModel, dispatch] = useReducer(reducer, initialState)
     const [activeRow, setActiveRow] = useState<TokenTripletRow>(rows[0])
-    const hasV2Balance = BigInt(activeRow.PV2.balance) > 10000n
+    const significant = 5
+    const magnitude = 18-significant
+    const threshold = BigInt(new BigNumber(10).pow(magnitude).toString())
+    const hasV2Balance = BigInt(activeRow.PV2.balance) >threshold
 
     const nameOfSelectedAddress = (input: boolean) => {
         if (input) {
@@ -1025,7 +1028,7 @@ export default function () {
                                     </Grid>
                                 </Grid>
                                 <Grid item>
-                                    <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance) : '0', 4)} token={viewModel.inputAddress} estimate={viewModel.inputSpotDaiPriceView} />
+                                    <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance) : '0', significant)} token={viewModel.inputAddress} estimate={viewModel.inputSpotDaiPriceView} />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -1069,7 +1072,7 @@ export default function () {
                                 <Grid item>
                                     <BalanceContainer
                                         setValue={setFormattingTo}
-                                        balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance) : '0', 4)}
+                                        balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance) : '0', significant)}
                                         token={viewModel.outputAddress}
                                         estimate={viewModel.outputSpotDaiPriceView} />
                                 </Grid>
@@ -1150,7 +1153,7 @@ export default function () {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance) : '0', 4)} token={viewModel.inputAddress} estimate={viewModel.inputSpotDaiPriceView} />
+                                        <BalanceContainer setValue={setFormattingFrom} balance={formatSignificantDecimalPlaces(fromBalance.length > 0 ? API.fromWei(fromBalance) : '0', significant)} token={viewModel.inputAddress} estimate={viewModel.inputSpotDaiPriceView} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1219,7 +1222,7 @@ export default function () {
                                     <Grid item>
                                         <BalanceContainer
                                             setValue={setFormattingTo}
-                                            balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance) : '0', 4)}
+                                            balance={formatSignificantDecimalPlaces(toBalance.length > 0 ? API.fromWei(toBalance) : '0', significant)}
                                             token={viewModel.outputAddress}
                                             estimate={viewModel.outputSpotDaiPriceView} />
                                     </Grid>

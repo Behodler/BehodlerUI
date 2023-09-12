@@ -48,8 +48,8 @@ const useStyles = (isMobile: boolean) => makeStyles((theme: Theme) => ({
     },
     list: {
         width: '100%',
-        height: '100%',
-        maxWidth: isMobile ? 250 : 350,
+        height: isMobile?"370px":'520px',
+        maxWidth: isMobile ? 250 : 450,
         // backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',

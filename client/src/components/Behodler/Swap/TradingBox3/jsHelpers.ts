@@ -28,7 +28,6 @@ export const formatNumberText = (text: string): string => {
 export const formatSignificantDecimalPlaces = (value: string, decimalPlaces: number = 18): string => {
     BigNumber.set({ EXPONENTIAL_AT: 18 })
     const big = new BigNumber(value)
-
     if (big.isNaN()) {
         return value
     }
