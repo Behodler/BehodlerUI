@@ -90,6 +90,7 @@ export function MigrateToPyroV3(props: {
     const [pyroV2InWallet, setPyroV2InWallet] = useAtom(V2PresentAtom)
     const [migrationInProgress, setMigrationInProgress] = useState<boolean>(false)
     const [redemptionInProgress, setRedemptionInProgress] = useState<boolean>(false)
+   
     useEffect(() => {
         setPyroV2InWallet(V2PyroTokensPresentInActiveWallet(rows))
     }, [rows])
@@ -155,7 +156,6 @@ export function MigrateToPyroV3(props: {
 
     useEffect(() => {
         if (redemptionClicked) {
-            console.log('redemptionClicked')
             if (unapprovedRedemption.length > 0) {
                 const approveAll = async () => {
                     const approvalPromises = unapprovedRedemption.map(

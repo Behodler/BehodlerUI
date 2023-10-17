@@ -58,14 +58,7 @@ export interface IFlatEcosystemAddress {
     LimboAddTokenToBehodler: string,
     UpdateMultipleSoulConfigProposal: string,
     ProposalFactory: string,
-    //For now, LimboTokens are not explicitly included
-    // Aave: string,
-    // Curve: string,
-    // Convex: string,
-    // MIM: string,
-    // Uni: string,
-    // Sushi: string,
-    // WBTC: string,
+
     ConfigureTokenApproverPower: string,
     AdjustFlanFeeOnTransferProposal: string,
     ApproveFlanMintingProposal: string,

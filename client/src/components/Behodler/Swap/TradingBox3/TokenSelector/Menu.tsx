@@ -141,7 +141,7 @@ export default function Menu(props: props) {
                     address: currentTokenListItem.address,
                     name: currentTokenListItem?.name || '',
                     image: currentTokenListItem?.image || '',
-                    balance: formatSignificantDecimalPlaces(API.fromWei(currentTokenListItem.balance), 4)
+                    balance: formatSignificantDecimalPlaces(API.fromWei(currentTokenListItem.balance), 5)
                 }
 
                 return item
