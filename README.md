@@ -1,5 +1,9 @@
 # Proxy-Swap-Upgrade
 
+### Prerequisite understanding
+
+Should have a basic knowledge of Behodler, Limbo and the need for CliffFace proxies (see appropriate docs)
+
 ## Motivation for branch
 
 The swap branch was created prior to Limbo and the proxy infrastructure. We need a new swap page that seamlessly detects if an input or output token in a swap is linked to a proxy and to orchestrate the swap through the proxy.
